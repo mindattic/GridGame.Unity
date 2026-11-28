@@ -5513,7 +5513,7 @@
       ],
       "speakers": [],
       "payload": {
-        "short": "Master's vestments humming with stored mana — the team begins the fight with extra orbs."
+        "short": "Master's vestments humming with stored mana — every spell starts the fight partly charged."
       }
     },
     "item:eq_axe_hellforged": {
@@ -23259,7 +23259,7 @@
       ],
       "speakers": [],
       "payload": {
-        "short": "A Halcyon battery dug out of the ruins, its glass crazed and its seals gone, so it holds no mana at all. The Manasmith can reseal one, and it joins your Mana Orbs."
+        "short": "A Halcyon battery dug out of the ruins, its glass crazed and its seals gone, so it holds no mana at all. It no longer holds anything, but the Manasmith will pay Mana Dust for it."
       }
     },
     "item:mat_ceramic_shard": {

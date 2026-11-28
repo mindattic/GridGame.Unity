@@ -1,6 +1,6 @@
 {
  "device": "iphone17pro",
- "captured": "2026-11-27T22:38:23",
+ "captured": "2026-11-27T22:49:09",
  "screens": {
   "title": {
    "screen": "title",
@@ -38047,8 +38047,4327 @@
   "battle": {
    "screen": "battle",
    "method": "scenario",
-   "landedOn": "hub",
+   "landedOn": "battle",
    "png": "docs/design/ui-audit/captures/iphone17pro/battle.png",
+   "device": {
+    "name": "iphone17pro",
+    "px": [
+     1206,
+     2622
+    ],
+    "ppi": 460,
+    "pxPerUnit": 3.0,
+    "unit": "pt",
+    "devicePxPerDesignPx": 1.0308
+   },
+   "window": [
+    602,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2550.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     602.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "pt": 45.4,
+     "mm": 7.5
+    },
+    "checked": 7,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "pt": 8.2,
+     "mm": 1.4
+    },
+    "gapsChecked": 7,
+    "tightGapCount": 0,
+    "tightGaps": [],
+    "total": 7
+   },
+   "text": {
+    "count": 86,
+    "captionFloor": {
+     "px": 30,
+     "pt": 10.3,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 36,
+     "pt": 12.4,
+     "mm": 2.0
+    },
+    "median": {
+     "px": 40,
+     "pt": 13.7,
+     "mm": 2.3
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 17,
+    "contrastFails": 1,
+    "minContrast": 1.06,
+    "items": [
+     {
+      "text": "The Arkgrave I",
+      "rect": [
+       297.0,
+       235.0,
+       292.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00b7",
+      "rect": [
+       601.0,
+       235.0,
+       19.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Wave 1/1",
+      "rect": [
+       630.0,
+       235.0,
+       190.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "1550 G",
+      "rect": [
+       943.0,
+       235.0,
+       200.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s \u00b7 move or skill",
+      "rect": [
+       332.0,
+       468.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#59d973",
+       "bg": "#000000",
+       "ratio": 11.57,
+       "worstStop": 11.57,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s",
+      "rect": [
+       25.0,
+       439.0,
+       130.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#000000",
+       "ratio": 19.12,
+       "worstStop": 19.12,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "GUARD",
+      "rect": [
+       1003.0,
+       377.0,
+       132.0,
+       132.0
+      ],
+      "size": {
+       "px": 36,
+       "pt": 12.4,
+       "mm": 2.0
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "5",
+      "rect": [
+       622.0,
+       2093.0,
+       51.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#000000",
+       "ratio": 19.12,
+       "worstStop": 19.12,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight: tap a skill to aim it \u00b7 hold one\u2026",
+      "rect": [
+       51.0,
+       2212.0,
+       1048.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#000000",
+       "ratio": 15.32,
+       "worstStop": 15.32,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       187.0,
+       2350.0,
+       649.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "TANK",
+      "rect": [
+       847.0,
+       2350.0,
+       126.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f25c4c",
+       "bg": "#000000",
+       "ratio": 6.41,
+       "worstStop": 6.41,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 10",
+      "rect": [
+       983.0,
+       2350.0,
+       115.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "HEALTH",
+      "rect": [
+       187.0,
+       2422.0,
+       157.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#000000",
+       "ratio": 8.54,
+       "worstStop": 8.54,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "272/272",
+      "rect": [
+       354.0,
+       2422.0,
+       183.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "MANA",
+      "rect": [
+       187.0,
+       2494.0,
+       120.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#000000",
+       "ratio": 8.54,
+       "worstStop": 8.54,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "no spells",
+      "rect": [
+       317.0,
+       2494.0,
+       181.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#000000",
+       "ratio": 16.92,
+       "worstStop": 16.92,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "STR 18  VIT 50  AGI 22  SPD 22 INT 12  W\u2026",
+      "rect": [
+       187.0,
+       2565.0,
+       912.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skills",
+      "rect": [
+       51.0,
+       2701.0,
+       1048.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunt",
+      "rect": [
+       122.0,
+       2773.0,
+       120.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       262.0,
+       2773.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Roar",
+      "rect": [
+       120.0,
+       2841.0,
+       91.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       224.0,
+       2841.0,
+       23.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "challenge:",
+      "rect": [
+       258.0,
+       2841.0,
+       206.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       476.0,
+       2841.0,
+       64.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "two",
+      "rect": [
+       552.0,
+       2841.0,
+       78.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "turns",
+      "rect": [
+       641.0,
+       2841.0,
+       111.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "every",
+      "rect": [
+       764.0,
+       2841.0,
+       109.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "enemy",
+      "rect": [
+       884.0,
+       2841.0,
+       124.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "that",
+      "rect": [
+       120.0,
+       2900.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "can",
+      "rect": [
+       222.0,
+       2900.0,
+       68.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "reach",
+      "rect": [
+       301.0,
+       2900.0,
+       111.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       424.0,
+       2900.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "must",
+      "rect": [
+       505.0,
+       2900.0,
+       101.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "come",
+      "rect": [
+       618.0,
+       2900.0,
+       101.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       731.0,
+       2900.0,
+       64.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       807.0,
+       2900.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       120.0,
+       2958.0,
+       17.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunting",
+      "rect": [
+       138.0,
+       2958.0,
+       179.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "),",
+      "rect": [
+       317.0,
+       2958.0,
+       29.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       358.0,
+       2958.0,
+       74.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       443.0,
+       2958.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "take",
+      "rect": [
+       525.0,
+       2958.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "25%",
+      "rect": [
+       626.0,
+       2958.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "less",
+      "rect": [
+       727.0,
+       2958.0,
+       80.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "damage.",
+      "rect": [
+       818.0,
+       2958.0,
+       165.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       120.0,
+       3016.0,
+       115.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "your",
+      "rect": [
+       247.0,
+       3016.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "casters",
+      "rect": [
+       348.0,
+       3016.0,
+       148.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "safe",
+      "rect": [
+       507.0,
+       3016.0,
+       87.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "from",
+      "rect": [
+       606.0,
+       3016.0,
+       97.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "staggering",
+      "rect": [
+       715.0,
+       3016.0,
+       218.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "blows.",
+      "rect": [
+       945.0,
+       3016.0,
+       128.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Sacred Challenge",
+      "rect": [
+       122.0,
+       3086.0,
+       342.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       484.0,
+       3086.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Cry a holy challenge: for two turns ever\u2026",
+      "rect": [
+       122.0,
+       3158.0,
+       976.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "X-Potion",
+      "rect": [
+       122.0,
+       3298.0,
+       179.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Item \u00b7 5/5 left",
+      "rect": [
+       321.0,
+       3298.0,
+       295.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight's Oath",
+      "rect": [
+       122.0,
+       3378.0,
+       276.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       418.0,
+       3378.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       120.0,
+       3446.0,
+       115.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       247.0,
+       3446.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "oath:",
+      "rect": [
+       328.0,
+       3446.0,
+       109.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       449.0,
+       3446.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       531.0,
+       3446.0,
+       134.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "trades",
+      "rect": [
+       676.0,
+       3446.0,
+       132.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "places",
+      "rect": [
+       820.0,
+       3446.0,
+       126.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "with",
+      "rect": [
+       958.0,
+       3446.0,
+       93.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       1063.0,
+       3446.0,
+       23.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "comrade,",
+      "rect": [
+       120.0,
+       3504.0,
+       179.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stepping",
+      "rect": [
+       311.0,
+       3504.0,
+       175.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "into",
+      "rect": [
+       498.0,
+       3504.0,
+       84.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       593.0,
+       3504.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "danger",
+      "rect": [
+       674.0,
+       3504.0,
+       140.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "they",
+      "rect": [
+       826.0,
+       3504.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stood",
+      "rect": [
+       927.0,
+       3504.0,
+       115.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "in,",
+      "rect": [
+       120.0,
+       3562.0,
+       52.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       185.0,
+       3562.0,
+       74.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "shields",
+      "rect": [
+       270.0,
+       3562.0,
+       142.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "them",
+      "rect": [
+       424.0,
+       3562.0,
+       103.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       538.0,
+       3562.0,
+       17.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Ward",
+      "rect": [
+       556.0,
+       3562.0,
+       101.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": ").",
+      "rect": [
+       657.0,
+       3562.0,
+       29.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Judgment of Warding",
+      "rect": [
+       122.0,
+       3632.0,
+       431.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 2 turns",
+      "rect": [
+       573.0,
+       3632.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Smite a foe with a judging blow that wei\u2026",
+      "rect": [
+       122.0,
+       3704.0,
+       976.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "37 new Codex entries",
+      "rect": [
+       122.0,
+       2179.0,
+       923.0,
+       109.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#0a0a0a",
+       "bg": "#000000",
+       "ratio": 1.06,
+       "worstStop": 1.06,
+       "need": 4.5,
+       "pass": false
+      }
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 181.0,
+     "safeBottom": 99.0,
+     "design": [
+      1170.0,
+      2550.0
+     ],
+     "screens": [
+      180.754578,
+      2270.12183
+     ],
+     "device": "(x:0.00, y:0.00, width:602.00, height:1312.00)",
+     "screen": [
+      602,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 86,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 86,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 119,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 3,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C8": {
+      "checkedCount": 1,
+      "failed": 0
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [],
+    "fill": {
+     "minX": 0.0,
+     "maxX": 1147.0,
+     "band": 202.0,
+     "main": 1123.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "battle-boss": {
+   "screen": "battle-boss",
+   "method": "scenario",
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/iphone17pro/battle-boss.png",
+   "device": {
+    "name": "iphone17pro",
+    "px": [
+     1206,
+     2622
+    ],
+    "ppi": 460,
+    "pxPerUnit": 3.0,
+    "unit": "pt",
+    "devicePxPerDesignPx": 1.0308
+   },
+   "window": [
+    602,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2550.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     602.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "pt": 45.4,
+     "mm": 7.5
+    },
+    "checked": 7,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "pt": 8.2,
+     "mm": 1.4
+    },
+    "gapsChecked": 7,
+    "tightGapCount": 0,
+    "tightGaps": [],
+    "total": 7
+   },
+   "text": {
+    "count": 85,
+    "captionFloor": {
+     "px": 30,
+     "pt": 10.3,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 36,
+     "pt": 12.4,
+     "mm": 2.0
+    },
+    "median": {
+     "px": 40,
+     "pt": 13.7,
+     "mm": 2.3
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 16,
+    "contrastFails": 3,
+    "minContrast": 2.04,
+    "items": [
+     {
+      "text": "The Tithe Moors III",
+      "rect": [
+       253.0,
+       235.0,
+       385.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#46566b",
+       "ratio": 6.0,
+       "worstStop": 6.0,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00b7",
+      "rect": [
+       649.0,
+       235.0,
+       19.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#405167",
+       "ratio": 6.53,
+       "worstStop": 6.53,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Wave 1/1",
+      "rect": [
+       678.0,
+       235.0,
+       189.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#5c6a84",
+       "ratio": 4.39,
+       "worstStop": 4.39,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "500 G",
+      "rect": [
+       943.0,
+       235.0,
+       200.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#98a3ba",
+       "ratio": 2.04,
+       "worstStop": 2.04,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "3.5s \u00b7 move or skill",
+      "rect": [
+       332.0,
+       468.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#59d973",
+       "bg": "#506d74",
+       "ratio": 3.06,
+       "worstStop": 3.06,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "3.5s",
+      "rect": [
+       25.0,
+       439.0,
+       130.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#6e4e5c",
+       "ratio": 6.58,
+       "worstStop": 6.58,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "GUARD",
+      "rect": [
+       1003.0,
+       377.0,
+       132.0,
+       132.0
+      ],
+      "size": {
+       "px": 36,
+       "pt": 12.4,
+       "mm": 2.0
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "5",
+      "rect": [
+       622.0,
+       2093.0,
+       51.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#0f0f15",
+       "ratio": 17.39,
+       "worstStop": 17.39,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight: tap a skill to aim it \u00b7 hold one\u2026",
+      "rect": [
+       51.0,
+       2212.0,
+       1048.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#242235",
+       "ratio": 11.31,
+       "worstStop": 11.31,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       187.0,
+       2350.0,
+       674.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1a1928",
+       "ratio": 13.94,
+       "worstStop": 13.94,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "TANK",
+      "rect": [
+       873.0,
+       2350.0,
+       126.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f25c4c",
+       "bg": "#0c0c16",
+       "ratio": 5.94,
+       "worstStop": 5.94,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 4",
+      "rect": [
+       1009.0,
+       2350.0,
+       89.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1a1928",
+       "ratio": 13.94,
+       "worstStop": 13.94,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "HEALTH",
+      "rect": [
+       187.0,
+       2422.0,
+       157.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#2a2e2b",
+       "ratio": 5.6,
+       "worstStop": 5.6,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "191/191",
+      "rect": [
+       354.0,
+       2422.0,
+       183.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#4d4f35",
+       "ratio": 6.81,
+       "worstStop": 6.81,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "MANA",
+      "rect": [
+       187.0,
+       2494.0,
+       120.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#0d141e",
+       "ratio": 7.52,
+       "worstStop": 7.52,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "no spells",
+      "rect": [
+       317.0,
+       2494.0,
+       181.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#454333",
+       "ratio": 8.04,
+       "worstStop": 8.04,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "STR 12  VIT 35  AGI 17  SPD 14 INT 9  WI\u2026",
+      "rect": [
+       187.0,
+       2565.0,
+       912.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skills",
+      "rect": [
+       51.0,
+       2701.0,
+       1048.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunt",
+      "rect": [
+       122.0,
+       2773.0,
+       120.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       262.0,
+       2773.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Roar",
+      "rect": [
+       120.0,
+       2841.0,
+       91.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       224.0,
+       2841.0,
+       23.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "challenge:",
+      "rect": [
+       258.0,
+       2841.0,
+       206.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       476.0,
+       2841.0,
+       64.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "two",
+      "rect": [
+       552.0,
+       2841.0,
+       78.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "turns",
+      "rect": [
+       641.0,
+       2841.0,
+       111.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "every",
+      "rect": [
+       764.0,
+       2841.0,
+       109.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "enemy",
+      "rect": [
+       884.0,
+       2841.0,
+       124.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "that",
+      "rect": [
+       120.0,
+       2900.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "can",
+      "rect": [
+       222.0,
+       2900.0,
+       68.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "reach",
+      "rect": [
+       301.0,
+       2900.0,
+       111.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       424.0,
+       2900.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "must",
+      "rect": [
+       505.0,
+       2900.0,
+       101.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "come",
+      "rect": [
+       618.0,
+       2900.0,
+       101.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       731.0,
+       2900.0,
+       64.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       807.0,
+       2900.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       120.0,
+       2958.0,
+       17.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunting",
+      "rect": [
+       138.0,
+       2958.0,
+       179.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "),",
+      "rect": [
+       317.0,
+       2958.0,
+       29.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       358.0,
+       2958.0,
+       74.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       443.0,
+       2958.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "take",
+      "rect": [
+       525.0,
+       2958.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "25%",
+      "rect": [
+       626.0,
+       2958.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "less",
+      "rect": [
+       727.0,
+       2958.0,
+       80.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "damage.",
+      "rect": [
+       818.0,
+       2958.0,
+       165.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       120.0,
+       3016.0,
+       115.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "your",
+      "rect": [
+       247.0,
+       3016.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "casters",
+      "rect": [
+       348.0,
+       3016.0,
+       148.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "safe",
+      "rect": [
+       507.0,
+       3016.0,
+       87.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "from",
+      "rect": [
+       606.0,
+       3016.0,
+       97.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "staggering",
+      "rect": [
+       715.0,
+       3016.0,
+       218.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "blows.",
+      "rect": [
+       945.0,
+       3016.0,
+       128.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Sacred Challenge",
+      "rect": [
+       122.0,
+       3086.0,
+       342.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       484.0,
+       3086.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Cry a holy challenge: for two turns ever\u2026",
+      "rect": [
+       122.0,
+       3158.0,
+       976.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "X-Potion",
+      "rect": [
+       122.0,
+       3298.0,
+       179.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Item \u00b7 5/5 left",
+      "rect": [
+       321.0,
+       3298.0,
+       295.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight's Oath",
+      "rect": [
+       122.0,
+       3378.0,
+       276.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       418.0,
+       3378.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       120.0,
+       3446.0,
+       115.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       247.0,
+       3446.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "oath:",
+      "rect": [
+       328.0,
+       3446.0,
+       109.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       449.0,
+       3446.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       531.0,
+       3446.0,
+       134.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "trades",
+      "rect": [
+       676.0,
+       3446.0,
+       132.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "places",
+      "rect": [
+       820.0,
+       3446.0,
+       126.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "with",
+      "rect": [
+       958.0,
+       3446.0,
+       93.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       1063.0,
+       3446.0,
+       23.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "comrade,",
+      "rect": [
+       120.0,
+       3504.0,
+       179.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stepping",
+      "rect": [
+       311.0,
+       3504.0,
+       175.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "into",
+      "rect": [
+       498.0,
+       3504.0,
+       84.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       593.0,
+       3504.0,
+       70.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "danger",
+      "rect": [
+       674.0,
+       3504.0,
+       140.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "they",
+      "rect": [
+       826.0,
+       3504.0,
+       89.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stood",
+      "rect": [
+       927.0,
+       3504.0,
+       115.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "in,",
+      "rect": [
+       120.0,
+       3562.0,
+       52.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       185.0,
+       3562.0,
+       74.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "shields",
+      "rect": [
+       270.0,
+       3562.0,
+       142.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "them",
+      "rect": [
+       424.0,
+       3562.0,
+       103.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       538.0,
+       3562.0,
+       17.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Ward",
+      "rect": [
+       556.0,
+       3562.0,
+       101.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": ").",
+      "rect": [
+       657.0,
+       3562.0,
+       29.0,
+       58.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Judgment of Warding",
+      "rect": [
+       122.0,
+       3632.0,
+       431.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 2 turns",
+      "rect": [
+       573.0,
+       3632.0,
+       465.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Smite a foe with a judging blow that wei\u2026",
+      "rect": [
+       122.0,
+       3704.0,
+       976.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 181.0,
+     "safeBottom": 99.0,
+     "design": [
+      1170.0,
+      2550.0
+     ],
+     "screens": [
+      180.754578,
+      2270.12183
+     ],
+     "device": "(x:0.00, y:0.00, width:602.00, height:1312.00)",
+     "screen": [
+      602,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 85,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 85,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 121,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 3,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C8": {
+      "checkedCount": 3,
+      "failed": 2
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [
+     {
+      "rule": "POL-C8",
+      "subject": "#plate-5",
+      "detail": "edge 21/19 vs gap 41; gap 41px is off the space scale"
+     },
+     {
+      "rule": "POL-C8",
+      "subject": "#plate-7",
+      "detail": "edge 19/19 vs gap 41; gap 41px is off the space scale"
+     }
+    ],
+    "fill": {
+     "minX": 0.0,
+     "maxX": 1147.0,
+     "band": 202.0,
+     "main": 1123.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "overworld": {
+   "screen": "overworld",
+   "method": "scenario",
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/iphone17pro/overworld.png",
+   "device": {
+    "name": "iphone17pro",
+    "px": [
+     1206,
+     2622
+    ],
+    "ppi": 460,
+    "pxPerUnit": 3.0,
+    "unit": "pt",
+    "devicePxPerDesignPx": 1.0308
+   },
+   "window": [
+    602,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2550.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     602.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "pt": 45.4,
+     "mm": 7.5
+    },
+    "checked": 16,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "pt": 8.2,
+     "mm": 1.4
+    },
+    "gapsChecked": 16,
+    "tightGapCount": 0,
+    "tightGaps": [],
+    "total": 16
+   },
+   "text": {
+    "count": 41,
+    "captionFloor": {
+     "px": 30,
+     "pt": 10.3,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 37,
+     "pt": 12.7,
+     "mm": 2.1
+    },
+    "median": {
+     "px": 40,
+     "pt": 13.7,
+     "mm": 2.3
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 38,
+    "contrastFails": 2,
+    "minContrast": 3.71,
+    "items": [
+     {
+      "text": "Knight",
+      "rect": [
+       169.0,
+       278.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2b2941",
+       "ratio": 11.31,
+       "worstStop": 11.31,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "TANK",
+      "rect": [
+       167.0,
+       352.0,
+       126.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f25c4c",
+       "bg": "#0c0c16",
+       "ratio": 5.94,
+       "worstStop": 5.94,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 12",
+      "rect": [
+       309.0,
+       350.0,
+       113.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#29283d",
+       "ratio": 10.51,
+       "worstStop": 10.51,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "279/279",
+      "rect": [
+       169.0,
+       449.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#27253a",
+       "ratio": 6.05,
+       "worstStop": 6.05,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Barbarian",
+      "rect": [
+       717.0,
+       278.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2b2941",
+       "ratio": 11.31,
+       "worstStop": 11.31,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "STRIKER",
+      "rect": [
+       715.0,
+       352.0,
+       190.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffa840",
+       "bg": "#151217",
+       "ratio": 9.68,
+       "worstStop": 9.68,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 12",
+      "rect": [
+       921.0,
+       350.0,
+       113.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#29283d",
+       "ratio": 10.46,
+       "worstStop": 10.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "169/169",
+      "rect": [
+       717.0,
+       449.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#27253a",
+       "ratio": 6.05,
+       "worstStop": 6.05,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Cleric",
+      "rect": [
+       169.0,
+       560.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#252336",
+       "ratio": 12.33,
+       "worstStop": 12.33,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "HEALER",
+      "rect": [
+       167.0,
+       634.0,
+       179.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#66e680",
+       "bg": "#0e1318",
+       "ratio": 11.68,
+       "worstStop": 11.68,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 12",
+      "rect": [
+       361.0,
+       632.0,
+       113.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#232133",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "159/159",
+      "rect": [
+       169.0,
+       733.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#212030",
+       "ratio": 6.5,
+       "worstStop": 6.5,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Red Mage",
+      "rect": [
+       717.0,
+       560.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#252336",
+       "ratio": 12.33,
+       "worstStop": 12.33,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "MAGE",
+      "rect": [
+       715.0,
+       634.0,
+       134.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#8c99ff",
+       "bg": "#0c0c17",
+       "ratio": 7.49,
+       "worstStop": 7.49,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 12",
+      "rect": [
+       865.0,
+       632.0,
+       113.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#232234",
+       "ratio": 11.36,
+       "worstStop": 11.36,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "159/159",
+      "rect": [
+       717.0,
+       733.0,
+       393.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#212030",
+       "ratio": 6.5,
+       "worstStop": 6.5,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Rest",
+      "rect": [
+       179.0,
+       865.0,
+       707.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#191725",
+       "ratio": 14.21,
+       "worstStop": 14.21,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Make camp",
+      "rect": [
+       906.0,
+       865.0,
+       220.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#191826",
+       "ratio": 14.1,
+       "worstStop": 14.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Continue",
+      "rect": [
+       60.0,
+       1038.0,
+       1026.0,
+       132.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "The Arkgrave III",
+      "rect": [
+       51.0,
+       1186.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#232136",
+       "ratio": 11.41,
+       "worstStop": 11.41,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "On the road \u00b7 no orbs carried",
+      "rect": [
+       51.0,
+       1257.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#212033",
+       "ratio": 6.47,
+       "worstStop": 6.47,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Adventure",
+      "rect": [
+       202.0,
+       1370.0,
+       676.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1e1d2f",
+       "ratio": 13.3,
+       "worstStop": 13.3,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Stage 12",
+      "rect": [
+       898.0,
+       1370.0,
+       181.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1f1e30",
+       "ratio": 13.15,
+       "worstStop": 13.15,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "1,850 G gold \u00b7 0:00:00 \u00b7 Cleared 11/40",
+      "rect": [
+       51.0,
+       1483.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1c1b2b",
+       "ratio": 6.88,
+       "worstStop": 6.88,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Rested",
+      "rect": [
+       51.0,
+       1555.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1a1927",
+       "ratio": 7.04,
+       "worstStop": 7.04,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Unlimited",
+      "rect": [
+       51.0,
+       1627.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffffff",
+       "bg": "#181725",
+       "ratio": 17.68,
+       "worstStop": 17.68,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Crucible",
+      "rect": [
+       202.0,
+       1790.0,
+       853.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#7a7a88",
+       "bg": "#222135",
+       "ratio": 3.71,
+       "worstStop": 3.71,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "Closed on the road",
+      "rect": [
+       202.0,
+       1862.0,
+       853.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1d1c2c",
+       "ratio": 6.81,
+       "worstStop": 6.81,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Heroes",
+      "rect": [
+       144.0,
+       2052.0,
+       128.0,
+       25.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#272f37",
+       "ratio": 7.12,
+       "worstStop": 7.12,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "New ability ready",
+      "rect": [
+       49.0,
+       2083.0,
+       319.0,
+       60.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#8490c3",
+       "bg": "#2b3137",
+       "ratio": 4.21,
+       "worstStop": 4.21,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "Summon Circle",
+      "rect": [
+       439.0,
+       2052.0,
+       266.0,
+       91.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#4c4946",
+       "ratio": 4.69,
+       "worstStop": 4.69,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Merchant",
+      "rect": [
+       849.0,
+       2052.0,
+       175.0,
+       91.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#191e22",
+       "ratio": 8.82,
+       "worstStop": 8.82,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Shard Store",
+      "rect": [
+       99.0,
+       2235.0,
+       218.0,
+       25.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#181e25",
+       "ratio": 8.81,
+       "worstStop": 8.81,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "0 Shards",
+      "rect": [
+       128.0,
+       2266.0,
+       161.0,
+       60.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#7c88bb",
+       "bg": "#10171c",
+       "ratio": 5.24,
+       "worstStop": 5.24,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Craft",
+      "rect": [
+       521.0,
+       2235.0,
+       103.0,
+       91.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#404042",
+       "ratio": 5.43,
+       "worstStop": 5.43,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Journal",
+      "rect": [
+       865.0,
+       2235.0,
+       142.0,
+       91.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#1f282e",
+       "ratio": 7.86,
+       "worstStop": 7.86,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Settings",
+      "rect": [
+       220.0,
+       2418.0,
+       159.0,
+       93.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#1a1d21",
+       "ratio": 8.88,
+       "worstStop": 8.88,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Save & Quit",
+      "rect": [
+       739.0,
+       2418.0,
+       214.0,
+       93.0
+      ],
+      "size": {
+       "px": 37,
+       "pt": 12.7,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#2d2828",
+       "ratio": 7.62,
+       "worstStop": 7.62,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Around the wagons",
+      "rect": [
+       51.0,
+       2554.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\"Casks sloshing fine today. Mind you don\u2026",
+      "rect": [
+       51.0,
+       2626.0,
+       1044.0,
+       126.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2014 Brannoc, cask-keeper",
+      "rect": [
+       51.0,
+       2758.0,
+       1044.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": null
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 181.0,
+     "safeBottom": 99.0,
+     "design": [
+      1170.0,
+      2550.0
+     ],
+     "screens": [
+      180.754578,
+      2270.12183
+     ],
+     "device": "(x:0.00, y:0.00, width:602.00, height:1312.00)",
+     "screen": [
+      602,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 41,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 41,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 77,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 1,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 16,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 16,
+      "failed": 0
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [],
+    "fill": {
+     "minX": 23.0,
+     "maxX": 1154.0,
+     "band": 237.0,
+     "main": 1139.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "camp": {
+   "screen": "camp",
+   "method": "scenario",
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/iphone17pro/camp.png",
    "device": {
     "name": "iphone17pro",
     "px": [
@@ -38708,7 +43027,7 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#8187a5",
+       "fg": "#8187a4",
        "bg": "#656768",
        "ratio": 1.61,
        "worstStop": 1.61,
@@ -38731,10 +43050,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#7f8696",
-       "bg": "#6e736d",
-       "ratio": 1.33,
-       "worstStop": 1.33,
+       "fg": "#808897",
+       "bg": "#70756e",
+       "ratio": 1.32,
+       "worstStop": 1.32,
        "need": 4.5,
        "pass": false
       }
@@ -38755,9 +43074,9 @@
       "large": false,
       "contrast": {
        "fg": "#8189aa",
-       "bg": "#666971",
-       "ratio": 1.59,
-       "worstStop": 1.59,
+       "bg": "#666a71",
+       "ratio": 1.58,
+       "worstStop": 1.58,
        "need": 4.5,
        "pass": false
       }
@@ -38823,10 +43142,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#7f8282",
-       "bg": "#6e6d52",
-       "ratio": 1.36,
-       "worstStop": 1.36,
+       "fg": "#808383",
+       "bg": "#6f6f53",
+       "ratio": 1.35,
+       "worstStop": 1.35,
        "need": 4.5,
        "pass": false
       }
@@ -38847,9 +43166,9 @@
       "large": false,
       "contrast": {
        "fg": "#aab8ff",
-       "bg": "#5b6362",
-       "ratio": 3.23,
-       "worstStop": 3.23,
+       "bg": "#596263",
+       "ratio": 3.29,
+       "worstStop": 3.29,
        "need": 4.5,
        "pass": false
       }
@@ -38870,9 +43189,9 @@
       "large": false,
       "contrast": {
        "fg": "#aab8ff",
-       "bg": "#4f5a64",
-       "ratio": 3.72,
-       "worstStop": 3.72,
+       "bg": "#4f5a65",
+       "ratio": 3.69,
+       "worstStop": 3.69,
        "need": 4.5,
        "pass": false
       }
@@ -38893,9 +43212,9 @@
       "large": false,
       "contrast": {
        "fg": "#aab8ff",
-       "bg": "#615e3c",
-       "ratio": 3.47,
-       "worstStop": 3.47,
+       "bg": "#605e3c",
+       "ratio": 3.48,
+       "worstStop": 3.48,
        "need": 4.5,
        "pass": false
       }
@@ -38916,9 +43235,9 @@
       "large": false,
       "contrast": {
        "fg": "#aab8ff",
-       "bg": "#282a26",
-       "ratio": 7.61,
-       "worstStop": 7.61,
+       "bg": "#262826",
+       "ratio": 7.79,
+       "worstStop": 7.79,
        "need": 4.5,
        "pass": true
       }
@@ -38981,3023 +43300,6 @@
     }
    },
    "layoutProblems": []
-  },
-  "battle-boss": {
-   "screen": "battle-boss",
-   "method": "scenario",
-   "landedOn": "battle",
-   "png": "docs/design/ui-audit/captures/iphone17pro/battle-boss.png",
-   "device": {
-    "name": "iphone17pro",
-    "px": [
-     1206,
-     2622
-    ],
-    "ppi": 460,
-    "pxPerUnit": 3.0,
-    "unit": "pt",
-    "devicePxPerDesignPx": 1.0308
-   },
-   "window": [
-    602,
-    1312
-   ],
-   "stage": {
-    "design": [
-     1170.0,
-     2550.0
-    ],
-    "framed": false,
-    "rect": [
-     0.0,
-     0.0,
-     602.0,
-     1312.0
-    ]
-   },
-   "tapTargets": {
-    "floor": {
-     "px": 132,
-     "pt": 45.4,
-     "mm": 7.5
-    },
-    "checked": 10,
-    "undersizedCount": 0,
-    "undersized": [],
-    "gapFloor": {
-     "px": 24,
-     "pt": 8.2,
-     "mm": 1.4
-    },
-    "gapsChecked": 10,
-    "tightGapCount": 0,
-    "tightGaps": [],
-    "total": 10
-   },
-   "text": {
-    "count": 33,
-    "captionFloor": {
-     "px": 30,
-     "pt": 10.3,
-     "mm": 1.7
-    },
-    "min": {
-     "px": 36,
-     "pt": 12.4,
-     "mm": 2.0
-    },
-    "median": {
-     "px": 40,
-     "pt": 13.7,
-     "mm": 2.3
-    },
-    "underCaptionFloor": 0,
-    "contrastSamples": 32,
-    "contrastFails": 1,
-    "minContrast": 2.48,
-    "items": [
-     {
-      "text": "The Tithe Moors III",
-      "rect": [
-       351.0,
-       205.0,
-       396.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Wave 1/1",
-      "rect": [
-       454.0,
-       277.0,
-       190.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "500 G",
-      "rect": [
-       932.0,
-       240.0,
-       200.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "3.5s \u00b7 move or skill",
-      "rect": [
-       322.0,
-       473.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#59d973",
-       "bg": "#000000",
-       "ratio": 11.57,
-       "worstStop": 11.57,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "3.5s",
-      "rect": [
-       15.0,
-       444.0,
-       130.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f4f4f6",
-       "bg": "#000000",
-       "ratio": 19.12,
-       "worstStop": 19.12,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "GUARD",
-      "rect": [
-       993.0,
-       382.0,
-       132.0,
-       132.0
-      ],
-      "size": {
-       "px": 36,
-       "pt": 12.4,
-       "mm": 2.0
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Captain ignores the turn order: two turn\u2026",
-      "rect": [
-       196.0,
-       522.0,
-       756.0,
-       187.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#4d4d4f",
-       "bg": "#000000",
-       "ratio": 2.48,
-       "worstStop": 2.48,
-       "need": 4.5,
-       "pass": false
-      }
-     },
-     {
-      "text": "RULE BREAKER",
-      "rect": [
-       -76.0,
-       1130.0,
-       867.0,
-       150.0
-      ],
-      "size": {
-       "px": 76,
-       "pt": 26.1,
-       "mm": 4.3
-      },
-      "large": true,
-      "contrast": {
-       "fg": "#ff4cbf",
-       "bg": "#000000",
-       "ratio": 7.05,
-       "worstStop": 7.05,
-       "need": 3.0,
-       "pass": true
-      }
-     },
-     {
-      "text": "5",
-      "rect": [
-       612.0,
-       2216.0,
-       51.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f4f4f6",
-       "bg": "#000000",
-       "ratio": 19.12,
-       "worstStop": 19.12,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Party",
-      "rect": [
-       37.0,
-       2504.0,
-       344.0,
-       60.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lore",
-      "rect": [
-       404.0,
-       2504.0,
-       342.0,
-       60.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#000000",
-       "ratio": 8.54,
-       "worstStop": 8.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Log",
-      "rect": [
-       769.0,
-       2504.0,
-       344.0,
-       60.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#000000",
-       "ratio": 8.54,
-       "worstStop": 8.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Knight",
-      "rect": [
-       176.0,
-       2438.0,
-       674.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "TANK",
-      "rect": [
-       863.0,
-       2440.0,
-       126.0,
-       4.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f25c4c",
-       "bg": "#000000",
-       "ratio": 6.41,
-       "worstStop": 6.41,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lv 4",
-      "rect": [
-       999.0,
-       2438.0,
-       89.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "HEALTH",
-      "rect": [
-       176.0,
-       2438.0,
-       157.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#000000",
-       "ratio": 8.54,
-       "worstStop": 8.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "191/191",
-      "rect": [
-       344.0,
-       2438.0,
-       183.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "MANA",
-      "rect": [
-       176.0,
-       2438.0,
-       120.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#000000",
-       "ratio": 8.54,
-       "worstStop": 8.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "0/1",
-      "rect": [
-       307.0,
-       2438.0,
-       78.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "STR 12  VIT 35  AGI 17  SPD 14 INT 9  WI\u2026",
-      "rect": [
-       176.0,
-       2446.0,
-       912.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#000000",
-       "ratio": 8.54,
-       "worstStop": 8.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skills",
-      "rect": [
-       40.0,
-       2450.0,
-       1048.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#000000",
-       "ratio": 15.32,
-       "worstStop": 15.32,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Taunt",
-      "rect": [
-       112.0,
-       2514.0,
-       120.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 3 turns",
-      "rect": [
-       252.0,
-       2514.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#000000",
-       "ratio": 15.32,
-       "worstStop": 15.32,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Sacred Challenge",
-      "rect": [
-       112.0,
-       2521.0,
-       342.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 3 turns",
-      "rect": [
-       474.0,
-       2521.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#000000",
-       "ratio": 15.32,
-       "worstStop": 15.32,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Cry a holy challenge: for two turns ever\u2026",
-      "rect": [
-       112.0,
-       2529.0,
-       976.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#000000",
-       "ratio": 8.54,
-       "worstStop": 8.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "X-Potion",
-      "rect": [
-       112.0,
-       2529.0,
-       181.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Item \u00b7 5/5 left",
-      "rect": [
-       313.0,
-       2529.0,
-       295.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#000000",
-       "ratio": 15.32,
-       "worstStop": 15.32,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Knight's Oath",
-      "rect": [
-       112.0,
-       2537.0,
-       276.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 3 turns",
-      "rect": [
-       408.0,
-       2537.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#000000",
-       "ratio": 15.32,
-       "worstStop": 15.32,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Judgment of Warding",
-      "rect": [
-       112.0,
-       2545.0,
-       433.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#000000",
-       "ratio": 16.92,
-       "worstStop": 16.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 2 turns",
-      "rect": [
-       565.0,
-       2545.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#000000",
-       "ratio": 15.32,
-       "worstStop": 15.32,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Smite a foe with a judging blow that wei\u2026",
-      "rect": [
-       112.0,
-       2553.0,
-       976.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": null
-     }
-    ]
-   },
-   "safeArea": {
-    "insets": {
-     "safeTop": 181.0,
-     "safeBottom": 99.0,
-     "design": [
-      1170.0,
-      2550.0
-     ],
-     "screens": [
-      180.754578,
-      2270.12183
-     ],
-     "device": "(x:0.00, y:0.00, width:602.00, height:1312.00)",
-     "screen": [
-      602,
-      1312
-     ]
-    },
-    "intrusions": []
-   },
-   "polish": {
-    "counts": {
-     "POL-A2": {
-      "checkedCount": 33,
-      "failed": 0
-     },
-     "POL-A3": {
-      "checkedCount": 33,
-      "failed": 0
-     },
-     "POL-C5": {
-      "checkedCount": 55,
-      "failed": 7
-     },
-     "POL-A5": {
-      "checkedCount": 3,
-      "failed": 0
-     },
-     "POL-C2": {
-      "checkedCount": 10,
-      "failed": 0
-     },
-     "POL-C3": {
-      "checkedCount": 10,
-      "failed": 0
-     },
-     "POL-C8": {
-      "checkedCount": 5,
-      "failed": 3
-     },
-     "POL-C9": {
-      "checkedCount": 1,
-      "failed": 0
-     }
-    },
-    "findings": [
-     {
-      "rule": "POL-C5",
-      "subject": "Captain ignores the turn order: two turn\u2026",
-      "detail": "clipped by a parent"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "RULE BREAKER",
-      "detail": "off-stage -76,1130..791,1280"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Party",
-      "detail": "off-stage 37,2504..381,2564"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Lore",
-      "detail": "off-stage 404,2504..746,2564"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Log",
-      "detail": "off-stage 769,2504..1113,2564"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Cry a holy challenge: for two turns ever\u2026",
-      "detail": "wrapped text cut off (119>0)"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Smite a foe with a judging blow that wei\u2026",
-      "detail": "wrapped text cut off (119>0)"
-     },
-     {
-      "rule": "POL-C8",
-      "subject": "#plate-5",
-      "detail": "edge 19/19 vs gap 41; gap 41px is off the space scale"
-     },
-     {
-      "rule": "POL-C8",
-      "subject": "#plate-6",
-      "detail": "edge 19/19 vs gap 41; gap 41px is off the space scale"
-     },
-     {
-      "rule": "POL-C8",
-      "subject": "#plate-7",
-      "detail": "edge 19/21 vs gap 41; gap 41px is off the space scale"
-     }
-    ],
-    "fill": {
-     "minX": 0.0,
-     "maxX": 1137.0,
-     "band": 205.0,
-     "main": 1123.0
-    }
-   },
-   "layoutProblems": [
-    "label off-stage horizontally 'RULE BREAKER' x=-76..791",
-    "zero-size label 'Roar'",
-    "zero-size label 'a'",
-    "zero-size label 'challenge:'",
-    "zero-size label 'for'",
-    "zero-size label 'two'",
-    "zero-size label 'turns'",
-    "zero-size label 'every'",
-    "zero-size label 'enemy'",
-    "zero-size label 'that'",
-    "zero-size label 'can'",
-    "zero-size label 'reach'",
-    "zero-size label 'you'",
-    "zero-size label 'must'",
-    "zero-size label 'come'",
-    "zero-size label 'for'",
-    "zero-size label 'you'",
-    "zero-size label '('",
-    "zero-size label 'Taunting'",
-    "zero-size label '),'",
-    "zero-size label 'and'",
-    "zero-size label 'you'",
-    "zero-size label 'take'",
-    "zero-size label '25%'",
-    "zero-size label 'less'",
-    "zero-size label 'damage.'",
-    "zero-size label 'Keeps'",
-    "zero-size label 'your'",
-    "zero-size label 'casters'",
-    "zero-size label 'safe'",
-    "zero-size label 'from'",
-    "zero-size label 'staggering'",
-    "zero-size label 'blows.'",
-    "zero-size label 'Keeps'",
-    "zero-size label 'the'",
-    "zero-size label 'oath:'",
-    "zero-size label 'the'",
-    "zero-size label 'Knight'",
-    "zero-size label 'trades'",
-    "zero-size label 'places'",
-    "zero-size label 'with'",
-    "zero-size label 'a'",
-    "zero-size label 'comrade,'",
-    "zero-size label 'stepping'",
-    "zero-size label 'into'",
-    "zero-size label 'the'",
-    "zero-size label 'danger'",
-    "zero-size label 'they'",
-    "zero-size label 'stood'",
-    "zero-size label 'in,'",
-    "zero-size label 'and'",
-    "zero-size label 'shields'",
-    "zero-size label 'them'",
-    "zero-size label '('",
-    "zero-size label 'Ward'",
-    "zero-size label ').'"
-   ]
-  },
-  "overworld": {
-   "screen": "overworld",
-   "method": "scenario",
-   "landedOn": "hub",
-   "png": "docs/design/ui-audit/captures/iphone17pro/overworld.png",
-   "device": {
-    "name": "iphone17pro",
-    "px": [
-     1206,
-     2622
-    ],
-    "ppi": 460,
-    "pxPerUnit": 3.0,
-    "unit": "pt",
-    "devicePxPerDesignPx": 1.0308
-   },
-   "window": [
-    602,
-    1312
-   ],
-   "stage": {
-    "design": [
-     1170.0,
-     2550.0
-    ],
-    "framed": false,
-    "rect": [
-     0.0,
-     0.0,
-     602.0,
-     1312.0
-    ]
-   },
-   "tapTargets": {
-    "floor": {
-     "px": 132,
-     "pt": 45.4,
-     "mm": 7.5
-    },
-    "checked": 16,
-    "undersizedCount": 0,
-    "undersized": [],
-    "gapFloor": {
-     "px": 24,
-     "pt": 8.2,
-     "mm": 1.4
-    },
-    "gapsChecked": 16,
-    "tightGapCount": 0,
-    "tightGaps": [],
-    "total": 16
-   },
-   "text": {
-    "count": 41,
-    "captionFloor": {
-     "px": 30,
-     "pt": 10.3,
-     "mm": 1.7
-    },
-    "min": {
-     "px": 37,
-     "pt": 12.7,
-     "mm": 2.1
-    },
-    "median": {
-     "px": 40,
-     "pt": 13.7,
-     "mm": 2.3
-    },
-    "underCaptionFloor": 0,
-    "contrastSamples": 38,
-    "contrastFails": 2,
-    "minContrast": 3.71,
-    "items": [
-     {
-      "text": "Knight",
-      "rect": [
-       169.0,
-       278.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2b2941",
-       "ratio": 11.31,
-       "worstStop": 11.31,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "TANK",
-      "rect": [
-       167.0,
-       352.0,
-       126.0,
-       62.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f25c4c",
-       "bg": "#0c0c16",
-       "ratio": 5.94,
-       "worstStop": 5.94,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lv 12",
-      "rect": [
-       309.0,
-       350.0,
-       113.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#29283d",
-       "ratio": 10.51,
-       "worstStop": 10.51,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "279/279",
-      "rect": [
-       169.0,
-       449.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#27253a",
-       "ratio": 6.05,
-       "worstStop": 6.05,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Barbarian",
-      "rect": [
-       717.0,
-       278.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2b2941",
-       "ratio": 11.31,
-       "worstStop": 11.31,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "STRIKER",
-      "rect": [
-       715.0,
-       352.0,
-       190.0,
-       62.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffa840",
-       "bg": "#151217",
-       "ratio": 9.68,
-       "worstStop": 9.68,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lv 12",
-      "rect": [
-       921.0,
-       350.0,
-       113.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#29283d",
-       "ratio": 10.46,
-       "worstStop": 10.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "169/169",
-      "rect": [
-       717.0,
-       449.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#27253a",
-       "ratio": 6.05,
-       "worstStop": 6.05,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Cleric",
-      "rect": [
-       169.0,
-       560.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#252336",
-       "ratio": 12.33,
-       "worstStop": 12.33,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "HEALER",
-      "rect": [
-       167.0,
-       634.0,
-       179.0,
-       62.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#66e680",
-       "bg": "#0e1318",
-       "ratio": 11.68,
-       "worstStop": 11.68,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lv 12",
-      "rect": [
-       361.0,
-       632.0,
-       113.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#232133",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "159/159",
-      "rect": [
-       169.0,
-       733.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#212030",
-       "ratio": 6.5,
-       "worstStop": 6.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Red Mage",
-      "rect": [
-       717.0,
-       560.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#252336",
-       "ratio": 12.33,
-       "worstStop": 12.33,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "MAGE",
-      "rect": [
-       715.0,
-       634.0,
-       134.0,
-       62.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#8c99ff",
-       "bg": "#0c0c17",
-       "ratio": 7.49,
-       "worstStop": 7.49,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lv 12",
-      "rect": [
-       865.0,
-       632.0,
-       113.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#232234",
-       "ratio": 11.36,
-       "worstStop": 11.36,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "159/159",
-      "rect": [
-       717.0,
-       733.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#212030",
-       "ratio": 6.5,
-       "worstStop": 6.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Rest",
-      "rect": [
-       179.0,
-       865.0,
-       707.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#191725",
-       "ratio": 14.21,
-       "worstStop": 14.21,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Make camp",
-      "rect": [
-       906.0,
-       865.0,
-       220.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#191826",
-       "ratio": 14.1,
-       "worstStop": 14.1,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Continue",
-      "rect": [
-       60.0,
-       1038.0,
-       1026.0,
-       132.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "The Arkgrave III",
-      "rect": [
-       51.0,
-       1186.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#232136",
-       "ratio": 11.41,
-       "worstStop": 11.41,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "On the road \u00b7 no orbs carried",
-      "rect": [
-       51.0,
-       1257.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#212033",
-       "ratio": 6.47,
-       "worstStop": 6.47,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Adventure",
-      "rect": [
-       202.0,
-       1370.0,
-       676.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#1e1d2f",
-       "ratio": 13.3,
-       "worstStop": 13.3,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Stage 12",
-      "rect": [
-       898.0,
-       1370.0,
-       181.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#1f1e30",
-       "ratio": 13.15,
-       "worstStop": 13.15,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "1,850 G gold \u00b7 0:00:01 \u00b7 Cleared 11/40",
-      "rect": [
-       51.0,
-       1483.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1c1b2b",
-       "ratio": 6.88,
-       "worstStop": 6.88,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Rested",
-      "rect": [
-       51.0,
-       1555.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1a1927",
-       "ratio": 7.04,
-       "worstStop": 7.04,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Unlimited",
-      "rect": [
-       51.0,
-       1627.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffffff",
-       "bg": "#181725",
-       "ratio": 17.68,
-       "worstStop": 17.68,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Crucible",
-      "rect": [
-       202.0,
-       1790.0,
-       853.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#7a7a88",
-       "bg": "#222135",
-       "ratio": 3.71,
-       "worstStop": 3.71,
-       "need": 4.5,
-       "pass": false
-      }
-     },
-     {
-      "text": "Closed on the road",
-      "rect": [
-       202.0,
-       1862.0,
-       853.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1d1c2c",
-       "ratio": 6.81,
-       "worstStop": 6.81,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Heroes",
-      "rect": [
-       144.0,
-       2052.0,
-       128.0,
-       25.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#272f37",
-       "ratio": 7.12,
-       "worstStop": 7.12,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "New ability ready",
-      "rect": [
-       49.0,
-       2083.0,
-       319.0,
-       60.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#8490c3",
-       "bg": "#2b3137",
-       "ratio": 4.21,
-       "worstStop": 4.21,
-       "need": 4.5,
-       "pass": false
-      }
-     },
-     {
-      "text": "Summon Circle",
-      "rect": [
-       439.0,
-       2052.0,
-       266.0,
-       91.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#4c4946",
-       "ratio": 4.69,
-       "worstStop": 4.69,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Merchant",
-      "rect": [
-       849.0,
-       2052.0,
-       175.0,
-       91.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#191e22",
-       "ratio": 8.82,
-       "worstStop": 8.82,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Shard Store",
-      "rect": [
-       99.0,
-       2235.0,
-       218.0,
-       25.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#181e25",
-       "ratio": 8.81,
-       "worstStop": 8.81,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "0 Shards",
-      "rect": [
-       128.0,
-       2266.0,
-       161.0,
-       60.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#7c88bb",
-       "bg": "#10171c",
-       "ratio": 5.24,
-       "worstStop": 5.24,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Craft",
-      "rect": [
-       521.0,
-       2235.0,
-       103.0,
-       91.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#404042",
-       "ratio": 5.43,
-       "worstStop": 5.43,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Journal",
-      "rect": [
-       865.0,
-       2235.0,
-       142.0,
-       91.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#1f282e",
-       "ratio": 7.86,
-       "worstStop": 7.86,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Settings",
-      "rect": [
-       220.0,
-       2418.0,
-       159.0,
-       93.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#1a1d21",
-       "ratio": 8.88,
-       "worstStop": 8.88,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Save & Quit",
-      "rect": [
-       739.0,
-       2418.0,
-       214.0,
-       93.0
-      ],
-      "size": {
-       "px": 37,
-       "pt": 12.7,
-       "mm": 2.1
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#2d2828",
-       "ratio": 7.62,
-       "worstStop": 7.62,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Around the wagons",
-      "rect": [
-       51.0,
-       2554.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": null
-     },
-     {
-      "text": "\"I took vows at a Still once. Turns out \u2026",
-      "rect": [
-       51.0,
-       2626.0,
-       1044.0,
-       126.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": null
-     },
-     {
-      "text": "\u2014 Sister Ilsabet, wagon medic",
-      "rect": [
-       51.0,
-       2758.0,
-       1044.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": null
-     }
-    ]
-   },
-   "safeArea": {
-    "insets": {
-     "safeTop": 181.0,
-     "safeBottom": 99.0,
-     "design": [
-      1170.0,
-      2550.0
-     ],
-     "screens": [
-      180.754578,
-      2270.12183
-     ],
-     "device": "(x:0.00, y:0.00, width:602.00, height:1312.00)",
-     "screen": [
-      602,
-      1312
-     ]
-    },
-    "intrusions": []
-   },
-   "polish": {
-    "counts": {
-     "POL-A2": {
-      "checkedCount": 41,
-      "failed": 0
-     },
-     "POL-A3": {
-      "checkedCount": 41,
-      "failed": 0
-     },
-     "POL-C5": {
-      "checkedCount": 77,
-      "failed": 0
-     },
-     "POL-A5": {
-      "checkedCount": 1,
-      "failed": 0
-     },
-     "POL-C2": {
-      "checkedCount": 16,
-      "failed": 0
-     },
-     "POL-C3": {
-      "checkedCount": 16,
-      "failed": 0
-     },
-     "POL-C9": {
-      "checkedCount": 1,
-      "failed": 0
-     }
-    },
-    "findings": [],
-    "fill": {
-     "minX": 23.0,
-     "maxX": 1154.0,
-     "band": 237.0,
-     "main": 1139.0
-    }
-   },
-   "layoutProblems": []
-  },
-  "camp": {
-   "screen": "camp",
-   "method": "scenario",
-   "landedOn": "battle",
-   "png": "docs/design/ui-audit/captures/iphone17pro/camp.png",
-   "device": {
-    "name": "iphone17pro",
-    "px": [
-     1206,
-     2622
-    ],
-    "ppi": 460,
-    "pxPerUnit": 3.0,
-    "unit": "pt",
-    "devicePxPerDesignPx": 1.0308
-   },
-   "window": [
-    602,
-    1312
-   ],
-   "stage": {
-    "design": [
-     1170.0,
-     2550.0
-    ],
-    "framed": false,
-    "rect": [
-     0.0,
-     0.0,
-     602.0,
-     1312.0
-    ]
-   },
-   "tapTargets": {
-    "floor": {
-     "px": 132,
-     "pt": 45.4,
-     "mm": 7.5
-    },
-    "checked": 10,
-    "undersizedCount": 0,
-    "undersized": [],
-    "gapFloor": {
-     "px": 24,
-     "pt": 8.2,
-     "mm": 1.4
-    },
-    "gapsChecked": 10,
-    "tightGapCount": 0,
-    "tightGaps": [],
-    "total": 10
-   },
-   "text": {
-    "count": 32,
-    "captionFloor": {
-     "px": 30,
-     "pt": 10.3,
-     "mm": 1.7
-    },
-    "min": {
-     "px": 36,
-     "pt": 12.4,
-     "mm": 2.0
-    },
-    "median": {
-     "px": 40,
-     "pt": 13.7,
-     "mm": 2.3
-    },
-    "underCaptionFloor": 0,
-    "contrastSamples": 31,
-    "contrastFails": 0,
-    "minContrast": 4.92,
-    "items": [
-     {
-      "text": "The Arkgrave I",
-      "rect": [
-       408.0,
-       200.0,
-       303.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#483c3f",
-       "ratio": 8.5,
-       "worstStop": 8.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Wave 1/1",
-      "rect": [
-       465.0,
-       272.0,
-       190.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#634946",
-       "ratio": 6.58,
-       "worstStop": 6.58,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "1550 G",
-      "rect": [
-       943.0,
-       235.0,
-       200.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#3b3539",
-       "ratio": 9.64,
-       "worstStop": 9.64,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "3.5s \u00b7 move or skill",
-      "rect": [
-       332.0,
-       468.0,
-       393.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#59d973",
-       "bg": "#423f40",
-       "ratio": 5.74,
-       "worstStop": 5.74,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "3.5s",
-      "rect": [
-       25.0,
-       439.0,
-       130.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f4f4f6",
-       "bg": "#784746",
-       "ratio": 6.86,
-       "worstStop": 6.86,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "GUARD",
-      "rect": [
-       1003.0,
-       377.0,
-       132.0,
-       132.0
-      ],
-      "size": {
-       "px": 36,
-       "pt": 12.4,
-       "mm": 2.0
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Tip: tap or hold any hero, foe, slot or \u2026",
-      "rect": [
-       206.0,
-       501.0,
-       756.0,
-       126.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#5e4d49",
-       "ratio": 6.44,
-       "worstStop": 6.44,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "5",
-      "rect": [
-       622.0,
-       2212.0,
-       51.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f4f4f6",
-       "bg": "#0f0f15",
-       "ratio": 17.39,
-       "worstStop": 17.39,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Party",
-      "rect": [
-       47.0,
-       2499.0,
-       344.0,
-       60.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lore",
-      "rect": [
-       414.0,
-       2499.0,
-       342.0,
-       60.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1a1930",
-       "ratio": 6.97,
-       "worstStop": 6.97,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Log",
-      "rect": [
-       779.0,
-       2499.0,
-       344.0,
-       60.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1a1930",
-       "ratio": 6.97,
-       "worstStop": 6.97,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Knight",
-      "rect": [
-       187.0,
-       2433.0,
-       649.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#211f33",
-       "ratio": 12.93,
-       "worstStop": 12.93,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "TANK",
-      "rect": [
-       847.0,
-       2435.0,
-       126.0,
-       4.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#f25c4c",
-       "bg": "#201f32",
-       "ratio": 4.92,
-       "worstStop": 4.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Lv 10",
-      "rect": [
-       983.0,
-       2433.0,
-       115.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#201f33",
-       "ratio": 12.96,
-       "worstStop": 12.96,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "HEALTH",
-      "rect": [
-       187.0,
-       2433.0,
-       157.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#201f32",
-       "ratio": 6.54,
-       "worstStop": 6.54,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "272/272",
-      "rect": [
-       354.0,
-       2433.0,
-       183.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#201e32",
-       "ratio": 13.08,
-       "worstStop": 13.08,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "MANA",
-      "rect": [
-       187.0,
-       2433.0,
-       120.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#201f32",
-       "ratio": 6.55,
-       "worstStop": 6.55,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "2/1",
-      "rect": [
-       317.0,
-       2433.0,
-       78.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#201f32",
-       "ratio": 12.98,
-       "worstStop": 12.98,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "STR 18  VIT 50  AGI 22  SPD 22 INT 12  W\u2026",
-      "rect": [
-       187.0,
-       2441.0,
-       912.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1b1a29",
-       "ratio": 6.96,
-       "worstStop": 6.96,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skills",
-      "rect": [
-       51.0,
-       2445.0,
-       1048.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#111217",
-       "ratio": 13.65,
-       "worstStop": 13.65,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Taunt",
-      "rect": [
-       122.0,
-       2509.0,
-       120.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 3 turns",
-      "rect": [
-       262.0,
-       2509.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#1a1930",
-       "ratio": 12.5,
-       "worstStop": 12.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Sacred Challenge",
-      "rect": [
-       122.0,
-       2517.0,
-       342.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 3 turns",
-      "rect": [
-       484.0,
-       2517.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#1a1930",
-       "ratio": 12.5,
-       "worstStop": 12.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Cry a holy challenge: for two turns ever\u2026",
-      "rect": [
-       122.0,
-       2525.0,
-       976.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#2a283f",
-       "ratio": 5.79,
-       "worstStop": 5.79,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "X-Potion",
-      "rect": [
-       122.0,
-       2525.0,
-       179.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Item \u00b7 5/5 left",
-      "rect": [
-       321.0,
-       2525.0,
-       295.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#1e1e30",
-       "ratio": 11.94,
-       "worstStop": 11.94,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Knight's Oath",
-      "rect": [
-       122.0,
-       2532.0,
-       276.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 3 turns",
-      "rect": [
-       418.0,
-       2532.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#1a1930",
-       "ratio": 12.5,
-       "worstStop": 12.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Judgment of Warding",
-      "rect": [
-       122.0,
-       2540.0,
-       431.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#2a2840",
-       "ratio": 11.46,
-       "worstStop": 11.46,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Skill \u00b7 recharge 2 turns",
-      "rect": [
-       573.0,
-       2540.0,
-       465.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#1a1930",
-       "ratio": 12.5,
-       "worstStop": 12.5,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Smite a foe with a judging blow that wei\u2026",
-      "rect": [
-       122.0,
-       2548.0,
-       976.0,
-       8.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.7,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": null
-     }
-    ]
-   },
-   "safeArea": {
-    "insets": {
-     "safeTop": 181.0,
-     "safeBottom": 99.0,
-     "design": [
-      1170.0,
-      2550.0
-     ],
-     "screens": [
-      180.754578,
-      2270.12183
-     ],
-     "device": "(x:0.00, y:0.00, width:602.00, height:1312.00)",
-     "screen": [
-      602,
-      1312
-     ]
-    },
-    "intrusions": []
-   },
-   "polish": {
-    "counts": {
-     "POL-A2": {
-      "checkedCount": 32,
-      "failed": 0
-     },
-     "POL-A3": {
-      "checkedCount": 32,
-      "failed": 0
-     },
-     "POL-C5": {
-      "checkedCount": 51,
-      "failed": 6
-     },
-     "POL-A5": {
-      "checkedCount": 2,
-      "failed": 0
-     },
-     "POL-C2": {
-      "checkedCount": 10,
-      "failed": 0
-     },
-     "POL-C3": {
-      "checkedCount": 10,
-      "failed": 0
-     },
-     "POL-C8": {
-      "checkedCount": 2,
-      "failed": 0
-     },
-     "POL-C9": {
-      "checkedCount": 1,
-      "failed": 0
-     }
-    },
-    "findings": [
-     {
-      "rule": "POL-C5",
-      "subject": "Tip: tap or hold any hero, foe, slot or \u2026",
-      "detail": "clipped by a parent"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Party",
-      "detail": "off-stage 47,2499..391,2560"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Lore",
-      "detail": "off-stage 414,2499..756,2560"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Log",
-      "detail": "off-stage 779,2499..1123,2560"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Cry a holy challenge: for two turns ever\u2026",
-      "detail": "wrapped text cut off (119>0)"
-     },
-     {
-      "rule": "POL-C5",
-      "subject": "Smite a foe with a judging blow that wei\u2026",
-      "detail": "wrapped text cut off (119>0)"
-     }
-    ],
-    "fill": {
-     "minX": 0.0,
-     "maxX": 1147.0,
-     "band": 200.0,
-     "main": 1123.0
-    }
-   },
-   "layoutProblems": [
-    "zero-size label 'Roar'",
-    "zero-size label 'a'",
-    "zero-size label 'challenge:'",
-    "zero-size label 'for'",
-    "zero-size label 'two'",
-    "zero-size label 'turns'",
-    "zero-size label 'every'",
-    "zero-size label 'enemy'",
-    "zero-size label 'that'",
-    "zero-size label 'can'",
-    "zero-size label 'reach'",
-    "zero-size label 'you'",
-    "zero-size label 'must'",
-    "zero-size label 'come'",
-    "zero-size label 'for'",
-    "zero-size label 'you'",
-    "zero-size label '('",
-    "zero-size label 'Taunting'",
-    "zero-size label '),'",
-    "zero-size label 'and'",
-    "zero-size label 'you'",
-    "zero-size label 'take'",
-    "zero-size label '25%'",
-    "zero-size label 'less'",
-    "zero-size label 'damage.'",
-    "zero-size label 'Keeps'",
-    "zero-size label 'your'",
-    "zero-size label 'casters'",
-    "zero-size label 'safe'",
-    "zero-size label 'from'",
-    "zero-size label 'staggering'",
-    "zero-size label 'blows.'",
-    "zero-size label 'Keeps'",
-    "zero-size label 'the'",
-    "zero-size label 'oath:'",
-    "zero-size label 'the'",
-    "zero-size label 'Knight'",
-    "zero-size label 'trades'",
-    "zero-size label 'places'",
-    "zero-size label 'with'",
-    "zero-size label 'a'",
-    "zero-size label 'comrade,'",
-    "zero-size label 'stepping'",
-    "zero-size label 'into'",
-    "zero-size label 'the'",
-    "zero-size label 'danger'",
-    "zero-size label 'they'",
-    "zero-size label 'stood'",
-    "zero-size label 'in,'",
-    "zero-size label 'and'",
-    "zero-size label 'shields'",
-    "zero-size label 'them'",
-    "zero-size label '('",
-    "zero-size label 'Ward'",
-    "zero-size label ').'"
-   ]
   },
   "skill-hex": {
    "screen": "skill-hex",

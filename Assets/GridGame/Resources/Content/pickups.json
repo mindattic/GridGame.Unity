@@ -11,7 +11,7 @@
   {
     "Id": "pk_mana",
     "Name": "Mana Shard",
-    "Description": "An orb flows into the mana pool.",
+    "Description": "Fills every spell's mana bar by 100.",
     "Weight": 4,
     "Orbs": 1,
     "Color": "#5AB4FF",

@@ -1,0 +1,306 @@
+{
+ "ticket": "GG-T1840",
+ "parent": "GG-T1834",
+ "device": "iphone17pro",
+ "captures": "f17cf7da",
+ "checklist": "docs/research/MobileGameAccessibility.md",
+ "screens": {
+  "reviewedFromScreenshot": [
+   "diamonds"
+  ],
+  "reviewedFromLayoutDumpOnly": [
+   "shop",
+   "blacksmith",
+   "alchemist",
+   "enchantress",
+   "talk",
+   "caravan",
+   "summon",
+   "talents",
+   "respec",
+   "status",
+   "equip",
+   "abilities",
+   "items",
+   "party"
+  ],
+  "skipped": {
+   "skill-hex": "capture landed on abilities (GG-T1843) and the frame is black",
+   "mercenaries": "not captured",
+   "summon-history": "not captured"
+  }
+ },
+ "notes": [
+  "15 of the 16 captured PNGs are black frames; findings for those screens rest on facts.json's layout dump, not the image (GG-T1857).",
+  "Contrast is sampled against the black frame, so only light-text fails are kept (black is their best case); dark-on-light fails were dropped as artefacts.",
+  "facts.json text ending in '…' at 40 characters is AutomationServer.Trim, not on-screen truncation, so it was not filed.",
+  "Bottom-nav 0 px gaps pass T2's non-overlap clause and were not filed. No findings on items or party beyond the shared ones."
+ ],
+ "findings": [
+  {
+   "id": "captures",
+   "ticket": "GG-T1857",
+   "screens": [
+    "shop",
+    "blacksmith",
+    "alchemist",
+    "enchantress",
+    "talk",
+    "caravan",
+    "summon",
+    "skill-hex",
+    "talents",
+    "respec",
+    "status",
+    "equip",
+    "abilities",
+    "items",
+    "party",
+    "mercenaries",
+    "summon-history"
+   ],
+   "checklist": [
+    "§3.1"
+   ],
+   "summary": "uiaudit captures: 15 of 16 shops/status PNGs are black frames (only the Development Build watermark), mercenaries and summon-history are never captured, skill-hex lands on abilities; contrast sampled from those frames is invalid (checklist §3.1)",
+   "detail": "Mean luminance 0.2/255 on shop, blacksmith, alchemist, enchantress, talk, caravan, summon, skill-hex, talents, respec, status, equip, abilities, items, party (diamonds is the only real frame). 30 of 37 captures in f17cf7da are black. The layout dump in facts.json is still live, so text sizes, overflows and tap targets are usable, but text.contrast bg is the black frame: light-text fails are real (black is their best case), dark-on-light labels (Buy, Enchant, Summon x1) read as false 1.03:1 fails. mercenaries and summon-history are in StartScreens' switch but not its All list, so uiaudit's goto_screens skips them. skill-hex reports landedOn 'abilities' (GG-T1843 covers scenario landing). Every '…' at 40 chars in facts.json text is AutomationServer.Trim, not on-screen truncation.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/shop.png"
+   ]
+  },
+  {
+   "id": "header",
+   "ticket": "GG-T1858",
+   "screens": [
+    "diamonds",
+    "respec",
+    "shop",
+    "talk",
+    "items",
+    "summon",
+    "party"
+   ],
+   "checklist": [
+    "L2",
+    "L10"
+   ],
+   "summary": "Screen header: gold sits mid-header instead of top-right, and Talk!/shard/ticket chips crowd it until Respec pushes '0 Tickets' off-stage (x 1051-1240 of 1170) (checklist L2, L10)",
+   "detail": "Every sub-page header lays out Back | title | (Talk!) | gold at x≈599-762 | shard chip | tickets (visible on diamonds.png). Owner rule: persistent controls hamburger top-left and gold top-right. On respec the extra Talk! button pushes '0 Tickets' to x=1051..1240, past the 1170 stage (layoutProblems). Fix once in the shared header: gold pinned top-right, secondary currencies and Talk! moved out of the currency row.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/diamonds.png",
+    "docs/design/ui-audit/captures/iphone17pro/respec.png"
+   ]
+  },
+  {
+   "id": "crafting-header",
+   "ticket": "GG-T1859",
+   "screens": [
+    "blacksmith",
+    "alchemist",
+    "enchantress"
+   ],
+   "checklist": [
+    "X1",
+    "L10"
+   ],
+   "summary": "Blacksmith/Alchemist/Enchantress header: the station rank line squeezes title and currencies to 25-31 px (under the 30 px caption floor) and overflows on Blacksmith (227>161, 661>159) (checklist X1, L10)",
+   "detail": "Alchemist header text auto-sizes to 31 px, Enchantress to 25 px ('Enchantress', 'Talk!', '5,000 G', '0 Tickets'; underCaptionFloor 4). Blacksmith keeps 40 px but 'Blacksmith' overflows 227>161 and 'Iron Forge · Apprentice 0/150 XP' 661>159. The rank/XP line belongs in the content band, not the header.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/alchemist.png",
+    "docs/design/ui-audit/captures/iphone17pro/enchantress.png",
+    "docs/design/ui-audit/captures/iphone17pro/blacksmith.png"
+   ]
+  },
+  {
+   "id": "hero-picker",
+   "ticket": "GG-T1860",
+   "screens": [
+    "status",
+    "equip",
+    "abilities",
+    "talents"
+   ],
+   "checklist": [
+    "X1",
+    "L10"
+   ],
+   "summary": "Heroes pages hero picker: 'Party' tag (25-28 px, 113>74) and 'New ability ready' badge (348>198) overflow the hero cards (checklist X1, L10)",
+   "detail": "Same picker on Status, Equip, Abilities and Talents. The 'Party' tag auto-sizes to 25-28 px (under the 30 px caption floor) and still overflows its 74-82 px box; 'New ability ready' needs 348 px in 198-206. Owner rule: no truncated or squeezed names. Use an icon badge with the full text on tap, or give the card the width.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/status.png",
+    "docs/design/ui-audit/captures/iphone17pro/equip.png"
+   ]
+  },
+  {
+   "id": "status-table",
+   "ticket": "GG-T1861",
+   "screens": [
+    "status"
+   ],
+   "checklist": [
+    "L10"
+   ],
+   "summary": "Status: stat table columns are 66 px wide, so 'Base', 'Board', 'Gear', 'Total' and the +24/+14/+10 bonuses overflow, and the XP/skill-point line overflows 655>639 (checklist L10)",
+   "detail": "layoutProblems: Base 91>66, Board 117>66, Gear 95>66, Total 105>86, '+24' 84>66 and three more, 'Next: 4050 XP · Skill points: 23' 655>639.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/status.png"
+   ]
+  },
+  {
+   "id": "respec-contrast",
+   "ticket": "GG-T1862",
+   "screens": [
+    "respec"
+   ],
+   "checklist": [
+    "X4"
+   ],
+   "summary": "Respec: class blurbs are #5a5a67 (3.08:1) with keyword links #566d8c (3.98:1), failing 4.5:1 even on pure black (checklist X4)",
+   "detail": "38 of 61 respec text samples fail, all in the per-hero role blurbs ('Backline healer buffer. Restores tempo with cleanse and aid.'). This is body text, not disabled text, so X5's 3:1 does not apply. Black is the best case for light text, so the fail holds whatever the real backdrop is.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/respec.png"
+   ]
+  },
+  {
+   "id": "alchemist-green",
+   "ticket": "GG-T1863",
+   "screens": [
+    "alchemist"
+   ],
+   "checklist": [
+    "X4"
+   ],
+   "summary": "Alchemist: green recipe name 'Greater Antidote' (#3c7f42) is 4.28:1 on black, under 4.5:1 (checklist X4)",
+   "detail": "Tier tint used for the recipe name text. Lighten the green for text and keep the hue for the swatch. Black is the best case, so the fail is real.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/alchemist.png"
+   ]
+  },
+  {
+   "id": "shop-grey",
+   "ticket": "GG-T1864",
+   "screens": [
+    "shop"
+   ],
+   "checklist": [
+    "X4"
+   ],
+   "summary": "Shop: 'More stock after The Arkgrave III' and '+6 items' are informative text in muted grey #68686b (3.76:1) (checklist X4)",
+   "detail": "This tells the player when stock grows; it is information, not a disabled label, so it needs 4.5:1.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/shop.png"
+   ]
+  },
+  {
+   "id": "blacksmith-list",
+   "ticket": "GG-T1865",
+   "screens": [
+    "blacksmith"
+   ],
+   "checklist": [
+    "E3"
+   ],
+   "summary": "Blacksmith: repair list shows every full-durability piece ('Knight — Iron Helm 100/100 OK') as 13+ grey rows while saying 'Nothing needs repair yet' (checklist E3)",
+   "detail": "Every equipped piece of every hero is listed with 'OK'. Show only damaged pieces (or collapse the rest under one 'All gear sound' row) so the group stays at 7 or fewer and the actionable rows come first.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/blacksmith.png"
+   ]
+  },
+  {
+   "id": "tight-gaps",
+   "ticket": "GG-T1866",
+   "screens": [
+    "shop",
+    "equip",
+    "status",
+    "abilities",
+    "talents"
+   ],
+   "checklist": [
+    "T2"
+   ],
+   "summary": "Shop tabs, Equip slots and Heroes tabs: neighbouring buttons 8-21 px apart, under the 24 px POL-C3 gap (checklist T2)",
+   "detail": "Shop Buy/Sell/Bargain and Weapons…Materials tabs 8 px; Equip Head/Torso 8 px; Status #hero-thumb/Change look 12 px; hero page tabs (Status/Equip/Abilities/Party) and hero picker cards 21 px. Bottom nav at 0 px is a segmented bar and passes T2's non-overlap clause.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/shop.png",
+    "docs/design/ui-audit/captures/iphone17pro/equip.png"
+   ]
+  },
+  {
+   "id": "summon-notice",
+   "ticket": "GG-T1867",
+   "screens": [
+    "summon"
+   ],
+   "checklist": [
+    "L10",
+    "M5"
+   ],
+   "summary": "Summon: ticket-gift notice overflows its box (1081>857 px) and the '43 new Codex entries' toast draws over the same rect (checklist L10, M5)",
+   "detail": "'The circle gives you 10 Summon Tickets…' and the Codex toast share rect [122,2179,923,109]; the toast also sits over Abilities in the skill-hex run. Give the notice room to wrap and keep toasts off content.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/summon.png"
+   ]
+  },
+  {
+   "id": "caravan-lore",
+   "ticket": "GG-T1868",
+   "screens": [
+    "caravan"
+   ],
+   "checklist": [
+    "E4"
+   ],
+   "summary": "Caravan: each upgrade row prints its keeper's lore, description, Now and Next inline, making the page ~6,300 px tall for 7 upgrades (checklist E4)",
+   "detail": "Text runs to y≈6270 (about 2.5 screens). Show name, Now/Next and cost by default; lore one tap away.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/caravan.png"
+   ]
+  },
+  {
+   "id": "diamonds-stepper",
+   "ticket": "GG-T1869",
+   "screens": [
+    "diamonds"
+   ],
+   "checklist": [
+    "L7"
+   ],
+   "summary": "Diamonds: exchange stepper wraps Max onto its own row and the amount '100' is a bare small label squeezed between −10 and +10 (checklist L7)",
+   "detail": "Five buttons plus the value do not fit one row, so Max sits alone below. Put the amount in a boxed value field and fit −/+/Max on one row.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/diamonds.png"
+   ]
+  },
+  {
+   "id": "diamonds-scroll",
+   "ticket": "GG-T1870",
+   "screens": [
+    "diamonds"
+   ],
+   "checklist": [
+    "L10"
+   ],
+   "summary": "Diamonds: Buy Mana Shards is a scroll box inside the page and cuts its last line ('A flat rate: every pack is the same price') (checklist L10)",
+   "detail": "Nested scroll region with its own scrollbar for four packs; let the panel size to its content.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/diamonds.png"
+   ]
+  },
+  {
+   "id": "diamonds-nav",
+   "ticket": "GG-T1871",
+   "screens": [
+    "diamonds"
+   ],
+   "checklist": [
+    "L3"
+   ],
+   "summary": "Diamonds: Shard Store has only Back, no Home or bottom nav, unlike the other shop pages (checklist L3)",
+   "detail": "tapTargets lists 12 targets and no Home/Campaign/Heroes/Summon/Shop, while shop, summon and the hero pages carry the bottom nav.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/diamonds.png"
+   ]
+  }
+ ]
+}

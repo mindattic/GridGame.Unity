@@ -193,7 +193,7 @@ namespace GridGame.App
             {
                 var store = DiamondStores.Current;
                 storeSig = Signature(store);
-                var packs = Ui.ListPanel(body, "Buy " + ShardText.Plural, "diamond-packs");
+                var packs = Ui.Panel(body, "Buy " + ShardText.Plural, false, "diamond-packs");
                 // GG-T470: one line says where the purchase stands: processing, the last answer (success, pending,
                 // cancelled, failed), or the store being unavailable.
                 var (state, text, tone) = StateLine(store);

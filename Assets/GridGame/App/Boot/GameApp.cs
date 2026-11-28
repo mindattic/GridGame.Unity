@@ -497,6 +497,8 @@ namespace GridGame.App
         {
             var t = Ui.Text(text, "toast shadow", Overlay);
             t.name = "toast";
+            t.style.bottom = 260 + liveToasts * 170; // GG-T1867: a second toast stacks above the first, never over it
+            liveToasts++;
             t.style.opacity = 0;
             yield return null;
             t.style.opacity = 1;
@@ -504,7 +506,10 @@ namespace GridGame.App
             t.style.opacity = 0;
             yield return new WaitForSecondsRealtime(0.25f);
             t.RemoveFromHierarchy();
+            liveToasts--;
         }
+
+        private int liveToasts;
 
         /// <summary>The quality level the player booted with, for <see cref="SettingsSave.QualityLevel"/> -1.</summary>
         private int projectQualityLevel;

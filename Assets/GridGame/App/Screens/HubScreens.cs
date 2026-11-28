@@ -52,12 +52,12 @@ namespace GridGame.App
             if (i.BaseDamage > 0) parts.Add($"ATK +{i.BaseDamage}");
             if (i.BaseHealing > 0) parts.Add($"Heals {i.BaseHealing}");
             if (i.Durability > 0) parts.Add($"Durability {i.Durability}");
-            if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs} orbs at battle start");
+            if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs * 100} mana to every spell at battle start");
             if (i.PincerDamageBonus > 0) parts.Add(FormattableString.Invariant($"Pincer +{i.PincerDamageBonus:0%}"));
             if (i.EvasionBonus > 0) parts.Add($"Evasion +{i.EvasionBonus:0}"); // GG-T297
             if (i.RegenPerTurn > 0) parts.Add($"Regen {i.RegenPerTurn}/turn");
             if (i.StartsProtected) parts.Add("Starts battles Protected");
-            if (i.GrantsOrbs > 0) parts.Add($"+{i.GrantsOrbs} orbs");
+            if (i.GrantsOrbs > 0) parts.Add($"+{i.GrantsOrbs * 100} mana to every spell");
             if (i.Revives) parts.Add("Revives a fallen ally");
             if (i.Escape) parts.Add("Escape from battle");
             if (i.CuresAll) parts.Add("Cures all ailments");
@@ -1410,11 +1410,13 @@ namespace GridGame.App
             all.name = RepairAllButton;
             Ui.SetEnabled(all, due.Any(p => Repair.Cost(C, S, p) <= S.Gold));
             bool any = false;
+            int sound = 0;
             foreach (var p in Repair.Pieces(C, S))
             {
                 any = true;
                 var piece = p;
                 int cost = Repair.Cost(C, S, p);
+                if (cost <= 0) { sound++; continue; } // GG-T1865: full-durability pieces collapse into one row below
                 bool bad = cost > 0 && Repair.IsUneconomical(p.Item, p.Durability, p.Repairs, p.Mastery);
                 string name = (p.Mastery > 1f ? "★ " : "") + p.Item.Name;
                 var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
@@ -1426,6 +1428,7 @@ namespace GridGame.App
                 if (cost > 0) RepairPriceNote(list, p);
                 if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);
             }
+            if (sound > 0) Ui.Note($"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)", list);
             if (!any) Ui.Empty("Nobody has gear that wears out. Equip forged weapons first.", list);
         }
 
