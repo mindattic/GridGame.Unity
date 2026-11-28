@@ -439,6 +439,12 @@ namespace GridGame.App
         }
     }
 
+    /// <summary>GG-T1863: opacity of a row or card that is shown but not actionable. 0.6 keeps the dimmest rarity tint (Uncommon green) at 4.5:1 or better on black; 0.55 gave 4.28:1.</summary>
+    public static class Dim
+    {
+        public const float Row = 0.6f;
+    }
+
     /// <summary>Duration tokens in seconds (POL-E1). Anything longer than Cinematic is a hold, also in the cinematic band.</summary>
     public static class Timing
     {
