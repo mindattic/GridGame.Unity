@@ -1152,7 +1152,7 @@ namespace GridGame.App
                     string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
                     row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
-                    if (!can) row.style.opacity = 0.55f;
+                    if (!can) row.style.opacity = Dim.Row;
                 }
                 else
                 {
@@ -1203,7 +1203,7 @@ namespace GridGame.App
                     var rec = r;
                     var row = ItemUi.Row(c.Item(r.Result), value, () => ShowLocked(detail, c, s, rec, LockReason(c, s, rec)), list, true, false);
                     row.name = "recipe-locked-" + r.Id;
-                    row.style.opacity = 0.55f;
+                    row.style.opacity = Dim.Row;
                 }
                 if (set.Count > VendorTiers.PreviewRows) Ui.Note($"+{set.Count - VendorTiers.PreviewRows} more {more}", list);
             }
@@ -1549,7 +1549,7 @@ namespace GridGame.App
                     () => { enchant = ench; Refresh(); }, elist);
                 row.KindIcon(RowKind.Ability, passive != null ? Art.AbilityIcon(passive) : null); // GG-T746 (§26.7), else the Ability emblem
                 row.name = ArmorEnchanting.EnchantRowPrefix + e.Id;
-                if (!can) row.style.opacity = 0.55f;
+                if (!can) row.style.opacity = Dim.Row;
                 if (enchant == e) Ui.Select(row);
             }
 
