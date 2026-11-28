@@ -260,11 +260,10 @@ namespace GridGame.App
             var facts = new List<string>();
             // A Passive/Reactive reads as its trigger, generated from the data (GG-T296, §4.1).
             if (a.Trigger != null) facts.Add(GridGame.Core.Rules.TriggerText.Describe(GameApp.I?.Content, a));
-            else if (a.Mode == TargetMode.Auto) facts.Add("No aim needed");
             else
             {
-                string reach = a.AdjacentOnly ? "an adjacent tile" : a.Radius > 0 ? $"{Words(a.Shape.ToString())}, radius {a.Radius}" : Words(a.Shape.ToString());
-                facts.Add($"Hits {reach} · {Words(a.Filter.ToString())}");
+                facts.Add("How it targets: " + GridGame.Core.Rules.TargetText.How(a));
+                facts.Add("Who it targets: " + GridGame.Core.Rules.TargetText.Who(a));
             }
             if (a.BaseDamage > 0) facts.Add($"<color=#{ColorUtility.ToHtmlStringRGB(Palette.ElementText(a.DamageType))}>{a.BaseDamage} {a.DamageType} damage</color> (before stats)");
             if (a.BaseHeal > 0) facts.Add(a.Revives ? $"Revives a fallen ally with {a.BaseHeal} HP" : $"Heals {a.BaseHeal} (before stats)");
