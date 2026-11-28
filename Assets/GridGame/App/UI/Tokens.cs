@@ -595,6 +595,9 @@ namespace GridGame.App
         public const float IosPpiPerScale = 163f;
         /// <summary>The bucket step and the range Theme.uss has <c>tap-target-N</c> classes for.</summary>
         public const int Step = 4, Highest = 200;
+        /// <summary>Headroom over the platform minimum: the audit measures a 132-px row 1-2 % under the exact maths (43.7 pt on
+        /// the iPhone 15 Pro, 43.0 on the 16e), so the target aims at 3 % over and the rendered row clears 44 pt / 48 dp.</summary>
+        public const float Margin = 1.03f;
         /// <summary>Debug launch option: screen px the minimum target must span (tools/scenario.py passes the device's
         /// 48 dp / 44 pt at the window's size, since a desktop player's dpi is the monitor's).</summary>
         public const string ForceFlag = "-tapPx";
@@ -609,7 +612,7 @@ namespace GridGame.App
         public static int Compute(float screenPxPerDesignPx, float minScreenPx)
         {
             if (screenPxPerDesignPx <= 0f || minScreenPx <= 0f) return (int)Size.Target;
-            int need = Mathf.CeilToInt(minScreenPx / screenPxPerDesignPx / Step - 0.001f) * Step;
+            int need = Mathf.CeilToInt(minScreenPx * Margin / screenPxPerDesignPx / Step - 0.001f) * Step;
             return Mathf.Clamp(need, (int)Size.Target, Highest);
         }
 

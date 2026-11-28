@@ -886,6 +886,11 @@
     "Aliases": ["Mana Orbs"]
   },
   {
+    "Id": "mana_bar",
+    "Term": "Mana bar",
+    "Aliases": ["Party mana bar", "Party bar"]
+  },
+  {
     "Id": "turn_mode_party_window",
     "Term": "Party window"
   },
