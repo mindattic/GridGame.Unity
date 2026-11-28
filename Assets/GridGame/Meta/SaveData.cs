@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 30;
+        public const int CurrentVersion = 31;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";

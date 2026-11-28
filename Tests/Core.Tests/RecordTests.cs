@@ -61,6 +61,8 @@ namespace GridGame.Tests
             Assert.That(BattleRecorder.IsLegacy(rec), Is.False);
             Assert.That(BattleRecorder.IsLegacy(new JObject { ["schema"] = 4 }), Is.True, "a bank-rule record loads as legacy");
             Assert.That(BattleRecorder.IsLegacy(new JObject { ["schema"] = 6, [BattleRecorder.RulesVersionKey] = 2 }), Is.True, "a per-spell meter record loads as legacy");
+            Assert.That(BattleRecorder.IsLegacy(new JObject { ["schema"] = 7, [BattleRecorder.RulesVersionKey] = 3 }), Is.True, "a pool record from before multi-pick aims loads as legacy");
+            Assert.That((int)rec[BattleRecorder.RulesVersionKey], Is.EqualTo(BattleRecorder.RulesVersion));
             var c = Real;
             var setup = BattleFactory.Build(c, Progression.NewGame(c, "Rec"), c.CampaignStages()[0].Id, 5);
             var s = BattleEngine.Create(c, setup, new System.Collections.Generic.List<BattleEvent>());

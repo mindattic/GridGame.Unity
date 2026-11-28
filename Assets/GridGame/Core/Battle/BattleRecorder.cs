@@ -291,7 +291,6 @@ namespace GridGame.Core.Battle
                 JObject o;
                 try { o = JObject.FromObject(e, Json); }
                 catch (Exception ex) { o = new JObject { ["serializeError"] = ex.Message }; }
-                if (e is ManaGainedEvent) { o.Remove("Meters"); o.Remove("Readied"); }
                 var name = e.GetType().Name;
                 o.AddFirst(new JProperty("type", name.EndsWith("Event") ? name.Substring(0, name.Length - 5) : name));
                 a.Add(o);

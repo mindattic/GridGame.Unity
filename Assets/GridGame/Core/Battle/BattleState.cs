@@ -29,6 +29,8 @@ namespace GridGame.Core.Battle
         public List<string> EquippedItemIds = new List<string>();
         /// <summary>Ability bar entries: ability id, or "item:id". Null/empty = empty slot.</summary>
         public List<string> Bar = new List<string>();
+        /// <summary>GG-T1917: the hero's saved Abilities sheet arrangement (<c>HeroSave.Actions</c>); null = the default tree.</summary>
+        public GridGame.Core.Rules.ActionLayout Layout;
         /// <summary>Item id → owned count, used to size bar item stacks.</summary>
         public Dictionary<string, int> ItemCounts = new Dictionary<string, int>();
         public Coord? Start;
@@ -448,43 +450,6 @@ namespace GridGame.Core.Battle
         /// <summary>Sets the pool, clamped to 0..capacity.</summary>
         public void SetPartyMana(int points) =>
             PartyMana = System.Math.Max(0, System.Math.Min(BattleConfig.PartyManaCapacity, points));
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SpellPrice.")]
-        public int ManaFull(Unit h, int slot) => SpellPrice(h, slot);
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana. Returns the pool capped at the slot's price.")]
-        public int ManaIn(int heroId, int slot)
-        {
-            var h = UnitById(heroId);
-            return h == null ? 0 : System.Math.Min(PartyMana, SpellPrice(h, slot));
-        }
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SetPartyMana.")]
-        public void SetMana(int heroId, int slot, int points) => SetPartyMana(points);
-
-        /// <summary>Affordable spell slots and all costed spell slots of the living heroes, in party then slot order.</summary>
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana and SpellReady.")]
-        public void CountMeters(out int full, out int total)
-        {
-            full = 0; total = 0;
-            foreach (var u in Units)
-            {
-                if (!u.IsHero || !u.Alive) continue;
-                for (int i = 0; i < u.Bar.Count; i++)
-                {
-                    int price = SpellPrice(u, i);
-                    if (price <= 0) continue;
-                    total++;
-                    if (PartyMana >= price) full++;
-                }
-            }
-        }
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana and SpellReady.")]
-        public int ReadySpellCount { get { CountMeters(out int full, out _); return full; } }
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use PartyManaFull.")]
-        public bool AllSpellsFull => PartyManaFull;
 
         public BattleState Clone()
         {

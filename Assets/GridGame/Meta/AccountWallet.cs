@@ -47,6 +47,10 @@ namespace GridGame.Meta
         /// so a save, a copy of it or an older backup of it never pays its Diamonds into the wallet twice.</summary>
         public Dictionary<string, CarriedSave> Migrated = new Dictionary<string, CarriedSave>(StringComparer.Ordinal);
 
+        /// <summary>GG-T1965: Shards given by Settings &gt; Developer's Give shards, kept apart from <see cref="Granted"/> so no
+        /// store, receipt, refund or spending-limit rule ever reads one as a purchase.</summary>
+        public List<DevGrantRecord> DevGrants = new List<DevGrantRecord>();
+
         public DateTime UpdatedUtc;
 
         /// <summary>GG-T1437: the age band asked once, at this login's first real-money purchase. Null until answered.</summary>
@@ -67,6 +71,7 @@ namespace GridGame.Meta
             if (Migrated.Comparer != StringComparer.Ordinal)
                 Migrated = new Dictionary<string, CarriedSave>(Migrated, StringComparer.Ordinal);
             foreach (var k in Migrated.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList()) Migrated.Remove(k);
+            DevGrants = DevGrants?.Where(g => g != null).ToList() ?? new List<DevGrantRecord>();
             Owned = Owned == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(Owned.Where(id => !string.IsNullOrEmpty(id)), StringComparer.Ordinal);
             Cosmetics = Cosmetics == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(Cosmetics.Where(id => !string.IsNullOrEmpty(id)), StringComparer.Ordinal);
             OfferClaims = OfferClaims == null ? new Dictionary<string, int>(StringComparer.Ordinal)
@@ -126,6 +131,18 @@ namespace GridGame.Meta
             return w.Diamonds - before;
         }
 
+        /// <summary>GG-T1965: adds <paramref name="diamonds"/> Shards from the Developer cheats and books them in
+        /// <see cref="AccountWallet.DevGrants"/>, tagged dev, never as a store transaction. Returns what was added.</summary>
+        public static int DevGrant(AccountWallet w, int diamonds, DateTime utc)
+        {
+            if (w == null || diamonds <= 0) return 0;
+            w.Normalize();
+            int added = Add(w, diamonds);
+            w.DevGrants.Add(new DevGrantRecord { Diamonds = added, Utc = utc });
+            w.UpdatedUtc = utc;
+            return added;
+        }
+
         public static bool CanSpend(AccountWallet w, int diamonds) => w != null && diamonds >= 0 && w.Diamonds >= diamonds;
 
         /// <summary>Takes <paramref name="diamonds"/> out of the wallet, all or nothing. False (and nothing taken) when it
@@ -173,6 +190,17 @@ namespace GridGame.Meta
             w?.Granted?.Values.Where(r => r != null && !r.Refunded).Sum(r => r.Diamonds) ?? 0;
 
         private static int Sum(int a, int b) => (int)Math.Min(int.MaxValue, (long)Math.Max(0, a) + Math.Max(0, b));
+    }
+
+    /// <summary>One Developer-cheat Shard grant in the wallet's history (GG-T1965).</summary>
+    public sealed class DevGrantRecord
+    {
+        public const string DevSource = "dev";
+
+        /// <summary>Always <see cref="DevSource"/>: the tag that marks the entry as a cheat, not money.</summary>
+        public string Source = DevSource;
+        public int Diamonds;
+        public DateTime Utc;
     }
 
     /// <summary>The age band a store login answered at its first real-money purchase (GG-T1437).</summary>

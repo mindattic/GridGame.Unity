@@ -4,6 +4,9 @@ using System.Linq;
 using GridGame.Core.Content;
 using GridGame.Core.Rules;
 using GridGame.Meta;
+using MindAttic.Telemetry;
+using MindAttic.Telemetry.Unity;
+using UnityEngine;
 
 namespace GridGame.App.Dev
 {
@@ -62,6 +65,46 @@ namespace GridGame.App.Dev
                     h.WeaponDurability = Math.Max(1, (int)(Repair.EffectiveMax(c.Item(itemId), h.WeaponRepairs, h.WeaponMastery) * wear.Value));
             }
             return equipped;
+        }
+
+        /// <summary>GG-T1965: <paramref name="count"/> Shards, as a dev grant: into the bound account wallet's
+        /// <see cref="AccountWallet.DevGrants"/> (never its store ledger), or the bag for a save not moved into a wallet, and
+        /// a "dev-grant" telemetry event tagged dev. The Shards the save has after.</summary>
+        public static int GiveShards(ContentDb c, SaveData s, int count)
+        {
+            int added;
+            if (DiamondExchange.WalletOf(s) is AccountWallet w)
+            {
+                added = AccountWallets.DevGrant(w, count, DateTime.UtcNow);
+                DiamondExchange.WalletDirty = true;
+            }
+            else
+            {
+                added = Math.Min(Math.Max(0, count), DiamondExchange.Room(c, s));
+                DiamondExchange.Add(s, added);
+            }
+            TelemetryUnity.RecordEvent("dev-grant", new TelemetryData
+            {
+                ["source"] = DevGrantRecord.DevSource, ["currency"] = "shards", ["amount"] = added,
+                ["where"] = DiamondExchange.WalletOf(s) != null ? "wallet" : "bag",
+            });
+            Debug.Log($"[Dev] dev grant: +{added} Shards");
+            return DiamondExchange.Have(s);
+        }
+
+        /// <summary>GG-T1965: every story beat, chapter crawl and region crawl due before the next uncleared stage marked
+        /// seen, exactly as <see cref="ScenarioBuilder"/> lives through them: beats played headless (first choice), chapters
+        /// through <see cref="Story.MarkChapterSeen"/>. The number of beats played.</summary>
+        public static int SkipStoryBeats(ContentDb c, SaveData s)
+        {
+            int before = s.SeenDialogues.Count;
+            var next = c.CampaignStages().FirstOrDefault(st => !s.ClearedStages.Contains(st.Id)) ?? c.CampaignStages().LastOrDefault();
+            if (next != null) DialogueRunner.PlayPendingBeatsHeadless(c, s, next.Id);
+            for (var ch = Story.ChapterDue(c, s); ch != null; ch = Story.ChapterDue(c, s)) Story.MarkChapterSeen(c, s, ch);
+            int themeIndex = c.Campaign.Themes.FindIndex(th => next != null && th.Stages.Contains(next.Id));
+            for (int i = 0; i <= themeIndex; i++)
+                if (c.Campaign.Themes[i].HasCrawl) Story.MarkRegionSeen(s, c.Campaign.Themes[i]);
+            return s.SeenDialogues.Count - before;
         }
     }
 }
