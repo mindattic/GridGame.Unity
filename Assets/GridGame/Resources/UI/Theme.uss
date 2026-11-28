@@ -54,6 +54,10 @@
     --space-8: 8px;
     --space-12: 12px; /* half of the 24-px target gap: two neighbours' margins add up to POL-C3 */
     --size-target: 132px; /* POL-C2 minimum tap target (44 pt) */
+    --size-icon-inline: 32px; /* docs/ICONS.md roles: Size.IconInline, IconButton, Icon, IconNav */
+    --size-icon-button: 48px;
+    --size-icon: 64px;
+    --size-icon-nav: 72px;
     --row-fill-max: 264px; /* two targets: the tallest a short list's row grows to fill its panel (GG-T654) */
     --kit-note-actions: 60px; /* Kit.Indent (72) less a button's 12-px margin: a row's buttons under its label */
     --space-16: 16px;
@@ -227,9 +231,9 @@
 .menu-value { font-size: var(--type-base); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
 /* GG-T760: the Equip slot list's shorter rows; the tap target stays above 88px. Text keeps the one GUI size (GG-T770). */
 .menu-row--compact { min-height: var(--size-target); margin: var(--space-12) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
-.menu-row--compact .menu-icon { width: 48px; height: 48px; margin-right: var(--space-12); }
+.menu-row--compact .menu-icon { width: var(--size-icon-button); height: var(--size-icon-button); margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
-.menu-icon { width: 64px; height: 64px; margin-right: var(--space-16); background-size: contain; }
+.menu-icon { width: var(--size-icon); height: var(--size-icon); margin-right: var(--space-16); background-size: contain; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 /* Every button stands on a darker lip (the thick bottom border). Pressing sinks it onto the lip. */
@@ -328,7 +332,7 @@
     border-color: var(--color-frame);
 }
 .kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 132px; align-items: center; justify-content: center; border-top-width: 6px; border-color: rgba(0, 0, 0, 0); }
-.kit-navtab > .menu-icon { width: 56px; height: 56px; margin: 0; }
+.kit-navtab > .menu-icon { width: var(--size-icon-nav); height: var(--size-icon-nav); margin: 0; }
 .kit-navtab-label { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; }
 .kit-navtab-badge {
     position: absolute;
