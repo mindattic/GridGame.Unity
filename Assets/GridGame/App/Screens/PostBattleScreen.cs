@@ -78,11 +78,9 @@ namespace GridGame.App
         private void BuildBattle(VisualElement root, VisualElement col, ContentDb c)
         {
             Ui.El("", col).style.height = Space.S48;
-            var title = Ui.Display(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", col, "shadow");
-            title.name = "results-title";
-            title.style.fontSize = TypeScale.Celebration;
-            title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
-            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+            var title = Headline(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT",
+                report.Victory ? Palette.Gold : Palette.Bad, "results-title", col);
+            Subhead(NameOf(c, report, stageId), col);
             reveals.Add(App.StartCoroutine(TitleCue(title, report.Victory)));
 
             bool onRoad = report.Victory && TravelRules.OnTheRoad(App.Save);
@@ -218,6 +216,26 @@ namespace GridGame.App
             }
         }
 
+        /// <summary>The big centred title (VICTORY, DEFEAT, CRUCIBLE, FALL BACK): the display face at the celebration size.</summary>
+        private static Label Headline(string text, Color color, string name, VisualElement col)
+        {
+            var title = Ui.Display(text, col, "shadow");
+            title.name = name;
+            title.style.fontSize = TypeScale.Celebration;
+            title.style.unityTextAlign = TextAnchor.MiddleCenter;
+            title.style.color = color;
+            return title;
+        }
+
+        /// <summary>The line under the title (the stage, the drill count, the waves): a heading, centred, dim unless
+        /// <paramref name="tone"/> says otherwise.</summary>
+        private static Label Subhead(string text, VisualElement col, string tone = "dim")
+        {
+            var l = Ui.Heading(text, col, "shadow " + tone);
+            l.style.unityTextAlign = TextAnchor.MiddleCenter;
+            return l;
+        }
+
         /// <summary>A footer button: they share the footer's width evenly; <paramref name="primary"/> is the one primary.</summary>
         private static Button FooterButton(string text, RowKind kind, System.Action onClick, bool primary, VisualElement footer)
         {
@@ -294,15 +312,10 @@ namespace GridGame.App
         /// keeps however it ended. Again › starts the save's next gauntlet; To Camp goes back to camp.</summary>
         private void BuildCrucible(VisualElement root, VisualElement col, ContentDb c)
         {
-            var title = Ui.Text("CRUCIBLE", "t-display shadow", col);
-            Fonts.UseDisplay(title);
-            title.style.color = Palette.Vfx.Crucible;
-            var waves = Ui.Text($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", "t-h1 shadow gold", col);
-            waves.name = "crucible-waves";
-            waves.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var best = Ui.Text(report.CrucibleNewBest ? "New best!" : $"Best: {report.CrucibleBest} waves", report.CrucibleNewBest ? "t-h2 shadow good" : "t-h2 shadow dim", col);
+            Headline("CRUCIBLE", Palette.Vfx.Crucible, "results-title", col);
+            Subhead($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", col, "gold").name = "crucible-waves";
+            var best = Subhead(report.CrucibleNewBest ? "New best" : $"Best: {report.CrucibleBest} waves", col, report.CrucibleNewBest ? "good" : "dim");
             best.name = "crucible-best";
-            best.style.unityTextAlign = TextAnchor.MiddleCenter;
             if (report.CrucibleNewBest)
             {
                 // The record is the run's headline: a fanfare and a pop, after the results have settled in.
@@ -313,10 +326,9 @@ namespace GridGame.App
             var w = Ui.Panel(col, null, true);
             Ui.Margin(w, top: Space.S32);
             var list = Ui.List(w).contentContainer;
-            var t = Ui.Text(report.Victory ? "Every wave falls. The Crucible is silent, and the whole haul is yours." :
-                report.Retreated || report.Escaped ? "The party steps out of the Crucible with everything it earned, and recovers." :
-                "The party falls in the Crucible, but every coin, drop and point of experience earned is kept. Everyone recovers.", "small", list);
-            t.style.whiteSpace = WhiteSpace.Normal;
+            Ui.Para(report.Victory ? "Every wave falls. The Crucible is silent, and the whole haul is yours." :
+                report.Retreated || report.Escaped ? "Your party steps out of the Crucible with everything it earned, and recovers." :
+                "Your party falls in the Crucible, but keeps every coin, drop and point of experience it earned. Everyone recovers.", list);
             Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
             // GG-T945: the run's own mode's record (Crucible.Commit filled it), not another mode's.
             Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list).WithKindIcon(RowKind.Crucible).name = "crucible-best-gold";
@@ -328,15 +340,13 @@ namespace GridGame.App
             if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list).KindIcon(RowKind.Bounty);
             if (report.AutoSold > 0) Ui.MenuRow("Stack full, extras sold", SoldCount(report.AutoSold), null, list).KindIcon(RowKind.Shop);
 
-            var row = Ui.El("row", col);
-            row.style.justifyContent = Justify.Center;
+            var footer = Ui.Footer(col, "results-footer");
             onContinue = () => App.Router.ResetTo(new HubScreen());
-            var cont = RowIcon.IconButton("To Camp", RowKind.Station, () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
-            cont.name = "continue";
-            var again = RowIcon.IconButton("Again", RowKind.Crucible, () => CrucibleLauncher.Launch(true), null, row);
+            var again = FooterButton("Again", RowKind.Crucible, () => CrucibleLauncher.Launch(true), false, footer);
             again.name = "crucible-again";
             Ui.SetEnabled(again, Crucible.CanLaunch(c, App.Save, out _));
-            Ui.El("", col).style.height = Space.S48;
+            FooterButton("To Camp", RowKind.Station, () => { if (continued) return; continued = true; onContinue(); }, true, footer).name = "continue";
+            Ui.El("", col).style.height = Kit.Gap;
             if (DemoMode.Active) root.schedule.Execute(() => App.Router.ResetTo(new HubScreen())).ExecuteLater(1500);
         }
 
@@ -344,32 +354,20 @@ namespace GridGame.App
         /// nothing lost, and Continue on into the story (no Retry: it is not a defeat).</summary>
         private void BuildWithdrawn(VisualElement root, VisualElement col, ContentDb c)
         {
-            var title = Ui.Text("FALL BACK", "t-display shadow", col);
-            title.name = "withdraw-title";
-            Fonts.UseDisplay(title);
-            title.style.fontSize = TypeScale.Celebration;
-            title.style.unityTextAlign = TextAnchor.MiddleCenter;
-            title.style.color = Palette.Gold;
-            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+            Headline("FALL BACK", Palette.Gold, "withdraw-title", col);
+            Subhead(NameOf(c, report, stageId), col);
 
             var w = Ui.Panel(col, null, true);
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
             if (!string.IsNullOrEmpty(report.WithdrawLine))
-            {
-                var line = Ui.Text(report.WithdrawLine, "kit-text", list);
-                line.name = "withdraw-line";
-                line.style.whiteSpace = WhiteSpace.Normal;
-            }
-            Ui.Text("Nothing is lost. Everyone recovers, and the road goes on.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
+                Ui.Para(report.WithdrawLine, list).name = "withdraw-line";
+            Ui.Para("Nothing is lost. Everyone recovers, and the road goes on.", list, "dim");
             TurnsRow(list);
 
-            var row = Ui.El("row", col);
-            row.style.justifyContent = Justify.Center;
             onContinue = () => StoryBeats.AfterResults(true, stageId);
-            var cont = RowIcon.IconButton("Continue", RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
-            cont.name = "continue";
-            Ui.El("", col).style.height = Space.S48;
+            FooterButton("Continue", RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, true, Ui.Footer(col, "results-footer")).name = "continue";
+            Ui.El("", col).style.height = Kit.Gap;
             if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
             else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
         }
@@ -386,23 +384,19 @@ namespace GridGame.App
             bool first = idx == 0 && !report.Practice; // GG-T1958: The Trap plays before the crawl; its win is the first VICTORY
             bool fellBack = report.Withdrawn && !report.Practice; // GG-T2138: a prologue battle's scripted withdrawal goes on
             bool passed = report.Victory || fellBack;
-            var title = Ui.Text(fellBack ? "FALL BACK" : !report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
-            title.name = "drill-title";
-            Fonts.UseDisplay(title);
-            title.style.color = passed ? Palette.Gold : Palette.Bad;
-            string where = idx >= 0 ? $"Drill {idx + 1} of {drills.Count} · {NameOf(c, report, stageId)}" : NameOf(c, report, stageId);
-            Ui.Text(where, "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+            var title = Headline(fellBack ? "FALL BACK" : !report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED",
+                passed ? Palette.Gold : Palette.Bad, "drill-title", col);
+            Subhead(idx >= 0 ? $"Drill {idx + 1} of {drills.Count} · {NameOf(c, report, stageId)}" : NameOf(c, report, stageId), col);
 
             var w = Ui.Panel(col, null, true);
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
-            var t = Ui.Text(fellBack && !string.IsNullOrEmpty(report.WithdrawLine) ? report.WithdrawLine
+            var t = Ui.Para(fellBack && !string.IsNullOrEmpty(report.WithdrawLine) ? report.WithdrawLine
                 : !passed ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
                 : first ? "That's the trap, Commander. Catch a foe between two of us and it falls."
                 : nextId != null ? "Drill cleared. We're ready for the next, Commander."
-                : "That's all we know, Commander. Lead us out.", "kit-text", list);
+                : "That's all we know, Commander. Lead us out.", list);
             t.name = "drill-line";
-            t.style.whiteSpace = WhiteSpace.Normal;
             // GG-T2138: a prologue battle is a story battle and pays out like one.
             if (report.Gold > 0) Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
             if (report.XpEach > 0) Ui.MenuRow("XP each", $"+{report.XpEach}", null, list).WithKindIcon(RowKind.Hero).name = "results-xp";
@@ -410,17 +404,16 @@ namespace GridGame.App
             ComboRows(c, list);
             if (report.Items.Count > 0) RevealItems(report.Items, c, list);
 
-            var row = Ui.El("row", col);
-            row.style.justifyContent = Justify.Center;
+            var row = Ui.Footer(col, "results-footer");
             if (report.Practice)
             {
                 onContinue = () => App.Router.Back(); // GG-T1647: practice returns to Settings, never touching the onboarding
-                RowIcon.IconButton("Back to Settings", RowKind.Enter, Go, "btn--primary", row).name = "continue";
+                FooterButton("Back", RowKind.Enter, Go, true, row).name = "continue";
             }
             else if (!passed)
             {
                 onContinue = () => StageLauncher.Launch(stageId, true);
-                RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";
+                FooterButton("Retry", RowKind.NewGamePlus, Go, true, row).name = "retry";
             }
             else if (first)
             {
@@ -429,7 +422,7 @@ namespace GridGame.App
                     if (nextId == null) MarkDrillsFinished();
                     App.Router.ResetTo(StoryBeats.AfterFirstDrill()); // GG-T1958: the opening crawl and the Founding, then drill 2
                 };
-                RowIcon.IconButton("Next", RowKind.Enter, Go, "btn--primary", row).name = "next";
+                FooterButton("Next", RowKind.Enter, Go, true, row).name = "next";
             }
             else if (nextId != null)
             {
@@ -439,7 +432,7 @@ namespace GridGame.App
                     App.Persist();
                     StageLauncher.Launch(nextId, true);
                 };
-                RowIcon.IconButton("Next drill", RowKind.Enter, Go, "btn--primary", row).name = "next";
+                FooterButton("Next drill", RowKind.Enter, Go, true, row).name = "next";
             }
             else
             {
@@ -450,9 +443,9 @@ namespace GridGame.App
                     MarkDrillsFinished();
                     StoryBeats.AfterResults(true, stageId);
                 };
-                RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
+                FooterButton("To Camp", RowKind.Station, Go, true, row).name = "continue";
             }
-            Ui.El("", col).style.height = Space.S48;
+            Ui.El("", col).style.height = Kit.Gap;
             reveals.Add(App.StartCoroutine(TitleCue(title, passed)));
 
             void Go()
@@ -578,7 +571,7 @@ namespace GridGame.App
             rows = rows.OrderBy(r => TierUp(r.change) ? 0 : 1).ThenByDescending(r => r.change.After - r.change.Before).ToList();
 
             string Name(string id) => c.TryClass(id)?.Name ?? id;
-            Ui.Text("Bonds", "small dim", list).name = "results-bonds-head";
+            Ui.Section("Bonds", list).name = "results-bonds-head";
             var shown = new List<(VisualElement row, bool tierUp)>();
             foreach (var (ids, b) in rows.Take(BondRowsShown))
             {
@@ -592,16 +585,14 @@ namespace GridGame.App
                 text.style.flexGrow = 1; text.style.flexShrink = 1;
                 Ui.Margin(text, left: Space.S8);
                 string what = ids.Length == 2 ? $"{Name(ids[0])} & {Name(ids[1])}" : $"{Name(ids[0])}'s Trust";
-                var head = Ui.Text($"{what} +{b.After - b.Before}", up ? "gold" : null, text);
-                head.style.whiteSpace = WhiteSpace.Normal;
-                Fonts.UseHeavy(head);
-                if (up) Ui.Text($"Tier {Bonds.Tier(b.After)}!", "small gold", text);
+                Ui.Name($"{what} +{b.After - b.Before}", text, up ? "gold" : null).style.whiteSpace = WhiteSpace.Normal;
+                if (up) Ui.Caption($"Tier {Bonds.Tier(b.After)}", text, "gold");
                 row.style.opacity = 0f;
                 shown.Add((row, up));
             }
             if (rows.Count > BondRowsShown)
             {
-                var more = Ui.Text($"and {rows.Count - BondRowsShown} more", "small dim", list);
+                var more = Ui.Caption($"and {rows.Count - BondRowsShown} more", list, "dim");
                 more.name = "results-bonds-more";
                 more.style.opacity = 0f;
                 shown.Add((more, false));
@@ -708,16 +699,13 @@ namespace GridGame.App
             Ui.Margin(Ui.Thumb(def.Id, box, 96), right: Space.S16);
             var text = Ui.El("col", box);
             text.style.flexGrow = 1; text.style.flexShrink = 1;
-            var head = Ui.Text($"{def.Name} wants to join you!", "t-h2 good", text);
-            head.style.whiteSpace = WhiteSpace.Normal;
-            var sub = Ui.Text($"Lv {offer.Level} - fights on its own with the Pincer keyword. No gear or skills; grows slowly (max Lv {Domestication.LevelCap}).", "small dim", text);
-            sub.style.whiteSpace = WhiteSpace.Normal;
-            var buttons = Ui.El("row", text);
-            Ui.Margin(buttons, top: Space.S8);
+            Ui.Heading($"{def.Name} wants to join you", text, "good").style.whiteSpace = WhiteSpace.Normal;
+            Ui.Para($"Lv {offer.Level} · fights on its own with the Pincer keyword. No gear or skills; grows slowly (max Lv {Domestication.LevelCap}).", text, "dim");
+            var buttons = Ui.Actions(text);
             void Show(string msg, bool good)
             {
                 buttons.Clear();
-                Ui.Text(msg, good ? "small good" : "small dim", buttons).style.whiteSpace = WhiteSpace.Normal;
+                Ui.Para(msg, buttons, good ? "good" : "dim");
             }
             void Settle(string msg, bool good)
             {
@@ -766,29 +754,25 @@ namespace GridGame.App
             if (wandererTalked)
             {
                 bool joined = App.Save.Hero(def.Id) != null;
-                Ui.Text(joined ? $"{def.Name} joins the caravan!" : $"{def.Name} goes their own way.", joined ? "h2 good" : "h2 dim", text).style.whiteSpace = WhiteSpace.Normal;
-                if (!joined) Ui.Text("Back to the road. You may meet them again.", "small dim", text);
+                Ui.Heading(joined ? $"{def.Name} joins the caravan." : $"{def.Name} goes their own way.", text, joined ? "good" : "dim").style.whiteSpace = WhiteSpace.Normal;
+                if (!joined) Ui.Para("Back to the road. You may meet them again.", text, "dim");
                 return;
             }
-            var head = Ui.Text($"The wandering {def.Name} lingers to talk.", "h2", text);
+            var head = Ui.Heading($"The wandering {def.Name} lingers to talk.", text);
             head.style.whiteSpace = WhiteSpace.Normal;
             head.style.color = Palette.Wanderer;
             var trust = Ui.El("row", text);
             trust.style.alignItems = Align.Center;
-            Ui.Margin(Ui.Text($"Trust {offer.Trust}/{offer.TrustNeeded}", "small", trust), right: Space.S16);
+            Ui.Margin(Ui.Caption($"Trust {offer.Trust}/{offer.TrustNeeded}", trust), right: Space.S16);
             Ui.Gauge(offer.TrustNeeded <= 0 ? 1f : Mathf.Clamp01(offer.Trust / (float)offer.TrustNeeded), trust, 220).name = "wanderer-trust";
             var faction = c.FactionOf(def.Id);
             var factionBlurb = ContentDb.Blurb(c.FactionBlurbs, faction?.Id); // GG-T374: Prose "faction:<id>"
             if (!string.IsNullOrEmpty(factionBlurb))
             {
-                var fb = Ui.Text(factionBlurb, "small dim", text);
-                fb.name = "wanderer-faction";
-                fb.style.whiteSpace = WhiteSpace.Normal;
+                Ui.Para(factionBlurb, text, "dim").name = "wanderer-faction";
             }
-            var rule = Ui.Text(Wanderers.Outlook(c, offer, null), "small dim", text);
-            rule.name = "wanderer-outlook";
-            rule.style.whiteSpace = WhiteSpace.Normal;
-            Ui.Margin(Ui.Text("Who talks with them?", "small", text), top: Space.S8);
+            Ui.Para(Wanderers.Outlook(c, offer, null), text, "dim").name = "wanderer-outlook";
+            Ui.Margin(Ui.Para("Who talks with them?", text), top: Space.S8);
             var buttons = Ui.El("row", text);
             buttons.style.flexWrap = Wrap.Wrap;
             foreach (var id in App.Save.Party)

@@ -70,11 +70,51 @@ namespace GridGame.App.Automation
                 // (GG-T1786: orbs carried, the Medic Wagon, To Camp / Next battle).
                 case "results": screen = new PostBattleScreen(PreviewReport(app, false), PreviewStage(app)); break;
                 case "results-mid": screen = new PostBattleScreen(PreviewReport(app, true), PreviewStage(app)); break;
+                // GG-T2091: the other end-of-battle cards for the audit: a defeat with its last hits, a prologue battle's
+                // drill card, and the level-up fanfare (three heroes, so it is still playing when the capture lands).
+                case "results-defeat": screen = new PostBattleScreen(PreviewDefeat(app), PreviewStage(app)); break;
+                case "results-drill": screen = PreviewDrill(app); break;
+                case "levelup": screen = new LevelUpScreen(PreviewLevelUps(app), PreviewStage(app)); break;
             }
             return screen != null;
         }
 
         private static string PreviewStage(GameApp app) => app.Content.CampaignStages()[0].Id;
+
+        private static Meta.BattleReport PreviewDefeat(GameApp app)
+        {
+            var c = app.Content;
+            var party = app.Save.Party;
+            string foe = c.Classes.Keys.FirstOrDefault(k => !party.Contains(k));
+            string target = party.FirstOrDefault();
+            var r = new Meta.BattleReport { StageId = PreviewStage(app), XpEach = 12 };
+            r.LastHits.Add(new Core.Battle.RecordedHit { Trap = true, TargetClass = party.LastOrDefault(), Amount = 40 });
+            r.LastHits.Add(new Core.Battle.RecordedHit { AttackerClass = foe, TargetClass = target, AbilityId = c.Abilities.Keys.FirstOrDefault(), Amount = 1250 });
+            r.LastHits.Add(new Core.Battle.RecordedHit { AttackerClass = foe, TargetClass = target, Amount = 96, Knockout = true });
+            return r;
+        }
+
+        private static GameScreen PreviewDrill(GameApp app)
+        {
+            var order = Meta.Drills.NewGameOrder(app.Content);
+            string stage = order.Skip(1).FirstOrDefault(id => app.Content.TryStage(id) != null) ?? order.FirstOrDefault();
+            if (stage == null) return null;
+            var r = new Meta.BattleReport { Victory = true, StageId = stage, Gold = 60, XpEach = 14 };
+            foreach (var it in app.Content.Items.Values.Where(i => i.Type == Core.Content.ItemType.CraftingMaterial).Take(3)) r.Items[it.Id] = 1;
+            return new PostBattleScreen(r, stage);
+        }
+
+        private static Meta.BattleReport PreviewLevelUps(GameApp app)
+        {
+            var r = new Meta.BattleReport { Victory = true, StageId = PreviewStage(app), Gold = 214, XpEach = 380 };
+            foreach (var id in app.Save.Party.Take(3))
+            {
+                var h = app.Save.Hero(id);
+                int lv = h != null ? Meta.Progression.Level(h) : 1;
+                r.LevelUps.Add((id, lv, lv + 2));
+            }
+            return r;
+        }
 
         private static Meta.BattleReport PreviewReport(GameApp app, bool mid)
         {

@@ -46,7 +46,7 @@ SCENARIO_SCREENS = [
 # the overworld preset lands there too.
 LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub", "skill-hex": "talents"}
 # Screens that move or animate on their own get longer to settle.
-SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon"}
+SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon", "levelup"}
 
 MIN_TARGET, MIN_GAP, CAPTION_FLOOR = 132.0, 24.0, 30.0  # design px, AutomationServer.Polish.cs
 
@@ -54,7 +54,7 @@ MIN_TARGET, MIN_GAP, CAPTION_FLOOR = 132.0, 24.0, 30.0  # design px, AutomationS
 def goto_screens():
     text = open(START_SCREENS, encoding="utf-8").read()
     block = re.search(r"All\s*=\s*\{(.*?)\};", text, re.S).group(1)
-    ids = re.findall(r'"([^"]+)"', block) + ["results", "results-mid"]
+    ids = re.findall(r'"([^"]+)"', block) + ["results", "results-mid", "results-defeat", "results-drill", "levelup"]
     taken = {n for n, _ in SCENARIO_SCREENS}
     return [i for i in ids if i not in taken]
 
