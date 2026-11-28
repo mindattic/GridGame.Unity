@@ -1003,7 +1003,7 @@ namespace GridGame.Core.Battle
             if (def.Roots && u.IsFloating) { Announce("Floating!", u.Id); return; } // GG-T859: roots find no ground to grip
             if (def.Frightens) // GG-T916: bosses and Heavy units don't scare; the rest remember what they fear
             {
-                if (IsBossLike(u) || u.IsHeavy) { Announce("Immune!", u.Id); return; }
+                if (u.IsBossLike || u.IsHeavy) { Announce("Immune!", u.Id); return; }
                 var src = sourceId >= 0 ? S.UnitById(sourceId) : null;
                 if (src == null || !src.Alive || !src.OnBoard) src = NearestFoeOf(u);
                 sourceId = src?.Id ?? -1;
@@ -1053,10 +1053,6 @@ namespace GridGame.Core.Battle
             S.Timeline.Remove(cast);
             Emit(new CastCancelledEvent { EntryId = cast.Id, CasterId = u.Id, AbilityId = cast.AbilityId, Reason = "rooted" });
         }
-
-        /// <summary>Same test as <see cref="Taming.WhyNot"/>'s "Too mighty": a Boss tag, a rule break, or boss phases.</summary>
-        private static bool IsBossLike(Unit u) =>
-            u.Def.HasTag("Boss") || u.RuleBreak != RuleBreak.None || (u.Def.BossPhases != null && u.Def.BossPhases.Count > 0);
 
         /// <summary>The nearest living, on-board unit of the opposing side (footprint Manhattan, ties by lowest Id), or null.</summary>
         private Unit NearestFoeOf(Unit u)
