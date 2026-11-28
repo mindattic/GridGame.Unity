@@ -1,7 +1,7 @@
 """Breed masks and preview sheets (GG-T1798, docs/research/sprite-recolor.md section 4).
 
     python tools/breed_masks.py masks   frog-00 bat-00 ...   # writes Portraits/<name>-mask.png (+ .meta, sRGB off)
-    python tools/breed_masks.py preview frog-00 bat-00 ... --out DIR   # one sheet per creature + a combined sheet
+    python tools/breed_masks.py preview frog-00 bat-00 ... --out DIR   # one sheet per creature (normal, then each breed) + a combined sheet
 
 The mask is the art's size: R body, G secondary, B keep-as-is (eyes, teeth, claws, gems); B wins overlaps; a pixel
 with no channel set is left untouched (outlines' white sticker rim, for one). The preview runs the same math as
@@ -292,8 +292,6 @@ def cmd_preview(names, out_dir, size):
         else:
             mask, _ = make_mask(rgb, alpha)
         tiles = [label(tile(rgb, alpha, size), f"{name}  normal")]
-        mview = mask * 0.85 + rgb * 0.15
-        tiles.append(label(tile(mview, alpha, size), "mask  R body  G 2nd  B keep"))
         for b in breeds:
             if not b.get("BodyRamp"):
                 continue

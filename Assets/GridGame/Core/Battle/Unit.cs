@@ -60,7 +60,7 @@ namespace GridGame.Core.Battle
         public PlayerId Owner;
         public ClassDef Def;
         public Team Team;
-        /// <summary>GG-T1774: the breed this foe rolled (a breeds.json id such as <c>red</c> or <c>albino</c>), or null for the
+        /// <summary>GG-T1774: the breed this foe rolled (a breeds.json id such as <c>red</c> or <c>shadow</c>), or null for the
         /// art as drawn. Looks only: the App recolours its art; no rule reads it.</summary>
         public string Breed;
         public int Level = 1;

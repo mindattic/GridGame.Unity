@@ -5,8 +5,8 @@ using System.Globalization;
 namespace GridGame.Core.Content
 {
     /// <summary>
-    /// A creature breed (GG-T1774, docs/research/sprite-recolor.md): the same drawing coloured another way, a Red or an
-    /// Albino or a rarer one, rolled by weight when a foe spawns. Looks only: Core stores the breed id on the unit
+    /// A creature breed (GG-T1774, docs/research/sprite-recolor.md): the same drawing coloured another way, a Red, a Shadow
+    /// or a rarer one, rolled by weight when a foe spawns. Looks only: Core stores the breed id on the unit
     /// (<see cref="Battle.Unit.Breed"/>) and never reads a colour; the App bakes the recolour (BreedArt, the
     /// <c>GridGame/BreedRecolor</c> shader) through the art's region mask (<c>&lt;file&gt;-mask.png</c>: R body, G secondary,
     /// B keep-as-is). Content/breeds.json, in file order.
@@ -27,7 +27,7 @@ namespace GridGame.Core.Content
         public float ChromaScale = 1f;
         /// <summary>The keep region's tint (eyes, claws, teeth), shaded by the original pixel; white leaves it as drawn.</summary>
         public string KeepTint = "#FFFFFF";
-        /// <summary>0..1: how far the keep region takes <see cref="KeepTint"/> (Albino's pink-red eyes = 1).</summary>
+        /// <summary>0..1: how far the keep region takes <see cref="KeepTint"/> (Shadow's cyan eye glints = 1).</summary>
         public float KeepMix;
         /// <summary>0..1: the recoloured regions' opacity (Spectral's translucency); 1 leaves alpha untouched.</summary>
         public float Alpha = 1f;
