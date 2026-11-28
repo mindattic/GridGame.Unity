@@ -5513,7 +5513,7 @@
       ],
       "speakers": [],
       "payload": {
-        "short": "Master's vestments humming with stored mana — every spell starts the fight partly charged."
+        "short": "Master's vestments humming with stored mana — the party starts the fight with mana in its bar."
       }
     },
     "item:eq_axe_hellforged": {

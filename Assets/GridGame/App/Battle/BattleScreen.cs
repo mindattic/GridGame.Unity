@@ -1331,6 +1331,7 @@ namespace GridGame.App
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
             Ui.MenuRow("Battle log", logLines.Count > 0 ? Ui.Count(logLines.Count) : "", () => ShowBattleLog(veil, w), w).KindIcon(RowKind.Menu);
             Ui.MenuRow("Settings", "", () => { veil.style.display = DisplayStyle.None; awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Settings); // GG-T1909
+            if (Dev.DevOptions.Enabled) Ui.MenuRow("Note", "", () => Dev.FeedbackNotes.Begin(veil), w).KindIcon(RowKind.Menu); // GG-T1939
             Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
