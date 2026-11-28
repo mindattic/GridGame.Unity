@@ -281,6 +281,11 @@
 .menu-row--compact .menu-icon { width: var(--size-icon-button); height: var(--size-icon-button); margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
 .menu-icon { width: var(--size-icon); height: var(--size-icon); margin-right: var(--space-16); background-size: contain; }
+/* A set icon in text (RowIcon.Line / Prefix, docs/ICONS.md): inline size, then its label, which wraps and is never cut. */
+.icon-inline { width: var(--size-icon-inline); height: var(--size-icon-inline); flex-shrink: 0; margin-right: var(--space-8); background-size: contain; }
+.icon-inline--value { margin-left: var(--space-16); }
+.icon-line { flex-direction: row; align-items: center; }
+.icon-line > Label { flex-grow: 1; flex-shrink: 1; white-space: normal; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 /* Every button stands on a darker lip (the thick bottom border). Pressing sinks it onto the lip. */
@@ -381,18 +386,7 @@
 .kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 132px; align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); }
 .kit-navtab > .menu-icon { width: var(--size-icon-nav); height: var(--size-icon-nav); margin: 0; }
 .kit-navtab-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
-.kit-navtab-badge {
-    position: absolute;
-    top: var(--space-8);
-    right: var(--space-16);
-    min-width: 44px;
-    padding: 0 var(--space-8);
-    border-radius: var(--radius-22);
-    background-color: var(--color-alert);
-    color: var(--color-white);
-    font-size: var(--type-base);
-    -unity-text-align: middle-center;
-}
+.kit-navtab-badge { position: absolute; top: var(--space-8); right: var(--space-16); }
 .kit-navtab--active { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
 .kit-navtab--active > .kit-navtab-label { color: var(--color-mana); }
 .kit-navtab--locked { opacity: 0.4; }
@@ -503,10 +497,10 @@
 .tab-icon { margin-right: var(--space-8); }
 .enter-mark { margin-left: var(--space-16); }
 .target-gap { margin: var(--space-12); }
+/* GG-T2020: a mercenary is one 132-px row (thumbnail, name and role, a short line); the hire lengths are rows in its sheet. */
+.card.merc-row { align-items: center; min-height: var(--size-target); padding-top: var(--space-8); padding-bottom: var(--space-8); }
+.merc-role { margin-left: var(--space-16); }
 .merc-terms { margin-top: var(--space-12); }
-.kit-actions.merc-terms { flex-wrap: nowrap; }
-/* GG-T1881: the hire lengths as one segmented row: each term two lines (length, price), sharing the row's width. */
-.merc-term { flex-grow: 1; flex-shrink: 1; padding: 0 var(--space-16); white-space: normal; }
 .merc-tag { margin-left: var(--space-8); }
 /* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
 .kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) 0 0 0; padding: 0 var(--space-12); } /* row padding + each button's 12-px margin: edge = gap = 24 from the text column (GG-T662) */
@@ -528,6 +522,20 @@
 .kit-empty-state { padding: var(--space-8) 0; }
 .kit-empty-state__line { flex-direction: row; align-items: center; padding: 0 var(--space-12); }
 .kit-empty-state__line > .kit-text { flex-grow: 1; flex-shrink: 1; }
+/* GG-T2048: the kit's chip, badge, segmented control, progress bar and sheet (DESIGN_SYSTEM §3, §4). A chip or segment
+   that is selected shows pressed in (R3): the dark well, a dark top edge, sunk. */
+.kit-badge { min-width: 44px; padding: 0 var(--space-8); border-radius: var(--radius-22); background-color: var(--color-alert); color: var(--color-white); font-size: var(--type-base); -unity-text-align: middle-center; }
+.kit-chip { flex-direction: row; align-items: center; align-self: flex-start; padding: var(--space-4) var(--space-16); margin: var(--space-4); border-radius: var(--radius-22); border-width: 2px; border-color: var(--color-frame); background-color: var(--color-badge); }
+.kit-chip__label { font-size: var(--type-base); white-space: nowrap; }
+.kit-chip--tap { min-height: var(--size-target); margin: var(--space-12); padding: 0 var(--space-24); }
+.kit-chip--tap.is-pressed { scale: 0.95 0.95; translate: 0 6px; background-color: var(--color-press); }
+.kit-chip--selected { background-color: var(--color-well); border-width: 3px; border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
+.kit-segmented { flex-direction: row; flex-wrap: nowrap; align-items: stretch; padding: 0 var(--space-12); }
+.kit-segment { flex-grow: 1; flex-shrink: 1; flex-basis: 0; padding: 0 var(--space-16); white-space: normal; }
+.kit-segment--selected { border-bottom-width: 3px; border-top-color: var(--color-well-edge); translate: 0 6px; background-color: var(--color-btn-pressed); }
+.kit-progress { flex-direction: row; align-items: center; }
+.kit-progress__gauge { flex-grow: 1; }
+.kit-progress__label { margin-left: var(--space-16); }
 
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {

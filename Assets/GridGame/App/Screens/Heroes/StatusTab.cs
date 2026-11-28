@@ -94,12 +94,21 @@ namespace GridGame.App
             void G(string label, string id, int dur = -1, int repairs = 0, float mastery = 1f, string enchant = null)
             {
                 var it = C.TryItem(id);
-                string name = it == null ? "—" : (mastery > 1f ? "★ " : "") + it.Name +
+                string name = it == null ? "—" : it.Name +
                     (dur >= 0 && it.Durability > 0 ? $"  ({dur}/{Repair.EffectiveMax(it, repairs, mastery)})" : "");
                 // GG-T179: an enchanted armor piece names the passive it grants.
                 var passive = it != null ? ArmorEnchanting.PassiveOf(C, enchant) : null;
-                if (passive != null) name += $"  ✦ {passive.Name}";
-                Ui.Field(label, name, sheet, it != null ? Ui.RarityClass(it.Rarity) : "dim");
+                string tone = it != null ? Ui.RarityClass(it.Rarity) : "dim";
+                var field = Ui.Field(label, name, sheet, tone);
+                if (it != null && mastery > 1f) RowIcon.Prefix(field.Q<Label>("value"), "cur-masterwork");
+                if (passive != null)
+                {
+                    field.Q<Label>("value").style.flexGrow = 0f;
+                    var mark = RowIcon.SetIcon("itemcat-enchanted", RowIcon.InlineClass);
+                    Ui.Margin(mark, left: Space.S16);
+                    field.Add(mark);
+                    Ui.Text(passive.Name, "kit-field__value " + tone, field);
+                }
             }
             G("Weapon", h.WeaponId, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery);
             foreach (var slot in BattleEngine.ArmorSlots)
@@ -144,7 +153,7 @@ namespace GridGame.App
             Ui.Section("Proficiencies", profBlock);
             var profs = Progression.KnownProficiencies(C, h);
             if (profs.Count == 0) Ui.Para("None yet — unlocked through skill-tree passives (Heavy Armor Proficiency, Martial Weapons, Arcane Focus).", profBlock, "dim");
-            foreach (var p in profs) Ui.Para("✔ " + p, profBlock, "good");
+            foreach (var p in profs) Ui.Para(p, RowIcon.Line("chrome-cleared", profBlock), "good");
         }
     }
 }

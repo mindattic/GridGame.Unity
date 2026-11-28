@@ -117,6 +117,10 @@ namespace GridGame.App
             var toggle = Ui.MenuRow("Cheats", cheats ? "ON" : "OFF", () => { Dev.DevOptions.SetCheats(!cheats); Refresh(); }, w);
             toggle.name = "settings-dev-cheats";
             toggle.KindIcon(RowKind.Settings);
+            bool perfHud = Dev.PerfStats.HudOn;
+            var hudRow = Ui.MenuRow("Perf HUD", perfHud ? "ON" : "OFF", () => { Dev.PerfStats.SetHud(!perfHud); Refresh(); }, w);
+            hudRow.name = "settings-dev-perfhud";
+            hudRow.KindIcon(RowKind.Settings);
             if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
             var s = App.Save;
             if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }
@@ -199,7 +203,7 @@ namespace GridGame.App
                 }
                 Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Type);
                 // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
-                Row(RowKind.Lore, "Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
+                Row(RowKind.TextWrap, "Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
             }
 
             Section("Gameplay");
@@ -220,13 +224,13 @@ namespace GridGame.App
             // GG-T1221: quality (-1 = the project's own), frame-rate cap, vsync, shake and effects amount.
             Section("Graphics");
             var qualities = QualitySettings.names;
-            CycleInt(RowKind.Diamond, "Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
+            CycleInt(RowKind.Quality, "Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
                 Enumerable.Range(-1, qualities.Length + 1).ToArray(), q => q < 0 ? "Default" : qualities[q], v => st.QualityLevel = v, "settings-quality");
             CycleInt(RowKind.Gauge, "Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
                 f => f < 0 ? "Uncapped" : $"{f} fps", v => st.FrameRateCap = v, "settings-frame-cap");
             if (!mobile) Toggle(RowKind.Sync, "VSync", st.VSync, v => st.VSync = v, "settings-vsync"); // GG-T1240: mobile ignores vsync
             Cycle(RowKind.Shake, "Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
-            Cycle(RowKind.New, "Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
+            Cycle(RowKind.Effects, "Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
 
             Section("Display");
             if (desktop)

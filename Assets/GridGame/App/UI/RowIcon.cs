@@ -122,6 +122,12 @@ namespace GridGame.App
         NoteOff,
         /// <summary>Settings (GG-T1886): a window struck through.</summary>
         WindowOff,
+        /// <summary>Settings: graphics quality.</summary>
+        Quality,
+        /// <summary>Settings: the amount of battle effects.</summary>
+        Effects,
+        /// <summary>Settings: how long words wrap (hyphenate or word wrap).</summary>
+        TextWrap,
         /// <summary>The hamburger, the menu button top-left of every screen that has one (GG-T1910, BIBLE 9.0 row 1): three
         /// big filled, outlined bars across the whole icon, no disc. <see cref="Menu"/> stays the in-list menu-row emblem.</summary>
         Hamburger,
@@ -211,10 +217,8 @@ namespace GridGame.App
         /// <see cref="HamburgerFrac"/> of the target, named <c>menu</c>.</summary>
         public static Button HamburgerButton(Action onClick, VisualElement parent)
         {
-            var b = IconButton("", RowKind.Hamburger, onClick, "btn--small btn--icon", parent);
+            var b = Ui.IconButton(RowKind.Hamburger, onClick, parent, Size.Target * HamburgerFrac, "btn--small");
             b.name = "menu";
-            var icon = b.Q(className: Class);
-            icon.style.width = icon.style.height = Size.Target * HamburgerFrac;
             return b;
         }
 
@@ -309,6 +313,9 @@ namespace GridGame.App
                 case RowKind.SpeakerOff: return "set-mute-sound";
                 case RowKind.NoteOff: return "set-mute-music";
                 case RowKind.WindowOff: return "set-mute-when-unfocused";
+                case RowKind.Quality: return "set-quality";
+                case RowKind.Effects: return "set-effects";
+                case RowKind.TextWrap: return "set-text-wrapping";
                 case RowKind.Hamburger: return "chrome-hamburger";
                 default: return "chrome-menu";
             }
@@ -324,6 +331,32 @@ namespace GridGame.App
             e.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
             return e;
         }
+
+        /// <summary>Class of a set icon set in text: <see cref="Size.IconInline"/> beside its label (docs/ICONS.md).</summary>
+        public const string InlineClass = "icon-inline";
+
+        /// <summary>A small row in <paramref name="parent"/> that starts with set icon <paramref name="id"/> at
+        /// <see cref="Size.IconInline"/>; the caller adds the label to it, which wraps beside the icon.</summary>
+        public static VisualElement Line(string id, VisualElement parent)
+        {
+            var row = Ui.El("icon-line", parent);
+            row.Add(SetIcon(id, InlineClass));
+            return row;
+        }
+
+        /// <summary>Puts set icon <paramref name="id"/> at <see cref="Size.IconInline"/> just before
+        /// <paramref name="label"/> in its row (a menu row's label or value).</summary>
+        public static T Prefix<T>(T label, string id) where T : VisualElement
+        {
+            var icon = SetIcon(id, InlineClass);
+            if (label.ClassListContains("menu-value")) { icon.AddToClassList("icon-inline--value"); label.style.marginLeft = 0; }
+            label.parent.Insert(label.parent.IndexOf(label), icon);
+            return label;
+        }
+
+        /// <summary>A have/need line: <c>chrome-cleared</c> and good when <paramref name="ok"/>, else <c>chrome-close</c> and bad.</summary>
+        public static Label HaveLine(bool ok, string text, VisualElement parent) =>
+            Ui.Para(text, Line(ok ? "chrome-cleared" : "chrome-close", parent), ok ? "good" : "bad");
 
         private static VisualElement Fallback(RowKind kind)
         {
