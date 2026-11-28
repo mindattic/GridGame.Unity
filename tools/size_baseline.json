@@ -10,7 +10,6 @@
   "Assets/GridGame/Core/Bot/HeroBot.cs",
   "Assets/GridGame/Core/Content/ContentLoader.cs",
   "Assets/GridGame/Core/Content/ContentModels.cs",
-  "Assets/GridGame/Meta/MetaServices.cs",
   "Assets/GridGame/Meta/SaveData.cs"
  ],
  "shared": {
