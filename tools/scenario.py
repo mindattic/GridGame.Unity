@@ -124,32 +124,16 @@ def describe(s):
     ])
 
 
-def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("scenario", nargs="?", help="a preset name or a target")
-    ap.add_argument("--spec", help="a spec JSON file instead of a preset or target")
-    ap.add_argument("--device", default="iphone17pro", choices=sorted(DEVICES))
-    ap.add_argument("--replace", action="store_true", help="close a running GridGame player first")
-    ap.add_argument("--build", action="store_true", help="rebuild the Windows dev player if it is stale")
-    ap.add_argument("--no-show", action="store_true", help="skip the preview set")
-    a = ap.parse_args()
-    arg = os.path.abspath(a.spec) if a.spec else a.scenario
-    if not arg:
-        ap.error("give a preset, a target or --spec")
-    name = re.sub(r"[^A-Za-z0-9_-]+", "-", os.path.splitext(os.path.basename(arg))[0] if a.spec else arg).strip("-")
-
-    ensure_build(a.build)
-    refuse_or_replace(a.replace)
+def start(arg, device, run):
     harness._ensure_port()
-    run = f"scenario-{name}"
     art = os.path.join(ROOT, "artifacts", run)
     saves = os.path.join(art, "saves")
     os.makedirs(saves, exist_ok=True)
     log = os.path.join(art, "player.log")
     if os.path.exists(log):
         os.remove(log)
-    ww, wh = window_size(a.device)
-    _, dh, top, bottom = DEVICES[a.device]
+    ww, wh = window_size(device)
+    _, dh, top, bottom = DEVICES[device]
     cmd = [harness.EXE, "-automation", str(harness.PORT), "-artifacts", art, "-saveRoot", saves,
            "-screen-width", str(ww), "-screen-height", str(wh), "-screen-fullscreen", "0",
            "-logFile", log, "-scenario", arg]
@@ -175,6 +159,27 @@ def main():
             break
         time.sleep(0.5)
     time.sleep(2.5)
+    return proc, summary, screen
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("scenario", nargs="?", help="a preset name or a target")
+    ap.add_argument("--spec", help="a spec JSON file instead of a preset or target")
+    ap.add_argument("--device", default="iphone17pro", choices=sorted(DEVICES))
+    ap.add_argument("--replace", action="store_true", help="close a running GridGame player first")
+    ap.add_argument("--build", action="store_true", help="rebuild the Windows dev player if it is stale")
+    ap.add_argument("--no-show", action="store_true", help="skip the preview set")
+    a = ap.parse_args()
+    arg = os.path.abspath(a.spec) if a.spec else a.scenario
+    if not arg:
+        ap.error("give a preset, a target or --spec")
+    name = re.sub(r"[^A-Za-z0-9_-]+", "-", os.path.splitext(os.path.basename(arg))[0] if a.spec else arg).strip("-")
+
+    ensure_build(a.build)
+    refuse_or_replace(a.replace)
+    run = f"scenario-{name}"
+    proc, summary, screen = start(arg, a.device, run)
     png = harness.shot(run)
     bring_to_front(proc.pid)
 
