@@ -5,6 +5,7 @@ using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using GridGame.Core.Rules;
+using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -340,8 +341,8 @@ namespace GridGame.App
 
         /// <summary>GG-T1978 (§2.0.1): the player's turns have no real-time limit — the hold and Mode C turn clocks stand
         /// still, no drop or Guard is forced, and a drop reports the human drag model's seconds (<see cref="HeldSeconds"/>).
-        /// The bot's own simulated drag keeps its timed hold.</summary>
-        private bool Untimed => App.Settings.UntimedTurns;
+        /// The bot's own simulated drag keeps its timed hold. A drill before The Clock (GG-T1959) is untimed too.</summary>
+        private bool Untimed => App.Settings.UntimedTurns || Drills.BeforeClock(App.Content, State?.Stage);
 
         private float holdElapsed, holdWindow = -1f, holdLastTime;
         private int holdTurnTicks = -1;
