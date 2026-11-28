@@ -102,10 +102,14 @@ namespace GridGame.App
                 return;
             }
             var node = board.Node(pt.Value);
-            // A passive's name lists its stats and can outrun the window's width: wrap it like the lines under it.
-            Ui.Heading(NodeName(node), w).style.whiteSpace = WhiteSpace.Normal;
-            if (route == null) { Ui.Para(node == null || node.Kind == SkillHexNodeKind.Open ? "An open slot: nothing to buy here yet." : "Can't reach that.", w, "dim"); return; }
-            if (route.Count == 0) { Ui.Para("Owned.", w, "good"); return; }
+            bool isAbility = node != null && node.Kind == SkillHexNodeKind.Ability && C.TryAbility(node.Ability) != null;
+            // GG-T1803: an ability node explains the whole skill with the battle's own card; the card carries the name.
+            if (isAbility) InspectCard.Ability(w, C.TryAbility(node.Ability), null, C.TryClass(h.ClassId));
+            else Ui.Heading(NodeName(node), w).style.whiteSpace = WhiteSpace.Normal;
+            if (node != null && node.Kind == SkillHexNodeKind.Passive) Explain(node, w);
+            else if (node != null && node.Kind == SkillHexNodeKind.Open) Ui.Para("An open slot: it adds nothing, but the trail runs through it to the nodes beyond.", w, "dim");
+            if (route == null) { if (node == null || node.Kind != SkillHexNodeKind.Open) Ui.Para("Can't reach that.", w, "dim"); return; }
+            if (route.Count == 0) { Ui.Para("Owned", w, "good").name = "hex-owned"; return; }
 
             int cost = board.SpCost(route, owned);
             Ui.Para($"Route: {route.Count} node{(route.Count == 1 ? "" : "s")} · {cost} SP (you have {h.SkillPoints})", w, h.SkillPoints >= cost ? null : "bad").name = "hex-route-cost";
@@ -128,6 +132,19 @@ namespace GridGame.App
             }, "btn--primary btn--small", foot);
             buy.name = "hex-buy";
             Ui.SetEnabled(buy, isSelected && h.SkillPoints >= cost);
+        }
+
+        /// <summary>A passive node's stats, one per line with what each does (GG-T1803).</summary>
+        private void Explain(SkillHexNodeDef n, VisualElement w)
+        {
+            Ui.Para("A passive: it permanently raises these stats while owned.", w, "dim");
+            foreach (var kv in (n.Stats ?? new Dictionary<string, int>()).OrderBy(kv => kv.Key))
+            {
+                var term = C.TryTerm(kv.Key);
+                string val = $"{(kv.Value >= 0 ? "+" : "")}{kv.Value}";
+                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", w);
+                t.name = "hex-stat-line";
+            }
         }
 
         private string NodeName(SkillHexNodeDef n)
