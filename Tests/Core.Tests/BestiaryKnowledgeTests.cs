@@ -84,6 +84,16 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void Element_line_names_an_element_locked_foe_by_its_one_open_element()
+        {
+            var d = new ClassDef();
+            foreach (DamageType t in System.Enum.GetValues(typeof(DamageType))) d.Resistances[t] = t == DamageType.Lightning ? 1.5f : 0f;
+            Assert.That(BestiaryKnowledge.ElementLine(d), Is.EqualTo("Immune to all but Lightning · weak to Lightning (×1.5)"));
+            d.Resistances[DamageType.Lightning] = 1f;
+            Assert.That(BestiaryKnowledge.ElementLine(d), Is.EqualTo("Immune to all but Lightning"));
+        }
+
+        [Test]
         public void Migration_drops_the_retired_scan_from_known_and_the_bar()
         {
             var s = new SaveData { Roster = { new HeroSave { ClassId = "knight", Known = { "scan", "taunt" }, Bar = new List<string> { "taunt", "scan", null, null, null } } } };

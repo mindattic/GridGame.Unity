@@ -744,7 +744,7 @@ namespace GridGame.App
             }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297
             else if (know >= BestiaryKnowledge.Speed) Ui.Text($"SPD {u.Effective.Speed:0}  ·  defeat more to learn the rest", "tiny dim", col);
-            if (!u.IsHero && know >= BestiaryKnowledge.Elements) Ui.Text(BestiaryKnowledge.ElementLine(u.Def), "tiny dim", col);
+            if (!u.IsHero && (know >= BestiaryKnowledge.Elements || u.Def.RevealResistances)) Ui.Text(BestiaryKnowledge.ElementLine(u.Def), "tiny dim", col);
             if (!u.IsHero)
             {
                 int n = BattleEngine.ActionsUntilTurn(State, u.Id);

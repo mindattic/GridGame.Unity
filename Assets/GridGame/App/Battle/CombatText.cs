@@ -136,7 +136,7 @@ namespace GridGame.App
                 case CombatTextKind.TimerEnd: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.9f, 0.55f), 1.4f, 0.4f, 4f, new Color(0.3f, 0.1f, 0f), true, CombatMotion.Flash, 0.9f, 0.3f);
                 case CombatTextKind.Expire: return new CombatTextStyle(CombatFace.Heavy, new Color(0.72f, 0.72f, 0.78f), 0.95f, 0f, 2f, Edge, true, CombatMotion.Fade, 1f, 0.3f);
                 case CombatTextKind.Miss: return new CombatTextStyle(CombatFace.Heavy, Palette.Info, 1.1f, 0f, 3f, Edge, true, CombatMotion.Arc, 0.6f, 0.1f);
-                case CombatTextKind.Immune: return new CombatTextStyle(CombatFace.Heavy, new Color(0.7f, 0.7f, 0.75f), 1.1f, 0f, 3f, Edge, true, CombatMotion.Shake, 0.6f, 0.1f);
+                case CombatTextKind.Immune: return new CombatTextStyle(CombatFace.Heavy, new Color(0.82f, 0.84f, 0.9f), 1.3f, 0f, 4f, Edge, true, CombatMotion.Shake, 0.85f, 0.1f);
                 case CombatTextKind.Weak: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.6f, 0.2f), 1.2f, 0.3f, 4f, new Color(0.3f, 0.05f, 0f), true, CombatMotion.Pop, 0.7f, 0.35f);
                 case CombatTextKind.Resist: return new CombatTextStyle(CombatFace.Heavy, new Color(0.75f, 0.85f, 0.95f), 1f, 0f, 3f, Edge, true, CombatMotion.Arc, 0.7f, 0.3f);
                 case CombatTextKind.Combo: return new CombatTextStyle(CombatFace.Heavy, Palette.GoldLight, 1.6f, 0.6f, 5f, new Color(0.3f, 0.12f, 0f), true, CombatMotion.Slam, 0.9f, 0.2f);
@@ -210,6 +210,8 @@ namespace GridGame.App
         /// </summary>
         public Label Damage(Vector2 at, CombatTextKind kind, string text, int amount, int maxHp, HitEffectiveness effect = HitEffectiveness.Normal, int overkill = 0, Color? tint = null)
         {
+            // GG-T2071: a blow an immunity stopped cold reads as one word, IMMUNE, not a "0" with a small tag beside it.
+            if (effect == HitEffectiveness.Immune && amount <= 0) return Show(at, CombatTextKind.Immune, TagOf(effect), 0.5f);
             var tier = TierOf(amount, maxHp);
             var l = Show(at, kind, text, MagnitudeOf(tier), tint);
             l.AddToClassList("combat-text--" + tier.ToString().ToLowerInvariant());

@@ -1458,7 +1458,7 @@ namespace GridGame.App
             Fact(w, "beast-speed", "Speed", tier >= BestiaryKnowledge.Speed ? $"SPD {d.BaseStats.Speed:0}" : null);
             Fact(w, "beast-stats", "Stats", tier >= BestiaryKnowledge.Stats
                 ? $"HP {Formulas.MaxHp(d.BaseStats, 1)} at Lv 1  ·  " + Ui.StatLine(Formulas.StatsAtLevel(d, 1)).Replace("\n", "  ") + $"  ·  EVA {Formulas.Evasion(Formulas.StatsAtLevel(d, 1)):0}%" : null);
-            Fact(w, "beast-elements", "Elements", tier >= BestiaryKnowledge.Elements ? BestiaryKnowledge.ElementLine(d) : null);
+            Fact(w, "beast-elements", "Elements", tier >= BestiaryKnowledge.Elements || d.RevealResistances ? BestiaryKnowledge.ElementLine(d) : null);
             Fact(w, "beast-abilities", "Abilities", tier >= BestiaryKnowledge.Abilities ? "" : null);
             if (tier >= BestiaryKnowledge.Abilities)
             {

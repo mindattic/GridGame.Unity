@@ -501,6 +501,9 @@ namespace GridGame.Core.Content
         public Stats Growth = new Stats();
         public List<MilestoneGrowth> Milestones = new List<MilestoneGrowth>();
         public Dictionary<DamageType, float> Resistances = new Dictionary<DamageType, float>();
+        /// <summary>GG-T2071 (BIBLE §3.3.1): a story foe whose resistances are the lesson (the prologue's Ward-Engine, "Immune
+        /// to all but Lightning"): its inspect card, description panel and Bestiary page show them whatever the Bestiary tier.</summary>
+        public bool RevealResistances;
         /// <summary>GG-T1134 (BIBLE §25.6.6.1): the class's own element (the six ninjas, the Night Hunter). An ability flagged
         /// <see cref="AbilityDef.ElementFromCaster"/> deals it and carries its rider (<see cref="AbilityDef.ForCaster"/>).
         /// Null = no element of its own: such an ability keeps its base numbers.</summary>
