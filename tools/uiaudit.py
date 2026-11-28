@@ -44,7 +44,7 @@ SCENARIO_SCREENS = [
 ]
 # The state "screen" each scenario capture must land on: Camp is the Hub screen, and until an overworld map screen exists
 # the overworld preset lands there too.
-LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub"}
+LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub", "skill-hex": "talents"}
 # Screens that move or animate on their own get longer to settle.
 SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon"}
 
@@ -181,9 +181,36 @@ def measure(device, name, method, png):
     }
 
 
+def settled(name, timeout=20.0):
+    """Waits until the router's fade is gone for two reads in a row (state.transitioning), then a beat for the fade-out."""
+    end, calm = time.time() + timeout, 0
+    while time.time() < end:
+        calm = calm + 1 if not harness.call("state", timeout=10).get("transitioning") else 0
+        if calm >= 2:
+            time.sleep(0.4)
+            return
+        time.sleep(0.15)
+    print(f"  {name}: still transitioning after {timeout:.0f}s", flush=True)
+
+
+def near_uniform(png):
+    from PIL import Image, ImageStat
+    img = Image.open(png).convert("L")
+    img = img.crop((0, 0, img.width, int(img.height * 0.9)))  # the dev-build watermark sits at the bottom
+    return max(ImageStat.Stat(img).stddev[0], 0.0) < 3.0
+
+
 def capture(device, name, method, facts):
     run = f"uiaudit-{device}-{name}"
-    src = harness.shot(run)
+    for attempt in range(4):
+        settled(name)
+        src = harness.shot(run)
+        if not near_uniform(src):
+            break
+        print(f"  {name}: near-uniform frame, retrying", flush=True)
+        time.sleep(1.5)
+    else:
+        print(f"  {name}: still a blank frame after retries", flush=True)
     dst = os.path.join(OUT, device, name + ".png")
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copyfile(src, dst)

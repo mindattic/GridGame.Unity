@@ -1137,6 +1137,7 @@ namespace GridGame.App.Automation
             {
                 ["screen"] = app.Router.Current?.Id,
                 ["stack"] = app.Router.Stack.Select(s => s.Id).ToList(),
+                ["transitioning"] = app.Router.Busy, // GG-T1857: the router fade is up, a screenshot now is black
                 ["screen_size"] = new[] { Screen.width, Screen.height },
                 ["fps"] = Mathf.Round(1f / Mathf.Max(0.0001f, Time.smoothDeltaTime)),
                 ["board_audit"] = BoardAudit.Snapshot(),

@@ -10,7 +10,7 @@ namespace GridGame.App.Automation
         {
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
             "alchemist", "enchantress", "talk", "summon", "caravan", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
-            "profiles", "newprofile", "createprofile", "splash", "diamonds",
+            "profiles", "newprofile", "createprofile", "splash", "diamonds", "mercenaries", "summon-history", "quests", "about",
         };
 
         public static bool TryGet(string id, out GameScreen screen)

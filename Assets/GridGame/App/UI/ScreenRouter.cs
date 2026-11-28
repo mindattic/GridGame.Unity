@@ -105,6 +105,9 @@ namespace GridGame.App
         /// Current but not mounted yet, so it is neither ticked nor told the app was suspended.</summary>
         public bool Preparing { get; private set; }
 
+        /// <summary>True from the start of a screen change until its fade is gone (GG-T1857: the UI audit waits on it).</summary>
+        public bool Busy => busy;
+
         public GameScreen Current => stack.Count > 0 ? stack.Peek() : null;
         public IEnumerable<GameScreen> Stack => stack;
         public event Action<GameScreen> Changed;
