@@ -658,10 +658,10 @@ namespace GridGame.App
             support.name = "abilities-support";
             Ui.Para("Pick a slot, then choose what goes in it — or move it along the bar.", barW, "dim");
             var tools = Ui.Actions(barW);
-            var left = RowIcon.IconButton("Move", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
+            var left = RowIcon.IconButton("Move left", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
             left.name = "bar-move-left";
             Ui.SetEnabled(left, slot > 0 && slot < unlocked);
-            var right = RowIcon.IconButton("Move", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
+            var right = RowIcon.IconButton("Move right", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
@@ -2103,7 +2103,20 @@ namespace GridGame.App
             Ui.Field("Horde", $"{Crucible.FirstWaveEnemies}→{Crucible.MaxWaveEnemies} foes, elites from wave {BattleConfig.CrucibleFirstEliteWave + 1}", list);
             Ui.Field("Pay", $"{Ui.Gold(Crucible.WaveGold(0))}, +{BattleConfig.CrucibleWaveGoldPerWave} G a wave", list, "gold");
             var fams = Crucible.Families(C, S);
-            Ui.Field("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met: " + string.Join(", ", fams.Select(f => f[0].Name)), list);
+            Ui.Field("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met", list);
+            if (fams.Count > 0)
+            {
+                var names = Ui.Para(string.Join(", ", fams.Select(f => f[0].Name)), list, "dim");
+                names.style.display = DisplayStyle.None;
+                Button toggle = null;
+                toggle = Ui.Button("Show names", () =>
+                {
+                    bool show = names.style.display == DisplayStyle.None;
+                    names.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+                    toggle.text = show ? "Hide names" : "Show names";
+                }, "btn--small", list);
+                toggle.name = "crucible-foes-toggle";
+            }
             var rec = Ui.El("col", list);
             rec.name = "crucible-record";
             Ui.Section("Record", rec);
@@ -2137,7 +2150,7 @@ namespace GridGame.App
             var foot = Ui.Footer(body, "crucible-footer");
             var costCol = Ui.El("col grow", foot);
             if (!can) Ui.Para(why, costCol, "bad");
-            Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", costCol, "dim");
+            Ui.Caption($"Costs {RestedPool.LaunchCost} Rested: the energy for a run, up to {RestedPool.Max}, +1 every {(int)RestedPool.RegenEvery.TotalMinutes} min", costCol, "dim");
             var enter = RowIcon.IconButton("Enter the Crucible", RowKind.Enter, () => CrucibleLauncher.Launch(false), "btn--primary", foot);
             enter.name = "crucible-enter";
             Ui.SetEnabled(enter, can);
@@ -2218,6 +2231,8 @@ namespace GridGame.App
 
     public sealed class BestiaryScreen : HubPage
     {
+        /// <summary>The tile behind an unseen creature's black silhouette: light enough that the shape reads against it.</summary>
+        internal static readonly Color UnseenTile = new Color(0.45f, 0.50f, 0.60f, 1f);
         private string selected;
         public override string Id => "bestiary";
         protected override string Title => "Bestiary";
@@ -2244,7 +2259,7 @@ namespace GridGame.App
                 S.Bestiary.TryGetValue(e.Id, out var entry);
                 var t = Ui.Thumb(e.Id, grid, 160, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
                 t.name = "beast-" + e.Id;
-                if (entry == null || !entry.Seen) { t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); }
+                if (entry == null || !entry.Seen) { t.style.backgroundColor = UnseenTile; t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); } // GG-T1889: a black silhouette on a light slate tile (over 4:1), not on the dark card
                 else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
                 t.AddToClassList("card-tap");
                 Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
