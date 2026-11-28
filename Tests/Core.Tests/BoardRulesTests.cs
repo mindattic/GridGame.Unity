@@ -47,7 +47,7 @@ namespace GridGame.Tests
             var pincer = ev.OfType<PincerFormedEvent>().Single();
             Assert.That(new[] { knight.Id, Hero(s, "cleric").Id }, Does.Contain(pincer.Attacker1));
             Assert.That(pincer.Opponents, Has.Exactly(1).Items);
-            var charge = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "pincer");
+            var charge = ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "pincer");
             Assert.That(charge.Participants, Is.EqualTo(2)); // §3.1.9: a lean two-hero pincer charges at full rate
             Assert.That(charge.Amount > 0, Is.True);
             Assert.That(ev.Any(e => e is DisplacedEvent d && d.To == new Coord(5, 3)), Is.True);
@@ -186,12 +186,12 @@ namespace GridGame.Tests
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
             var p = ev.OfType<PincerFormedEvent>().Single();
             Assert.That(p.Supporters, Does.Contain(Hero(s, "mage").Id));
-            var charge = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "pincer");
+            var charge = ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "pincer");
             Assert.That(charge.Participants, Is.EqualTo(3));
             var tank = s.Units.Single(u => u.Def.Id == "tank");
             float share = (tank.MaxHp - tank.Hp) / (float)tank.MaxHp;
             Assert.That(charge.Amount, Is.EqualTo(System.Math.Max(BattleConfig.MinPincerCharge, (int)System.Math.Round(BattleConfig.PincerChargePerHp * share / 1.5f)))); // ×1.5 divisor for 3 heroes
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "support"), Is.False);
+            Assert.That(ev.Any(e => e is ManaGainedEvent o && o.Kind == ManaGainKind.Grant && o.Reason == "support"), Is.False);
             Assert.That(ev.Any(e => e is AttackEvent a && a.IsSupport), Is.True);
         }
 
@@ -294,7 +294,7 @@ namespace GridGame.Tests
                     case SupportEffect.Haste:
                         if (act.Targets.Any(hadTurn.Contains)) Assert.That(ev.Any(e => e is HastenedEvent h && act.Targets.Contains(h.UnitId)), Is.True, why); break;
                     case SupportEffect.Mana:
-                        Assert.That(ev.Any(e => e is ManaChargedEvent m && m.Reason == "support" && m.SourceId == mage.Id), Is.True, why); break;
+                        Assert.That(ev.Any(e => e is ManaGainedEvent m && m.Reason == "support" && m.SourceId == mage.Id), Is.True, why); break;
                     case SupportEffect.Cleanse:
                         if (act.Targets.Contains(knight.Id)) Assert.That(ev.Any(e => e is BuffRemovedEvent r && r.UnitId == knight.Id && r.Reason == "cleansed"), Is.True, why); break;
                     case SupportEffect.Crit:

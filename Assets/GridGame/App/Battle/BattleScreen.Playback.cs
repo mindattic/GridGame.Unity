@@ -192,12 +192,9 @@ namespace GridGame.App
                 case AmplifierMovedEvent am: return AmpMoveAnim(am);
                 case PickupMovedEvent pm: return PickupMoveAnim(pm);
                 case AmplifierUsedEvent au: return AmpUsedAnim(au);
-                case ManaChargedEvent mc: ChargeLines(mc); return null;
-                case OrbMintedEvent o: if (o.Reason == "pincer") FlushTallies(); GrantLine(o); return null;
-                case OrbsSpentEvent _: App.Audio.Sfx("battle.cast", 0.6f); return null; // the bar drops on SpellManaSpent
-                case ManaGainedEvent mg: return ManaGainAnim(mg);
+                case ManaGainedEvent mg: ManaLines(mg); return ManaGainAnim(mg);
                 case SpellReadyEvent sr: return SpellReadyAnim(sr);
-                case SpellManaSpentEvent sms: SpellManaSpent(sms); return null;
+                case SpellManaSpentEvent sms: App.Audio.Sfx("battle.cast", 0.6f); SpellManaSpent(sms); return null;
 
                 case TimelineAdvancedEvent ta: FlushTallies(); return TimelineAnim(ta);
                 case PushedBackEvent pb: return PushAnim(pb);
@@ -1639,7 +1636,7 @@ namespace GridGame.App
             return new Vector2(GameApp.StageWidth / 2f, BoardTop + BoardView.Tile * BattleConfig.Rows / 2f);
         }
 
-        /// <summary>The player-facing name of a mint or charge source (OrbMintedEvent / ManaChargedEvent.Reason).</summary>
+        /// <summary>The player-facing name of a mana gain's source (ManaGainedEvent.Reason).</summary>
         private static string MintLabel(string reason)
         {
             switch (reason)
@@ -1717,12 +1714,12 @@ namespace GridGame.App
             s.RemoveFromHierarchy();
         }
 
-        /// <summary>A whole grant's orb (§3.1.0: 100 points to every spell meter) goes in the Log under the action that gave
-        /// it (a Mana Potion, Meditate, Mana Pour) or its source; the spell bars fill from its ManaGainedEvent.</summary>
-        private void GrantLine(OrbMintedEvent o)
+        /// <summary>A whole grant (§3.1.0: 100 points per orb to every spell meter) goes in the Log under the action that
+        /// gave it (a Mana Potion, Meditate, Mana Pour) or its source; the spell bars fill from the same ManaGainedEvent.</summary>
+        private void GrantLine(ManaGainedEvent g)
         {
-            string label = (o.Reason == "item" || o.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(o.Reason);
-            if (o.Landed) Feed($"{label}: +{BattleConfig.ManaPointsPerOrb} mana to every spell", Palette.Mana);
+            string label = (g.Reason == "item" || g.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(g.Reason);
+            if (g.Meters.Count > 0) Feed($"{label}: +{g.Orbs * BattleConfig.ManaPointsPerOrb} mana to every spell", Palette.Mana);
             else Feed($"{label}: every spell was already full", Palette.Gold);
         }
 

@@ -69,7 +69,7 @@ namespace GridGame.Tests
             s.TurnEntryOf(s.Units.First(u => u.Def.Id == "goblin").Id).Ip = BattleConfig.BarLength - 1;
             var ev = BattleEngine.Apply(s, new ShieldCommand());
             Assert.That(ev.Any(e => e is PincerFormedEvent p && p.Team == Team.Enemy), Is.True);
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && (o.Reason == "pincer" || o.Reason == "support")), Is.False);
+            Assert.That(ev.Any(e => e is ManaGainedEvent o && (o.Reason == "pincer" || o.Reason == "support")), Is.False);
         }
 
         [Test] // US-016 / US-017
@@ -264,7 +264,7 @@ namespace GridGame.Tests
                 var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
                 var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
                 int crits = ev.OfType<DamagedEvent>().Count(d => d.Hit == HitKind.Critical && d.SourceId == Hero(s, "knight").Id);
-                int wild = ev.OfType<ManaChargedEvent>().Count(o => o.Reason == "critical" && ManaEconomyTests.IsDampedFrom(o.Amount, BattleConfig.CritCharge));
+                int wild = ev.OfType<ManaGainedEvent>().Count(o => o.Reason == "critical" && ManaEconomyTests.IsDampedFrom(o.Amount, BattleConfig.CritCharge));
                 if (crits > 0) { Assert.That(wild, Is.EqualTo(crits)); saw = true; }
             }
             Assert.That(saw, Is.True);
@@ -279,7 +279,7 @@ namespace GridGame.Tests
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "steal" };
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = k.Pos });
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "steal"), Is.True);
+            Assert.That(ev.Any(e => e is ManaGainedEvent o && o.Kind == ManaGainKind.Grant && o.Reason == "steal"), Is.True);
         }
 
         [Test] // US-077 / US-096
@@ -298,7 +298,7 @@ namespace GridGame.Tests
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 0)) });
             Assert.That(ev.Any(e => e is CastStaggeredEvent st && st.DelayTicks > 0), Is.True);
             Assert.That(ev.Any(e => e is CastCancelledEvent c && c.Reason == "interrupted"), Is.True);
-            Assert.That(ev.Any(e => e is ManaChargedEvent o && o.Reason == "interrupt" && ManaEconomyTests.IsDampedFrom(o.Amount, BattleConfig.InterruptCharge)), Is.True);
+            Assert.That(ev.Any(e => e is ManaGainedEvent o && o.Reason == "interrupt" && ManaEconomyTests.IsDampedFrom(o.Amount, BattleConfig.InterruptCharge)), Is.True);
         }
 
         [Test] // US-091
@@ -633,7 +633,7 @@ namespace GridGame.Tests
                 var d = ev.OfType<DamagedEvent>().First(x => x.SourceId == Hero(s, "mage").Id);
                 if (d.Hit == HitKind.Miss) misses++;
                 int power = (int)System.Math.Round(18 * Formulas.CasterPower(db.Abilities["fireball"], Hero(s, "mage")));
-                if (d.Hit == HitKind.Critical) { crits++; Assert.That(d.Amount, Is.EqualTo((int)System.Math.Round(power * 1.6))); Assert.That(ev.Any(e => e is ManaChargedEvent o && o.Reason == "critical"), Is.True); }
+                if (d.Hit == HitKind.Critical) { crits++; Assert.That(d.Amount, Is.EqualTo((int)System.Math.Round(power * 1.6))); Assert.That(ev.Any(e => e is ManaGainedEvent o && o.Reason == "critical"), Is.True); }
             }
             Assert.That(misses, Is.EqualTo(0));
             Assert.That(crits, Is.InRange(5, 30)); // 50% physical crit cap × 0.5 → ~25%

@@ -537,7 +537,7 @@ namespace GridGame.Tests
             Assert.That(TurnRules.MaxTimeBankOrbs(s), Is.EqualTo(BattleConfig.AnyHeroMaxTimeBankOrbs));
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "knight").Id, Path = P((5, 6)), TimeLeftSeconds = 3.9f, HeldSeconds = BattleEngine.MinDragSeconds });
             Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty);
-            Assert.That(ev.OfType<OrbMintedEvent>().Count(o => o.Reason == "time bank"), Is.EqualTo(BattleConfig.AnyHeroMaxTimeBankOrbs));
+            Assert.That(ev.OfType<ManaGainedEvent>().Where(g => g.Reason == "time bank").Sum(g => g.Orbs), Is.EqualTo(BattleConfig.AnyHeroMaxTimeBankOrbs));
         }
 
         [Test]

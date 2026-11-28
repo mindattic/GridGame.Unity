@@ -167,23 +167,17 @@ namespace GridGame.App
             Ui.Para($"{ShardText.Plural} pay for a random summon, an instant Rested refill and a lucky craft. Anything priced in {ShardText.ShortPlural} can also be paid in gold at the same rate.", bal, "dim");
 
             var ex = Ui.Panel(body, "Exchange gold", false, "diamond-exchange-panel");
-            var pick = Ui.Actions(ex);
-            pick.style.alignItems = Align.Center;
-            foreach (var step in Steps)
-            {
-                int d = step;
-                if (d > 0) continue;
-                RowIcon.IconButton($"−{-d}", RowKind.Diamond, () => { amount = Math.Max(1, amount + d); Refresh(); }, "btn--small", pick).name = $"diamond-amount-minus{-d}";
-            }
-            var amt = Ui.Name($"{amount:N0}", pick, "gold");
+            var amt = Ui.Heading($"{amount:N0}", ex, "gold diamond-amount-box");
             amt.name = "diamond-amount";
+            var pick = Ui.Actions(ex);
+            pick.AddToClassList("diamond-steps");
             foreach (var step in Steps)
             {
                 int d = step;
-                if (d < 0) continue;
-                RowIcon.IconButton($"+{d}", RowKind.Diamond, () => { amount += d; Refresh(); }, "btn--small", pick).name = $"diamond-amount-plus{d}";
+                string label = d < 0 ? $"−{-d}" : $"+{d}";
+                Ui.Button(label, () => { amount = Math.Max(1, amount + d); Refresh(); }, "btn--small diamond-step", pick).name = d < 0 ? $"diamond-amount-minus{-d}" : $"diamond-amount-plus{d}";
             }
-            var maxB = RowIcon.IconButton("Max", RowKind.Diamond, () => { amount = Math.Max(1, max); Refresh(); }, "btn--small", pick);
+            var maxB = Ui.Button("Max", () => { amount = Math.Max(1, max); Refresh(); }, "btn--small diamond-step", pick);
             maxB.name = "diamond-amount-max";
             Ui.SetEnabled(maxB, max > 0);
             Ui.Field("Costs", Ui.Gold(DiamondExchange.GoldFor(amount)), ex, S.Gold >= DiamondExchange.GoldFor(amount) ? null : "bad", "diamond-quote");

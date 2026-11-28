@@ -23,8 +23,11 @@ namespace GridGame.Core.Battle
         /// v4 (2026-11-23, GG-T767): top-level "turnMode" (§2.13; <see cref="CommandCodec.ReadTurnMode"/> reads a record
         /// without it as PartyWindow).
         /// v5 (2026-11-27, GG-T1812): top-level "rulesVersion"; "startOrbs" becomes "startMana" (points granted to every
-        /// meter before wave 1), and every state's "bank", "bankCapacity" and "charge" become "meters" (§3.1.0).</summary>
-        public const int SchemaVersion = 5;
+        /// meter before wave 1), and every state's "bank", "bankCapacity" and "charge" become "meters" (§3.1.0).
+        /// v6 (2026-11-27, GG-T1844): OrbMinted, OrbsSpent and ManaCharged events are gone; ManaGained carries "Kind"
+        /// (Grant / Earned / Siphon), "Orbs", "Participants" and "Chain", and a grant that found every meter full is a
+        /// ManaGained with Amount 0 and no meters.</summary>
+        public const int SchemaVersion = 6;
 
         /// <summary>The battle rules a record was made under. 2 (GG-T1812): per-spell mana meters (§3.1.0). A record
         /// without it was made under the shared orb bank (1).</summary>
