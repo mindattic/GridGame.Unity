@@ -16,8 +16,10 @@ namespace GridGame.Core.Battle
     public sealed class OutcomePreview
     {
         public List<OutcomeTarget> Targets = new List<OutcomeTarget>();
-        /// <summary>Orbs that would land in the bank during the action (min/max over samples).</summary>
-        public int OrbsMin, OrbsMax;
+        /// <summary>Mana points the action would add to every spell meter (§3.1.0; min/max over samples).</summary>
+        public int ManaMin, ManaMax;
+        /// <summary>Spell meters the action would fill (min/max over samples).</summary>
+        public int FillsMin, FillsMax;
         public int Samples;
         public bool Refused;
 
@@ -41,7 +43,8 @@ namespace GridGame.Core.Battle
             var result = new OutcomePreview { Samples = samples };
             int actor = BattleEngine.CommandHeroId(cmd);
             var perSample = new List<Dictionary<int, Sample>>(samples);
-            var orbs = new List<int>(samples);
+            var mana = new List<int>(samples);
+            var fills = new List<int>(samples);
             for (int i = 0; i < samples; i++)
             {
                 var copy = s.Clone();
@@ -50,7 +53,7 @@ namespace GridGame.Core.Battle
                 try { events = BattleEngine.Apply(copy, cmd); }
                 catch (TileConflictException) { result.Refused = true; return result; }
                 var hits = new Dictionary<int, Sample>();
-                int landed = 0;
+                int gained = 0, filled = 0;
                 bool open = true;
                 foreach (var e in events)
                 {
@@ -67,11 +70,13 @@ namespace GridGame.Core.Battle
                         case HealedEvent h: Get(hits, h.TargetId).Heal += h.Amount; break;
                         case DiedEvent dd: Get(hits, dd.UnitId).Died = true; break;
                         case BuffAppliedEvent b: Get(hits, b.UnitId).Buffs.Add(b.BuffId); break;
-                        case OrbMintedEvent o when o.Landed: landed++; break;
+                        case ManaGainedEvent mg when mg.Amount > 0: gained += mg.Amount; break;
+                        case SpellReadyEvent _: filled++; break;
                     }
                 }
                 perSample.Add(hits);
-                orbs.Add(landed);
+                mana.Add(gained);
+                fills.Add(filled);
             }
 
             var ids = new HashSet<int>();
@@ -96,10 +101,16 @@ namespace GridGame.Core.Battle
                 foreach (var kv in statusCounts) t.StatusChance[kv.Key] = kv.Value / (float)samples;
                 result.Targets.Add(t);
             }
-            result.OrbsMin = int.MaxValue;
-            foreach (var n in orbs) { if (n < result.OrbsMin) result.OrbsMin = n; if (n > result.OrbsMax) result.OrbsMax = n; }
-            if (orbs.Count == 0) result.OrbsMin = 0;
+            Span(mana, out result.ManaMin, out result.ManaMax);
+            Span(fills, out result.FillsMin, out result.FillsMax);
             return result;
+        }
+
+        private static void Span(List<int> values, out int min, out int max)
+        {
+            min = values.Count == 0 ? 0 : int.MaxValue;
+            max = 0;
+            foreach (var n in values) { if (n < min) min = n; if (n > max) max = n; }
         }
 
         private sealed class Sample

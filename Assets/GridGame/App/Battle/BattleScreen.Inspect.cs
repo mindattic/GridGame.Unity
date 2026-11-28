@@ -148,8 +148,8 @@ namespace GridGame.App
                 l.name = "confirm-outcome";
                 l.style.whiteSpace = WhiteSpace.Normal;
             }
-            if (p.OrbsMax > 0)
-                Ui.Text($"Mana +{Range(p.OrbsMin, p.OrbsMax)} orb{(p.OrbsMax == 1 ? "" : "s")}", "t-caption", parent).style.color = Palette.Mana;
+            if (p.ManaMax > 0)
+                Ui.Text($"Mana +{Range(p.ManaMin, p.ManaMax)} to every spell{(p.FillsMax > 0 ? $" · fills {Range(p.FillsMin, p.FillsMax)}" : "")}", "t-caption", parent).style.color = Palette.Mana;
         }
 
         /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step.</summary>

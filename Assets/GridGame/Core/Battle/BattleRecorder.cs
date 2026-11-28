@@ -21,8 +21,18 @@ namespace GridGame.Core.Battle
         /// v3 (2026-10-19, GG-T98): PincerFormed events carry formation-time footprints ("Attacker1At", "Attacker2At",
         /// "OpponentsAt", "SupportersAt"); WaveStarted/ReinforcementsArrived carry "SpawnedAt".
         /// v4 (2026-11-23, GG-T767): top-level "turnMode" (§2.13; <see cref="CommandCodec.ReadTurnMode"/> reads a record
-        /// without it as PartyWindow).</summary>
-        public const int SchemaVersion = 4;
+        /// without it as PartyWindow).
+        /// v5 (2026-11-27, GG-T1812): top-level "rulesVersion"; "startOrbs" becomes "startMana" (points granted to every
+        /// meter before wave 1), and every state's "bank", "bankCapacity" and "charge" become "meters" (§3.1.0).</summary>
+        public const int SchemaVersion = 5;
+
+        /// <summary>The battle rules a record was made under. 2 (GG-T1812): per-spell mana meters (§3.1.0). A record
+        /// without it was made under the shared orb bank (1).</summary>
+        public const int RulesVersion = 2;
+        public const string RulesVersionKey = "rulesVersion";
+
+        /// <summary>A record made under older rules: shown as it was, never re-simulated (§3.1.0).</summary>
+        public static bool IsLegacy(JObject record) => ((int?)record?[RulesVersionKey] ?? 1) < RulesVersion;
 
         private static readonly JsonSerializer Json = JsonSerializer.Create(new JsonSerializerSettings
         {
@@ -41,6 +51,7 @@ namespace GridGame.Core.Battle
             root = new JObject
             {
                 ["schema"] = SchemaVersion,
+                [RulesVersionKey] = RulesVersion,
                 ["recordedAtUtc"] = DateTime.UtcNow.ToString("o"),
                 ["source"] = source,
                 ["stage"] = s.Stage?.Id,
@@ -51,7 +62,7 @@ namespace GridGame.Core.Battle
                 ["newGamePlus"] = setup?.NewGamePlus ?? 0,
                 ["difficulty"] = setup?.Difficulty ?? 0, // the dial (GG-T309); 0 = unscaled
                 [CommandCodec.TurnModeKey] = CommandCodec.EncodeTurnMode(s.TurnMode), // §2.13 (GG-T767): a replay reproduces it
-                ["startOrbs"] = setup?.StartOrbs ?? 0,
+                ["startMana"] = (setup?.StartOrbs ?? 0) * BattleConfig.ManaPointsPerOrb,
                 ["party"] = new JArray(s.Units.Where(u => u.IsHero).Select(u => new JObject
                 {
                     ["id"] = u.Id, ["class"] = u.Def.Id, ["role"] = u.Def.Role, ["level"] = u.Level, ["maxHp"] = u.MaxHp,
@@ -94,7 +105,7 @@ namespace GridGame.Core.Battle
                 ["after"] = new JObject
                 {
                     ["phase"] = after.Phase.ToString(), ["wave"] = after.Wave, ["clock"] = after.Clock,
-                    ["bank"] = after.Bank.Count, ["charge"] = after.ManaCharge,
+                    ["meters"] = Meters(after),
                     ["heroHp"] = new JArray(after.Units.Where(u => u.IsHero).Select(u => u.Alive ? u.Hp : 0)),
                     ["enemiesAlive"] = after.Units.Count(u => u.Alive && u.Team == Team.Enemy && !u.IsRemains),
                 },
@@ -133,9 +144,7 @@ namespace GridGame.Core.Battle
             ["phase"] = s.Phase.ToString(),
             ["wave"] = s.Wave,
             ["clock"] = s.Clock,
-            ["bank"] = s.Bank.Count,
-            ["bankCapacity"] = s.Bank.Capacity,
-            ["charge"] = s.ManaCharge,
+            ["meters"] = Meters(s),
             ["units"] = new JArray(s.Units.Where(u => u.Alive).Select(u =>
             {
                 var turn = s.TurnEntryOf(u.Id);
@@ -168,6 +177,22 @@ namespace GridGame.Core.Battle
             ["blocks"] = new JArray(s.Blocks.Select(b => new JArray(b.X, b.Y))),
             ["amplifier"] = s.Amplifier.HasValue ? new JArray(s.Amplifier.Value.X, s.Amplifier.Value.Y) : null,
         };
+
+        /// <summary>Every hero's spell meters in party then slot order (§3.1.0): hero id, slot, spell, points and full.</summary>
+        public static JArray Meters(BattleState s)
+        {
+            var a = new JArray();
+            foreach (var u in s.Units)
+            {
+                if (!u.IsHero) continue;
+                for (int i = 0; i < u.Bar.Count; i++)
+                {
+                    int full = s.ManaFull(u, i);
+                    if (full > 0) a.Add(new JObject { ["hero"] = u.Id, ["slot"] = i, ["ability"] = u.Bar[i].AbilityId, ["points"] = s.ManaIn(u.Id, i), ["full"] = full });
+                }
+            }
+            return a;
+        }
 
         private static JArray Bar(Unit u) => new JArray(u.Bar.Select(sl =>
             sl == null || sl.IsEmpty ? (JToken)JValue.CreateNull()

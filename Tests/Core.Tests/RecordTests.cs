@@ -55,6 +55,29 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void The_same_seed_and_commands_give_the_same_meters_on_replay()
+        {
+            var (_, rec) = PlayRecorded(5, 0f, "bot:greedy", 80);
+            Assert.That(BattleRecorder.IsLegacy(rec), Is.False);
+            Assert.That(BattleRecorder.IsLegacy(new JObject { ["schema"] = 4 }), Is.True, "a bank-rule record loads as legacy");
+            var c = Real;
+            var setup = BattleFactory.Build(c, Progression.NewGame(c, "Rec"), c.CampaignStages()[0].Id, 5);
+            var s = BattleEngine.Create(c, setup, new System.Collections.Generic.List<BattleEvent>());
+            Assert.That(BattleRecorder.Meters(s).ToString(), Is.EqualTo(rec["opening"]["state"]["meters"].ToString()));
+            var turns = (JArray)rec["turns"];
+            Assert.That(turns.Count, Is.GreaterThan(10));
+            bool moved = false;
+            foreach (var t in turns)
+            {
+                BattleEngine.Apply(s, CommandCodec.FromJObject((JObject)t["command"]));
+                var meters = BattleRecorder.Meters(s);
+                Assert.That(meters.ToString(), Is.EqualTo(t["after"]["meters"].ToString()), $"turn {t["index"]}");
+                moved |= meters.Any(m => (int)m["points"] > 0);
+            }
+            Assert.That(moved, Is.True, "some meter gained mana");
+        }
+
+        [Test]
         public void Record_soak_of_the_first_battle()
         {
             var dir = Environment.GetEnvironmentVariable("GRIDGAME_RECORDS");

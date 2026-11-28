@@ -500,14 +500,14 @@ namespace GridGame.Core.Bot
         }
 
         /// <summary>True while <paramref name="o"/> charges a spell that would lower the party's tempo (a Chronomancer's Drag),
-        /// or a siphon that would drain orbs the party still holds (GG-T332).</summary>
+        /// or a siphon that would drain mana the party's spell meters still hold (GG-T332, §3.1.0).</summary>
         internal static bool ChargesTempoDrain(BattleState s, Unit o)
         {
             foreach (var e in s.Timeline)
             {
                 if (e.Kind != TimelineKind.Cast || !e.IsCharge || e.OwnerId != o.Id) continue;
                 var ability = s.Content.TryAbility(e.AbilityId);
-                if (ability != null && ability.DrainsOrbs > 0 && s.Bank.Count > 0) return true;
+                if (ability != null && ability.DrainsOrbs > 0 && AnyMana(s)) return true;
                 var buff = s.Content.TryBuff(ability?.ApplyBuff);
                 if (buff != null && buff.Tempo < 0) return true;
             }
@@ -553,7 +553,7 @@ namespace GridGame.Core.Bot
             {
                 // GG-T872: float a Heavy foe a mover can then set into a pincer, or a hero whose way in crosses ground hazards.
                 float fv = FloatSpell.Value(s, caster, s.UnitAt(anchor));
-                return fv > 0f ? fv - a.Cost * OrbPenalty(s, false) : 0f;
+                return fv > 0f ? fv : 0f;
             }
             if (AnchorStance.Is(s, a)) return AnchorStance.Value(s, caster); // GG-T882: only when a foe's shove or hook is queued at the Warden or an ally beside it
             var targets = TargetResolver.Collect(s, a, caster, anchor);
@@ -569,7 +569,7 @@ namespace GridGame.Core.Bot
             {
                 foreach (var u in s.Units) if (u.Team == Team.Hero && !u.Alive && !u.IsCorpse) { score += 40f; break; }
             }
-            if (a.GrantsOrbs > 0) score += Math.Min(a.GrantsOrbs, s.Bank.Capacity - s.Bank.Count) * 3f - (s.Bank.IsFull ? 6f : 0f);
+            if (a.GrantsOrbs > 0) score += MeterFill(s, a.GrantsOrbs * BattleConfig.ManaPointsPerOrb) * 3f - (s.AllSpellsFull ? 6f : 0f);
             if (a.StepBack > 0 && caster.HpFraction < 0.6f)
                 foreach (var e in s.LivingList(Team.Enemy)) if (e.IsAdjacentTo(caster)) { score += 3f; break; }
             foreach (var t in targets)
@@ -591,7 +591,7 @@ namespace GridGame.Core.Bot
                     else if (curse != null && curse.Roots) score += BrambleSnare.Value(s, t) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T881: root a Kiter, a fleeing foe, a Line charger or a hooker
                     else if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
                     if (curse != null) score += ShredValue(t, curse) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T864: Flay a plated or tough foe
-                    if (a.StealsMana) score += s.Bank.IsFull ? 0f : 3f;
+                    if (a.StealsMana) score += s.AllSpellsFull ? 0f : 3f;
                     if (a.HastenU > 0) score -= 5f;
                     if (!ReadsBar) { if (a.Pushback > 0f) score += 3f; } // GG-T183: shoving a foe back on the timeline buys the party a turn
                     else if (!kills)
@@ -688,14 +688,6 @@ namespace GridGame.Core.Bot
             bool lone = EnemyPlanner.LoneHero(s) && score > 0f && a.BaseDamage > 0;
             if (ReadsBar && castTicks > 0 && score > 0f) score -= LatePenalty(s, a, targets, castTicks);
             if (ReadsBar && score > 0f) score += AbilityTimeValue(s, caster, a, targets);
-            if (a.Kind == AbilityKind.Spell)
-            {
-                score -= a.Cost * OrbPenalty(s, lone);
-                // GG-T373: while the party saves for a big spell it can't yet afford, a cheaper spell's orbs also cost the
-                // turns they push that spell back, so only a cheap spell worth clearly more than its price is cast.
-                int goal = lone ? 0 : SavingFor(s);
-                if (goal > a.Cost) score -= a.Cost * (TimelineAware ? SaveSurchargeSmart : SaveSurchargeCasual);
-            }
             if (a.Kind == AbilityKind.Item) score -= lone ? 1f : 4f;
             return score;
         }
@@ -1333,48 +1325,39 @@ namespace GridGame.Core.Bot
         private float GuardValue(BattleState s)
         {
             if (stalled >= 3) return float.NegativeInfinity;
-            float v = BattleEngine.GuardCharge(s) / 25f; // 40 charge (the cap) ≈ 1.6
+            float v = MeterFill(s, BattleEngine.DampedCharge(s, BattleEngine.GuardCharge(s))) * 4f; // §3.1.0: the share of each unfilled meter it adds
             foreach (var f in s.LivingList(Team.Enemy))
                 if (EnemyActTicks(s, f) == TurnRules.NextFoeTicks(s) && Threatens(s, f)) { v += 1f; break; }
             return v;
         }
 
-        /// <summary>GG-T246: what one orb is worth keeping. A filling bank makes hoarding pointless (every orb minted into
-        /// a full bank overflows), so the price of spending falls as it fills.</summary>
-        private static float OrbPenalty(BattleState s, bool lone)
+        /// <summary>§3.1.0: whole meters' worth of fill a gain of <paramref name="points"/> would add, summed over every
+        /// spell meter of every living hero (each capped at its own full); 0 when every meter is full.</summary>
+        internal static float MeterFill(BattleState s, int points)
         {
-            if (lone) return 0.5f;
-            if (s.Bank.IsFull) return 0.2f;
-            float fill = s.Bank.Capacity > 0 ? (float)s.Bank.Count / s.Bank.Capacity : 0f;
-            return 1.5f * (1f - 0.8f * fill);
-        }
-
-        /// <summary>GG-T373: a spell of at least this many orbs is one the party saves for. GG-T673: costs now run 1..4, and
-        /// the old 5–12 band maps to the top tier.</summary>
-        public const int SaveForCost = Battle.BattleConfig.MaxSpellOrbCost;
-        /// <summary>GG-T373: extra price per orb of a cheaper spell while saving — the smart bot saves harder than the casual one.</summary>
-        public const float SaveSurchargeSmart = 0.6f, SaveSurchargeCasual = 0.3f;
-
-        /// <summary>GG-T373: the orb price of the nearest big spell (<see cref="SaveForCost"/>+) on a living hero's unlocked bar
-        /// that the bank can hold but can't pay for yet, or 0 when there's nothing to save for. The nearest, so a party with a
-        /// 5- and a 10-orb spell saves up to the 5 first; once the bank holds it, the 10 becomes the goal.</summary>
-        public static int SavingFor(BattleState s)
-        {
-            int goal = 0;
-            foreach (var h in s.LivingList(Team.Hero))
+            float fill = 0f;
+            if (points <= 0) return fill;
+            foreach (var u in s.Units)
             {
-                if (h.IsIndependent) continue;
-                for (int i = 0; i < h.Bar.Count && i < h.UnlockedSlots; i++)
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count; i++)
                 {
-                    var sl = h.Bar[i];
-                    if (sl == null || sl.IsEmpty || sl.IsItem || sl.IsWeapon) continue;
-                    var a = s.Content.TryAbility(sl.AbilityId);
-                    if (a == null || a.Kind != AbilityKind.Spell || a.Cost < SaveForCost) continue;
-                    if (a.Cost <= s.Bank.Count || a.Cost > s.Bank.Capacity) continue;
-                    if (goal == 0 || a.Cost < goal) goal = a.Cost;
+                    int full = s.ManaFull(u, i);
+                    if (full > 0) fill += Math.Min(points, full - s.ManaIn(u.Id, i)) / (float)full;
                 }
             }
-            return goal;
+            return fill;
+        }
+
+        /// <summary>§3.1.0: any living hero's spell meter holds points (what a foe's siphon would take).</summary>
+        private static bool AnyMana(BattleState s)
+        {
+            foreach (var u in s.Units)
+            {
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count; i++) if (s.ManaFull(u, i) > 0 && s.ManaIn(u.Id, i) > 0) return true;
+            }
+            return false;
         }
 
         private static bool FightIsClose(BattleState s)
