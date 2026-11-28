@@ -353,9 +353,9 @@ namespace GridGame.EditorTools
             PlayerSettings.iOS.targetOSVersionString = IosMinimumVersion;
             PlayerSettings.iOS.requiresFullScreen = true;
             // GG-T2027: a swipe up from the bottom edge is the game's first (a drag on the board's last row), the system's
-            // only on a second swipe; the home indicator fades out once the player stops touching the screen.
+            // only on a second swipe. GG-T2121: the home indicator is shown player-wide; HomeIndicator auto-hides it in battle.
             PlayerSettings.iOS.deferSystemGesturesMode = UnityEngine.iOS.SystemGestureDeferMode.BottomEdge;
-            PlayerSettings.iOS.hideHomeButton = true;
+            PlayerSettings.iOS.hideHomeButton = false;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
 
             string oldBuild = PlayerSettings.iOS.buildNumber;
