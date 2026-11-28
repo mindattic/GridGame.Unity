@@ -294,6 +294,7 @@ namespace GridGame.Core.Content
                 NeedClass(c.Remains, $"class {c.Id} remains");
                 NeedClass(c.LaysEgg, $"class {c.Id} egg");
                 if (c.TameBond < 0) p.Add($"class {c.Id}: TameBond can't be negative (GG-T303)");
+                if (c.PlateUnyielding && c.ArmorPlate <= 0) p.Add($"class {c.Id}: PlateUnyielding needs an ArmorPlate (GG-T2069)");
                 foreach (var ph in c.BossPhases) NeedAbility(ph.OnEnterAbility, $"class {c.Id} boss phase");
             }
             foreach (var a in db.Abilities.Values)
@@ -314,6 +315,8 @@ namespace GridGame.Core.Content
                         p.Add($"ability {a.Id}: BonusVsBuffsMultiplier needs BaseDamage (GG-T1220)");
                 }
                 if (!(a.CastStagger >= 0f)) p.Add($"ability {a.Id}: CastStagger {a.CastStagger}s can't be negative (GG-T879)");
+                if (a.ShattersPlate && (a.Kind == AbilityKind.Passive || a.Kind == AbilityKind.Reactive || a.Filter == TargetFilter.AllyOnly || a.Filter == TargetFilter.EmptyOnly))
+                    p.Add($"ability {a.Id}: ShattersPlate is a Skill, Spell or Item that can pick a foe (GG-T2069)");
                 if (a.OnlyVsTag != null && !System.Linq.Enumerable.Any(db.Classes.Values, c => c.Team == Team.Enemy && c.HasTag(a.OnlyVsTag)))
                     p.Add($"ability {a.Id}: OnlyVsTag '{a.OnlyVsTag}' is carried by no foe (GG-T879)");
                 if (!(a.RecoverSeconds >= 0f) || a.RecoverSeconds > Battle.BattleConfig.RecoverMaxSeconds)

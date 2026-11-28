@@ -290,6 +290,7 @@ namespace GridGame.Core.Battle
                 bool friend = t.Team == caster.Team || (t.IsNeutral && caster.IsHero); // a recruitable is mended, never hurt (GG-T132)
                 bool deals = a.BaseDamage > 0 && !(a.BaseHeal > 0 && friend);
                 bool payoff = !friend && a.BonusVsBuffs.Exists(t.HasBuff); // GG-T1220: read before this hit thaws or lays a status
+                if (a.ShattersPlate && !friend && t.HasPlate) ShatterPlate(t, caster, a.Id); // GG-T2069: before the hit, so it lands on the body
                 if (deals && a.DamageType == DamageType.Fire)
                 {
                     if (t.HasBuff("frozen")) ForceExpire(t, "frozen");

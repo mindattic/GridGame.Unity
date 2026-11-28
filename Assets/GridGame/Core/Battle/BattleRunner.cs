@@ -1064,11 +1064,12 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>GG-T857 (§13.5): a <see cref="BuffDef.PlateChip"/> debuff takes a fixed bite out of the bearer's plate
-        /// whichever way it faces, unlike a blow, which only dents it from the front. Same events as a blow on the plate.</summary>
+        /// whichever way it faces, unlike a blow, which only dents it from the front. Same events as a blow on the plate.
+        /// GG-T2069: an unyielding plate shrugs the bite off (a 0 clang).</summary>
         private void ChipPlate(Unit u, int amount, int sourceId)
         {
             if (!u.HasPlate || amount <= 0) return;
-            int bite = Math.Min(amount, u.PlateHp);
+            int bite = Unyielding(u) ? 0 : Math.Min(amount, u.PlateHp);
             u.PlateHp -= bite;
             Emit(new PlateHitEvent { UnitId = u.Id, AttackerId = sourceId, Amount = bite, Left = u.PlateHp, Max = u.PlateMax });
             if (u.PlateHp == 0)
