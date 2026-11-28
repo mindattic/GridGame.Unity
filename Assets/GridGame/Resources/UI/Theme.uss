@@ -284,7 +284,8 @@
 .header-gold { font-size: var(--type-base); color: var(--color-gold); -unity-text-align: middle-right; margin-right: var(--space-16); }
 /* GG-T1361: the header's currency strip: Gold, the Shards button (opens the Shard Store), Summon Tickets. */
 .header-currencies { flex-direction: row; align-items: center; flex-shrink: 0; }
-.header-currencies > #header-shards { margin-right: var(--space-16); }
+.header-currencies > Button { margin-right: var(--space-8); }
+.header-currencies > #header-gold { margin-right: 0; margin-left: var(--space-8); }
 
 /* ── Bottom nav (GG-T1590, Ui.NavBar): five tabs under a hub page's body; the lit one holds the mana accent ── */
 .kit-navbar {

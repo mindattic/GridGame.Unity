@@ -39,12 +39,12 @@ namespace GridGame.App
                 ShowsHubChrome && App.Router.PagesAboveHub != 1 && App.Router.PagesAboveHub != 0 ? () => App.Router.Home() : (Action)null);
             if (SubtitleName != null && header.Q<Label>("header-sub") is Label subLabel) subLabel.name = SubtitleName;
             // Every Camp NPC can be talked to from their own station as well as from Camp's Talk row (GG-T119).
+            Button talk = null;
             var topic = Npc != null && CampNpcs.Joined(S, Npc) ? DialogueRunner.TalkTopic(C, S, ContentLoader.NpcFlagPrefix + Npc) : null;
             if (topic != null)
             {
-                var talk = RowIcon.IconButton(S.SeenDialogues.Contains(topic.Id) ? "Talk" : "Talk!", RowKind.Talk, () => App.Router.Push(new DialogueScreen(topic, (string)null, (GameScreen)null)), "btn--small", null);
+                talk = RowIcon.IconButton(S.SeenDialogues.Contains(topic.Id) ? "Talk" : "Talk!", RowKind.Talk, () => App.Router.Push(new DialogueScreen(topic, (string)null, (GameScreen)null)), "btn--small", null);
                 talk.name = "npc-talk";
-                header.Insert(header.IndexOf(CurrencyBar), talk);
             }
             // GG-T454 (the menu kit): the kit's page body, the centred column with the kit's gutters (GG-T398).
             Body = Ui.PageBody(col);
@@ -53,7 +53,7 @@ namespace GridGame.App
             // GG-T1590: the hub's bottom nav under the body.
             if (ShowsHubChrome) Ui.NavBar(col, this);
             // GG-T1361: Gold, Shards and Summon Tickets on every hub page; tapping Shards opens the Shard Store.
-            Ui.Currencies(CurrencyBar, App.Save, ShardsTap);
+            Ui.Currencies(CurrencyBar, App.Save, ShardsTap, talk);
             CampTipOverlay.ShowIfPending(this, TipStation);
         }
 
