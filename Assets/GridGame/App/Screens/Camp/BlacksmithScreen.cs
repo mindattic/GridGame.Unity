@@ -102,9 +102,10 @@ namespace GridGame.App
                     bool tierLocked = !Crafting.IsUnlocked(s, r), facilityLocked = !Facilities.Allows(c, s, r);
                     bool locked = tierLocked || facilityLocked;
                     string nameOverride = resultCounts[r.Result] > 1 ? $"{result.Name} — {InputSummary(c, r)}" : null;
-                    string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
+                    string lockLabel = tierLocked ? StationProgress.TierName(r.Tier) : Facilities.NeededName(c, r);
                     row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
+                    if (locked) RowIcon.Prefix(row.Q<Label>("value"), "chrome-locked");
                     if (can) ReadyChip(row, verb);
                     else row.style.opacity = Dim.Row;
                 }
@@ -146,8 +147,8 @@ namespace GridGame.App
         }
 
         /// <summary>GG-T538 (§25.0.10): the next tier, shown locked at the foot of the list. Up to
-        /// <see cref="VendorTiers.PreviewRows"/> recipes from the next rank ("🔒 Journeyman") and from the next progress tier
-        /// ("🔒 The Lantern Road III"), with a count of the rest, so the player sees what is coming and what opens it.</summary>
+        /// <see cref="VendorTiers.PreviewRows"/> recipes from the next rank (a locked "Journeyman") and from the next progress tier
+        /// (a locked "The Lantern Road III"), with a count of the rest, so the player sees what is coming and what opens it.</summary>
         private static void ComingLater(VisualElement list, VisualElement detail, ContentDb c, SaveData s, CraftStation station, List<RecipeDef> recipes, List<RecipeDef> visible)
         {
             var kind = Crafting.StationFor(station);
@@ -169,16 +170,17 @@ namespace GridGame.App
                     var rec = r;
                     var row = ItemUi.Row(c.Item(r.Result), value, () => ShowLocked(detail, c, s, rec, LockReason(c, s, rec)), list, true, false);
                     row.name = "recipe-locked-" + r.Id;
+                    RowIcon.Prefix(row.Q<Label>("value"), "chrome-locked");
                     row.AddToClassList("menu-row--compact");
                     row.style.opacity = Dim.Row;
                 }
                 if (set.Count > VendorTiers.PreviewRows) Ui.Note($"+{set.Count - VendorTiers.PreviewRows} more {more}", list);
             }
-            if (byRank.Count > 0) Rows(byRank, $"🔒 {StationProgress.TierName(rank + 1)}", $"at {StationProgress.TierName(rank + 1)}");
+            if (byRank.Count > 0) Rows(byRank, StationProgress.TierName(rank + 1), $"at {StationProgress.TierName(rank + 1)}");
             if (byRoad.Count > 0)
             {
                 string after = VendorTiers.OpensHint(c, next);
-                Rows(byRoad, "🔒 " + after.Substring("after ".Length), after);
+                Rows(byRoad, after.Substring("after ".Length), after);
             }
         }
 
@@ -198,7 +200,7 @@ namespace GridGame.App
         {
             w.Clear();
             ItemUi.Detail(w, c.Item(r.Result), c);
-            Ui.Para("🔒 " + reason, w, "bad");
+            Ui.Para(reason, RowIcon.Line("chrome-locked", w), "bad");
             Ui.Section("Needs", w);
             if (r.BaseItem != null) Ui.Text($"{c.TryItem(r.BaseItem)?.Name ?? r.BaseItem} ×1", "kit-text dim", w);
             foreach (var ic in r.Inputs) Ui.Text($"{c.TryItem(ic.Item)?.Name ?? ic.Item} ×{ic.Count}", "kit-text dim", w);
@@ -243,13 +245,13 @@ namespace GridGame.App
                 {
                     var b = c.TryItem(r.BaseItem);
                     int have = s.Count(r.BaseItem);
-                    Ui.Text($"{(have >= 1 ? "✔" : "✘")} {b?.Name ?? r.BaseItem} ×1   (have {have})", "kit-text " + (have >= 1 ? "good" : "bad"), undiscoveredNeed);
+                    RowIcon.HaveLine(have >= 1, $"{b?.Name ?? r.BaseItem} ×1   (have {have})", undiscoveredNeed);
                 }
                 foreach (var ic in r.Inputs)
                 {
                     var it = c.TryItem(ic.Item);
                     int have = s.Count(ic.Item);
-                    Ui.Text($"{(have >= ic.Count ? "✔" : "✘")} {it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", "kit-text " + (have >= ic.Count ? "good" : "bad"), undiscoveredNeed);
+                    RowIcon.HaveLine(have >= ic.Count, $"{it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", undiscoveredNeed);
                 }
                 return;
             }
@@ -259,12 +261,12 @@ namespace GridGame.App
             if (!Crafting.IsUnlocked(s, r))
             {
                 var kind = Crafting.StationFor(r.Station);
-                Ui.Para($"🔒 Requires {StationProgress.TierName(r.Tier)} ({StationProgress.Id(kind)} is {StationProgress.LevelName(s, kind)})", w, "bad");
+                Ui.Para($"Requires {StationProgress.TierName(r.Tier)} ({StationProgress.Id(kind)} is {StationProgress.LevelName(s, kind)})", RowIcon.Line("chrome-locked", w), "bad");
             }
             if (!Facilities.Allows(c, s, r))
             {
                 // GG-T432: shown locked, never hidden — the facility that works this material is named, with its price.
-                Ui.Para($"🔒 Needs {Facilities.NeededName(c, r)} (you have the {Facilities.Current(c, s, r.Station)})", w, "bad");
+                Ui.Para($"Needs {Facilities.NeededName(c, r)} (you have the {Facilities.Current(c, s, r.Station)})", RowIcon.Line("chrome-locked", w), "bad");
                 if (Facilities.Next(c, s, r.Station) is CaravanLevel next)
                 {
                     var b = RowIcon.IconButton($"Build {next.Name} · {Ui.Gold(next.Cost)}", RowKind.Confirm, () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w), confirmTap: false);
@@ -278,17 +280,17 @@ namespace GridGame.App
             {
                 var b = c.TryItem(r.BaseItem);
                 int have = s.Count(r.BaseItem);
-                Ui.Text($"{(have >= 1 ? "✔" : "✘")} {b?.Name ?? r.BaseItem} ×1   (have {have})", "kit-text " + (have >= 1 ? "good" : "bad"), need);
+                RowIcon.HaveLine(have >= 1, $"{b?.Name ?? r.BaseItem} ×1   (have {have})", need);
             }
             foreach (var ic in r.Inputs)
             {
                 var it = c.TryItem(ic.Item);
                 int have = s.Count(ic.Item);
-                Ui.Text($"{(have >= ic.Count ? "✔" : "✘")} {it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", "kit-text " + (have >= ic.Count ? "good" : "bad"), need);
+                RowIcon.HaveLine(have >= ic.Count, $"{it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", need);
             }
-            Ui.Para($"{(s.Gold >= r.Gold ? "✔" : "✘")} {Ui.Gold(r.Gold)}", need, s.Gold >= r.Gold ? "good" : "bad");
+            RowIcon.HaveLine(s.Gold >= r.Gold, Ui.Gold(r.Gold), need);
             if (r.Station == CraftStation.Forge)
-                Ui.Para($"★ {OddsText.Percent(Crafting.MasterworkChance(c, s))} chance of a Masterwork result", need, "gold");
+                Ui.Para($"{OddsText.Percent(Crafting.MasterworkChance(c, s))} chance of a Masterwork result", RowIcon.Line("cur-masterwork", need), "gold");
             if (Forging.IsGuided(s, r) && Forging.SuitedHero(c, s, result) is HeroSave suited)
                 Ui.Para($"First forge: free, and the {c.TryClass(suited.ClassId)?.Name ?? suited.ClassId} equips it", need, "gold");
             if (Forging.IsGuidedArmor(c, s, r) && Forging.SuitedWearer(c, s, result) is HeroSave wearer)
@@ -316,7 +318,7 @@ namespace GridGame.App
                 {
                     var it = c.TryItem(ic.Item);
                     int have = s.Count(ic.Item);
-                    Ui.Text($"{(have >= ic.Count ? "✔" : "✘")} {it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", "kit-text " + (have >= ic.Count ? "good" : "bad"), pneed);
+                    RowIcon.HaveLine(have >= ic.Count, $"{it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", pneed);
                 }
                 var pbtn = RowIcon.IconButton($"{verb} {greater.Name}", RowKind.Confirm, () =>
                 {
@@ -386,12 +388,12 @@ namespace GridGame.App
                 if (cost <= 0) { sound++; continue; } // GG-T1865: full-durability pieces collapse into one row below
                 worn++;
                 bool bad = cost > 0 && Repair.IsUneconomical(p.Item, p.Durability, p.Repairs, p.Mastery);
-                string name = (p.Mastery > 1f ? "★ " : "") + p.Item.Name;
-                var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
+                var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {p.Item.Name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
                     () => Done(piece.Slot == EquipmentSlot.Weapon ? Repair.RepairWeapon(C, S, piece.Hero) : Repair.RepairArmor(C, S, piece.Hero, piece.Slot), cue: "camp.repair"),
                     list, null, cost > 0);
                 row.name = p.RowName;
                 row.KindIcon(RowKind.Item, Art.ItemIcon(p.Item.Id)); // GG-T746 (§26.7): the worn piece's icon, else the Item emblem
+                if (p.Mastery > 1f) RowIcon.Prefix(row.Q<Label>("label"), "cur-masterwork");
                 if (bad) row.Q<Label>("value").AddToClassList("warn");
                 if (cost > 0) RepairPriceNote(list, p);
                 if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);

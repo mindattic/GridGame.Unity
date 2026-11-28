@@ -181,7 +181,7 @@ namespace GridGame.App
             {
                 var sh = new VisualElement { name = "coach-shade", pickingMode = PickingMode.Position };
                 sh.style.position = Position.Absolute;
-                sh.style.backgroundColor = new Color(0f, 0f, 0.04f, 0.62f);
+                sh.style.backgroundColor = Palette.Scene.CoachShade.WithA(0.62f);
                 sh.style.display = DisplayStyle.None;
                 // A tap outside the box does nothing but nudge the highlight.
                 sh.RegisterCallback<PointerDownEvent>(e => { e.StopPropagation(); Nudge(); });
@@ -215,7 +215,7 @@ namespace GridGame.App
         {
             veil = new VisualElement { name = "coach-veil", pickingMode = PickingMode.Position };
             veil.AddToClassList("fill");
-            veil.style.backgroundColor = new Color(0f, 0f, 0.04f, 0.66f);
+            veil.style.backgroundColor = Palette.Scene.CoachShade.WithA(0.66f);
             veil.style.justifyContent = Justify.Center;
             veil.style.paddingTop = GameApp.SafeTop + Space.S48;
             veil.style.paddingBottom = GameApp.SafeBottom + Space.S48;

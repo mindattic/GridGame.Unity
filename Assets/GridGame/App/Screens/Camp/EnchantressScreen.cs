@@ -73,8 +73,15 @@ namespace GridGame.App
             {
                 var target = t;
                 var bound = ArmorEnchanting.PassiveOf(C, t.Piece.Enchant);
-                var row = ItemUi.Row(t.Item, bound != null ? $"{HeroName(t)} ✦ {bound.Name}" : HeroName(t), () => OpenSheet(target), plist, true);
+                var row = ItemUi.Row(t.Item, HeroName(t), () => OpenSheet(target), plist, true);
                 row.name = t.RowName;
+                if (bound != null)
+                {
+                    var hero = row.Q<Label>("value");
+                    var passive = Ui.Text(bound.Name, "menu-value");
+                    row.Insert(row.IndexOf(hero) + 1, passive);
+                    RowIcon.Prefix(passive, "itemcat-enchanted");
+                }
                 if (piece != null && piece.Hero == t.Hero && piece.Slot == t.Slot) Ui.Select(row);
             }
             if (sheetOpen) EnchantSheet();
@@ -182,8 +189,9 @@ namespace GridGame.App
             var ench = e;
             bool locked = !ArmorEnchanting.IsUnlocked(S, e);
             var passive = C.TryAbility(e.Passive);
-            var row = Ui.MenuRow(e.Name, locked ? $"🔒 {StationProgress.TierName(e.Tier)}" : Ui.Gold(ArmorEnchanting.Gold(C, S, e)),
+            var row = Ui.MenuRow(e.Name, locked ? StationProgress.TierName(e.Tier) : Ui.Gold(ArmorEnchanting.Gold(C, S, e)),
                 () => { enchant = ench; Refresh(); }, list);
+            if (locked) RowIcon.Prefix(row.Q<Label>("value"), "chrome-locked");
             row.KindIcon(RowKind.Ability, passive != null ? Art.AbilityIcon(passive) : null); // GG-T746 (§26.7), else the Ability emblem
             row.name = ArmorEnchanting.EnchantRowPrefix + e.Id;
             if (can) BlacksmithScreen.ReadyChip(row, "Enchant");
@@ -205,12 +213,12 @@ namespace GridGame.App
             foreach (var ic in enchant.Inputs)
             {
                 int have = S.Count(ic.Item);
-                Ui.Para($"{(have >= ic.Count ? "✔" : "✘")} {C.TryItem(ic.Item)?.Name ?? ic.Item} ×{ic.Count}   (have {have})", detail, have >= ic.Count ? "good" : "bad");
+                RowIcon.HaveLine(have >= ic.Count, $"{C.TryItem(ic.Item)?.Name ?? ic.Item} ×{ic.Count}   (have {have})", detail);
             }
             int gold = ArmorEnchanting.Gold(C, S, enchant);
-            Ui.Para($"{(S.Gold >= gold ? "✔" : "✘")} {Ui.Gold(gold)}" + (gold == 0 && enchant.Gold > 0 ? "  (first rune free)" : gold > 0 && gold < enchant.Gold ? "  (Enchanter's Wagon)" : ""), detail, S.Gold >= gold ? "good" : "bad");
+            RowIcon.HaveLine(S.Gold >= gold, Ui.Gold(gold) + (gold == 0 && enchant.Gold > 0 ? "  (first rune free)" : gold > 0 && gold < enchant.Gold ? "  (Enchanter's Wagon)" : ""), detail);
             if (!ArmorEnchanting.IsUnlocked(S, enchant))
-                Ui.Para($"🔒 Requires {StationProgress.TierName(enchant.Tier)} (alchemist is {StationProgress.LevelName(S, StationKind.Alchemist)})", detail, "bad");
+                Ui.Para($"Requires {StationProgress.TierName(enchant.Tier)} (alchemist is {StationProgress.LevelName(S, StationKind.Alchemist)})", RowIcon.Line("chrome-locked", detail), "bad");
             var old = C.TryArmorEnchant(piece.Piece.Enchant);
             if (old == enchant) Ui.Para($"The {HeroName(piece)}'s {piece.Item.Name} already holds {enchant.Name}.", detail, "dim");
             else Ui.Para($"Into the {HeroName(piece)}'s {piece.Item.Name}" + (old != null ? $" (replaces {old.Name})" : ""), detail, "gold");

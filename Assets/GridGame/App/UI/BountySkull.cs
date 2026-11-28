@@ -10,7 +10,7 @@ namespace GridGame.App
     /// </summary>
     internal static class BountySkull
     {
-        public static readonly Color Fill = new Color(0.42f, 0.04f, 0.05f, 0.95f);
+        public static readonly Color Fill = Palette.Scene.SkullFill;
 
         public static VisualElement Make(float size, VisualElement parent = null)
         {

@@ -316,7 +316,7 @@ namespace GridGame.App
                 var track = new VisualElement { name = "loading-track", pickingMode = PickingMode.Ignore };
                 track.style.alignSelf = Align.Stretch;
                 track.style.height = Size.Track;
-                track.style.backgroundColor = new Color(1f, 1f, 1f, 0.12f);
+                track.style.backgroundColor = Palette.White.WithA(0.12f);
                 track.style.borderTopLeftRadius = track.style.borderTopRightRadius = Radius.R3;
                 track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = Radius.R3;
                 track.style.overflow = Overflow.Hidden;

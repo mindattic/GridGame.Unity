@@ -372,6 +372,14 @@ namespace GridGame.Meta
         /// end, so each retry of a long gauntlet leaves the party stronger. Shared by Defeat and Retreat.</summary>
         private static void GrantHardWonXp(SaveData s, BattleState battle, BattleResults r, BattleReport rep)
         {
+            GrantXp(s, battle, r, rep);
+            foreach (var kv in r.Kills) Entry(s, kv.Key).Defeated += kv.Value;
+        }
+
+        /// <summary>The battle's XP to each of the party's own heroes (no guest or visitor), with their level-ups and skill
+        /// points. Shared by Defeat, Retreat and a prologue battle's win (GG-T2138).</summary>
+        internal static void GrantXp(SaveData s, BattleState battle, BattleResults r, BattleReport rep)
+        {
             var heroes = battle.Units.Where(u => u.IsHero && !u.IsGuest && !u.IsVisitor).ToList();
             rep.XpEach = heroes.Count > 0 ? r.Xp : 0;
             int foeLevel = TopFoeLevel(battle);
@@ -385,7 +393,6 @@ namespace GridGame.Meta
                 if (after > before) rep.LevelUps.Add((h.ClassId, before, after));
                 h.SkillPoints += Formulas.SkillPointsForLevelUp(before, after);
             }
-            foreach (var kv in r.Kills) Entry(s, kv.Key).Defeated += kv.Value;
         }
 
         /// <summary>The level of the strongest foe in the battle: what catch-up XP measures a hero against (GG-T474).</summary>

@@ -419,20 +419,19 @@ Every `RowKind` that draws a code emblem today, and the inventory row whose icon
 
 | Glyph | Used for | Where (Assets/GridGame/App, Meta) | Becomes |
 |---|---|---|---|
-| ★ U+2605 | Masterwork prefix; defeat feed line | Camp/BlacksmithScreen.cs 291, 389; EquipTab.cs 40; StatusTab.cs 95; ItemsScreen.cs 76; LuckyCraftUi.cs 48, 101; BattleScreen.Playback.cs 921 | currency/Masterwork; battle/Defeated |
-| ✦ U+2726 | enchant / armor passive; support feed line; other item | Camp/EnchantressScreen.cs 76; EquipTab.cs 40, 74; StatusTab.cs 99; ItemsScreen.cs 41; BattleScreen.Playback.cs 693 | itemcat/Enchanted; battle/Support |
-| 🔒 U+1F512 | locked tier or station label | Camp/BlacksmithScreen.cs 105, 177, 181, 201, 262, 267; Camp/EnchantressScreen.cs 185, 213 | chrome/Locked |
-| ☠ U+2620 | bounty mark | BattleScreen.Bounty.cs 15, 22; BoardView.cs 844; StageSelectScreen.cs 78, 122; BountySkull.cs 25; CampMenu.cs 120 | map/Bounty |
-| ⭾ U+2B7E | weapon swap | BattleScreen.Playback.cs 259; AbilitiesTab.cs 315 | battle/Weapon swap |
-| ✚ U+271A | heal feed line; consumable | BattleScreen.Playback.cs 907; ItemsScreen.cs 38 | battle/Heal; itemcat/Consumable |
+| ★ U+2605 | Masterwork prefix; defeat feed line | LuckyCraftUi.cs 48, 101; BattleScreen.Playback.cs 921 | currency/Masterwork; battle/Defeated |
+| ✦ U+2726 | enchant / armor passive; support feed line; other item | BattleScreen.Playback.cs 693 | itemcat/Enchanted; battle/Support |
+| ☠ U+2620 | bounty mark | BattleScreen.Bounty.cs 15, 22; BoardView.cs 844; BountySkull.cs 25; CampMenu.cs 120 | map/Bounty |
+| ⭾ U+2B7E | weapon swap | BattleScreen.Playback.cs 259 | battle/Weapon swap |
+| ✚ U+271A | heal feed line; consumable | BattleScreen.Playback.cs 907 | battle/Heal |
 | ⚠ U+26A0 | hazard cell default | BattleScreen.Region.cs 324; BoardView.cs 977 | map/Danger |
 | ♨ U+2668 | burn tick default | BattleScreen.Playback.cs 879 | status/burning |
 | ▶ U+25B6 | turn start feed line | BattleScreen.Playback.cs 1817 | battle/Turn start |
 | ⏲ U+23F2 | hazard countdown | BattleScreen.Region.cs 174 | battle/Countdown |
 | ✓ U+2713 | acted badge | BoardView.cs 285 | battle/Acted |
-| ✔ U+2714 | proficiency line | StatusTab.cs 145 | chrome/Cleared |
 | ◎ U+25CE | region target cell | BoardView.cs 986 | battle/Region target cell |
-| † ◆ ✧ ◈ ❖ U+2020 U+25C6 U+2727 U+25C8 U+2756 | item category marks | ItemsScreen.cs 37-40 | itemcat/Weapon, Armor, Accessory, Material, Recipe / Tome |
+
+Done in App/Screens (GG-T2140): lock, masterwork, enchanted, have/need (chrome-cleared / chrome-close), bounty, weapon swap and the item category marks are set icons at `IconInline`, through `RowIcon.Line` (an icon-then-label row) and `RowIcon.Prefix` (an icon before a menu row's label or value); `ItemUi.CategoryIconId` names the itemcat icon. The compact armor-set line on Equip still folds its tiers into one string with U+2714.
 
 Kept as type, not icons: U+25B2 U+25BC (stat up / down inside a number (CombatText.cs 228, Ui.cs 957)); U+2192 (arrows inside prose (16 lines)); U+2212 (the minus sign in numbers (9 lines)).
 

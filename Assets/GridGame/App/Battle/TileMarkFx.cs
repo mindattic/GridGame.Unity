@@ -59,7 +59,7 @@ namespace GridGame.App
         }
 
         /// <summary>The crate wood (GG-T935).</summary>
-        public static readonly Color Wood = new Color(0.62f, 0.45f, 0.26f, 1f);
+        public static readonly Color Wood = Palette.Vfx.Wood;
 
         /// <summary>GG-T935 (Shapes §11.6): a braced crate filling most of <paramref name="r"/>: a wood body with the ink
         /// outline, an inner frame and a cross brace (each a Shapes bar, ink-outlined); <paramref name="wear"/> (0..1) darkens
@@ -68,7 +68,7 @@ namespace GridGame.App
         {
             float pad = Mathf.Min(r.width, r.height) * 0.16f;
             var box = new Rect(r.x + pad, r.y + pad, r.width - 2f * pad, r.height - 2f * pad);
-            var wood = Color.Lerp(Wood, new Color(0.3f, 0.2f, 0.12f, 1f), Mathf.Clamp01(wear) * 0.6f);
+            var wood = Color.Lerp(Wood, Palette.Vfx.WoodWorn, Mathf.Clamp01(wear) * 0.6f);
             var plank = Color.Lerp(wood, Palette.White, 0.25f);
             Shapes.RoundedRect(p, box, 8f, ShapeStyle.Small.Tint(wood).Outlined(ShapeStyle.Ink, 3f), filled: true);
             var inner = new Rect(box.x + 9f, box.y + 9f, box.width - 18f, box.height - 18f);

@@ -7,7 +7,7 @@ namespace GridGame.App
 {
     public sealed partial class BattleScreen
     {
-        private static readonly Color RuleBreakColor = new Color(1f, 0.3f, 0.75f);
+        private static readonly Color RuleBreakColor = Palette.Vfx.RuleBreak;
 
         /// <summary>A finale boss breaks a rule (§14.9, GG-T234): its entrance names the rule with a war cry and a shake;
         /// each bite after that plays its own cue and float over the boss.</summary>
