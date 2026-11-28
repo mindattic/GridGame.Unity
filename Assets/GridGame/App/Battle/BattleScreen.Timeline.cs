@@ -24,10 +24,13 @@ namespace GridGame.App
         /// <summary>GG-T2118 (owner 2026-11-28, §9.0): the timeline sits a gutter under the board, in the thumb zone, above the
         /// party mana strip and the action row.</summary>
         private const float TimelineY = BoardBottom + Space.S8 + TimelineFrameHeight / 2f;
-        private const float TimelineFrameHeight = 150f;
+        /// <summary>GG-T2142: the frame reserves its own row under the diamonds for the gap hint (the seconds and what fits), so the
+        /// mana strip and the action row under the frame never cover it, whatever size the text draws at.</summary>
+        private const float GapLabelHeight = Size.Icon;
+        private const float TimelineFrameHeight = TrackY + IconSpan / 2f + Space.S4 + GapLabelHeight;
         private const float TimelineBottom = TimelineY + TimelineFrameHeight / 2f;
         /// <summary>The track line's y inside the timeline frame; every icon centres on it.</summary>
-        private const float TrackY = TimelineFrameHeight / 2f;
+        private const float TrackY = 75f;
         private const float Sqrt2 = 1.41421356f;
         private const float IconSide = 60f, IconSpan = IconSide * Sqrt2, IconBorder = 4f;
         private const float SlotSide = 96f, SlotSpan = SlotSide * Sqrt2, SlotBorder = 6f;
@@ -202,7 +205,8 @@ namespace GridGame.App
             Ui.Scrim(gapLabel); // GG-T1898
             gapLabel.pickingMode = PickingMode.Ignore;
             gapLabel.style.position = Position.Absolute;
-            gapLabel.style.top = TrackY + IconSpan / 2f - Space.S8;
+            gapLabel.style.top = TrackY + IconSpan / 2f + Space.S4; gapLabel.style.height = GapLabelHeight;
+            gapLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
             gapLabel.style.display = DisplayStyle.None;
             Fonts.UseHeavy(gapLabel);
             roundLabel = Ui.Text("", "tiny shadow", frame);
