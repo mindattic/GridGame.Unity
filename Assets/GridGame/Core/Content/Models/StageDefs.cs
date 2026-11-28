@@ -74,7 +74,7 @@ namespace GridGame.Core.Content
         /// <summary>GG-T1374: a fixed battle seed (the tutorial drills); null plays on the caller's seed.</summary>
         public int? Seed;
         /// <summary>GG-T1374: a drill's coach-mark lessons in order, each with the wave it waits for. Non-empty only on a
-        /// drill (campaign.json <see cref="CampaignDef.Tutorial"/>).</summary>
+        /// drill (campaign.json <see cref="CampaignDef.Tutorial"/> or <see cref="CampaignDef.Prologue"/>).</summary>
         public List<StageLessonDef> Lessons = new List<StageLessonDef>();
         /// <summary>GG-T1641: a drill's intro card line, the heroes speaking to the Commander, shown before its first lesson.</summary>
         public string Intro;

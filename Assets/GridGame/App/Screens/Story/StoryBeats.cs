@@ -180,8 +180,12 @@ namespace GridGame.App
             return next();
         }
 
-        private static StageDef TutorialStage(ContentDb c, int n) =>
-            n < c.Campaign.Tutorial.Count ? c.TryStage(c.Campaign.Tutorial[n]) : null;
+        /// <summary>GG-T2075: a new game's drill <paramref name="n"/>: campaign.json's Prologue battles, else its Tutorial drills.</summary>
+        private static StageDef TutorialStage(ContentDb c, int n)
+        {
+            var order = Drills.NewGameOrder(c);
+            return n < order.Count ? c.TryStage(order[n]) : null;
+        }
 
         /// <summary>Tutorial drill <paramref name="n"/>, its checkpoint written as it starts. A drill always starts from
         /// the top (a battle is never saved mid-fight, BIBLE 26.8).</summary>

@@ -66,6 +66,7 @@
     }
   ],
   "Tutorial": ["tutorial-01", "tutorial-02", "tutorial-03"],
+  "Prologue": ["prologue-vault", "prologue-ambush", "prologue-bridge-skirmish"],
   "HubMusic": ["hearthside-camp-00", "embers-at-rest-00"],
   "MomentMusic": {
     "title": ["teller-of-the-tales-00"],
