@@ -1085,6 +1085,7 @@ namespace GridGame.App
         protected override string Title => "Blacksmith";
         protected override string Backdrop => "cave";
         protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Forge)} · {StationProgress.ShortText(S, StationKind.Blacksmith)}";
+        protected override bool SubtitleInBody => true;
         protected override string Npc => CampNpcs.Blacksmith;
         /// <summary>The Forge tab has its own tip, the first forge (GG-T177), then the first armor once the weapon is made
         /// (GG-T178); Repair keeps the Blacksmith's.</summary>
@@ -1477,6 +1478,7 @@ namespace GridGame.App
         protected override string Title => "Alchemist";
         protected override string Backdrop => "swamp";
         protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Alchemy)} · {StationProgress.HeaderText(S, StationKind.Alchemist)}";
+        protected override bool SubtitleInBody => true;
         protected override string Npc => CampNpcs.Alchemist;
 
         protected override void BuildBody(VisualElement body)
@@ -1511,6 +1513,7 @@ namespace GridGame.App
         protected override string Title => "Enchantress";
         protected override string Backdrop => "swamp";
         protected override string Subtitle => "Unlocks with the Alchemist: " + StationProgress.HeaderText(S, StationKind.Alchemist);
+        protected override bool SubtitleInBody => true;
         protected override string Npc => CampNpcs.Enchantress;
 
         protected override void BuildBody(VisualElement body)

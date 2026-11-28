@@ -35,12 +35,12 @@ namespace GridGame.App
                 bool ok = closed == null && nodes > 0 && S.Gold >= cost;
                 // GG-T698: a card (portrait, name, level, status and the class blurb) rather than a bare menu row.
                 var card = Ui.Card(list, hero.ClassId, null, out var col, "respec-" + hero.ClassId);
-                Ui.Name($"{name}  Lv {Progression.Level(hero)}", col);
-                Ui.Caption(value, col);
+                var title = Ui.Name($"{name}  Lv {Progression.Level(hero)}", col);
+                var status = Ui.Caption(value, col);
                 GlossaryText.Create(C.TryClass(hero.ClassId)?.Card ?? "", "kit-text dim", col);
                 card.AddToClassList("card-tap");
                 card.AddToClassList("card--fill");
-                if (!ok) card.style.opacity = Dim.Row;
+                if (!ok) title.style.opacity = status.style.opacity = Dim.Row; // GG-T1862: the blurb keeps full colour (4.5:1)
                 Ui.Tappable(card, () =>
                 {
                     if (!ok) { GameApp.I?.Audio?.Sfx("ui.error"); return; }
