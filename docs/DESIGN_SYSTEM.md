@@ -129,9 +129,13 @@ Every tappable goes through `Ui.Pressable`, which sinks it and plays the `ui.pre
 | Section | `Ui.Section` | `.kit-section` | n/a | heavy gold, flush left |
 | Card | `Ui.Card(parent, classId, name, out col)` | `.card`, `.card-tap`, `.tap--selected` | when its tap runs an action (`Ui.Tappable(…, confirmTap: true)`) | thumbnail 120 (R9), heavy name, its buttons under its text (`Ui.Actions`) |
 | Button | `Ui.Button(text, onClick, classes, parent, confirmTap)` | `.btn`, `--primary`, `--danger`, `--small`, `--icon`, `--disabled` | **yes** for an action with no confirm of its own (every `RowKind.Confirm` icon button). **No** for a button that opens its own Confirm, a dialog's answer, the battle commit button, navigation and steppers | the primary holds the mana fill; danger is wine red; one primary per screen (POL-C7) |
-| Icon button | `RowIcon.IconButton(kind, …, tex)` | `.btn--icon` | Confirm kind: yes | 132 square; a 48 icon (`Size.IconButton`): the kind's set icon (`RowIcon.IconId`, `Art.UiIcon`) unless `tex` names another, per [ICONS.md](ICONS.md) |
+| Icon button | `Ui.IconButton(kind, onClick, parent, icon)` (icon-only, any ICONS.md size), `RowIcon.IconButton(text, kind, …, tex)` | `.btn--icon` | Confirm kind: yes | 132 square; a 48 icon (`Size.IconButton`): the kind's set icon (`RowIcon.IconId`, `Art.UiIcon`) unless `tex` names another, per [ICONS.md](ICONS.md) |
 | Tabs | `Ui.Tabs(names, active, onPick, parent, locked)` | `.tab`, `.tab--active` | no | the window below sits flush; the active tab has a 4-px mana top |
 | Stepper | `Ui.Stepper(parent, value, onMinus, onPlus, …)` | `.btn--small` | no | minus, value, plus; each button a full target |
+| Segmented control | `Ui.Segmented(options, selected, onPick, parent)` | `.kit-segmented`, `.kit-segment`, `--selected` | no (a pick is not an action) | equal small buttons sharing the row; the selected one pressed in; each named `seg-<label>` |
+| Chip | `Ui.Chip(text, parent, icon, onClick, selected)`, `Ui.SetSelected` | `.kit-chip`, `--tap`, `--selected` | no | a pill with an inline 32 icon; a full target when tappable, pressed in when selected |
+| Badge | `Ui.Badge(text, parent, classes)` | `.kit-badge`, `.kit-navtab-badge` | n/a | a count or word on a pill; takes no taps |
+| Progress bar | `Ui.ProgressBar(frac, parent, label)`, `Ui.SetProgress` | `.kit-progress` | n/a | the gauge across the width, an optional count at its right |
 | Field | `Ui.Field(label, value, parent)` | `.kit-field` | n/a | read-only: dim label, body value |
 | Detail pane | `Ui.DetailPanel` | `.window--detail` | n/a | grows to 45 % of the column, then scrolls |
 | Footer | `Ui.Footer` | `.window`, `.kit-footer` | its button: yes, unless it confirms itself | total on the left, commit on the right, at the bottom, pinned above the nav |
@@ -147,11 +151,12 @@ All of them sit on `GameApp.I.Overlay` above a `.veil` (#05050C at 0.72) that sw
 
 | Surface | Builder | Shape | Dismiss | Confirm rule |
 |---|---|---|---|---|
-| Confirm dialog | `Confirm.Show(question, yes, onYes, onNo)` | a centred window 76 % wide: the question as a heading, actions right-aligned (Cancel, then Yes) | Cancel, Back, a second Back | single tap: the dialog is the confirm |
-| Bottom sheet | the Abilities sheet (`BattleScreen.AbilitySheet`, GG-T1914, GG-T1920) | full width, rising from the thumb zone. Header with the hero thumbnail, name, HP and Close; tabs; a breadcrumb (`Abilities › Ninjutsu › Smokebomb`). The board stays visible behind it | Close, Back, a tap on the veil | rows are select-then-confirm; the commit button (Perform, Cast, Use) is single |
+| Modal | `Ui.Modal(title, onCancel, name)`, `Ui.ModalActions`, `Ui.CloseModal` | a centred window 76 % wide on the veil | Back answers `onCancel` | the caller's |
+| Confirm dialog | `Confirm.Show(question, yes, onYes, onNo)` (built on `Ui.Modal`) | a centred window 76 % wide: the question as a heading, actions right-aligned (Cancel, then Yes) | Cancel, Back, a second Back | single tap: the dialog is the confirm |
+| Bottom sheet | `Ui.Sheet(name, onClose, full, heightPct)`, `Ui.CloseSheet`; the Abilities sheet (`BattleScreen.AbilitySheet`, GG-T1914, GG-T1920) | full width, rising from the thumb zone. Header with the hero thumbnail, name, HP and Close; tabs; a breadcrumb (`Abilities › Ninjutsu › Smokebomb`). The board stays visible behind it | Close, Back, a tap on the veil | rows are select-then-confirm; the commit button (Perform, Cast, Use) is single |
 | Inspect card | `InspectCard.Attach(e, build)`, `InspectCard.Tap` | a floating card beside its anchor | lift the finger, tap elsewhere | press and hold inspects anything (POL-D1) |
 | Art preview | `ArtPreview.Open(classId)` | the full 1024 portrait over the veil | a tap anywhere, Back | n/a (R9) |
-| Toast | `GameApp.Toast(text, seconds)` | a small pane above the nav, never over content | times out (1.8 s) | n/a |
+| Toast | `Ui.Toast(text, seconds)` (`GameApp.Toast` forwards) | a small pane above the nav, never over content | times out (1.8 s) | n/a |
 | Pause menu | hamburger, then `OpenMenu` | a sheet of menu rows | Resume, Back | rows are select-then-confirm |
 
 A sheet rises from the bottom (`Timing.Standard`, `Ease.Out`) and drops away faster (`Timing.Quick`). A dialog fades in and scales up from 96 % (`Timing.Quick`, `Ease.Back`).

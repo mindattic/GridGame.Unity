@@ -13,7 +13,7 @@ namespace GridGame.App
     /// The widget kit. Every screen composes these; nothing positions itself with magic pixel offsets
     /// except the battle board. All styling is in Theme.uss classes.
     /// </summary>
-    public static class Ui
+    public static partial class Ui
     {
         public static VisualElement El(string classes = null, VisualElement parent = null)
         {
@@ -323,7 +323,7 @@ namespace GridGame.App
                 var icon = t.KindIcon(NavKind(tab.Id), Art.UiIcon("nav-" + tab.Id));
                 if (!tab.Open) RowIcon.Badge(icon, RowKind.Locked);
                 Marquee(Text(tab.Label, "kit-navtab-label", t));
-                if (!string.IsNullOrEmpty(tab.Badge)) Text(tab.Badge, "kit-navtab-badge", t).name = "nav-badge";
+                if (!string.IsNullOrEmpty(tab.Badge)) Badge(tab.Badge, t, "kit-navtab-badge").name = "nav-badge";
                 string id = tab.Id, hint = tab.Hint;
                 if (tab.Open) Tappable(t, () => NavGo(app, id));
                 else Tappable(t, () => app.Toast(hint), "ui.error");

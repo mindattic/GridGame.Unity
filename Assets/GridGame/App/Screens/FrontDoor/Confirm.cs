@@ -10,26 +10,19 @@ using UnityEngine.UIElements;
 
 namespace GridGame.App
 {
-    /// <summary>Modal confirm dialog on the overlay layer.</summary>
+    /// <summary>Modal confirm dialog on the overlay layer, built on the kit's modal (<see cref="Ui.Modal"/>).</summary>
     public static class Confirm
     {
-        private const string VeilName = "confirm-veil";
+        private const string VeilName = Ui.ModalVeil;
 
         /// <summary>Returns the veil, so a caller can tell whether its question is still up.</summary>
         public static VisualElement Show(string question, string yes, Action onYes, Action onNo = null)
         {
-            var overlay = GameApp.I.Overlay;
-            var veil = Ui.El("fill veil col center", overlay);
-            veil.name = VeilName;
-            veil.pickingMode = PickingMode.Position;
-            var w = Ui.Panel(veil);
-            w.style.width = Length.Percent(76);
-            var q = Ui.Heading(question, w);
-            q.style.whiteSpace = WhiteSpace.Normal;
-            var row = Ui.Actions(w);
-            row.style.justifyContent = Justify.FlexEnd;
-            Action cancel = () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); };
-            veil.userData = cancel; // Android Back answers Cancel (CancelTop)
+            VisualElement veil = null;
+            Action cancel = () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); }; // Android Back answers Cancel (CancelTop)
+            var w = Ui.Modal(question, cancel, null, false);
+            veil = w.parent;
+            var row = Ui.ModalActions(w);
             // GG-T738 (§26.7): Cancel leads with the Close cross, the answer with the Confirm check.
             RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, row).name = "confirm-no";
             RowIcon.IconButton(yes, RowKind.Confirm, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row, confirmTap: false).name = "confirm-yes";
@@ -44,18 +37,13 @@ namespace GridGame.App
             string second, RowKind secondKind, Action onSecond, bool secondIsDefault, string name = null)
         {
             var app = GameApp.I;
-            var veil = Ui.El("fill veil col center", app.Overlay);
-            veil.name = VeilName;
-            veil.pickingMode = PickingMode.Position;
-            var w = Ui.Panel(veil, null, false, name);
-            w.style.width = Length.Percent(76);
-            Ui.Heading(question, w).style.whiteSpace = WhiteSpace.Normal;
-            if (!string.IsNullOrEmpty(note)) Ui.Note(note, w);
-            var row = Ui.Actions(w);
-            row.style.justifyContent = Justify.FlexEnd;
+            VisualElement veil = null;
             Action a = () => { veil.RemoveFromHierarchy(); onFirst?.Invoke(); };
             Action b = () => { veil.RemoveFromHierarchy(); onSecond?.Invoke(); };
-            veil.userData = secondIsDefault ? b : a;
+            var w = Ui.Modal(question, secondIsDefault ? b : a, name, false);
+            veil = w.parent;
+            if (!string.IsNullOrEmpty(note)) Ui.Note(note, w);
+            var row = Ui.ModalActions(w);
             RowIcon.IconButton(first, firstKind, a, secondIsDefault ? null : "btn--primary", row).name = "choose-first";
             RowIcon.IconButton(second, secondKind, b, secondIsDefault ? "btn--primary" : null, row).name = "choose-second";
             app.Audio.Sfx("ui.select");
@@ -68,19 +56,15 @@ namespace GridGame.App
         public static VisualElement Notice(string kicker, string title, string text, string ok, RowKind okKind, Action onOk, string name)
         {
             var app = GameApp.I;
-            var veil = Ui.El("fill veil col center", app.Overlay);
-            veil.name = VeilName;
-            veil.pickingMode = PickingMode.Position;
-            var w = Ui.Panel(veil, null, false, name);
-            w.style.width = Length.Percent(76);
+            VisualElement veil = null;
+            Action a = () => { veil.RemoveFromHierarchy(); onOk?.Invoke(); };
+            var w = Ui.Modal(null, a, name, false);
+            veil = w.parent;
             Ui.Caption(kicker, w, "gold");
             var head = Ui.Heading(title, w);
             head.style.whiteSpace = WhiteSpace.Normal;
             Ui.Text(text, "kit-text", w).style.whiteSpace = WhiteSpace.Normal;
-            var row = Ui.Actions(w);
-            row.style.justifyContent = Justify.FlexEnd;
-            Action a = () => { veil.RemoveFromHierarchy(); onOk?.Invoke(); };
-            veil.userData = a;
+            var row = Ui.ModalActions(w);
             RowIcon.IconButton(ok, okKind, a, "btn--primary", row).name = "notice-ok";
             app.Audio.Sfx("battle.powerup");
             if (!Tween.Calm)

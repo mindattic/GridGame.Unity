@@ -502,28 +502,8 @@ namespace GridGame.App
             Cloud?.Saved(Profile?.Name, Slot, Save); // GG-T608: uploaded at most once a minute, and on pause/quit
         }
 
-        public void Toast(string text, float seconds = 1.8f)
-        {
-            StartCoroutine(ToastRoutine(text, seconds));
-        }
-
-        private IEnumerator ToastRoutine(string text, float seconds)
-        {
-            var t = Ui.Text(text, "toast shadow", Overlay);
-            t.name = "toast";
-            t.style.bottom = Size.ToastLift + liveToasts * Size.ToastStack; // GG-T1867: a second toast stacks above the first, never over it
-            liveToasts++;
-            t.style.opacity = 0;
-            yield return null;
-            t.style.opacity = 1;
-            yield return new WaitForSecondsRealtime(seconds);
-            t.style.opacity = 0;
-            yield return new WaitForSecondsRealtime(Timing.Standard);
-            t.RemoveFromHierarchy();
-            liveToasts--;
-        }
-
-        private int liveToasts;
+        /// <summary>The kit's toast (<see cref="Ui.Toast"/>).</summary>
+        public void Toast(string text, float seconds = 1.8f) => Ui.Toast(text, seconds);
 
         /// <summary>The quality level the player booted with, for <see cref="SettingsSave.QualityLevel"/> -1.</summary>
         private int projectQualityLevel;
