@@ -4793,7 +4793,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13153,
-    "Intro": "Commander, our pincers earn mana. Spend it on spells, and tap anything to read it.",
+    "Intro": "Commander, everything we do fills our one mana bar. Spend it on spells, and tap anything to read it.",
     "Lessons": [
       { "Id": "spell", "Wave": 0, "FocusRole": "Healer" },
       { "Id": "read", "Wave": 1 }
