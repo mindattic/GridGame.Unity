@@ -617,7 +617,11 @@ namespace GridGame.Core.Battle
     {
         public bool Victory;
         public bool Escaped;
-        public override string ToString() => Victory ? "Victory" : Escaped ? "Escaped" : "Defeat";
+        /// <summary>GG-T2070: a stage's scripted withdrawal ended it, with the party's <see cref="Line"/> to the Commander.
+        /// Null rather than false otherwise, so the recorder leaves it out of every other battle's record.</summary>
+        public bool? Withdrawn;
+        public string Line;
+        public override string ToString() => Victory ? "Victory" : Escaped ? "Escaped" : Withdrawn == true ? "Withdrawn" : "Defeat";
     }
 
     public sealed class RevivedEvent : BattleEvent

@@ -116,7 +116,7 @@ namespace GridGame.App
             field.schedule.Execute(() => field.Focus()).ExecuteLater(200);
         }
 
-        /// <summary>A one-line profile-name box (this screen and Create Profile's step 1, GG-T1344).</summary>
+        /// <summary>A one-line profile-name box (this screen and Create Profile, GG-T1344).</summary>
         internal static TextField NameField(string name, string value, VisualElement parent)
         {
             var f = new TextField { name = name, maxLength = ProfileStore.MaxNameLength, value = value ?? "" };

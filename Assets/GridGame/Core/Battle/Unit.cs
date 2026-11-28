@@ -213,6 +213,9 @@ namespace GridGame.Core.Battle
         public string Title;
         public bool IsBountyTarget => BountyId != null;
         public string Name => Title ?? Def.Name;
+        /// <summary>A boss for every rule that asks (immunities, taming's "Too mighty", the battle's boss bar and BOSS tag,
+        /// GG-T1952): a Boss tag, a rule break, or boss phases.</summary>
+        public bool IsBossLike => Def.HasTag("Boss") || RuleBreak != RuleBreak.None || (Def.BossPhases != null && Def.BossPhases.Count > 0);
         /// <summary>Pincer eligibility (bible §1.2, GG-LAW-2): heroes always; enemies only with a society (tag Sentient, GG-T289);
         /// anything carrying the Pincer keyword (a tamed or domesticated monster, or a class tagged Pincer — GG-T303).</summary>
         public bool CanPincer => Team == Team.Hero || Def.HasTag("Sentient") || HasPincerKeyword;

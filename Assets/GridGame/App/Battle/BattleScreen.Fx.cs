@@ -487,63 +487,83 @@ namespace GridGame.App
             board.PickupViews.Remove(e.PickupEntryId);
         }
 
-        // ── GG-T1820 (§3.1.0): the spell bars. The state is already the end of the action, so playback keeps each meter as
-        //    far as its beats have filled it; idle, the bars read the state. ──
-        private readonly Dictionary<(int, int), int> shownMana = new Dictionary<(int, int), int>();
+        // ── GG-T1928 (§3.1.0): the party mana bar. The state is already the end of the action, so playback keeps the pool as
+        //    far as its beats have filled or spent it; idle, the bar reads the state. ──
+        private int shownPool = -1;
 
+        private int ShownPool => playing && shownPool >= 0 ? shownPool : State.PartyMana;
+
+        /// <summary>The shown pool capped at the slot's price: how much of a spell's cost the bar holds.</summary>
         private int ShownMana(int heroId, int slot) =>
-            playing && shownMana.TryGetValue((heroId, slot), out var p) ? Mathf.Max(0, p) : State.ManaIn(heroId, slot);
+            State.UnitById(heroId) is Unit h ? Mathf.Min(ShownPool, State.SpellPrice(h, slot)) : 0;
 
-        /// <summary>Every meter this action moves starts where the action found it: the final meter less its gains, plus
-        /// its spends.</summary>
+        /// <summary>The bar starts where the action found the pool: the final pool less its gains, plus its spends.</summary>
         private void BeginMeterPlayback(List<BattleEvent> events)
         {
-            shownMana.Clear();
-            void Rewind(int unit, int slot, int by) =>
-                shownMana[(unit, slot)] = (shownMana.TryGetValue((unit, slot), out var p) ? p : State.ManaIn(unit, slot)) + by;
+            int pool = State.PartyMana;
             foreach (var ev in events)
             {
-                if (ev is ManaGainedEvent g) foreach (var d in g.Meters) Rewind(d.UnitId, d.Slot, -d.Delta);
-                else if (ev is SpellManaSpentEvent sp) Rewind(sp.UnitId, sp.Slot, sp.Points);
+                if (ev is ManaGainedEvent g) pool -= g.Amount;
+                else if (ev is SpellManaSpentEvent sp) pool += sp.Points;
             }
+            shownPool = Mathf.Clamp(pool, 0, BattleConfig.PartyManaCapacity);
         }
 
-        /// <summary>Where a spell's mana motes land, in Overlay (stage) coordinates: the Abilities button's centre now that the
-        /// slots are gone (GG-T1921; GG-T1928 points them at the party bar).</summary>
-        private Vector2 SlotCenter(int slot)
+        /// <summary>Any living hero's spell the shown pool can pay (the bar's glow).</summary>
+        private bool AnySpellAffordable()
         {
-            var b = abilitiesButton != null ? abilitiesButton.worldBound : new Rect(float.NaN, 0, 0, 0);
-            return float.IsNaN(b.x) || b.width <= 0f ? BarCenter() : b.center - App.Stage.worldBound.position;
+            int pool = ShownPool;
+            foreach (var u in State.Units)
+            {
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count && i < u.UnlockedSlots; i++)
+                {
+                    int price = State.SpellPrice(u, i);
+                    if (price > 0 && price <= pool) return true;
+                }
+            }
+            return false;
         }
 
-        /// <summary>A gain reaches the meters: a mote flies from its real source (MintFrom) to each of the shown hero's spell
-        /// bars it moved (Guard's starts gold, its turn time poured into mana), and each bar eases up as it lands with a
-        /// short "+N%" over it; a siphon drains them with "-N%". Time regen has no source on the board, and Reduce Motion
-        /// skips the flight: the bars just fill.</summary>
+        private void SyncPartyMana()
+        {
+            if (partyManaBar == null) return;
+            partyManaBar.Capacity = BattleConfig.PartyManaCapacity;
+            partyManaBar.Points = ShownPool;
+            partyManaBar.Ready = AnySpellAffordable();
+        }
+
+        /// <summary>Where mana motes land, in Overlay (stage) coordinates: the party bar where the gain leaves its fill.</summary>
+        private Vector2 PoolPoint(int points)
+        {
+            var b = partyManaBar != null ? partyManaBar.worldBound : new Rect(float.NaN, 0, 0, 0);
+            if (float.IsNaN(b.x) || b.width <= 0f) return BarCenter();
+            return partyManaBar.PointAt(points / (float)BattleConfig.PartyManaCapacity) - App.Stage.worldBound.position;
+        }
+
+        /// <summary>A gain reaches the pool: motes fly from its real source (MintFrom) into the party bar where the fill will
+        /// end (Guard's start gold, its turn time poured into mana), and the bar eases up as they land; a siphon drains it.
+        /// Time regen has no source on the board, and Reduce Motion skips the flight: the bar just fills.</summary>
         private IEnumerator ManaGainAnim(ManaGainedEvent g)
         {
-            var mine = new List<ManaMeterDelta>();
-            foreach (var d in g.Meters)
-            {
-                if (d.UnitId == SelectedHeroId && d.Slot < BarSlots) mine.Add(d);
-                else shownMana[(d.UnitId, d.Slot)] = d.After;
-            }
-            if (mine.Count == 0) yield break;
+            if (g.Amount == 0) yield break;
             if (g.Amount > 0 && g.Reason != "regen" && !ReduceMotion)
             {
                 var from = MintFrom(g.Reason, g.SourceId);
+                var to = PoolPoint(g.After);
                 bool guard = g.Reason == "guard";
                 float seconds = guard ? Timing.Emphasis : Timing.Standard + Timing.Quick;
-                foreach (var d in mine)
-                    App.StartCoroutine(MoteFlight(from, seconds, false, guard ? Palette.Gold : (Color?)null, 0.7f, SlotCenter(d.Slot)));
+                int motes = Mathf.Clamp(g.Amount / PartyManaBar.TickEvery, 1, 3);
+                for (int m = 0; m < motes; m++)
+                    App.StartCoroutine(MoteFlight(from, seconds, false, guard ? Palette.Gold : (Color?)null, 0.7f, to));
                 yield return Tween.Wait(seconds);
             }
-            foreach (var d in mine) shownMana[(d.UnitId, d.Slot)] = d.After;
+            shownPool = g.After;
             if (g.Amount > 0) App.Audio.Sfx("battle.orb", 0.35f, 1f + Random.Range(-0.05f, 0.1f));
             SyncBar();
         }
 
-        /// <summary>A spell's meter filled: the Abilities button pops with a bright tick (its dot shows from here on).</summary>
+        /// <summary>A spell became affordable: the Abilities button pops with a bright tick (its dot shows from here on).</summary>
         private IEnumerator SpellReadyAnim(SpellReadyEvent sr)
         {
             if (sr.UnitId != SelectedHeroId || sr.Slot < 0 || sr.Slot >= BarSlots || abilitiesButton == null) yield break;
@@ -553,11 +573,12 @@ namespace GridGame.App
             v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
         }
 
-        /// <summary>A cast empties its own spell's meter; only that bar drops.</summary>
+        /// <summary>A cast pays its price from the pool: the party bar drains over time with a falling hum.</summary>
         private void SpellManaSpent(SpellManaSpentEvent sp)
         {
-            shownMana[(sp.UnitId, sp.Slot)] = Mathf.Max(0, ShownMana(sp.UnitId, sp.Slot) - sp.Points);
-            if (sp.UnitId == SelectedHeroId) SyncBar();
+            shownPool = Mathf.Max(0, ShownPool - sp.Points);
+            App.Audio.Sfx("battle.channel", 0.4f, 0.7f);
+            SyncBar();
         }
     }
 }
