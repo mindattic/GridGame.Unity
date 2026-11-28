@@ -204,7 +204,7 @@ namespace GridGame.App
             roundLabel.style.top = TrackY - IconSpan / 2f - Space.S8;
             roundLabel.style.left = XOfU(0f);
             roundLabel.style.maxWidth = Mathf.Max(0f, XOfU(1f) - XOfU(0f) - TempoLabelWidth); // GG-T1158: never runs under the tempo caption
-            roundLabel.style.whiteSpace = WhiteSpace.NoWrap; roundLabel.style.overflow = Overflow.Hidden; roundLabel.style.textOverflow = TextOverflow.Ellipsis;
+            roundLabel.style.whiteSpace = WhiteSpace.NoWrap;
             roundLabel.style.color = Palette.GoldLight;
             roundLabel.style.display = DisplayStyle.None;
             Fonts.UseHeavy(roundLabel);
@@ -259,7 +259,7 @@ namespace GridGame.App
             float gapMin = Fit.Edge + SlotSpan + Space.S8; // GG-T1158: clear of the NOW portrait
             gapLabel.style.left = Mathf.Max(gapMin, XOfU(0f) + Mathf.Max(0f, w * 0.5f - 60f));
             gapLabel.style.maxWidth = Mathf.Max(0f, XOfU(1f) + IconSpan / 2f - gapMin);
-            gapLabel.style.whiteSpace = WhiteSpace.NoWrap; gapLabel.style.overflow = Overflow.Hidden; gapLabel.style.textOverflow = TextOverflow.Ellipsis;
+            gapLabel.style.whiteSpace = WhiteSpace.NoWrap;
         }
 
         /// <summary>The prominence slot: a gold socket holding a large diamond of the next (or acting) actor, its seconds under it.</summary>
