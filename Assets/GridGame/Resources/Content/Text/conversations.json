@@ -180,7 +180,7 @@
           {
             "id": "a",
             "speaker": "class-mechaarmor01",
-            "line": "CHOIR DIG. TITHED CREWS ONLY. TURN BACK. ...Look, kids, I just drive this thing for the Red Seal. Go home.",
+            "line": "CHOIR DIG. TITHED CREWS ONLY. TURN BACK. Look, kids, I just drive this thing for the Red Seal. Go home.",
             "next": "b"
           },
           {
@@ -192,7 +192,7 @@
           {
             "id": "c",
             "speaker": "class-mechaarmor01",
-            "line": "SHIELD WALL ACTIVE. SIDE ASSAULTS WILL BE DEFLECTED. ...That's the card talking. The card's not wrong.",
+            "line": "SHIELD WALL ACTIVE. SIDE ASSAULTS WILL BE DEFLECTED. That's the card talking. The card's not wrong.",
             "next": "d"
           },
           {
@@ -309,7 +309,7 @@
           {
             "id": "b",
             "speaker": "$commander",
-            "line": "A glow, cyan, tank after tank. That's mana, and far more than the Lullaby needs. ...Where does the rest go?",
+            "line": "A glow, cyan, tank after tank. That's mana, and far more than the Lullaby needs. Where does the rest go?",
             "next": "c"
           },
           {
@@ -360,7 +360,7 @@
           {
             "id": "c",
             "speaker": "class-swampmistress00",
-            "line": "And leave her to the Choir's salvage crews? My coven holds the mire for me. Strike at me and I'm simply... somewhere else.",
+            "line": "And leave her to the Choir's salvage crews? My coven holds the mire for me. Strike at me and I'm simply somewhere else.",
             "next": "d"
           },
           {
@@ -15872,7 +15872,7 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Let me ask them what they think. ...They're thinking.",
+            "line": "Let me ask them what they think. They're thinking.",
             "next": "$outcome"
           },
           {
