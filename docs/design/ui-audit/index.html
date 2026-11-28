@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame UI Audit</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>UI Audit</h1>
+    <p class="sub">Every captured screen beside its findings against the
+      <a href="../../research/MobileGameAccessibility.md">phone accessibility checklist</a>. A finding is
+      <b class="fixed">fixed</b> when its ticket is closed and <b class="open">open</b> otherwise; statuses are
+      baked in by <code>python tools/ui_audit_page.py</code> (GG-T1841).</p>
+  </header>
+
+  <section class="summary" aria-label="Summary">
+    <div class="tiles" id="tiles"></div>
+    <div class="tablewrap"><table class="bysev"><thead><tr><th>Severity</th><th>Fixed</th><th>Open</th><th>Total</th><th>Means</th></tr></thead><tbody id="sevRows"></tbody></table></div>
+  </section>
+
+  <section class="filters" aria-label="Filters">
+    <div class="seg" role="group" aria-label="Status" id="statusSeg">
+      <button type="button" data-v="all" aria-pressed="true">All</button>
+      <button type="button" data-v="open" aria-pressed="false">Open</button>
+      <button type="button" data-v="fixed" aria-pressed="false">Fixed</button>
+    </div>
+    <label>Screen <select id="screenSel"></select></label>
+    <label>Severity <select id="sevSel">
+      <option value="all">Any</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
+    </select></label>
+    <label class="chk"><input type="checkbox" id="hideClean"> Hide screens with no matching findings</label>
+    <span class="count" id="shown"></span>
+  </section>
+
+  <div id="screens"></div>
+
+  <section>
+    <h2>Notes</h2>
+    <div id="notes"></div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
