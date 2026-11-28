@@ -1358,6 +1358,8 @@ namespace GridGame.App
             /// <summary>Chevron only: centre, pointing direction and size.</summary>
             public Vector2 Center, Dir;
             public float Size;
+            /// <summary>Arrow only: px trimmed off the tail and the tip along the path.</summary>
+            public float Inset;
             public ShapeStyle Style;
         }
         public readonly List<ShapeEntry> ShapeList = new List<ShapeEntry>();
@@ -1365,9 +1367,10 @@ namespace GridGame.App
         public LineLayer() { generateVisualContent += Draw; }
 
         public void ClearLines() { Segs.Clear(); Dots.Clear(); Rings.Clear(); Outlines.Clear(); ShapeList.Clear(); MarkDirtyRepaint(); }
-        /// <summary>A straight arrow from <paramref name="from"/> with its tip at <paramref name="to"/>.</summary>
-        public void Arrow(Vector2 from, Vector2 to, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.Arrow, Path = new[] { from, to }, Style = s }); MarkDirtyRepaint(); }
-        /// <summary>An arrow along a polyline with its head at the last point.</summary>
+        /// <summary>A right-angle arrow (GG-T1833: straight, or an L round one corner) from <paramref name="from"/> with its tip at
+        /// <paramref name="to"/>, trimmed <paramref name="inset"/> px at both ends.</summary>
+        public void Arrow(Vector2 from, Vector2 to, ShapeStyle s, float inset = 0f) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.Arrow, Path = new[] { from, to }, Style = s, Inset = inset }); MarkDirtyRepaint(); }
+        /// <summary>An arrow along a polyline (a tile route, rounded at its corners) with its head at the last point.</summary>
         public void PathArrow(IList<Vector2> path, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.PathArrow, Path = new List<Vector2>(path).ToArray(), Style = s }); MarkDirtyRepaint(); }
         public void Chevron(Vector2 center, Vector2 dir, float size, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.Chevron, Center = center, Dir = dir, Size = size, Style = s }); MarkDirtyRepaint(); }
         /// <summary>A round-capped bar (a link with no head) from <paramref name="from"/> to <paramref name="to"/>.</summary>
@@ -1406,8 +1409,8 @@ namespace GridGame.App
             {
                 switch (e.Kind)
                 {
-                    case ShapeKind.Arrow: Shapes.Arrow(p, e.Path[0], e.Path[1], e.Style); break;
-                    case ShapeKind.PathArrow: Shapes.PathArrow(p, e.Path, e.Style); break;
+                    case ShapeKind.Arrow: Shapes.OrthoArrow(p, e.Path[0], e.Path[1], e.Style, insetStart: e.Inset, insetEnd: e.Inset); break;
+                    case ShapeKind.PathArrow: Shapes.OrthoPathArrow(p, e.Path, e.Style); break;
                     case ShapeKind.Chevron: Shapes.Chevron(p, e.Center, e.Dir, e.Size, e.Style); break;
                     case ShapeKind.Bar: Shapes.Bar(p, e.Path[0], e.Path[1], e.Style); break;
                 }

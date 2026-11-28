@@ -55,39 +55,67 @@ namespace GridGame.App
     /// </summary>
     public static class Shapes
     {
-        private const int CapSegments = 8, CircleSegments = 40, CurveSegments = 24;
+        private const int CapSegments = 8, CircleSegments = 40, BezierSegments = 36, CornerSegments = 6;
+        private const float DefaultBow = 0.18f, DefaultCorner = 14f;
 
         // ── Arrows ──────────────────────────────────────────────────────────────────
 
-        /// <summary>A straight arrow from <paramref name="from"/> (round tail) to its tip at <paramref name="to"/>.</summary>
-        public static void Arrow(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s) => PathArrow(p, new[] { from, to }, s);
+        /// <summary>
+        /// An arrow from <paramref name="from"/> (round tail) to its tip at <paramref name="to"/> (GG-T1833): straight when the
+        /// two share a row or column (a right angle's single leg), otherwise a cubic Bezier bowed by <paramref name="bow"/>
+        /// (share of the span, to the left of travel; negative bows right). Always a filled, outlined body, never a stroke.
+        /// </summary>
+        public static void Arrow(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s, float bow = DefaultBow)
+        {
+            if (Aligned(from, to)) PathArrow(p, new[] { from, to }, s);
+            else BezierArrow(p, from, to, s, bow);
+        }
 
         /// <summary>A dashed straight arrow; <paramref name="phase"/> (px) slides the dashes toward the tip (marching).</summary>
         public static void DashedArrow(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s, float phase = 0f) =>
             DashedArrow(p, new[] { from, to }, s, phase);
 
-        /// <summary>A quadratic curved arrow bending toward <paramref name="control"/>.</summary>
-        public static void CurvedArrow(Painter2D p, Vector2 from, Vector2 control, Vector2 to, ShapeStyle s, bool dashed = false, float phase = 0f)
+        /// <summary>
+        /// A right-angle arrow (GG-T1833): straight when the ends share a row or column, else an L (horizontal leg first unless
+        /// <paramref name="verticalFirst"/>) with its corner rounded by <paramref name="corner"/> px. <paramref name="insetStart"/>
+        /// and <paramref name="insetEnd"/> trim px off the tail and tip along the path (to stop short of tokens).
+        /// </summary>
+        public static void OrthoArrow(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s, bool verticalFirst = false,
+            float corner = DefaultCorner, float insetStart = 0f, float insetEnd = 0f)
         {
-            var pts = new Vector2[CurveSegments + 1];
-            for (int i = 0; i <= CurveSegments; i++)
+            var path = new List<Vector2> { from };
+            if (!Aligned(from, to)) path.Add(verticalFirst ? new Vector2(from.x, to.y) : new Vector2(to.x, from.y));
+            path.Add(to);
+            if (insetStart > 0f || insetEnd > 0f) path = Sub(path, insetStart, Length(path) - insetEnd);
+            PathArrow(p, RoundCorners(path, corner), s);
+        }
+
+        /// <summary>A solid arrow along a right-angle polyline (a board route) with each corner rounded by <paramref name="corner"/> px.</summary>
+        public static void OrthoPathArrow(Painter2D p, IList<Vector2> path, ShapeStyle s, float corner = DefaultCorner) =>
+            PathArrow(p, RoundCorners(Clean(path), corner), s);
+
+        /// <summary>
+        /// A cubic Bezier arrow b0 → b3 (GG-T1833) with control points b1, b2: the shaft is the sampled curve offset along its
+        /// normal on both sides (a filled ribbon), the head lies along the end tangent, and one outline runs round the lot.
+        /// </summary>
+        public static void BezierArrow(Painter2D p, Vector2 b0, Vector2 b1, Vector2 b2, Vector2 b3, ShapeStyle s, bool dashed = false, float phase = 0f)
+        {
+            var pts = new Vector2[BezierSegments + 1];
+            for (int i = 0; i <= BezierSegments; i++)
             {
-                float t = i / (float)CurveSegments, u = 1f - t;
-                pts[i] = u * u * from + 2f * u * t * control + t * t * to;
+                float t = i / (float)BezierSegments, u = 1f - t;
+                pts[i] = u * u * u * b0 + 3f * u * u * t * b1 + 3f * u * t * t * b2 + t * t * t * b3;
             }
             if (dashed) DashedArrow(p, pts, s, phase); else PathArrow(p, pts, s);
         }
 
-        /// <summary>A cubic (bezier) curved arrow.</summary>
-        public static void CurvedArrow(Painter2D p, Vector2 from, Vector2 c1, Vector2 c2, Vector2 to, ShapeStyle s, bool dashed = false, float phase = 0f)
+        /// <summary>A cubic Bezier arrow with b1, b2 picked for a perpendicular bow: both a third of the way in from their
+        /// ends and pushed <paramref name="bow"/> × span to the left of travel (negative bows right).</summary>
+        public static void BezierArrow(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s, float bow = DefaultBow, bool dashed = false, float phase = 0f)
         {
-            var pts = new Vector2[CurveSegments + 1];
-            for (int i = 0; i <= CurveSegments; i++)
-            {
-                float t = i / (float)CurveSegments, u = 1f - t;
-                pts[i] = u * u * u * from + 3f * u * u * t * c1 + 3f * u * t * t * c2 + t * t * t * to;
-            }
-            if (dashed) DashedArrow(p, pts, s, phase); else PathArrow(p, pts, s);
+            var span = to - from;
+            var off = Perp(Dir(from, to, Vector2.right)) * (span.magnitude * bow);
+            BezierArrow(p, from, from + span / 3f + off, from + span * (2f / 3f) + off, to, s, dashed, phase);
         }
 
         /// <summary>A solid arrow along a polyline: one outline from the round tail, along the mitred shaft, around the head.</summary>
@@ -410,6 +438,37 @@ namespace GridGame.App
 
         private static Rect Inflate(Rect r, float by) =>
             new Rect(r.xMin - by, r.yMin - by, Mathf.Max(0f, r.width + by * 2f), Mathf.Max(0f, r.height + by * 2f));
+
+        /// <summary>True when the two points share a row or column, so one straight leg joins them at a right angle.</summary>
+        private static bool Aligned(Vector2 a, Vector2 b) => Mathf.Abs(a.x - b.x) < 0.5f || Mathf.Abs(a.y - b.y) < 0.5f;
+
+        /// <summary>The polyline with each inner corner replaced by a circular fillet of up to <paramref name="radius"/> px
+        /// (shrunk to fit half of each neighbouring leg); straight-through vertices are left as they are.</summary>
+        private static List<Vector2> RoundCorners(List<Vector2> pts, float radius)
+        {
+            if (pts.Count < 3 || radius <= 0f) return pts;
+            var o = new List<Vector2> { pts[0] };
+            for (int i = 1; i < pts.Count - 1; i++)
+            {
+                Vector2 a = pts[i - 1], v = pts[i], b = pts[i + 1];
+                var d0 = Dir(a, v, Vector2.right);
+                var d1 = Dir(v, b, Vector2.right);
+                float turn = Vector2.Angle(d0, d1) * Mathf.Deg2Rad;
+                if (turn < 0.05f) { o.Add(v); continue; }
+                float tan = Mathf.Tan(turn * 0.5f);
+                float cut = Mathf.Min(radius * tan, Vector2.Distance(a, v) * 0.5f, Vector2.Distance(v, b) * 0.5f);
+                var p0 = v - d0 * cut;
+                var p1 = v + d1 * cut;
+                // A quadratic through the corner is close enough to the circular fillet at these sizes.
+                for (int k = 0; k <= CornerSegments; k++)
+                {
+                    float t = k / (float)CornerSegments, u = 1f - t;
+                    o.Add(u * u * p0 + 2f * u * t * v + t * t * p1);
+                }
+            }
+            o.Add(pts[pts.Count - 1]);
+            return o;
+        }
 
         private static Vector2 Perp(Vector2 d) => new Vector2(-d.y, d.x);
 

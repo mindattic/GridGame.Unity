@@ -622,13 +622,9 @@ namespace GridGame.App
             board.Mark(d.From, col, 0.16f);
             var a = BoardView.CenterOf(d.From);
             var b = BoardView.CenterOf(d.To);
-            var dir = b - a;
-            if (dir.sqrMagnitude < 1f) return;
-            dir.Normalize();
+            if ((b - a).sqrMagnitude < 1f) return;
             // Stop short of both token centres so the arrow reads between them, not over the art.
-            a += dir * (BoardView.Tile * 0.22f);
-            b -= dir * (BoardView.Tile * 0.22f);
-            board.Lines.Arrow(a, b, ShapeStyle.Indicator.Tint(col));
+            board.Lines.Arrow(a, b, ShapeStyle.Indicator.Tint(col), BoardView.Tile * 0.22f);
         }
 
         /// <summary>Puts a drag back where it started with no command and no clock spent — for a drop that can't be

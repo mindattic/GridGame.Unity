@@ -593,8 +593,14 @@ namespace GridGame.App
                 Shapes.RoundedRect(p, new Rect(g.xMin - 6f, g.yMin - 6f, g.width + 12f, g.height + 12f), 10f, s.Thick(6f).Outlined(s.Line, 2f), dashed: true);
             // A move's route: dots march toward the destination (still under Reduce Motion), a solid head on it.
             if (path != null && path.Count >= 2) Shapes.DashedArrow(p, path, s.Thick(18f).Dashes(0f, 16f), t * 60f);
-            // The caption's pointer.
-            if (arrow is (Vector2 from, Vector2 to)) Shapes.Arrow(p, from, to, s);
+            // The caption's pointer (GG-T1833): straight down/up when it lines up with the target, else a cubic Bezier
+            // that leaves the caption and meets the target vertically.
+            if (arrow is (Vector2 from, Vector2 to))
+            {
+                float midY = (from.y + to.y) * 0.5f;
+                if (Mathf.Abs(from.x - to.x) < 0.5f) Shapes.Arrow(p, from, to, s);
+                else Shapes.BezierArrow(p, from, new Vector2(from.x, midY), new Vector2(to.x, midY), to, s);
+            }
         }
     }
 }

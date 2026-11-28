@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -270,12 +271,10 @@ namespace GridGame.App
                     break;
                 case RowKind.Stage:
                 case RowKind.Enter: // the Enter arrow, pointing right
-                    Line(p, P(-0.8f, 0f), P(0.6f, 0f));
-                    Poly(p, P(0.95f, 0f), P(0.25f, -0.6f), P(0.25f, 0.6f));
+                    Shapes.Arrow(p, P(-0.8f, 0f), P(0.95f, 0f), ArrowStyle(w, u));
                     break;
                 case RowKind.Back: // arrow pointing left
-                    Line(p, P(0.8f, 0f), P(-0.6f, 0f));
-                    Poly(p, P(-0.95f, 0f), P(-0.25f, -0.6f), P(-0.25f, 0.6f));
+                    Shapes.Arrow(p, P(0.8f, 0f), P(-0.95f, 0f), ArrowStyle(w, u));
                     break;
                 case RowKind.Close:
                     Line(p, P(-0.6f, -0.6f), P(0.6f, 0.6f));
@@ -397,13 +396,15 @@ namespace GridGame.App
                     Poly(p, P(0.95f, -0.65f), P(0.06f, -0.45f), P(0.06f, 0.8f), P(0.95f, 0.6f));
                     break;
                 case RowKind.NewGamePlus: // a loop: a ring almost closed, its arrowhead at the gap
-                    p.BeginPath();
-                    p.Arc(c, u * 0.72f, Angle.Degrees(-60f), Angle.Degrees(220f));
-                    p.Stroke();
                     {
-                        float a = -60f * Mathf.Deg2Rad;
-                        var tip = c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * u * 0.72f;
-                        Poly(p, tip + new Vector2(0.05f, -0.45f) * u, tip + new Vector2(0.45f, 0.2f) * u, tip + new Vector2(-0.3f, 0.15f) * u);
+                        // GG-T1833: the loop is one filled, outlined arrow along the arc, its head at the gap.
+                        var loop = new List<Vector2>();
+                        for (int k = 0; k <= 28; k++)
+                        {
+                            float a = Mathf.Lerp(220f, -60f, k / 28f) * Mathf.Deg2Rad;
+                            loop.Add(c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * u * 0.72f);
+                        }
+                        Shapes.PathArrow(p, loop, ArrowStyle(w, u));
                     }
                     break;
                 case RowKind.Crucible: // a chalice: a bowl on a stem and foot
@@ -458,6 +459,10 @@ namespace GridGame.App
             p.Fill();
             p.fillColor = Mark;
         }
+
+        /// <summary>GG-T1833: an emblem's arrow is a filled body in the mark colour with a dark rim outline, sized to the glyph.</summary>
+        private static ShapeStyle ArrowStyle(float w, float u) => new ShapeStyle
+        { Width = w, Outline = Mathf.Max(1f, w * 0.3f), HeadLength = u * 0.7f, HeadWidth = u * 1.2f, Fill = Mark, Line = Rim };
 
         private static void Line(Painter2D p, Vector2 a, Vector2 b)
         {

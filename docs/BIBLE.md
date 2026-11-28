@@ -2502,9 +2502,13 @@ Every arrow, connector, ring, progress trace and box drawn in a `generateVisualC
 **How a shape is built.** Each shape is math, not strokes: closed polygons (a shaft is its centreline offset by half the width with mitred joins, the mitre clamped at 4×; ends are round caps; an arrowhead is part of the same outline), painted in two passes: the outline (stroked at twice `ShapeStyle.Outline`, so the body covers its inner half and the outline sits wholly outside), then one body fill over every piece. Pieces of one shape (dashes, ring loops) share both passes, so their outlines never cut across each other's bodies.
 
 **The API** (`Shapes.*`, each takes the `Painter2D` and a `ShapeStyle`):
-- `Arrow(from, to)`, `PathArrow(path)` — a solid arrow, round tail, along a straight line or a polyline.
+- `Arrow(from, to, bow)` — straight when the ends share a row or column, otherwise a cubic Bezier bowed `bow` × span to the left of travel.
+- `OrthoArrow(from, to, verticalFirst, corner, insetStart, insetEnd)`, `OrthoPathArrow(path, corner)` — right-angle arrows (an L, or a tile route) with rounded corners; board tile-to-tile arrows use these.
+- `BezierArrow(b0, b1, b2, b3)` (or `BezierArrow(from, to, bow)`, b1/b2 picked as a perpendicular bow) — the curve sampled and offset along its normal into a filled ribbon, head along the end tangent; solid or `dashed`.
+- `PathArrow(path)` — a solid arrow, round tail, along any polyline (what the above build on).
 - `DashedArrow(from, to | path, phase)` — round-capped dashes up to a solid head; `phase` (px) marches them toward the tip.
-- `CurvedArrow(from, control, to)` (quadratic) and `CurvedArrow(from, c1, c2, to)` (bezier), solid or `dashed`.
+
+**Arrows are filled, outlined shapes (GG-T1833, owner 2026-11-27).** Every arrow is a closed body (constant-width shaft plus head) filled and ringed by a darker outline — never a stroked line, a `LineRenderer` or a line plus a triangle. Its path is right-angled (straight legs, rounded corners) where the ends can be joined that way, otherwise a cubic Bezier b0, b1, b2, b3; curved arrows are filled and outlined like straight ones.
 - `Line(path, closed)` — a round-capped stroke along a polyline (a connector, a progress trace); `closed` makes it a mitred loop with no caps.
 - `Bar(from, to)` — a straight round-capped link (an arrow with no head).
 - `Chevron(center, dir, size)`, `Dot(center, radius)`.
