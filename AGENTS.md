@@ -26,8 +26,13 @@ D:\Projects\MindAttic\GridGame2026 is the frozen design reference — read it, n
 - `Core/Battle/BattleRunner*.cs` — the rules (setup, movement/pincers, abilities, timeline, enemy turns)
 - `Core/Battle/BattleConfig.cs` — every tuning number
 - `Core/Bot/HeroBot.cs` — bot player (soak tests, autoplay, hints); `Meta/CampRoutine.cs` — bot camp manager
-- `App/Battle/BattleScreen*.cs` — HUD, drag input, event playback
-- `App/Screens/*.cs` — title, camp hub, vendors, results; `App/UI/Ui.cs` — widget kit
+- `App/Battle/BattleScreen.<Concern>.cs` — one partial class: HUD, drag input, event playback
+  (`BattleScreen.Playback.<Family>.cs`)
+- `App/Screens/<Area>/<Name>Screen.cs` — one screen per file (FrontDoor, Hub, Camp, Heroes, Items, Summon, Story,
+  Settings); `App/UI/Ui.cs` — widget kit
+- `Meta/` — save and camp services by domain (`Meta/Economy/`, `Meta/Heroes/`, `Meta/Save/`);
+  `Core/Content/Models/` and `Core/Content/Validation/` — content definitions and load-time checks
+- docs/CODE_STYLE.md — 1200-line cap and one screen per file, checked by `python tools/polish_lint.py --size`
 - `App/Automation/AutomationServer.cs` — dev-build HTTP control (tap/drag/screenshot/state/layout)
 - `tools/` — test, build, harness, asset and glyph checks (the art/audio/content authoring scripts and the thumbnail
   framer live in the sibling GridGame.Studio repo, GG-T579)

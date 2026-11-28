@@ -1094,8 +1094,7 @@ _COACH_SEEN = []
 _COACH_SHOTS = []
 
 # The guided first battle's lessons, in order (App/Battle/BattleScreen.Tutorial.cs).
-BATTLE_LESSONS = ("move", "pincer", "read", "shove", "hold", "orbs", "mana", "chain", "support", "spell", "buffs", "timeline",
-                  "taunt", "guard", "pickup", "interrupt", "plate", "ready")
+BATTLE_LESSONS = ("pincer", "chain", "timeline", "hold", "guard", "spell", "read")
 
 
 def coach_info():
@@ -1462,7 +1461,7 @@ def coachskip(run="coachskip", capture=True):
         call("battle", stage="greenvalley-01"); time.sleep(1.0)
         through_story()
         _wait_screen("battle", 10)
-        c = _await_lesson("battle-move", timeout=10)
+        c = _await_lesson("battle-pincer", timeout=10)
         shot("01-lesson-1")
         if not c:
             fails.append("the tutorial battle opened without lesson 1")
@@ -1496,7 +1495,7 @@ def coachskip(run="coachskip", capture=True):
         call("battle", stage="greenvalley-01"); time.sleep(1.0)
         through_story()
         _wait_screen("battle", 10)
-        c = _await_lesson("battle-move", timeout=10)
+        c = _await_lesson("battle-pincer", timeout=10)
         shot("05-replayed-lesson-1")
         if not c:
             fails.append("Replay tutorials didn't bring lesson 1 back on The Tithe Moors I")

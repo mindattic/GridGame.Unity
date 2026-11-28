@@ -1780,7 +1780,7 @@ namespace GridGame.App
             Ui.Caption(left == 1 ? "Next pull" : $"Within {left} pulls", row, "dim");
         }
 
-        /// <summary>What a pull takes, as its button names it: "1 Summon Ticket", "1,000 Shards", "40 Shards + 360 G".</summary>
+        /// <summary>What a pull takes, as its button names it: "1 Summon Ticket", "1,000 Mana Shards", "40 Mana Shards + 360 G".</summary>
         private string PayText(int tickets, int shards)
         {
             var parts = new List<string>();
@@ -2513,7 +2513,7 @@ namespace GridGame.App
         {
             var row = Ui.MenuRow("Delete all game data", "Erase", () =>
                 Confirm.Show("Delete all game data? Every profile, save slot and setting on this device is erased, and so are their cloud copies. This can't be undone.", "Continue", () =>
-                    Confirm.Show("Purchased Shards, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
+                    Confirm.Show($"Purchased {ShardText.Plural}, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
                         App.DeleteAllData(ok => App.Toast(ok ? "All game data deleted" : "Some game data couldn't be deleted")))), parent);
             row.name = "settings-delete-all-data";
             row.KindIcon(RowKind.Close);
@@ -2597,7 +2597,7 @@ namespace GridGame.App
             Section("Gameplay");
             TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
-            Cycle(RowKind.Speed, "Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
+            Cycle(RowKind.Speed, "Battle speed", st.BattleSpeed, new[] { 0.5f, 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
             Toggle(RowKind.Timer, "Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
             Toggle(RowKind.Confirm, "Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
             Toggle(RowKind.Focus, "Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
@@ -2650,6 +2650,7 @@ namespace GridGame.App
             Row(RowKind.Text, "Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
             Toggle(RowKind.Eye, "Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
             Toggle(RowKind.Pause, "Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
+            Toggle(RowKind.Timer, "Untimed turns", st.UntimedTurns, v => st.UntimedTurns = v, "settings-untimed-turns"); // GG-T1978 (§2.0.1)
             // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
             // then draws with the default theme, font and word wrap).
             if (Features.LookPresets)

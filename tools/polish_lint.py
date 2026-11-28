@@ -5,6 +5,8 @@ per-site text-fit checks, random durations, hand-written easing curves and off-t
     python tools/polish_lint.py            # table
     python tools/polish_lint.py --json     # machine-readable, read by tools/polish.py
     python tools/polish_lint.py --hits     # every POL-K hit, one line each (screen, file:line, what)
+    python tools/polish_lint.py --size     # POL-S1 offenders; exit 1 on any not in tools/size_baseline.json
+    python tools/polish_lint.py --write-size-baseline   # record today's POL-S1 offenders as known
 
 Scores follow POLISH.md section 3: a rule's score is the share of its subjects that pass. For "token" rules the
 subject is each use site (a token use passes, a literal fails); for "never" rules the subject is each file
@@ -14,6 +16,11 @@ The kit rules (GG-T1373, BIBLE §26.7, Ui.cs "the menu kit") read App/Screens on
 with zero hits passes): POL-K1 a screen draws its own page title ("title"/"h1" text, a "header" element) instead of
 Ui.Header; POL-K2 a raw Ui.Window instead of a kit role (Panel, ListPanel, DetailPanel, Footer); POL-K3 a tappable
 (Ui.Button, Ui.MenuRow, new Button) with no KindIcon; POL-K4 an inline style.margin*/padding* set in a screen.
+
+POL-S1 (GG-T2024, docs/CODE_STYLE.md) scores each .cs file under Assets/GridGame and Tests: it fails when the file is
+over 1200 lines or declares two or more screens (concrete GameScreen subclasses). Offenders that predate the rule are
+listed in tools/size_baseline.json and pass; split one and drop its entry there. A shared file passes while its
+screens stay a subset of its baselined set.
 """
 import json
 import os
@@ -189,6 +196,7 @@ def lint():
         }
     out.update(vfx_rules())
     out.update(kit_rules())
+    out.update(size_rules())
     bad = sorted(c for c in cues if not CUE_OK.match(c))
     out["POL-F1"] = {
         "kind": "cue", "checked": len(cues), "failed": len(bad),
@@ -306,7 +314,79 @@ def kit_rules():
     return out
 
 
+SIZE_ROOTS = [os.path.join(ROOT, "Assets", "GridGame"), os.path.join(ROOT, "Tests")]
+SIZE_BASELINE = os.path.join(ROOT, "tools", "size_baseline.json")
+MAX_LINES = 1200
+CLASS_BASE = re.compile(r"^\s*((?:\w+\s+)*)class\s+(\w+)(?:<[^>{]*>)?\s*:\s*([\w.]+)", re.M)
+
+
+def cs_files():
+    for top in SIZE_ROOTS:
+        for d, dirs, fs in os.walk(top):
+            dirs[:] = [x for x in dirs if x not in ("bin", "obj")]
+            for f in fs:
+                if f.endswith(".cs"):
+                    yield os.path.join(d, f)
+
+
+def size_offenders():
+    """POL-S1: ({file: lines} over MAX_LINES, {file: [screens]} with two or more screens, files checked)."""
+    long, bases, where, abstract, checked = {}, {}, defaultdict(set), set(), 0
+    for p in cs_files():
+        checked += 1
+        rel = os.path.relpath(p, ROOT).replace("\\", "/")
+        raw = open(p, encoding="utf-8", errors="replace").read()
+        n = len(raw.splitlines())
+        if n > MAX_LINES:
+            long[rel] = n
+        for m in CLASS_BASE.finditer(strip_comments(raw)):
+            name = m.group(2)
+            bases[name] = m.group(3).split(".")[-1]
+            where[name].add(rel)
+            if "abstract" in m.group(1).split():
+                abstract.add(name)
+
+    def is_screen(name, seen=()):
+        b = bases.get(name)
+        return b == "GameScreen" or (b in bases and b not in seen and is_screen(b, seen + (name,)))
+
+    per_file = defaultdict(set)
+    for name in bases:
+        if name not in abstract and is_screen(name):
+            for rel in where[name]:
+                per_file[rel].add(name)
+    shared = {rel: sorted(v) for rel, v in sorted(per_file.items()) if len(v) > 1}
+    return long, shared, checked
+
+
+def size_rules():
+    long, shared, checked = size_offenders()
+    base = json.load(open(SIZE_BASELINE, encoding="utf-8")) if os.path.exists(SIZE_BASELINE) else {}
+    new = [(rel, f"{n} lines") for rel, n in sorted(long.items()) if rel not in base.get("long", [])]
+    new += [(rel, "screens " + "+".join(v)) for rel, v in shared.items()
+            if not set(v) <= set(base.get("shared", {}).get(rel, []))]
+    bad = {rel for rel, _ in new}
+    return {"POL-S1": {"kind": "size", "checked": checked, "failed": len(bad),
+                       "score": round(100.0 * (checked - len(bad)) / checked, 1) if checked else None,
+                       "known": len((set(long) | set(shared)) - bad),
+                       "new": new, "worst": [(rel, 1) for rel, _ in new[:5]]}}
+
+
 def main():
+    if "--write-size-baseline" in sys.argv:
+        long, shared, _ = size_offenders()
+        with open(SIZE_BASELINE, "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"long": sorted(long), "shared": shared}, f, indent=1)
+            f.write("\n")
+        print(f"size baseline written ({len(long)} long files, {len(shared)} shared-screen files)")
+        return
+    if "--size" in sys.argv:
+        r = size_rules()["POL-S1"]
+        for rel, what in r["new"]:
+            print(f"POL-S1 {rel}  {what}")
+        print(f"POL-S1 {'clean' if not r['new'] else 'FAILED'}: {len(r['new'])} new, {r['known']} known in "
+              f"tools/size_baseline.json, {r['checked']} files")
+        sys.exit(1 if r["new"] else 0)
     if "--hits" in sys.argv:
         for rule, owner, rel, line, what in kit_hits()[0]:
             print(f"{rule} {owner:24} {rel}:{line}  {what}")
