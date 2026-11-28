@@ -478,6 +478,13 @@ namespace GridGame.Core.Content
                     if (sc.Pickup != null && !db.Pickups.ContainsKey(sc.Pickup)) p.Add($"stage {s.Id} scene {sc.Id}: unknown pickup '{sc.Pickup}'");
                 }
             foreach (var s in db.Stages.Values)
+                if (s.Withdraw is WithdrawDef wd)
+                {
+                    if (wd.AfterPlateClangs < 0 || wd.AfterTurns < 0) p.Add($"stage {s.Id}: Withdraw counts can't be negative (GG-T2070)");
+                    if (wd.AfterPlateClangs <= 0 && wd.AfterTurns <= 0) p.Add($"stage {s.Id}: Withdraw needs AfterPlateClangs or AfterTurns (GG-T2070)");
+                    if (string.IsNullOrWhiteSpace(wd.Line)) p.Add($"stage {s.Id}: Withdraw needs a Commander Line (GG-T2070)");
+                }
+            foreach (var s in db.Stages.Values)
                 foreach (var w in s.Waves)
                 {
                     foreach (var e in w.Enemies) NeedClass(e.Class, $"stage {s.Id}");

@@ -111,6 +111,8 @@ namespace GridGame.Meta
                 Victory = battle.Phase == BattlePhase.Victory,
                 Escaped = battle.Phase == BattlePhase.Escaped,
                 Retreated = battle.Phase == BattlePhase.Retreated,
+                Withdrawn = battle.Phase == BattlePhase.Withdrawn,
+                WithdrawLine = battle.Phase == BattlePhase.Withdrawn ? battle.Stage.Withdraw?.Line : null,
                 StageId = battle.Stage.Id,
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,
@@ -131,7 +133,7 @@ namespace GridGame.Meta
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);
 
-            foreach (var kv in r.ItemsConsumed) s.AddItem(kv.Key, -kv.Value);
+            if (!rep.Withdrawn) foreach (var kv in r.ItemsConsumed) s.AddItem(kv.Key, -kv.Value); // GG-T2070: a scripted withdrawal costs nothing
             foreach (var id in r.Seen) Entry(s, id).Seen = true;
 
             if (rep.Victory)
@@ -183,6 +185,20 @@ namespace GridGame.Meta
                 var milestone = Milestones.Pay(c, s, rep, battle.Stage.Id); // a theme's first full clear teaches (GG-T301)
                 ManaOrbs.AfterVictory(c, s, rep, battle.Stage.Id, milestone); // GG-T1811: milestone Shards, Halcyon find Dust
                 rep.TameOffers.AddRange(Domestication.Offers(c, s, battle)); // a fully bonded tamed monster asks to join (GG-T303)
+            }
+            else if (rep.Withdrawn)
+            {
+                // GG-T2070: a scripted withdrawal is no defeat and costs nothing: everyone is back to full, the items used
+                // are kept (above), gear wears nothing, and the stage counts as played so the story goes on. It earns nothing.
+                foreach (var id in s.Party) { var h = s.Hero(id); if (h != null) h.Hp = 0; }
+                int index = c.CampaignStages().FindIndex(x => x.Id == battle.Stage.Id);
+                rep.FirstClear = s.ClearedStages.Add(battle.Stage.Id);
+                if (index > s.HighestClearedStage)
+                {
+                    s.HighestClearedStage = index;
+                    var list = c.CampaignStages();
+                    if (index + 1 < list.Count) rep.UnlockedStage = list[index + 1].Name;
+                }
             }
             else if (rep.Escaped)
             {
@@ -239,7 +255,7 @@ namespace GridGame.Meta
             rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
             // GG-T1790 (§28): on the road a win carries the party mana pool's points on and the Medic Wagon patches wounds; a
             // loss camps.
-            rep.CarriedMana = TravelRules.AfterBattle(c, s, rep.Victory, rep.ManaLeft, out rep.MedicHealed);
+            if (!rep.Withdrawn) rep.CarriedMana = TravelRules.AfterBattle(c, s, rep.Victory, rep.ManaLeft, out rep.MedicHealed); // GG-T2070: a withdrawal doesn't make camp
             // GG-T676, GG-T1927 (§3.1.0): the points left at the end of a won stage settle into Mana Dust, floor(points / 100)
             // x DustPerOrbLeft. Points travel carries to its next battle settle at the battle that finally keeps them; a lost
             // stage's mana simply discharges (no Dust, like every other reward of a loss).
