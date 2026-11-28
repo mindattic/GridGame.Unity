@@ -495,7 +495,9 @@ namespace GridGame.Meta
         public bool ReduceMotion;
         /// <summary>Terra Battle-style drag timer (§2, act-advanced amendment). Off by default.</summary>
         public bool DragTimer;
-        /// <summary>Battle animation speed multiplier (1 = normal).</summary>
+        /// <summary>Untimed turns (GG-T1978, §2.0.1): a held hero has no real-time limit and no drop is forced. Off by default.</summary>
+        public bool UntimedTurns;
+        /// <summary>Battle animation speed multiplier (1 = normal; 0.5 the slowest).</summary>
         public float BattleSpeed = 1f;
         /// <summary>Close-up portrait cut-in on pincers (ported from GridGame2026).</summary>
         public bool PincerCutIns = true;

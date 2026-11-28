@@ -19,7 +19,7 @@ namespace GridGame.App
         public override string Id => "create-profile";
 
         private static readonly float[] Volumes = { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
-        private static readonly float[] Speeds = { 1f, 1.5f, 2f, 3f };
+        private static readonly float[] Speeds = { 0.5f, 1f, 1.5f, 2f, 3f };
 
         /// <summary>The six settings step 2 offers, copied to and from a <see cref="SettingsSave"/>.</summary>
         private struct Quick
