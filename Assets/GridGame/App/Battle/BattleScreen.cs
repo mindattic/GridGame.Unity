@@ -417,7 +417,6 @@ namespace GridGame.App
                 slot.name = "slot" + i;
                 slot.AddToClassList("slot");
                 Ui.Pressable(slot);
-                AttachSlotInspect(slot, idx);
                 slot.RegisterCallback<ClickEvent>(_ => OnSlot(idx));
                 // GG-T1819: icon-only (owner: long names "truncated or ..." can't work as 5 buttons); the full name is
                 // in the description panel.
