@@ -121,6 +121,9 @@ namespace GridGame.App
             var hudRow = Ui.MenuRow("Perf HUD", perfHud ? "ON" : "OFF", () => { Dev.PerfStats.SetHud(!perfHud); Refresh(); }, w);
             hudRow.name = "settings-dev-perfhud";
             hudRow.KindIcon(RowKind.Settings);
+            var gallery = Ui.MenuRow("Component gallery", "Open", () => App.Router.Push(new ComponentGalleryScreen()), w);
+            gallery.name = "settings-dev-components";
+            gallery.KindIcon(RowKind.Settings);
             if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
             var s = App.Save;
             if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }

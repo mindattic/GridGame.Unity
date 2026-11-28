@@ -87,11 +87,9 @@ namespace GridGame.App
 
             int diamonds = DiamondExchange.Have(S), tickets = SummonTickets.Have(S);
             var wallet = Ui.Actions(w);
-            var img = wallet.KindIcon(RowKind.Diamond, Art.ItemIcon(Crafting.DiamondId)); // GG-T745 (§26.7)
-            img.style.width = img.style.height = Size.IconS;
-            img.style.marginLeft = Space.TargetHalfGap;
-            img.style.marginRight = Space.S0;
-            Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)} · {TicketText.Plural}: {Ui.Count(tickets)}", wallet, "grow").style.marginLeft = Space.S8;
+            wallet.name = "summon-wallet";
+            Ui.Chip($"{ShardText.ShortPlural}: {Ui.Count(diamonds)}", wallet, RowKind.Diamond, tone: "gold", name: "summon-wallet-shards");
+            Ui.Chip($"{TicketText.Plural}: {Ui.Count(tickets)}", wallet, RowKind.Summon, name: "summon-wallet-tickets");
             var row = Ui.Actions(w);
             PullButton(row, b, 1, busy, "btn--small btn--primary").name = "summon-draw";
             PullButton(row, b, b.MultiCount, busy, "btn--small").name = "summon-draw-multi";
