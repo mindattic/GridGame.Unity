@@ -1805,7 +1805,7 @@ namespace GridGame.App
                 var r = Gacha.Pull(C, S, b, count, now, out var job);
                 if (r.Ok) pulls = S.Summon.History.Take(count).Reverse().ToList();
                 return (r, job);
-            }, count == 1 ? "The circle reaches out…" : $"The circle reaches out {count} times…", r =>
+            }, count == 1 ? "The circle reaches out" : $"The circle reaches out {count} times", r =>
             {
                 if (!r.Ok || pulls == null) { Refresh(); return; }
                 SummonReveal.Show(pulls, b, () => VariantPicker.ShowPending(Refresh)); // GG-T532: then pick their look
@@ -1875,7 +1875,7 @@ namespace GridGame.App
                 Ui.Card(list, d.Id, d.Name, out var col);
                 GlossaryText.Create(d.Card ?? d.Description ?? "", "kit-text dim", col);
                 var b = RowIcon.IconButton(owned ? "Joined" : "Recruit", RowKind.Confirm, () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
-                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}…", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
+                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
             }
         }

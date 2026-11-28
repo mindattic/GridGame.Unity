@@ -54,7 +54,7 @@ namespace GridGame.App
                 App.StartCoroutine(Tween.Pop(done, 1.12f, 0.18f));
             }
             if (s.Count(tome.Id) <= 0) return;
-            Ui.Text(s.Count(tome.Id) > 1 ? $"Teach to… ({s.Count(tome.Id)} tomes)" : "Teach to…", "small dim", box);
+            Ui.Text(s.Count(tome.Id) > 1 ? $"Teach to ({s.Count(tome.Id)} tomes)" : "Teach to", "small dim", box);
             var row = Ui.El("row", box);
             row.style.flexWrap = Wrap.Wrap;
             foreach (var h in s.Roster.OrderByDescending(x => s.Party.Contains(x.ClassId)).ToList())

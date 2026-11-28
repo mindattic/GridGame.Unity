@@ -333,7 +333,7 @@ namespace GridGame.App
 
         private void RestoreFromCloud()
         {
-            App.Toast("Checking the cloud…");
+            App.Toast("Checking the cloud");
             App.Cloud.RestoreEmptySlots(App, restored =>
             {
                 App.Toast(restored == 0 ? "No cloud saves for the empty slots" : restored == 1 ? "Restored 1 save from the cloud" : $"Restored {restored} saves from the cloud");
@@ -1151,7 +1151,7 @@ namespace GridGame.App
                 RowIcon.Badge(row.KindIcon(RowKind.Place, theme.Id), cleared == theme.Stages.Count ? RowKind.Cleared : RowKind.New);
                 if (cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
             }
-            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead…", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
+            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
         }
 
         /// <summary>Step two: one region's stages, each Cleared or New (a cleared one can be fought again as a hunt). Any

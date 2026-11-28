@@ -75,7 +75,7 @@ namespace GridGame.App
                 Ui.Caption(Contents(o), card);
                 var product = Offers.ForMoney(o) ? StoreCatalog.Of(o.ProductId) : null;
                 if (product != null)
-                    Ui.Field("Price", DiamondStores.InFlight == product.Id ? "Processing…" : store.PriceOf(product) ?? product.Price, card, null, "offer-price-" + o.Id);
+                    Ui.Field("Price", DiamondStores.InFlight == product.Id ? "Processing" : store.PriceOf(product) ?? product.Price, card, null, "offer-price-" + o.Id);
                 if (o.ShardPrice > 0)
                     Ui.Field("Price", ShardText.ShortOf(o.ShardPrice), card, AccountWallets.CanSpend(w, o.ShardPrice) ? null : "bad", "offer-shard-price-" + o.Id);
                 int left = Offers.Remaining(w, o);

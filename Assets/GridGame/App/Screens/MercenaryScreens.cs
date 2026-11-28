@@ -93,7 +93,7 @@ namespace GridGame.App
             // Hire and Haggle stay off while the merc thinks (the page isn't rebuilt until the answer lands).
             Body?.Query<Button>().ForEach(btn => { if (btn.name != null && btn.name.StartsWith("merc-")) Ui.SetEnabled(btn, false); });
             App.Audio.Sfx("ui.press");
-            var think = Ui.Heading("...", card, "gold");
+            var think = Ui.Heading("Hmm", card, "gold");
             yield return Tween.Run(Timing.Dramatic, k => { think.style.opacity = 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)); });
             var o = Mercenaries.Haggle(C, S, m.Class, out var message);
             haggling = false;
