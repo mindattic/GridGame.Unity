@@ -212,24 +212,68 @@ namespace GridGame.App
             return h;
         }
 
-        /// <summary>GG-T1361: fills a header's currency strip with what <paramref name="s"/> holds: Gold, Shards (tapping them
-        /// runs <paramref name="onShards"/>, the Shard Store) and, while an account wallet is bound, its Summon Tickets.
-        /// Rebuilds the strip each call, so a refresh shows the new balances.</summary>
-        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null)
+        /// <summary>GG-T1361: fills a header's currency strip with what <paramref name="s"/> holds. Gold is pinned last, so it sits
+        /// at the header's right edge (GG-T1858); to its left come <paramref name="talk"/> (a station's Talk button), the Shards
+        /// button (tapping it runs <paramref name="onShards"/>, the Shard Store) and, while an account wallet is bound, the
+        /// Summon Tickets. When the header runs short of room the chips drop to icon plus number, then fold into one "+N" chip
+        /// that toasts what it holds; gold never moves. Rebuilds the strip each call, so a refresh shows the new balances.</summary>
+        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null, Button talk = null)
         {
             if (bar == null) return;
             bar.Clear();
             if (s == null) return;
-            Text(Gold(s.Gold), "header-gold shadow", bar).name = "header-gold";
+            var chips = new List<(VisualElement chip, Label label, string full, string compact, string said)>();
+            if (talk != null)
+            {
+                bar.Add(talk);
+                var tl = talk.Q<Label>();
+                chips.Add((talk, tl, tl?.text, "", talk.Q<Label>()?.text));
+            }
             var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
             shards.name = "header-shards";
             shards.tooltip = ShardText.Store;
             if (onShards == null) shards.pickingMode = PickingMode.Ignore;
+            chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
             if (DiamondExchange.Wallet is AccountWallet w)
             {
                 int t = Math.Max(0, w.Tickets);
-                Text($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", "header-gold shadow", bar).name = "header-tickets";
+                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
+                tickets.name = "header-tickets";
+                tickets.pickingMode = PickingMode.Ignore;
+                chips.Add((tickets, tickets.Q<Label>(), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}", Count(t), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}"));
             }
+            var more = RowIcon.IconButton($"+{chips.Count}", RowKind.Menu, null, "btn--small", bar);
+            more.name = "header-more";
+            more.style.display = DisplayStyle.None;
+            Text(Gold(s.Gold), "header-gold shadow", bar).name = "header-gold";
+
+            int mode = 0;
+            void Apply()
+            {
+                foreach (var c in chips)
+                {
+                    c.chip.style.display = mode == 2 ? DisplayStyle.None : DisplayStyle.Flex;
+                    if (c.label != null)
+                    {
+                        string text = mode == 1 ? c.compact : c.full;
+                        c.label.text = text;
+                        c.label.style.display = string.IsNullOrEmpty(text) ? DisplayStyle.None : DisplayStyle.Flex;
+                    }
+                }
+                more.style.display = mode == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+            more.clicked += () => GameApp.I?.Toast(string.Join("   ", chips.Select(c => c.said).Where(x => !string.IsNullOrEmpty(x))));
+            float lastWidth = -1f;
+            void Fit(GeometryChangedEvent _)
+            {
+                var h = bar.parent;
+                if (h == null || float.IsNaN(h.layout.width) || h.layout.width <= 0f) return;
+                if (Math.Abs(h.layout.width - lastWidth) > 0.5f) { lastWidth = h.layout.width; mode = 0; Apply(); return; }
+                float budget = (h.layout.width - h.resolvedStyle.paddingLeft - h.resolvedStyle.paddingRight) * 0.6f;
+                if (mode < 2 && bar.layout.width > budget) { mode++; Apply(); }
+            }
+            bar.RegisterCallback<GeometryChangedEvent>(Fit);
+            bar.schedule.Execute(() => bar.parent?.RegisterCallback<GeometryChangedEvent>(Fit));
         }
 
         /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Campaign, Heroes, Summon and Shop off
