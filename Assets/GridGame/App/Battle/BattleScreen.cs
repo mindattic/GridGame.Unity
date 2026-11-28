@@ -309,7 +309,7 @@ namespace GridGame.App
             var bar = Ui.El("row", root);
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = TopBarTop; bar.style.height = TopBarHeight;
-            RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
+            RowIcon.HamburgerButton(OpenMenu, bar); // GG-T754: icon-only pause
             // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
             // shrinks to the floor, then scrolls (GG-T1143), the wave never does.
             var mid = Ui.El("row grow", bar);
