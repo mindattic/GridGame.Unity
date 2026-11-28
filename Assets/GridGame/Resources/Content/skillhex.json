@@ -620,7 +620,7 @@
     {"Q": 6, "R": 6, "Kind": "Ability", "Ability": "grappling_hook", "Note": "moved from [6, 0] (the myrmidon signature slot, now myrmidon_shield_rush) (GG-T1201); grudge moved to [8, 2] as the Prize Fighter signature (GG-T1131)"},
     {"Q": 6, "R": 7, "Kind": "Passive", "Stats": {"VIT": 1, "STR": 1}},
     {"Q": 6, "R": 8, "Kind": "Passive", "Stats": {"VIT": 1, "STR": 1}},
-    {"Q": 6, "R": 9, "Kind": "Open", "Note": "freed by merge GG-T1126 (berserk into blood_rage for heroes; monsters keep berserk)"},
+    {"Q": 6, "R": 9, "Kind": "Ability", "Ability": "sunder", "Note": "Sunder, the Barbarian's camp skill (STORY_SLICE beat 17:45), on the frontier of its Start path so Training.Teach can buy it free (GG-T2072); slot freed by merge GG-T1126 (berserk into blood_rage for heroes; monsters keep berserk)"},
     {"Q": 6, "R": 10, "Kind": "Passive", "Stats": {"STR": 2}},
     {"Q": 7, "R": -16, "Kind": "Passive", "Stats": {"WIS": 1, "INT": 1}},
     {"Q": 7, "R": -15, "Kind": "Passive", "Stats": {"WIS": 1, "INT": 1}},

@@ -330,6 +330,12 @@ namespace GridGame.App
         public const float TargetHalfGap = 12;
     }
 
+    /// <summary>Corner radii in design px (USS <c>--radius-N</c>, the same steps).</summary>
+    public static class Radius
+    {
+        public const float R3 = 3, R6 = 6, R8 = 8, R10 = 10, R12 = 12, R14 = 14, R16 = 16, R17 = 17, R18 = 18, R22 = 22;
+    }
+
     /// <summary>Named element sizes in design px (POL-C1). Design px already scale uniformly to every resolution
     /// (bible §26.2), so fixed-size things (icons, pips, portraits) use these; layout widths use <see cref="Fit"/>.</summary>
     public static class Size

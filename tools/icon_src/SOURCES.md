@@ -233,7 +233,6 @@ Authors: carl-olsen, darkzaitzev, delapouite, faithtoken, lorc, sbed, skoll, zer
 - lorc/quill-ink
 - lorc/rally-the-troops
 - lorc/robe
-- lorc/root-tip
 - lorc/round-bottom-flask
 - lorc/run
 - lorc/rune-stone
