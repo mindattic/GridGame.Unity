@@ -17,7 +17,7 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        private VisualElement abilitiesButton, sheetVeil, sheetGlow;
+        private VisualElement abilitiesButton, sheetVeil, sheetGlow, sheetPreview;
         /// <summary>The sheet's place in the tree: a tab, then folders, then (on the detail page) the move.</summary>
         private readonly List<ActionNode> sheetPath = new List<ActionNode>();
         private int sheetHeroId = -1;
@@ -68,6 +68,7 @@ namespace GridGame.App
             cell.RegisterCallback<PointerCancelEvent>(_ => hold?.Pause());
             cell.RegisterCallback<ClickEvent>(_ =>
             {
+                ExitExamine();
                 if (abilitiesHeld) { abilitiesHeld = false; return; }
                 OpenAbilities(TargetingSlot);
             });
@@ -169,12 +170,57 @@ namespace GridGame.App
             SyncAbilitiesButton();
         }
 
+        /// <summary>
+        /// GG-T2129: opens the sheet at <paramref name="path"/>, tab then folders then a move, matched to the breadcrumb names
+        /// ignoring case ("Consumables", "Spells/Fire"), the way tapping the tab and rows would. The hero is the selected one
+        /// when its tree holds the path, else the first hero whose does. False while the battle can't take a command yet.
+        /// </summary>
+        public bool OpenAbilitiesAt(IReadOnlyList<string> path)
+        {
+            if (!CanCommand() || State.UnitById(SelectedHeroId) == null) return false;
+            Unit hero = null;
+            List<ActionNode> nodes = null;
+            foreach (var u in State.Units.Where(u => u.IsCommandable && u.Alive).OrderBy(u => u.Id == SelectedHeroId ? 0 : 1))
+            {
+                var n = SheetNodes(ActionTree.For(State, u), path);
+                bool full = n.Count == path.Count && (n.Count == 0 || ActionTree.Moves(n[n.Count - 1]).Any());
+                if (hero == null || full || n.Count > nodes.Count) { hero = u; nodes = n; }
+                if (full) break;
+            }
+            if (nodes.Count < path.Count) Debug.LogWarning($"[Scenario] abilities: no '{path[nodes.Count]}' in {hero.Def?.Id}'s sheet");
+            SelectHero(hero.Id);
+            OpenAbilities();
+            if (!AbilitiesOpen) return false;
+            if (nodes.Count == 0) return true;
+            sheetPath.Clear();
+            sheetPath.AddRange(nodes);
+            var last = nodes[nodes.Count - 1];
+            if (last.IsMove) HighlightMove(hero, last.Slot);
+            RenderSheet();
+            return true;
+        }
+
+        /// <summary>The nodes along <paramref name="path"/> from the tabs down, by name ignoring case, up to the first miss.</summary>
+        private static List<ActionNode> SheetNodes(List<ActionNode> tree, IReadOnlyList<string> path)
+        {
+            var nodes = new List<ActionNode>();
+            var level = tree;
+            foreach (var name in path)
+            {
+                var match = level.FirstOrDefault(n => string.Equals(n.Name, name, System.StringComparison.OrdinalIgnoreCase));
+                if (match == null) break;
+                nodes.Add(match);
+                level = match.Children;
+            }
+            return nodes;
+        }
+
         /// <summary>Closes the sheet; it slides down unless Reduce Motion is on or <paramref name="animate"/> is false.</summary>
         private void CloseAbilities(bool animate = true)
         {
             if (sheetVeil == null) return;
             var veil = sheetVeil;
-            sheetVeil = sheetGlow = null;
+            sheetVeil = sheetGlow = sheetPreview = null;
             sheetHeroId = -1;
             highlightedMove = -1;
             var sheet = veil.Q("abilities-sheet");
@@ -196,10 +242,89 @@ namespace GridGame.App
             else CloseAbilities();
         }
 
-        /// <summary>Hook for the board preview while browsing (§9.0, later ticket): a move row was highlighted.</summary>
+        /// <summary>A move row was highlighted: the board preview follows it.</summary>
         private void HighlightMove(Unit hero, int slot)
         {
             highlightedMove = slot;
+            DrawSheetPreview(hero, slot);
+        }
+
+        /// <summary>
+        /// GG-T1919 (§9.0): the live board preview while browsing. Over the dim, on the veil itself so the dim never mutes
+        /// it, the highlighted move outlines what it reaches right now: its valid tiles (gold), the shape of its area at the
+        /// pick that catches the most (filled) and the units it would hit (bold). It breathes, or holds still under Reduce
+        /// Motion.
+        /// </summary>
+        private void DrawSheetPreview(Unit hero, int slot)
+        {
+            sheetPreview?.RemoveFromHierarchy();
+            sheetPreview = null;
+            var veil = sheetVeil;
+            var a = veil == null || hero == null || slot < 0 ? null : BattleEngine.SlotAbility(State, hero, slot);
+            if (a == null) return;
+            var layer = sheetPreview = Ui.El("fill", veil);
+            layer.name = "abilities-preview";
+            layer.pickingMode = PickingMode.Ignore;
+            var sheet = veil.Q("abilities-sheet");
+            if (sheet != null) layer.PlaceBehind(sheet);
+
+            bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
+            var col = harmful ? Palette.Bad : Palette.Good;
+            var valid = BattleEngine.ValidTargets(State, hero.Id, slot);
+            var targets = new List<Unit>();
+            List<Coord> area = null;
+            if (a.Mode == TargetMode.Auto)
+            {
+                var anchor = TargetResolver.AutoAnchor(hero);
+                targets = TargetResolver.Collect(State, a, hero, anchor);
+                if (a.Shape != TargetShape.Self && a.Shape != TargetShape.AllEnemies && a.Shape != TargetShape.AllAllies)
+                    area = TargetResolver.Tiles(anchor, a.Shape, a.Radius, hero.Pos);
+            }
+            else if (valid.Count > 0)
+            {
+                var best = valid[0];
+                int most = -1;
+                foreach (var c in valid)
+                {
+                    int n = TargetResolver.Collect(State, a, hero, c).Count;
+                    if (n > most) { most = n; best = c; }
+                }
+                if (TargetResolver.PicksUnit(a))
+                {
+                    foreach (var c in valid)
+                    {
+                        var u = State.UnitAt(c);
+                        if (u != null && !targets.Contains(u)) targets.Add(u);
+                    }
+                }
+                else targets = TargetResolver.Collect(State, a, hero, best);
+                if (!a.IsTeleport && a.Shape != TargetShape.SingleActor && a.Shape != TargetShape.SingleTile)
+                    area = TargetResolver.Tiles(best, a.Shape, a.Radius, hero.Pos);
+            }
+
+            foreach (var c in valid) PreviewTile(layer, c, Palette.Gold, 0.12f, Space.S2);
+            if (area != null) foreach (var c in area) PreviewTile(layer, c, col, 0.3f, Space.S2);
+            foreach (var u in targets)
+                foreach (var c in u.Tiles()) PreviewTile(layer, c, col, 0f, Space.S4);
+            if (valid.Count == 0 && targets.Count == 0 && area == null) PreviewTile(layer, hero.Pos, Palette.Gold, 0f, Space.S4);
+
+            if (ReduceMotion) return;
+            layer.schedule.Execute(() => layer.style.opacity = 0.7f + 0.3f * Mathf.Sin(Time.unscaledTime * 4f)).Every(33);
+        }
+
+        /// <summary>One board tile of the preview in overlay space: an outline of <paramref name="edge"/> px over a fill of
+        /// <paramref name="fill"/> alpha.</summary>
+        private void PreviewTile(VisualElement layer, Coord c, Color col, float fill, float edge)
+        {
+            var r = App.Overlay.WorldToLocal(board.Root.LocalToWorld(new Rect(BoardView.PosOf(c), new Vector2(BoardView.Tile, BoardView.Tile))));
+            var t = Ui.El(null, layer);
+            t.pickingMode = PickingMode.Ignore;
+            t.style.position = Position.Absolute;
+            t.style.left = r.x; t.style.top = r.y;
+            t.style.width = r.width; t.style.height = r.height;
+            t.style.backgroundColor = col.WithA(fill);
+            t.style.borderTopWidth = t.style.borderBottomWidth = t.style.borderLeftWidth = t.style.borderRightWidth = edge;
+            t.style.borderTopColor = t.style.borderBottomColor = t.style.borderLeftColor = t.style.borderRightColor = col;
         }
 
         private void RenderSheet()
@@ -222,6 +347,7 @@ namespace GridGame.App
             if (fresh.Count == 0) fresh.Add(tree[0]);
             sheetPath.Clear();
             sheetPath.AddRange(fresh);
+            DrawSheetPreview(hero, highlightedMove);
 
             float scroll = sheet.Q<ScrollView>("abilities-list")?.scrollOffset.y ?? 0f;
             sheet.Clear();
@@ -298,7 +424,7 @@ namespace GridGame.App
             var row = Ui.El("row", list);
             row.name = "move" + slot;
             row.style.alignItems = Align.Center;
-            row.style.minHeight = Size.Target;
+            row.style.minHeight = Kit.Row;
             row.style.marginBottom = Space.S8;
             if (slot == highlightedMove) row.style.backgroundColor = Palette.Gold.WithA(0.18f);
             var face = MoveFace(row, hero, slot, status);
@@ -308,7 +434,7 @@ namespace GridGame.App
             col.style.flexShrink = 1;
             var name = Ui.Text(move.Name, "small", col);
             name.style.whiteSpace = WhiteSpace.Normal;
-            var state = Ui.Text(MoveReadiness(hero, slot, a, status), ready ? "small gold" : "small dim", col);
+            var state = Ui.Text(MoveReadiness(hero, slot, a, status), ready ? "small gold" : status == SlotStatus.Unaffordable ? "small warn" : "small dim", col);
             state.style.whiteSpace = WhiteSpace.Normal;
             var sum = Ui.Text(TargetText.How(a), "tiny dim", col);
             sum.style.whiteSpace = WhiteSpace.Normal;
@@ -357,16 +483,9 @@ namespace GridGame.App
             foot.style.marginTop = Space.S8;
             var back = RowIcon.IconButton("Back", RowKind.Back, SheetBack, "btn--small", foot);
             back.name = "abilities-back";
-            var go = RowIcon.IconButton(CommitVerb(hero, slot, a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
+            var go = RowIcon.IconButton(CommitVerb(a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
             go.name = "abilities-commit";
             go.SetEnabled(ready && CanCommand());
-        }
-
-        /// <summary>The detail page's commit button: Use for an item, Cast for a spell, else Perform.</summary>
-        private static string CommitVerb(Unit hero, int slot, AbilityDef a)
-        {
-            var sl = hero.Bar[slot];
-            return sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
         }
 
         /// <summary>Perform / Cast / Use: the sheet slides away and the board takes that move's own aiming.</summary>
@@ -394,22 +513,20 @@ namespace GridGame.App
             }
         }
 
-        // ── Spell readiness: the one switch GG-T1915 turns from each spell's own meter to cost against the party bar ──
+        // ── Spell readiness: the spell's price against the party bar (§3.1.0) ──
 
-        /// <summary>How ready a spell is, 0..1 (1 = castable), or −1 when it has no meter.</summary>
+        /// <summary>How much of a spell's price the shown pool holds, 0..1 (1 = castable), or −1 when it costs nothing.</summary>
         private float SpellFill(Unit hero, int slot)
         {
-            int full = State.ManaFull(hero, slot);
-            return full > 0 ? ShownMana(hero.Id, slot) / (float)full : -1f;
+            int price = State.SpellPrice(hero, slot);
+            return price > 0 ? ShownMana(hero.Id, slot) / (float)price : -1f;
         }
 
-        /// <summary>A spell's readiness in words for the sheet ("120 / 300 mana · charging 40%").</summary>
+        /// <summary>A spell's price against the bar for the sheet ("Costs 300 mana · bar 120").</summary>
         private string SpellReadyText(Unit hero, int slot)
         {
-            int full = State.ManaFull(hero, slot);
-            if (full <= 0) return "No mana needed";
-            int have = Mathf.Min(full, ShownMana(hero.Id, slot));
-            return have >= full ? $"{full} / {full} mana" : $"{have} / {full} mana · charging {Mathf.FloorToInt(100f * have / full)}%";
+            int price = State.SpellPrice(hero, slot);
+            return price <= 0 ? "No mana needed" : $"Costs {price} mana · bar {ShownPool}";
         }
     }
 }

@@ -103,7 +103,7 @@ namespace GridGame.App
         private readonly StageDepthsDef depth;
         private readonly float aspect, moonAspect, somAspect, start;
         private readonly bool still, live, liveMoon;
-        private Color tint = Color.white;
+        private Color tint = Palette.White;
         private float w, h, skyBottom, refW;
         private float somX, somY, somR, rainTop;
         private Vector2 wakeDir, wakeAcross;
@@ -230,7 +230,7 @@ namespace GridGame.App
             palette == null || palette.Count == 0 ? fallback : ParseColor(palette[rnd.Next(palette.Count)], fallback);
 
         /// <summary>The Manalith art's deep blue (GG-T674), for a palette that is missing.</summary>
-        private static readonly Color ManalithBlue = new Color(0.365f, 0.392f, 0.639f);
+        private static readonly Color ManalithBlue = Palette.Scene.ManalithBlue;
 
         private void BuildDebris(System.Random rnd)
         {
@@ -387,7 +387,7 @@ namespace GridGame.App
             {
                 tint = t2;
                 foreach (var child in bg.Children()) child.style.unityBackgroundImageTintColor = tint;
-                foreach (var (el, c) in tinted) el.style.backgroundColor = new Color(c.r * tint.r, c.g * tint.g, c.b * tint.b, c.a);
+                foreach (var (el, c) in tinted) el.style.backgroundColor = (c * tint).WithA(c.a);
             }
             float t = still ? 0f : Time.realtimeSinceStartup - start;
             // The whole stage moves as one camera: a depth-1 layer shifts by `shift`, a depth-d layer by d x shift.

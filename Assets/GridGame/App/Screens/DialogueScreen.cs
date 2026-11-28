@@ -144,12 +144,11 @@ namespace GridGame.App
             bondChips.style.alignItems = Align.Center;
 
             // The one shared text box: each line replaces the last in it; the choices sit in it too.
-            var box = Ui.Window(null, root, "window--plain");
-            box.name = "dlg-box";
+            var box = Ui.Panel(root, null, false, "dlg-box");
+            box.AddToClassList("window--plain");
+            box.AddToClassList("dlg-box");
             box.style.position = Position.Absolute;
             box.style.left = box.style.right = Fit.Inset + Fit.Edge; box.style.bottom = Space.S48;
-            box.style.minHeight = 560;
-            box.style.paddingTop = Space.S64;
             box.style.overflow = Overflow.Visible;
             box.RegisterCallback<ClickEvent>(e =>
             {
@@ -212,11 +211,10 @@ namespace GridGame.App
             plate.style.top = -Space.S64;
             if (s.Index == 0) plate.style.left = Space.S32; else plate.style.right = Space.S32;
             plate.style.height = Size.Plate;
-            plate.style.minWidth = 260;
-            plate.style.paddingLeft = plate.style.paddingRight = Space.S32;
+            plate.AddToClassList("dlg-plate");
             plate.style.justifyContent = Justify.Center;
             plate.style.alignItems = Align.Center;
-            SetRadius(plate, 22);
+            SetRadius(plate, Radius.R22);
             SetBorder(plate, 4);
             plate.style.opacity = 0f;
             s.GlowFar = Glow(plate, 22, 0.18f);
@@ -234,7 +232,7 @@ namespace GridGame.App
             var g = new VisualElement { pickingMode = PickingMode.Ignore };
             g.style.position = Position.Absolute;
             g.style.left = g.style.right = g.style.top = g.style.bottom = -spread;
-            SetRadius(g, 22 + spread);
+            SetRadius(g, Radius.R22 + spread);
             g.style.opacity = 0f;
             g.userData = alpha;
             plate.Add(g);
@@ -279,7 +277,7 @@ namespace GridGame.App
 
             s.Art.style.opacity = s.Portrait != null ? present : 0f;
             float tint = Mathf.Lerp(0.42f, 1f, lit);
-            s.Art.style.unityBackgroundImageTintColor = new Color(tint, tint, tint);
+            s.Art.style.unityBackgroundImageTintColor = Palette.Grey(tint);
             s.Art.style.scale = new Scale(Vector2.one * Mathf.Lerp(0.93f, 1f, lit));
             s.Art.style.translate = new Translate(s.Toward * (Mathf.Lerp(0f, 40f, lit) - (1f - present) * 140f), 0);
 
@@ -287,11 +285,11 @@ namespace GridGame.App
             s.Plate.style.scale = new Scale(Vector2.one * Mathf.Lerp(0.9f, 1.06f, lit));
             s.Plate.style.translate = new Translate(0, Mathf.Lerp(8f, 0f, lit));
             var dimBg = Palette.Ink.WithA(0.92f);
-            var litBg = Color.Lerp(accent, Color.black, 0.3f); litBg.a = 0.98f;
+            var litBg = Color.Lerp(accent, Palette.Black, 0.3f); litBg.a = 0.98f;
             s.Plate.style.backgroundColor = Color.Lerp(dimBg, litBg, lit);
-            var border = Color.Lerp(new Color(0.42f, 0.46f, 0.62f), Color.Lerp(accent, Color.white, 0.55f), lit);
+            var border = Color.Lerp(Palette.PlateRim, Color.Lerp(accent, Palette.White, 0.55f), lit);
             s.Plate.style.borderTopColor = s.Plate.style.borderBottomColor = s.Plate.style.borderLeftColor = s.Plate.style.borderRightColor = border;
-            s.NameLabel.style.color = Color.Lerp(Palette.TextDim, Color.white, lit);
+            s.NameLabel.style.color = Color.Lerp(Palette.TextDim, Palette.White, lit);
             foreach (var g in new[] { s.GlowNear, s.GlowFar })
             {
                 var c = accent; c.a = (float)g.userData;
@@ -429,7 +427,7 @@ namespace GridGame.App
                     int idx = i;
                     var b = RowIcon.IconButton(Commander.Fill(choices[i].Label, App.Save, App.Profile?.Name), RowKind.Talk, () => Choose(idx), i == 0 ? "btn--primary" : null, controls);
                     b.name = "choice-" + i;
-                    b.style.marginTop = Space.S8;
+                    b.AddToClassList("dlg-choice");
                     b.style.opacity = 0f;
                     App.StartCoroutine(FadeUp(b, i * 0.06f));
                 }
@@ -453,8 +451,17 @@ namespace GridGame.App
         private void TapLine()
         {
             if (done) return;
-            if (Typing) { typed = typingText.Length; typing.text = typingText; LineDone(); return; }
+            if (Typing) { FinishLine(); return; }
             if (!run.AwaitingChoice) Advance();
+        }
+
+        /// <summary>The line being typed shows in full at once (GG-T2150: the audit's settled dialogue box).</summary>
+        internal void FinishLine()
+        {
+            if (done || !Typing) return;
+            typed = typingText.Length;
+            typing.text = typingText;
+            LineDone();
         }
 
         private void Advance()
@@ -490,23 +497,18 @@ namespace GridGame.App
             panel.style.position = Position.Absolute;
             panel.style.left = panel.style.right = Fit.Inset + Fit.Edge; panel.style.top = Fit.H(5.9f);
             panel.style.alignItems = Align.Center;
-            var row = Ui.El(null, panel);
+            var row = Ui.El("dlg-wits-row", panel);
             row.pickingMode = PickingMode.Ignore;
-            row.style.flexDirection = FlexDirection.Row;
-            row.style.alignItems = Align.Center;
-            row.style.paddingLeft = row.style.paddingRight = Space.S24;
-            row.style.paddingTop = row.style.paddingBottom = Space.S16;
             row.style.backgroundColor = Palette.Ink.WithA(0.72f);
-            SetRadius(row, 28);
-            var name = Ui.Text("Standing", "small", row);
-            name.style.marginRight = Space.S16;
+            SetRadius(row, Radius.R28);
+            Ui.Text("Standing", "small dlg-wits-name", row);
             witsPips = new VisualElement[w.Max];
             for (int i = 0; i < w.Max; i++)
             {
                 var pip = new VisualElement { pickingMode = PickingMode.Ignore, name = "dlg-wits-pip-" + (i + 1) };
+                pip.AddToClassList("dlg-wits-pip");
                 pip.style.width = pip.style.height = Size.IconS;
-                pip.style.marginLeft = pip.style.marginRight = Space.S4;
-                SetRadius(pip, 20);
+                SetRadius(pip, Radius.R20);
                 SetBorder(pip, i + 1 == w.Threshold ? 5 : 3);
                 var edge = i + 1 == w.Threshold ? Palette.Gold : Palette.TextDim;
                 pip.style.borderTopColor = pip.style.borderBottomColor = pip.style.borderLeftColor = pip.style.borderRightColor = edge;
@@ -514,9 +516,8 @@ namespace GridGame.App
                 row.Add(pip);
                 witsPips[i] = pip;
             }
-            witsCaption = Ui.Text(WitsCaption(w, 0, false), "small", panel);
+            witsCaption = Ui.Text(WitsCaption(w, 0, false), "small dlg-wits-caption", panel);
             witsCaption.name = "dlg-wits-caption";
-            witsCaption.style.marginTop = Space.S8;
         }
 
         /// <summary>Pip <paramref name="i"/> (0-based) at <paramref name="standing"/>: lit in the wanderer's rose below the
@@ -559,24 +560,13 @@ namespace GridGame.App
         private void ShowBond(DialogueRunner.BondChange b, int order)
         {
             string Name(string id) => App.Content.TryClass(id)?.Name ?? id;
-            var chip = Ui.El(null, bondChips);
+            var chip = Ui.El("kit-chip dlg-bond" + (b.TierUp ? " dlg-bond--tier" : ""), bondChips);
             chip.name = "dlg-bond-" + (b.B == null ? b.A : b.A + "-" + b.B);
             chip.pickingMode = PickingMode.Ignore;
-            chip.style.flexDirection = FlexDirection.Row;
-            chip.style.alignItems = Align.Center;
-            chip.style.marginTop = Space.S8;
-            chip.style.paddingLeft = chip.style.paddingRight = Space.S24;
-            chip.style.paddingTop = chip.style.paddingBottom = Space.S8;
-            chip.style.backgroundColor = Palette.Ink.WithA(0.85f);
-            SetRadius(chip, 28);
-            SetBorder(chip, b.TierUp ? 4 : 2);
-            var edge = b.TierUp ? Palette.Gold : Palette.TextDim;
-            chip.style.borderTopColor = chip.style.borderBottomColor = chip.style.borderLeftColor = chip.style.borderRightColor = edge;
             chip.style.opacity = 0f;
             foreach (var id in b.B == null ? new[] { b.A } : new[] { b.A, b.B })
-                Ui.Thumb(id, chip, Size.Icon).style.marginRight = Space.S8;
-            var col = Ui.El("col", chip);
-            col.style.marginLeft = Space.S8;
+                Ui.Thumb(id, chip, Size.Icon).AddToClassList("dlg-bond__thumb");
+            var col = Ui.El("col dlg-bond__text", chip);
             string what = b.B == null ? $"{Name(b.A)}'s Trust" : $"{Name(b.A)} & {Name(b.B)}";
             var amount = Ui.Text($"{what} {b.Moved:+0;-0}", b.Moved > 0 ? null : "dim", col);
             Fonts.UseHeavy(amount);

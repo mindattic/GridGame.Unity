@@ -124,7 +124,7 @@ namespace GridGame.App
             var box = Ui.El("col", body);
             box.name = "window-preview";
             Ui.Tabs(new[] { "Items", "Magic", "Equip" }, previewTab, i => { previewTab = i; Rebuild(); }, box);
-            var w = Ui.Window($"{draft.Name}{(dirty ? " *" : "")}", box);
+            var w = Ui.Panel(box, $"{draft.Name}{(dirty ? " *" : "")}");
             var line = Ui.Text("Sample text: the quick brown fox. ", "small", w);
             line.style.whiteSpace = WhiteSpace.Normal;
             var stats = Ui.El("row", w);
@@ -208,7 +208,7 @@ namespace GridGame.App
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
             // A dark plate under white text: the swatch behind the name runs from near-white to saturated, so no one text colour clears 4.5:1 on all of them.
-            l.style.color = Color.white;
+            l.style.color = Palette.White;
             l.style.backgroundColor = Palette.Ink.WithA(0.8f);
             l.style.paddingLeft = l.style.paddingRight = Space.S16;
             l.style.borderTopLeftRadius = l.style.borderTopRightRadius = l.style.borderBottomLeftRadius = l.style.borderBottomRightRadius = Space.S16;
@@ -310,12 +310,17 @@ namespace GridGame.App
         // ── Colors ──────────────────────────────────────────────────────────────────
 
         /// <summary>An option row (one that cycles a setting): named for automation, led by the Settings emblem (GG-T751, §26.7).</summary>
-        private static void Option(VisualElement row, string name) { row.name = name; row.KindIcon(RowKind.Settings); }
+        private static void Option(string label, string value, Action onClick, VisualElement parent, string name)
+        {
+            var row = Ui.MenuRow(label, value, onClick, parent);
+            row.KindIcon(RowKind.Settings);
+            row.name = name;
+        }
 
         private void BuildColors(VisualElement c)
         {
             var g = draft.Gradient;
-            Option(Ui.MenuRow("Gradient", ModeLabel(g.Mode), () => { CycleMode(); ChangedAndRebuild(); }, c), "window-mode");
+            Option("Gradient", ModeLabel(g.Mode), () => { CycleMode(); ChangedAndRebuild(); }, c, "window-mode");
             if (g.Mode == WindowThemeCatalog.Corners)
             {
                 // Four chips laid out like the corners they colour (FF7's window config).
@@ -340,7 +345,7 @@ namespace GridGame.App
                     Slider(c, "Center X", "window-center-x", 0, 100, Mathf.RoundToInt(g.Center[0] * 100), v => $"{v}%", v => { g.Center[0] = v / 100f; Changed(); });
                     Slider(c, "Center Y", "window-center-y", 0, 100, Mathf.RoundToInt(g.Center[1] * 100), v => $"{v}%", v => { g.Center[1] = v / 100f; Changed(); });
                 }
-                Option(Ui.MenuRow("Stops", g.Stops.Count.ToString(), () => { CycleStops(); ChangedAndRebuild(); }, c), "window-stops");
+                Option("Stops", g.Stops.Count.ToString(), () => { CycleStops(); ChangedAndRebuild(); }, c, "window-stops");
                 var row = Ui.El("row", c);
                 row.style.flexWrap = Wrap.Wrap;
                 row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
@@ -406,7 +411,7 @@ namespace GridGame.App
         }
 
         private static string Mix(string a, string b) =>
-            WindowThemes.HexOf(Color.Lerp(WindowThemes.Hex(a, Color.gray), WindowThemes.Hex(b, Color.gray), 0.5f));
+            WindowThemes.HexOf(Color.Lerp(WindowThemes.Hex(a, Palette.Gray), WindowThemes.Hex(b, Palette.Gray), 0.5f));
 
         // ── Texture ─────────────────────────────────────────────────────────────────
 
@@ -444,12 +449,12 @@ namespace GridGame.App
             }
             if (x == null) return;
             Slider(c, "Opacity", "window-tex-opacity", 0, 100, Mathf.RoundToInt(x.Opacity * 100), v => $"{v}%", v => { x.Opacity = v / 100f; Changed(); });
-            Option(Ui.MenuRow("Blend", BlendLabel(x.Blend), () =>
+            Option("Blend", BlendLabel(x.Blend), () =>
             {
                 int i = Array.IndexOf(WindowThemeCatalog.Blends, x.Blend);
                 x.Blend = WindowThemeCatalog.Blends[(i + 1) % WindowThemeCatalog.Blends.Length];
                 ChangedAndRebuild();
-            }, c), "window-tex-blend");
+            }, c, "window-tex-blend");
             Slider(c, "Scale", "window-tex-scale", 25, 400, Mathf.RoundToInt(x.Scale * 100), v => $"{v}%", v => { x.Scale = v / 100f; Changed(); });
         }
 
@@ -466,29 +471,29 @@ namespace GridGame.App
         private void BuildFrame(VisualElement c)
         {
             var f = draft.Frame ??= new WindowFrameDef();
-            Option(Ui.MenuRow("Frame style", StyleLabel(f.Style), () =>
+            Option("Frame style", StyleLabel(f.Style), () =>
             {
                 int i = Array.IndexOf(WindowThemeCatalog.FrameStyles, f.Style);
                 f.Style = WindowThemeCatalog.FrameStyles[(i + 1) % WindowThemeCatalog.FrameStyles.Length];
                 ChangedAndRebuild();
-            }, c), "window-frame-style");
+            }, c, "window-frame-style");
             int n = f.Colors?.Length ?? 0;
-            Option(Ui.MenuRow("Frame colours", n == 0 ? "Style's own" : n == 1 ? "Solid" : n == 2 ? "Bevel" : "Bevel, 3 tones", () =>
+            Option("Frame colours", n == 0 ? "Style's own" : n == 1 ? "Solid" : n == 2 ? "Bevel" : "Bevel, 3 tones", () =>
             {
                 f.Colors = n == 0 ? new[] { "#FFFFFF" } : n == 1 ? new[] { "#F2F2F6", "#6A6A72" } : n == 2 ? new[] { f.Colors[0], "#B0B0B8", f.Colors[1] } : null;
                 frameSel = 0;
                 ChangedAndRebuild();
-            }, c), "window-frame-colors");
-            Option(Ui.MenuRow("Accent", draft.Accent == null ? "From the gradient" : "Custom", () =>
+            }, c, "window-frame-colors");
+            Option("Accent", draft.Accent == null ? "From the gradient" : "Custom", () =>
             {
                 draft.Accent = draft.Accent == null ? WindowThemes.HexOf(WindowThemes.DerivedAccent(draft)) : null;
                 ChangedAndRebuild();
-            }, c), "window-accent");
-            Option(Ui.MenuRow("Text colour", draft.Text == null ? "Default" : "Custom", () =>
+            }, c, "window-accent");
+            Option("Text colour", draft.Text == null ? "Default" : "Custom", () =>
             {
                 draft.Text = draft.Text == null ? "#FFFFFF" : null;
                 ChangedAndRebuild();
-            }, c), "window-text");
+            }, c, "window-text");
 
             // The colours this frame has, as chips; the selected one goes on the sliders.
             var targets = new List<(string label, Func<string> get, Action<string> set)>();
@@ -594,7 +599,7 @@ namespace GridGame.App
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
             var hex = Ui.Text("", "small", chip);
-            void Show() { chip.style.backgroundColor = WindowThemes.Hex(get(), Color.gray); hex.text = get(); }
+            void Show() { chip.style.backgroundColor = WindowThemes.Hex(get(), Palette.Gray); hex.text = get(); }
             Show();
             live.Add(Show);
             Ui.Tappable(chip, onTap, "ui.select");
@@ -616,7 +621,7 @@ namespace GridGame.App
             sw.style.borderTopWidth = sw.style.borderBottomWidth = sw.style.borderLeftWidth = sw.style.borderRightWidth = Size.Hairline;
             sw.style.borderTopColor = sw.style.borderBottomColor = sw.style.borderLeftColor = sw.style.borderRightColor = Palette.Text;
             sw.style.borderTopLeftRadius = sw.style.borderTopRightRadius = sw.style.borderBottomLeftRadius = sw.style.borderBottomRightRadius = Space.S8;
-            void Show() { hex.text = get(); sw.style.backgroundColor = WindowThemes.Hex(get(), Color.gray); }
+            void Show() { hex.text = get(); sw.style.backgroundColor = WindowThemes.Hex(get(), Palette.Gray); }
             Show();
             live.Add(Show);
             int Channel(int shift) => WindowThemeCatalog.TryHex(get(), out int v) ? (v >> shift) & 0xFF : 0;
@@ -630,6 +635,26 @@ namespace GridGame.App
             Slider(c, "R", "window-r", 0, 255, Channel(16), v => v.ToString(), v => SetChannel(16, v), Palette.Enemy);
             Slider(c, "G", "window-g", 0, 255, Channel(8), v => v.ToString(), v => SetChannel(8, v), Palette.Good);
             Slider(c, "B", "window-b", 0, 255, Channel(0), v => v.ToString(), v => SetChannel(0, v), Palette.Hero);
+        }
+
+        private static Texture2D stepMinus, stepPlus;
+
+        /// <summary>The slider steppers' bar and cross, drawn once in the text colour: the kit has no minus/plus icon.</summary>
+        private static Texture2D StepGlyph(bool plus)
+        {
+            if (plus ? stepPlus != null : stepMinus != null) return plus ? stepPlus : stepMinus;
+            const int n = 64, half = 6;
+            var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { name = plus ? "step-plus" : "step-minus", wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave };
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    bool bar = Mathf.Abs(y - n / 2) < half && x >= 12 && x < n - 12;
+                    bool stem = plus && Mathf.Abs(x - n / 2) < half && y >= 12 && y < n - 12;
+                    t.SetPixel(x, y, bar || stem ? Color.white : Color.clear);
+                }
+            t.Apply();
+            if (plus) stepPlus = t; else stepMinus = t;
+            return t;
         }
 
         /// <summary>A labelled slider: − and + buttons (one step) either side of a track that follows a drag or a tap.
@@ -656,7 +681,7 @@ namespace GridGame.App
                 fill.style.width = Length.Percent(max > min ? (v - min) * 100f / (max - min) : 100f);
                 if (notify) onChange(v);
             }
-            var minus = Ui.Button("−", () => Set(cur - 1, true), "btn--small btn--icon", row);
+            var minus = Ui.IconButton(RowKind.Window, () => Set(cur - 1, true), row, classes: "btn--small", tex: StepGlyph(false));
             minus.name = name + "-down";
             var track = Ui.El(null, row);
             track.name = name + "-track";
@@ -695,7 +720,7 @@ namespace GridGame.App
             track.RegisterCallback<PointerDownEvent>(e => { track.CapturePointer(e.pointerId); FromPointer(e.localPosition); e.StopPropagation(); });
             track.RegisterCallback<PointerMoveEvent>(e => { if (track.HasPointerCapture(e.pointerId)) { FromPointer(e.localPosition); e.StopPropagation(); } });
             track.RegisterCallback<PointerUpEvent>(e => { if (track.HasPointerCapture(e.pointerId)) track.ReleasePointer(e.pointerId); });
-            var plus = Ui.Button("+", () => Set(cur + 1, true), "btn--small btn--icon", row);
+            var plus = Ui.IconButton(RowKind.Window, () => Set(cur + 1, true), row, classes: "btn--small", tex: StepGlyph(true));
             plus.name = name + "-up";
             row.Add(valueLabel);
             valueLabel.style.width = Size.Label;

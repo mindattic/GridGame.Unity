@@ -82,6 +82,9 @@ namespace GridGame.App
     public static class Coach
     {
         public const string OffFlag = "lessons:off", SeenPrefix = "lesson:";
+        /// <summary>GG-T1961: the battle loop in one sentence (UX review 1.5), on the first drill's card, atop How to play
+        /// and in Info's Examine empty state.</summary>
+        public const string LoopLine = "Your turn lasts until the next enemy reaches the left. Every hero acts once. Trap a foe between two heroes to hit it, and the trap pushes it back, which buys your team more time.";
         private const float MissingTimeout = 2.5f, BoxPad = 10f, ArrowGap = 28f;
 
         private static CoachLesson lesson;
@@ -178,7 +181,7 @@ namespace GridGame.App
             {
                 var sh = new VisualElement { name = "coach-shade", pickingMode = PickingMode.Position };
                 sh.style.position = Position.Absolute;
-                sh.style.backgroundColor = new Color(0f, 0f, 0.04f, 0.62f);
+                sh.style.backgroundColor = Palette.Scene.CoachShade.WithA(0.62f);
                 sh.style.display = DisplayStyle.None;
                 // A tap outside the box does nothing but nudge the highlight.
                 sh.RegisterCallback<PointerDownEvent>(e => { e.StopPropagation(); Nudge(); });
@@ -212,13 +215,12 @@ namespace GridGame.App
         {
             veil = new VisualElement { name = "coach-veil", pickingMode = PickingMode.Position };
             veil.AddToClassList("fill");
-            veil.style.backgroundColor = new Color(0f, 0f, 0.04f, 0.66f);
+            veil.AddToClassList("veil");
             veil.style.justifyContent = Justify.Center;
             veil.style.paddingTop = GameApp.SafeTop + Space.S48;
             veil.style.paddingBottom = GameApp.SafeBottom + Space.S48;
             layer.Add(veil);
-            card = Ui.Window(null, veil);
-            card.name = lesson.CardName;
+            card = Ui.Panel(veil, null, false, lesson.CardName);
             Fit.Center(card);
             Ui.Caption(lesson.Kicker, card, "gold").name = "coach-kicker";
             var title = Ui.Heading(lesson.Title ?? "", card);
@@ -228,10 +230,10 @@ namespace GridGame.App
             if (tex != null)
             {
                 var img = new VisualElement { name = "coach-image", pickingMode = PickingMode.Ignore };
+                img.AddToClassList("coach-image");
                 float w = Fit.Column - Kit.Gutter * 2f - Kit.PadX * 2f - Space.S16;
                 float h = Mathf.Min(w * tex.height / Mathf.Max(1f, tex.width), Fit.H(30f));
                 img.style.height = h;
-                img.style.marginTop = img.style.marginBottom = Space.S16;
                 img.style.backgroundImage = new StyleBackground(tex);
                 img.style.unityBackgroundScaleMode = ScaleMode.ScaleToFit;
                 card.Add(img);
@@ -239,9 +241,7 @@ namespace GridGame.App
             // GG-T908: a [bracketed] glossary term in the lesson's words is a tap tooltip (GG-T300); plain text stays one Label.
             var text = GlossaryText.Create(lesson.Text ?? "", "kit-text", card);
             text.name = "coach-text";
-            var row = Ui.El("kit-footer", card);
-            row.style.justifyContent = Justify.SpaceBetween;
-            row.style.marginTop = Space.S24;
+            var row = Ui.El("kit-footer coach-actions", card);
             RowIcon.IconButton("Skip tutorial", RowKind.Close, AskTurnOff, "btn--small", row).name = "coach-skip"; // GG-T754 (§26.7)
             RowIcon.IconButton("Next", RowKind.Enter, BeginSteps, "btn--primary", row).name = lesson.NextName;
             // The first box shows under the popup already, so the popup reads as "this, here".
@@ -320,8 +320,8 @@ namespace GridGame.App
         private static void BuildCaption(CoachStep s)
         {
             caption?.RemoveFromHierarchy();
-            caption = Ui.Window(null, layer, "window--compact");
-            caption.name = "coach-caption";
+            caption = Ui.Panel(layer, null, false, "coach-caption");
+            caption.AddToClassList("window--compact");
             caption.pickingMode = PickingMode.Position;
             caption.style.position = Position.Absolute;
             caption.style.left = caption.style.right = Fit.Inset + Fit.Edge;
@@ -331,10 +331,7 @@ namespace GridGame.App
             captionText.name = "coach-caption-text";
             captionText.style.whiteSpace = WhiteSpace.Normal;
             captionText.style.flexGrow = 1; captionText.style.flexShrink = 1;
-            var skip = RowIcon.IconButton("Skip tutorial", RowKind.Close, AskTurnOff, "btn--small", row);
-            skip.name = "coach-skip";
-            skip.style.flexShrink = 0;
-            skip.style.marginLeft = Space.S16;
+            RowIcon.IconButton("Skip tutorial", RowKind.Close, AskTurnOff, "btn--small coach-caption-skip", row).name = "coach-skip";
         }
 
         private static bool Resolve(CoachStep s, out Rect world)

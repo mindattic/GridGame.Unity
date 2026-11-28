@@ -6,7 +6,9 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py aspects          # GG-T169/T706: title/hub/battle; 9:23..9:16 fill, 10:16/2:3/3:4, 9:25 and 1:1 framed
     python tools/harness.py aspects devices  # GG-T724/T2026: the same per in-target screen shape (tools/devices.json) plus the framed fold inners
     python tools/harness.py aspects DEVICE   # GG-T2026: a device or shape id, shapes or all (tools/devices.py)
+    python tools/harness.py perf [RUN] [--device DEVICE]  # GG-T2101: one battle and one camp scroll at a device shape, checked against BIBLE §30; writes docs/perf/records/<date>-<device>.json
     python tools/harness.py safeareas [RUN] [--nocapture] [--device DEVICE] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4 (--device: each device's own shape and safe area); title/camp/merchant/results/battle
+    python tools/harness.py refold [RUN] [--device DEVICE]  # GG-T2028: one player at a Fold cover, hub, resize to the Fold main and back; each shape must re-lay out live
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py variants [RUN] [--nocapture]  # GG-T532: new game -> the Warden's female/male picker -> male Warden at Camp -> Change look, recorded
     python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
@@ -614,7 +616,7 @@ def smoke(run="smoke"):
     files.append(shot("02-charselect"))
     pick_party()
     files.append(shot("02-hub"))
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     files.append(shot("03-stages"))
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
     through_story(files)
@@ -658,7 +660,7 @@ def sweep(run="sweep", theme=None):
 
 # GG-T169/GG-T398 device fit: (label, aspect w/h). Every shape from 9:23 to 3:4 must fill the window edge to edge;
 # shapes outside that range (ultra-tall 9:25, square 1:1) are framed.
-ASPECT_MIN, ASPECT_MAX = 9 / 23, 9 / 16  # GG-T706: tablets are letterboxed in the mystic fog
+ASPECT_MIN, ASPECT_MAX = 1170 / 3000, 9 / 16  # GG-T706: tablets are letterboxed in the mystic fog
 ASPECTS = [("9x23-ultratall", 9 / 23), ("9x21", 9 / 21), ("9x20", 9 / 20), ("9x19.5", 9 / 19.5), ("9x18", 9 / 18),
            ("9x16", 9 / 16), ("10x16-tablet", 10 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
 
@@ -683,7 +685,7 @@ DEVICE_ASPECTS = device_aspects() + FRAMED_ASPECTS
 
 def aspects(run="aspects", height=1200, shapes=None):
     """GG-T169: launches the player at every supported phone ratio plus tablet/ultra-tall shapes; shoots the
-    title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x2990, fills the
+    title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x3000, fills the
     window (no frame) from 9:23 to 9:16 and is framed outside it; runs the layout audit on each screen. Exit 1 on any failure."""
     failures, report = [], {}
     for label, a in (shapes or ASPECTS):
@@ -697,14 +699,14 @@ def aspects(run="aspects", height=1200, shapes=None):
             entry = {"window": [w, height], "stage": [dw, dh], "framed": sb["framed"], "screens": {}}
             if dw < 1170 or dh < 2532:
                 failures.append(f"{label}: stage {dw}x{dh} below the 1170x2532 minimum")
-            if dw > 1899 or dh > 2990:
-                failures.append(f"{label}: stage {dw}x{dh} above the 1899x2990 maximum")
+            if dw > 1899 or dh > 3000:
+                failures.append(f"{label}: stage {dw}x{dh} above the 1899x3000 maximum")
             if sb["framed"] != expect_framed:
                 failures.append(f"{label}: framed={sb['framed']}, expected {expect_framed}")
             shot(f"{label}-1-title"); entry["screens"]["title"] = call("layout").get("problems")
             call("newgame", slot=0); time.sleep(1.2)
             shot(f"{label}-2-hub"); entry["screens"]["hub"] = call("layout").get("problems")
-            call("clicktext", text="Adventure"); time.sleep(0.8)
+            call("clicktext", text="Journey"); time.sleep(0.8)
             enter_stage("The Tithe Moors I"); time.sleep(1.5)
             through_story(wait=1.2)
             if _wait_screen("battle", 8):
@@ -793,6 +795,67 @@ def safeareas(run="safeareas", height=1200, capture=True, settings=(), device=No
     return not failures
 
 
+# GG-T2028: the Galaxy Z Fold6 main (inner) screen, portrait px, with no safe insets (under-display camera). Not in
+# tools/devices.json, whose fold entries are the cover screens.
+FOLD_MAIN_PX = (1856, 2160)
+
+
+def _stage_for(w, h):
+    """The stage GameApp.StageSizeFor picks for a w x h screen, and whether it is framed (bible 26.3)."""
+    a = w / h
+    if a >= 1170 / 2532:
+        exact = 2532 * a
+        return (min(max(round(exact), 1170), 1424), 2532), exact > 1424 + 2
+    exact = 1170 / a
+    return (1170, min(max(round(exact), 2532), 3000)), exact > 3000 + 2
+
+
+def refold(run="refold", device="galaxyzfold6cover", height=1200):
+    """GG-T2028: one player launched at a Fold cover screen (with its safe insets) goes to the hub, then the automation
+    `resize` switches it to the Fold main screen and back to the cover without a restart. After each switch the hub must
+    still be the current screen, the stage must have re-laid out to that shape's size and frame state, and the layout
+    audit must be clean. Shots of each shape go to artifacts/RUN/. Exit 1 on any failure or log error."""
+    failures, report = [], {}
+    dev = devices.resolve(device)[0]
+    cw, ch, ct, cb = devices.screen(dev)
+    k = height / ch  # one density for both screens, as on the phone
+    shapes = [("cover", cw, ch, ct, cb), ("main", *FOLD_MAIN_PX, 0, 0), ("cover-again", cw, ch, ct, cb)]
+    launch(run, width=round(cw * k), height=height, fresh=True, extra=("-safeArea", f"{round(ct * k)},{round(cb * k)}"))
+    try:
+        _wait_screen("title"); time.sleep(0.8)
+        call("newgame", slot=0); time.sleep(1.5)
+        start = call("state")["screen"]
+        report["start"] = {"screen": start, "stage": call("stagebounds")}
+        shot(f"{run}-0-{start}")
+        for i, (label, w, h, top, bottom) in enumerate(shapes, 1):
+            if i == 1:
+                continue  # launched at the cover shape
+            r = call("resize", w=round(w * k), h=round(h * k), top=top, bottom=bottom, ref=h)
+            time.sleep(0.8)
+            expect, framed = _stage_for(w, h)
+            entry = {"resize": r, "layout": call("layout").get("problems")}
+            if not r.get("ok"):
+                failures.append(f"{label}: window is {r.get('screen')}, asked {round(w * k)}x{round(h * k)}")
+            if not r.get("relaid"):
+                failures.append(f"{label}: no re-layout after the resize")
+            if r.get("current") != start:
+                failures.append(f"{label}: screen is {r.get('current')}, expected {start} (no restart)")
+            if [round(v) for v in r.get("design", [])] != list(expect) or r.get("framed") != framed:
+                failures.append(f"{label}: stage {r.get('design')} framed={r.get('framed')}, expected {list(expect)} framed={framed}")
+            if entry["layout"]:
+                failures.append(f"{label}: layout {entry['layout']}")
+            shot(f"{run}-{i - 1}-{label}")
+            report[label] = entry
+        errs = [l for l in call("logs") if l.startswith(("Error", "Exception"))]
+        if errs:
+            failures.append(f"log errors {errs[:3]}")
+    finally:
+        _stop_player()
+    print(json.dumps(report, indent=1))
+    print("FAILURES:" if failures else "REFOLD OK", *failures, sep="\n  ")
+    return not failures
+
+
 def a11y(run="a11y", capture=True, settings=()):
     """GG-T495: the accessibility look at the default 9:19.5 window: Settings, Camp (locked rows and their hints), the
     Merchant, the results screen (rarity colours) and a battle, with the given automation settings (e.g. textsize=130,
@@ -853,6 +916,103 @@ def _play_battle(tag, timeout=480):
     return "timeout", call("state")
 
 
+
+# GG-T2101: BIBLE §30's budget as the perf record checks it (frame times in ms, memory in MB, cold start in s).
+PERF_BUDGET = {"fps": 60, "frame_p95_ms": 1000 / 60, "ui_ms": 8, "texture_mb": 512, "allocated_mb": 1024,
+               "mono_heap_mb": 128, "gc_bytes_per_frame": 1024, "cold_start_s": 5}
+
+
+def _perf_verdict(p):
+    """GG-T2101: {check: (measured, ceiling, ok)} for one perf window against PERF_BUDGET."""
+    b = PERF_BUDGET
+    checks = {
+        "fps_avg": (p["fps_avg"], b["fps"], p["fps_avg"] >= b["fps"] - 1),
+        "frame_p95_ms": (p["frame_ms"]["p95"], round(b["frame_p95_ms"], 2), p["frame_ms"]["p95"] <= b["frame_p95_ms"] + 0.5),
+        "texture_mb": (p["texture_mb"], b["texture_mb"], p["texture_mb"] <= b["texture_mb"]),
+        "allocated_mb": (p["allocated_mb"], b["allocated_mb"], p["allocated_mb"] <= b["allocated_mb"]),
+        "mono_heap_mb": (p["mono_heap_mb"], b["mono_heap_mb"], p["mono_heap_mb"] <= b["mono_heap_mb"]),
+        "gc_bytes_per_frame": (p["gc_alloc_bytes_per_frame"], b["gc_bytes_per_frame"], p["gc_alloc_bytes_per_frame"] <= b["gc_bytes_per_frame"]),
+    }
+    if "ui_ms" in p:
+        checks["ui_ms_p95"] = (p["ui_ms"]["p95"], b["ui_ms"], p["ui_ms"]["p95"] <= b["ui_ms"])
+    return {k: {"measured": m, "budget": c, "ok": ok} for k, (m, c, ok) in checks.items()}
+
+
+def _perf_launch(run, preset, device, want):
+    """Launches the player at the device's shape (scaled to fit this desktop, like tools/scenario.py) straight into a
+    scenario preset and waits until the screen is one of `want`."""
+    import scenario
+    ww, wh = scenario.window_size(device)
+    _, dh, top, bottom = devices.screen(device)
+    launch(run, width=ww, height=wh, extra=("-scenario", preset), fresh=True)
+    call("safearea", top=top, bottom=bottom, ref=dh)
+    frame = devices.frame(device)
+    if frame:
+        call("deviceframe", **frame)
+    deadline = time.time() + 90
+    while time.time() < deadline:
+        st = call("state")
+        if st.get("screen") in want and not st.get("transitioning"):
+            return st
+        time.sleep(0.5)
+    raise RuntimeError(f"scenario {preset} never reached {want} (screen {st.get('screen')})")
+
+
+def perf(run="perf", device=devices.DEFAULT, battle_seconds=40, scroll_seconds=20, out=None):
+    """GG-T2101: one battle (first-boss, autoplay) and one camp scroll (the overworld scenario: there is no map screen
+    yet, so the camp's list stands in for the map) at a device shape, each measured through the automation perf window,
+    checked against PERF_BUDGET and written as one JSON record (docs/perf/records/ by default)."""
+    record = {"ticket": "GG-T2101", "device": device, "device_px": list(devices.screen(device)[:2]),
+              "when": time.strftime("%Y-%m-%dT%H:%M:%S"), "host": "Windows dev player (a desktop proxy, not the phone)",
+              "budget": PERF_BUDGET, "flows": {}}
+
+    _perf_launch(run + "-battle", "first-boss", device, ("battle",))
+    cold = call("perf").get("cold_start_s")
+    time.sleep(2.0)
+    call("perf", reset=1)
+    call("autoplay", on=1)
+    end = time.time() + battle_seconds
+    while time.time() < end and call("state").get("screen") == "battle":
+        time.sleep(1.0)
+    p = call("perf")
+    shot(run + "-battle")
+    record["cold_start_s"] = cold
+    record["flows"]["battle"] = {"preset": "first-boss", "perf": p, "verdict": _perf_verdict(p)}
+    _stop_player()
+
+    st = _perf_launch(run + "-map", "overworld", device, ("hub",))
+    time.sleep(2.0)
+    call("perf", reset=1)
+    cx = 540
+    end = time.time() + scroll_seconds
+    swipes = 0
+    while time.time() < end:
+        a, b = (1700, 900) if swipes % 2 == 0 else (900, 1700)
+        call("drag", path=f"{cx},{a};{cx},{(a + b) // 2};{cx},{b}", step=0.25)
+        swipes += 1
+    p = call("perf")
+    shot(run + "-map")
+    record["flows"]["map"] = {"preset": "overworld", "screen": st.get("screen"), "swipes": swipes, "perf": p,
+                              "verdict": _perf_verdict(p),
+                              "note": "no map screen exists yet; the camp scroll stands in for the map scroll"}
+    _stop_player()
+
+    record["cold_start"] = {"measured": cold, "budget": PERF_BUDGET["cold_start_s"],
+                            "ok": bool(cold) and cold <= PERF_BUDGET["cold_start_s"]}
+    out = out or os.path.join(ROOT, "docs", "perf", "records", f"{time.strftime('%Y-%m-%d')}-{device}.json")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(record, f, indent=2)
+        f.write("\n")
+    for name, flow in record["flows"].items():
+        bad = [k for k, v in flow["verdict"].items() if not v["ok"]]
+        q = flow["perf"]
+        print(f"[perf] {name}: {q['fps_avg']} fps, p95 {q['frame_ms']['p95']} ms, tex {q['texture_mb']} MB, "
+              f"GC {q['gc_alloc_bytes_per_frame']} B/frame" + (f"; over budget: {', '.join(bad)}" if bad else "; within budget"))
+    print(f"[perf] cold start {cold} s; record {out}")
+    return out
+
+
 def _skip_levelups(st):
     for _ in range(8):  # one "Skip" per hero that leveled up (LevelUpScreen.Advance), capped at MaxPartySize
         if st["screen"] != "levelup":
@@ -878,7 +1038,7 @@ def campaign(run="campaign", stages=6, speed=3, extra=(), max_loss_retries=3):
     call("newgame", slot=0)
     time.sleep(1)
     call("speed", x=speed)
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     results = []
@@ -988,7 +1148,7 @@ def fullloop(run="fullloop", battles=4, speed=3):
             fails.append(f"fresh camp: {row} should be a locked row")
 
     # Fights: Adventure -> first stage, story beats, then `battles` battles in a row.
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     for n in range(battles):
@@ -1362,7 +1522,7 @@ def coach(run="coach", camp=False, capture=True):
             print("[coach] lessons before the first battle:", pre, flush=True)
         if call("state")["screen"] != "hub":
             call("goto", screen="hub"); time.sleep(1.0)
-        call("clicktext", text="Adventure"); time.sleep(0.8)
+        call("clicktext", text="Journey"); time.sleep(0.8)
         enter_stage("The Tithe Moors I"); time.sleep(1.5)
         through_story()
         if not _wait_screen("battle", 10):
@@ -1580,7 +1740,7 @@ def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
             fails.append(f"the splash didn't hand off to Create Profile (on {call('state')['screen']})")
             raise RuntimeError("no Create Profile")
 
-        # 2. Create Profile: name, quick settings, summary, Begin.
+        # 2. Create Profile: one step, the name (prefilled with a suggestion), then Create (GG-T1957).
         _step("create-profile")
         time.sleep(0.8)
         shot("02-create-profile-name")
@@ -1588,16 +1748,10 @@ def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
         if _tap_failed(r):
             fails.append(f"no name field: {r}")
         time.sleep(0.4)
-        call("click", name="create-profile-next"); time.sleep(0.9)
-        if not any("Step 2 of 3" in t for t in call("texts")):
-            fails.append("Next on the name step didn't reach step 2")
-        shot("03-create-profile-settings")
-        call("click", name="create-profile-next"); time.sleep(0.9)
-        shot("04-create-profile-summary")
-        if not _click_until_screen("create-profile-begin", "create-profile"):
-            fails.append("Begin didn't leave Create Profile")
+        if not _click_until_screen("create-profile-create", "create-profile"):
+            fails.append("Create didn't leave Create Profile")
         if not _wait_screen("title", 8):
-            fails.append(f"Begin didn't reach the Main Menu (on {call('state')['screen']})")
+            fails.append(f"Create didn't reach the Main Menu (on {call('state')['screen']})")
         time.sleep(0.8)
 
         # 3. Main Menu: the new profile is active and named on the Profile row.
@@ -2445,7 +2599,7 @@ def story_recruits(run="recruits", speed=3):
     party0 = list(call("state").get("save", {}).get("party") or [])
     ok["starts_with_three"] = party0 == list(STARTING_PARTY)
     call("speed", x=speed)
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
     through_story()
     outcome, st = _play_battle("03-gv1-mid")
@@ -2594,10 +2748,10 @@ def storyarc(run="storyarc", capture=True):
         call("clicktext", text="Skip")
     ok["prologue_then_camp"] = _wait_screen("hub", 8)
     time.sleep(0.8); shot("03-camp")
-    ok["camp_rested_meter"] = bool(call("names", prefix="camp-rested"))
+    ok["camp_fight_button"] = bool(call("names", prefix="camp-continue"))  # GG-T1962: Rested shows on the hub only while it gates
     call("devrested", limit=1, points=5)
     call("devwanderer")
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
     _drain_story(seen, "04-gv1")
     ok["gv1_in_battle"] = _wait_screen("battle", 8)
@@ -2645,10 +2799,16 @@ def storyarc(run="storyarc", capture=True):
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1)):
         call("devgive", item=item, count=n)
     _goto("mercenaries"); time.sleep(0.8); shot("12-mercenaries")
-    hire = sorted(call("names", prefix="merc-hire-"))
-    if hire:
-        call("scrollto", name=hire[0]); time.sleep(0.4)  # the first by name may sit below the list's fold (GG-T401)
-        call("click", name=hire[0]); time.sleep(0.5); call("click", name="confirm-yes"); time.sleep(1.0)
+    # GG-T2020: a row opens the hire sheet; GG-T2090: a length segment there picks the term, then Hire hires (a mouse tap runs it at once).
+    for offer in sorted(call("names", prefix="merc-offer-")):
+        call("scrollto", name=offer); time.sleep(0.4)  # the first by name may sit below the list's fold (GG-T401)
+        call("click", name=offer); time.sleep(0.6)
+        hire = sorted(call("names", prefix="merc-hire-"))
+        if hire:
+            call("click", name=hire[0]); time.sleep(0.4)
+            call("click", name="merc-hire"); time.sleep(1.0)
+            break
+        call("click", name="merc-sheet-close"); time.sleep(0.5)
     ok["mercenary_hired"] = len(save().get("mercs") or []) == 1
     shot("13-merc-hired")
     call("back"); time.sleep(0.6)
@@ -2934,6 +3094,9 @@ def navcheck(run="navcheck"):
     _wait_screen("title")
     call("goto", screen="hub"); time.sleep(0.9)
     checks = {}
+    # GG-T1963: the hub root shows the nav too; Heroes, Summon and Shop left the tiles, their old names ride the nav tabs.
+    checks["the hub root shows the nav"] = bool(call("names", prefix="nav-home"))
+    checks["camp-heroes rides the Heroes tab"] = bool(call("names", prefix="camp-heroes"))
 
     def stack():
         return call("state")["stack"]  # top first, so [-1] is the hub
@@ -3959,6 +4122,15 @@ def _dispatch(cmd):
         names = [a for a in rest if "=" not in a]
         sys.exit(0 if safeareas(names[0] if names else "safeareas", capture="--nocapture" not in sys.argv, settings=kvs,
                                 device=device) else 1)
+    elif cmd == "refold":
+        # refold [RUN] [--device DEVICE]  (DEVICE: a Fold cover device id from tools/devices.json)
+        rest = sys.argv[2:]
+        device = "galaxyzfold6cover"
+        if "--device" in rest:
+            i = rest.index("--device")
+            device = rest[i + 1] if i + 1 < len(rest) else sys.exit("--device needs a device id")
+            del rest[i:i + 2]
+        sys.exit(0 if refold(rest[0] if rest else "refold", device=device) else 1)
     elif cmd == "a11y":
         # a11y [RUN] [--nocapture] [key=value ...]  (GG-T495, e.g. textsize=130 reducemotion=1 colorblind=1)
         rest = [a for a in sys.argv[2:] if a != "--nocapture"]
@@ -4006,6 +4178,10 @@ def _dispatch(cmd):
         sys.exit(0 if firstenchant() else 1)
     elif cmd == "firstskill":
         sys.exit(0 if firstskill() else 1)
+    elif cmd == "perf":
+        raw = sys.argv[sys.argv.index("--device") + 1] if "--device" in sys.argv else devices.DEFAULT
+        names = [a for a in sys.argv[2:] if not a.startswith("--") and a != raw]
+        perf(names[0] if names else "perf", device=devices.device_id(raw))
     elif cmd == "fullloop":
         sys.exit(0 if fullloop(battles=int(sys.argv[2]) if len(sys.argv) > 2 else 4) else 1)
     elif cmd == "clips":

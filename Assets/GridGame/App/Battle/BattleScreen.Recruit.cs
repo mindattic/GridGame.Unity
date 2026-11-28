@@ -90,7 +90,7 @@ namespace GridGame.App
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             App.Audio.Sfx("battle.victory", 0.6f);
             if (e.GoldPaid > 0) App.StartCoroutine(FloatText(e.UnitId, CombatTextKind.Support, $"-{e.GoldPaid} G", 0.6f, 0f, Palette.Gold));
-            Billboard($"{u.Name} joins the fight! Keep them standing to recruit them.", null, new Color(0.6f, 1f, 0.75f));
+            Billboard($"{u.Name} joins the fight! Keep them standing to recruit them.", null, Palette.Vfx.Ally);
             if (ReduceMotion) { v.SetTeamLook(u); yield break; }
             // GG-T1072: the tile turns over like a card, showing its back past 90°, and comes round guest-green.
             App.Audio.Sfx("battle.whoosh", 0.6f, 1.1f);

@@ -20,6 +20,9 @@ namespace GridGame.App.Dev
         public int StageIndex;
         public int Wave;
         public bool IsBoss;
+        /// <summary>GG-T2145: the stage is a Prologue or Tutorial drill, which sits outside the campaign's stage list
+        /// (<see cref="StageIndex"/> is 0: no campaign stage is cleared before it).</summary>
+        public bool Drill;
         public string BossClass;
         public string Screen;
     }
@@ -40,6 +43,7 @@ namespace GridGame.App.Dev
             party = Save.Party.Select(id => new { hero = id, level = Progression.Level(Save.Hero(id)) }).ToList(),
             reserve = Save.Roster.Where(h => !Save.Party.Contains(h.ClassId)).Select(h => h.ClassId).ToList(),
             gear = Gear,
+            consumables = Save.Party.ToDictionary(id => id, id => Save.Hero(id).Bar.Where(e => e != null && e.StartsWith("item:")).Select(e => e.Substring(5)).ToList()),
             cleared = Save.ClearedStages.Count,
             highestCleared = Save.HighestClearedStage,
             story = Story,
@@ -92,6 +96,13 @@ namespace GridGame.App.Dev
             return Math.Max(0, st.Waves.Count - 1);
         }
 
+        /// <summary>GG-T2145: the Prologue or Tutorial drill named <paramref name="id"/>, or null.</summary>
+        public static StageDef DrillStage(ContentDb c, string id)
+        {
+            var stage = c.TryStage(id);
+            return stage != null && Drills.IsDrill(stage) && Drills.OrderOf(c, stage.Id).Exists(x => string.Equals(x, stage.Id, StringComparison.OrdinalIgnoreCase)) ? stage : null;
+        }
+
         /// <summary>Resolves a target string against content. Throws ArgumentException on one that names nothing.</summary>
         public static ScenarioTarget Resolve(ContentDb c, string target)
         {
@@ -139,7 +150,9 @@ namespace GridGame.App.Dev
                 case "stage":
                 {
                     int i = stages.FindIndex(x => string.Equals(x.Id, arg, StringComparison.OrdinalIgnoreCase));
-                    if (i < 0) throw new ArgumentException($"no campaign stage '{arg}'");
+                    if (i < 0 && DrillStage(c, arg) is StageDef drill)
+                        return new ScenarioTarget { Kind = ScenarioKind.Battle, StageId = drill.Id, StageIndex = 0, Drill = true };
+                    if (i < 0) throw new ArgumentException($"no campaign or drill stage '{arg}'");
                     return new ScenarioTarget { Kind = ScenarioKind.Battle, StageId = stages[i].Id, StageIndex = i };
                 }
                 case "region":
@@ -194,21 +207,24 @@ namespace GridGame.App.Dev
 
             // TestLoop.NewSave's recipe, minus TestMode (this save sees story) and the up-front NPCs (the beats bring them).
             s.TutorialDone = true;
-            Drills.MarkAllCleared(c, s);
+            if (target.Drill) ClearDrillsBefore(c, s, target.StageId);
+            else Drills.MarkAllCleared(c, s);
             Onboarding.Finish(s);
             if (def.AllFeatures) CampNpcs.JoinAll(s);
 
-            for (int i = 0; i < cleared; i++) s.ClearedStages.Add(stages[i].Id);
+            for (int i = 0; i < cleared; i++) { s.ClearedStages.Add(stages[i].Id); BestiaryRegions.RecordStage(s, stages[i]); }
             s.HighestClearedStage = cleared - 1;
+
+            if (target.Drill && c.Stage(target.StageId).PartySize is int fielded && s.Party.Count > fielded) s.Party.RemoveRange(fielded, s.Party.Count - fielded);
 
             var result = new ScenarioResult { Save = s, Target = target };
             var nextStage = target.StageId != null ? c.Stage(target.StageId) : stages.LastOrDefault();
             int level = ScenarioDef.Int(def.Level)
-                ?? (nextStage == null ? 1 : Progression.StageRecommendedLevel(c, s, nextStage) + (target.IsBoss ? 1 : 0));
+                ?? (nextStage == null || target.Drill ? 1 : Progression.StageRecommendedLevel(c, s, nextStage) + (target.IsBoss ? 1 : 0));
             result.Level = level = Math.Max(1, level);
 
             foreach (var h in s.Roster) RaiseTo(c, h, level);
-            if (nextStage != null) result.Story = DialogueRunner.PlayPendingBeatsHeadless(c, s, nextStage.Id);
+            if (nextStage != null && !target.Drill) result.Story = DialogueRunner.PlayPendingBeatsHeadless(c, s, nextStage.Id);
             foreach (var h in s.Roster) { RaiseTo(c, h, level); h.VariantPending = false; }
 
             for (var ch = Story.ChapterDue(c, s); ch != null; ch = Story.ChapterDue(c, s)) Story.MarkChapterSeen(c, s, ch);
@@ -218,6 +234,10 @@ namespace GridGame.App.Dev
 
             s.Gold = ScenarioDef.Int(def.Gold) ?? Progression.StartingGold + GoldPerClear * cleared;
             if (!ScenarioDef.IsWord(def.Gear, "none")) EquipBest(c, s, result);
+            EquipConsumables(c, s, def.Consumables);
+            if (def.Bag != null)
+                foreach (var kv in def.Bag)
+                    s.AddItem((c.TryItem(kv.Key) ?? throw new ArgumentException($"bag: unknown item '{kv.Key}'")).Id, Math.Max(1, kv.Value));
             FillCaravan(c, s, def.Caravan, cleared, stages.Count);
 
             if (def.Food is int food) s.World.Food = Math.Max(0, food);
@@ -228,6 +248,15 @@ namespace GridGame.App.Dev
             }
             else TravelRules.MakeCamp(s);
             return result;
+        }
+
+        /// <summary>GG-T2145: every drill ahead of <paramref name="stageId"/> in its own list (Prologue or Tutorial) is cleared,
+        /// as a player standing at it would have.</summary>
+        private static void ClearDrillsBefore(ContentDb c, SaveData s, string stageId)
+        {
+            s.ClearedDrills ??= new HashSet<string>();
+            var order = Drills.OrderOf(c, stageId);
+            foreach (var id in order.Take(order.FindIndex(x => string.Equals(x, stageId, StringComparison.OrdinalIgnoreCase)))) s.ClearedDrills.Add(id);
         }
 
         /// <summary>Raises a hero to <paramref name="level"/> the way leveling would: its XP, the skill points for each
@@ -272,6 +301,28 @@ namespace GridGame.App.Dev
                     else s.AddItem(best.Id, -1);
                 }
                 result.Gear[h.ClassId] = worn;
+            }
+        }
+
+        /// <summary>Each hero's battle items (<see cref="ScenarioDef.Consumables"/>): the stack into the bag, then onto the bar
+        /// through <see cref="Abilities.Assign"/>, in the first empty unlocked slot or else the last unlocked one.</summary>
+        private static void EquipConsumables(ContentDb c, SaveData s, Dictionary<string, Dictionary<string, int>> spec)
+        {
+            if (spec == null) return;
+            int unlocked = Progression.UnlockedSlots(s);
+            foreach (var kv in spec)
+            {
+                var h = s.Hero(kv.Key) ?? throw new ArgumentException($"consumables: '{kv.Key}' is not in the roster");
+                foreach (var stack in kv.Value ?? new Dictionary<string, int>())
+                {
+                    var item = c.TryItem(stack.Key);
+                    if (item == null || item.Type != ItemType.Consumable) throw new ArgumentException($"consumables: '{stack.Key}' is not a battle item");
+                    s.AddItem(item.Id, Math.Max(1, stack.Value));
+                    int free = h.Bar.IndexOf(null);
+                    int slot = free >= 0 && free < unlocked ? free : unlocked - 1;
+                    var r = Abilities.Assign(c, s, h, slot, "item:" + item.Id);
+                    if (!r.Ok) throw new ArgumentException($"consumables: {kv.Key} can't carry {item.Id}: {r.Message}");
+                }
             }
         }
 

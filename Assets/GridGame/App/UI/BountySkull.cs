@@ -10,7 +10,7 @@ namespace GridGame.App
     /// </summary>
     internal static class BountySkull
     {
-        public static readonly Color Fill = new Color(0.42f, 0.04f, 0.05f, 0.95f);
+        public static readonly Color Fill = Palette.Scene.SkullFill;
 
         public static VisualElement Make(float size, VisualElement parent = null)
         {
@@ -24,7 +24,7 @@ namespace GridGame.App
             disc.style.justifyContent = Justify.Center;
             var glyph = new Label("☠") { pickingMode = PickingMode.Ignore };
             glyph.style.fontSize = size * 0.7f;
-            glyph.style.color = Color.white;
+            glyph.style.color = Palette.White;
             glyph.style.unityTextAlign = TextAnchor.MiddleCenter;
             glyph.style.marginLeft = glyph.style.marginRight = glyph.style.marginTop = glyph.style.marginBottom = Space.S0;
             glyph.style.paddingLeft = glyph.style.paddingRight = glyph.style.paddingTop = glyph.style.paddingBottom = Space.S0;

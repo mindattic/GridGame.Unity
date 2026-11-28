@@ -27,6 +27,7 @@ namespace GridGame.Meta
             }
             foreach (var id in h.Jewelry.Values) if (id != null) spec.EquippedItemIds.Add(id);
             spec.Bar = new List<string>(h.Bar);
+            spec.Layout = h.Actions; // GG-T1917: the hero's own Abilities sheet tree
             // GG-T296: learned passives/reactives (skill-tree grants like Last Bastion's Counter Attack) fight with the hero.
             // GG-T301: only the ones switched on, up to the hero's passive slots (PassiveLoadout); class-kit ones are innate.
             spec.Passives.AddRange(PassiveLoadout.Active(c, h));
@@ -75,10 +76,12 @@ namespace GridGame.Meta
             // One shared pool: every hero's item slots draw from the same owned counts, in party order, so five heroes
             // can't each carry a full stack of the same five potions (GG-T285: 5 owned X-Potions became 25 heals).
             var owned = new Dictionary<string, int>(s.Inventory);
+            int fielded = drill && stage.PartySize is int size ? size : int.MaxValue; // GG-T1958: The Trap fields two
             foreach (var id in s.Party)
             {
                 var h = s.Hero(id);
                 if (h == null) continue;
+                if (setup.Party.Count >= fielded) break;
                 var spec = SpecFor(c, h, s);
                 spec.ItemCounts = owned;
                 setup.Party.Add(spec);
@@ -109,6 +112,8 @@ namespace GridGame.Meta
                 Victory = battle.Phase == BattlePhase.Victory,
                 Escaped = battle.Phase == BattlePhase.Escaped,
                 Retreated = battle.Phase == BattlePhase.Retreated,
+                Withdrawn = battle.Phase == BattlePhase.Withdrawn,
+                WithdrawLine = battle.Phase == BattlePhase.Withdrawn ? battle.Stage.Withdraw?.Line : null,
                 StageId = battle.Stage.Id,
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,
@@ -129,7 +134,7 @@ namespace GridGame.Meta
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);
 
-            foreach (var kv in r.ItemsConsumed) s.AddItem(kv.Key, -kv.Value);
+            if (!rep.Withdrawn) foreach (var kv in r.ItemsConsumed) s.AddItem(kv.Key, -kv.Value); // GG-T2070: a scripted withdrawal costs nothing
             foreach (var id in r.Seen) Entry(s, id).Seen = true;
 
             if (rep.Victory)
@@ -181,6 +186,20 @@ namespace GridGame.Meta
                 var milestone = Milestones.Pay(c, s, rep, battle.Stage.Id); // a theme's first full clear teaches (GG-T301)
                 ManaOrbs.AfterVictory(c, s, rep, battle.Stage.Id, milestone); // GG-T1811: milestone Shards, Halcyon find Dust
                 rep.TameOffers.AddRange(Domestication.Offers(c, s, battle)); // a fully bonded tamed monster asks to join (GG-T303)
+            }
+            else if (rep.Withdrawn)
+            {
+                // GG-T2070: a scripted withdrawal is no defeat and costs nothing: everyone is back to full, the items used
+                // are kept (above), gear wears nothing, and the stage counts as played so the story goes on. It earns nothing.
+                foreach (var id in s.Party) { var h = s.Hero(id); if (h != null) h.Hp = 0; }
+                int index = c.CampaignStages().FindIndex(x => x.Id == battle.Stage.Id);
+                rep.FirstClear = s.ClearedStages.Add(battle.Stage.Id);
+                if (index > s.HighestClearedStage)
+                {
+                    s.HighestClearedStage = index;
+                    var list = c.CampaignStages();
+                    if (index + 1 < list.Count) rep.UnlockedStage = list[index + 1].Name;
+                }
             }
             else if (rep.Escaped)
             {
@@ -237,7 +256,7 @@ namespace GridGame.Meta
             rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
             // GG-T1790 (§28): on the road a win carries the party mana pool's points on and the Medic Wagon patches wounds; a
             // loss camps.
-            rep.CarriedMana = TravelRules.AfterBattle(c, s, rep.Victory, rep.ManaLeft, out rep.MedicHealed);
+            if (!rep.Withdrawn) rep.CarriedMana = TravelRules.AfterBattle(c, s, rep.Victory, rep.ManaLeft, out rep.MedicHealed); // GG-T2070: a withdrawal doesn't make camp
             // GG-T676, GG-T1927 (§3.1.0): the points left at the end of a won stage settle into Mana Dust, floor(points / 100)
             // x DustPerOrbLeft. Points travel carries to its next battle settle at the battle that finally keeps them; a lost
             // stage's mana simply discharges (no Dust, like every other reward of a loss).
@@ -354,6 +373,14 @@ namespace GridGame.Meta
         /// end, so each retry of a long gauntlet leaves the party stronger. Shared by Defeat and Retreat.</summary>
         private static void GrantHardWonXp(SaveData s, BattleState battle, BattleResults r, BattleReport rep)
         {
+            GrantXp(s, battle, r, rep);
+            foreach (var kv in r.Kills) Entry(s, kv.Key).Defeated += kv.Value;
+        }
+
+        /// <summary>The battle's XP to each of the party's own heroes (no guest or visitor), with their level-ups and skill
+        /// points. Shared by Defeat, Retreat and a prologue battle's win (GG-T2138).</summary>
+        internal static void GrantXp(SaveData s, BattleState battle, BattleResults r, BattleReport rep)
+        {
             var heroes = battle.Units.Where(u => u.IsHero && !u.IsGuest && !u.IsVisitor).ToList();
             rep.XpEach = heroes.Count > 0 ? r.Xp : 0;
             int foeLevel = TopFoeLevel(battle);
@@ -367,7 +394,6 @@ namespace GridGame.Meta
                 if (after > before) rep.LevelUps.Add((h.ClassId, before, after));
                 h.SkillPoints += Formulas.SkillPointsForLevelUp(before, after);
             }
-            foreach (var kv in r.Kills) Entry(s, kv.Key).Defeated += kv.Value;
         }
 
         /// <summary>The level of the strongest foe in the battle: what catch-up XP measures a hero against (GG-T474).</summary>

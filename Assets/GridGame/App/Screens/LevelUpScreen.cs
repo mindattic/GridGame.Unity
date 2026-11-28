@@ -23,7 +23,7 @@ namespace GridGame.App
         private int index;
         private Coroutine running;
         private readonly List<Coroutine> reveals = new List<Coroutine>();
-        private VisualElement portraitRow, xpGauge, statColumn;
+        private VisualElement portraitRow, xpBar, statColumn;
         private Label levelLabel;
         private bool skipHandlerBound;
         /// <summary>Set once the router pops this screen. The fanfare coroutine runs on GameApp, not on this screen, so
@@ -57,8 +57,10 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col center", root);
 
-            var head = Ui.Text("LEVEL UP!", "t-display shadow", col);
-            Fonts.UseDisplay(head);
+            var head = Ui.Display("LEVEL UP", col, "shadow");
+            head.name = "levelup-title";
+            head.style.fontSize = TypeScale.Celebration;
+            head.style.unityTextAlign = TextAnchor.MiddleCenter;
             head.style.color = Palette.Gold;
             Ui.Margin(head, bottom: Space.S32);
 
@@ -66,7 +68,7 @@ namespace GridGame.App
             portraitRow.style.opacity = 0f;
             var frame = Ui.El(null, portraitRow);
             frame.style.width = Size.PortraitW; frame.style.height = Size.PortraitH;
-            frame.style.borderTopWidth = frame.style.borderBottomWidth = frame.style.borderLeftWidth = frame.style.borderRightWidth = 4;
+            frame.style.borderTopWidth = frame.style.borderBottomWidth = frame.style.borderLeftWidth = frame.style.borderRightWidth = Size.Hairline;
             var roleColor = Ui.RoleColor(def.Role);
             frame.style.borderTopColor = frame.style.borderBottomColor = frame.style.borderLeftColor = frame.style.borderRightColor = roleColor;
             frame.style.backgroundColor = Palette.Ink.WithA(0.6f);
@@ -75,12 +77,12 @@ namespace GridGame.App
 
             var info = Ui.El("col", portraitRow);
             Ui.Margin(info, left: Space.S24); info.style.width = Fit.C(27f);
-            var nm = Ui.Text(def.Name, "t-h1 shadow", info);
-            Fonts.UseDisplay(nm);
+            Ui.Heading(def.Name, info, "shadow").name = "levelup-name";
             Ui.Margin(Ui.RoleBadge(def.Role, info), bottom: Space.S8);
-            levelLabel = Ui.Text($"Lv {from}", "t-h1 shadow gold", info);
-            xpGauge = Ui.Gauge(0f, info, 300);
-            Ui.Margin(xpGauge, top: Space.S8);
+            levelLabel = Ui.Heading($"Lv {from}", info, "shadow gold");
+            levelLabel.name = "levelup-level";
+            xpBar = Ui.ProgressBar(0f, info, null, "levelup-xp");
+            Ui.Margin(xpBar, top: Space.S8);
 
             statColumn = Ui.El("col", col);
             Ui.Margin(statColumn, top: Space.S24);
@@ -94,7 +96,9 @@ namespace GridGame.App
                 var nextRow = Ui.El("row", col);
                 nextRow.name = "levelup-next-ability";
                 Ui.Margin(nextRow, top: Space.S24); nextRow.style.alignItems = Align.Center;
-                Ui.Margin(Ui.Text(NextAbility.Line(c, heroSave), "small gold", nextRow), right: Space.S16);
+                var line = Ui.Para(NextAbility.Line(c, heroSave), nextRow, "gold");
+                line.style.flexShrink = 1;
+                Ui.Margin(line, right: Space.S16);
                 RowIcon.IconButton("Learn", RowKind.Ability, () => Learn(classId, next), "btn--small", nextRow).name = "levelup-learn";
             }
 
@@ -170,25 +174,24 @@ namespace GridGame.App
             for (int lvl = from; lvl < to; lvl++)
             {
                 App.Audio.Sfx("battle.crit", 0.6f, 0.8f + 0.1f * (lvl - from));
-                yield return Tween.Run(Timing.Standard, k => Ui.SetGauge(xpGauge, k));
+                yield return Tween.Run(Timing.Standard, k => Ui.SetProgress(xpBar, k));
                 levelLabel.text = $"Lv {lvl + 1}";
                 reveals.Add(App.StartCoroutine(Tween.Pop(levelLabel, 1.3f, 0.2f)));
                 yield return Tween.Wait(Timing.Quick);
-                Ui.SetGauge(xpGauge, 0f);
+                Ui.SetProgress(xpBar, 0f);
             }
             int intoFinal = hero != null ? hero.TotalXp - Formulas.TotalXpForLevel(to) : 0;
             float finalFrac = Mathf.Clamp01(intoFinal / (float)Formulas.XpToNext(to));
             App.Audio.Sfx("battle.orb", 0.5f);
-            yield return Tween.Run(Timing.Emphasis, k => Ui.SetGauge(xpGauge, Mathf.Lerp(0f, finalFrac, k)));
+            yield return Tween.Run(Timing.Emphasis, k => Ui.SetProgress(xpBar, Mathf.Lerp(0f, finalFrac, k)));
             yield return Tween.Wait(Timing.Standard);
 
             var before = Formulas.StatsAtLevel(def, from);
             var after = Formulas.StatsAtLevel(def, to);
             foreach (var (label, b, a) in StatRows(before, after))
             {
-                var row = Ui.El("row", statColumn);
-                Ui.Text(label, "small dim", row).style.width = Size.ColumnS;
-                Ui.Text($"{b:0} → {a:0}  (+{a - b:0})", "small good", row);
+                var row = Ui.Field(label, $"{b:0} to {a:0} · +{a - b:0}", statColumn, "good", "levelup-stat-" + label.ToLowerInvariant());
+                row.Q<Label>("value").style.whiteSpace = WhiteSpace.NoWrap; // the column grows row by row; a short value never wraps
                 reveals.Add(App.StartCoroutine(Tween.Pop(row, 1.15f, 0.15f)));
                 yield return Tween.Wait(Timing.Instant);
             }

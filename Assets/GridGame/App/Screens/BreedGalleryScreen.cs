@@ -17,7 +17,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             root.style.backgroundColor = new Color(0.07f, 0.07f, 0.10f);
-            root.style.paddingTop = root.style.paddingLeft = root.style.paddingRight = 12;
+            root.style.paddingTop = root.style.paddingLeft = root.style.paddingRight = Space.TargetHalfGap;
             var db = GameApp.I.Content;
             var breeds = db.BreedOrder.Where(b => b != null).ToList();
             var classes = db.Classes.Values
@@ -25,9 +25,9 @@ namespace GridGame.App
                 .OrderBy(c => c.Id).ToList();
 
             var title = new Label($"Breeds: {classes.Count} masked classes x {breeds.Count} breeds") { name = "breed-title" };
-            title.style.color = Color.white;
+            title.style.color = Palette.White;
             title.style.fontSize = 28;
-            title.style.marginBottom = 8;
+            title.style.marginBottom = Space.S8;
             root.Add(title);
 
             var head = Row();
@@ -43,8 +43,8 @@ namespace GridGame.App
                     var host = new VisualElement { name = $"breed-{c.Id}-{b.Id}" };
                     host.style.flexGrow = 1;
                     host.style.flexBasis = 0;
-                    host.style.height = 140;
-                    host.style.marginLeft = host.style.marginRight = 2;
+                    host.style.height = Size.Medallion;
+                    host.style.marginLeft = host.style.marginRight = Space.S2;
                     host.style.backgroundColor = new Color(0.13f, 0.13f, 0.17f);
                     Ui.PortraitThumb(host, c.Id, useThumb: false, breed: b.IsPlain ? null : b.Id);
                     row.Add(host);
@@ -58,7 +58,7 @@ namespace GridGame.App
             var r = new VisualElement();
             r.style.flexDirection = FlexDirection.Row;
             r.style.alignItems = Align.Center;
-            r.style.marginBottom = 4;
+            r.style.marginBottom = Space.S4;
             return r;
         }
 

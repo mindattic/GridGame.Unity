@@ -1,0 +1,27 @@
+dialogue prologue_rematch
+title: The Rematch
+trigger: Prologue Rematch
+backdrop: greenvalley
+speaker commander $commander
+speaker redmage redmage
+speaker barbarian barbarian
+speaker knight knight
+
+node shattered commander
+  The Collector's plate lies in pieces on the bridge. His keys hang at his belt.
+  -> mage
+
+node mage redmage
+  You took his plate off with an axe. I like you already.
+  -> axe
+
+node axe barbarian
+  Took all night to learn. Worth it.
+  -> wagon
+
+node wagon knight
+  His chest is on the white wagon. Gold, a flask, a book. And the wagon is ours now too.
+  -> join
+
+node join redmage
+  He kept that book from me for a month. Let me read it, and I'll show you what it's for.

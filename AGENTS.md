@@ -44,11 +44,13 @@ pick a preset or write a spec (every field optional; fill each gap yourself), th
 It launches a detached player on a throwaway "Scenario" profile at that device's size and safe area, leaves the window
 open and adds a screenshot to a preview set. Say in one line what was set up. One game instance at a time (--replace).
 - Presets (`tools/scenarios/*.json`): `overworld`, `first-boss`, `final-boss`, `camp-midgame`, `summon`, `caravan`,
-  `skill-hex`, and per region `<theme>-start` / `<theme>-boss` (greenvalley, lanternroad, desert, swamp, cave, still,
+  `skill-hex`, `potion-equipped` (a Healing Potion on the Knight's bar: Abilities > Consumables in battle), `potion-equipped-open-at-consumables` (the same, landed with that sheet open), and per region `<theme>-start` / `<theme>-boss` (greenvalley, lanternroad, desert, swamp, cave, still,
   cityruins, cathedral, bloom, greenvalley2, cityruins2, swamp2, desert2, cave2, morrowsshadow).
 - Spec fields (`Assets/GridGame/App/Dev/Scenario.cs`): `target` (first-boss, boss:N, boss:<class>, final-boss,
   stage:<id>, region:<theme>, screen:<id>, overworld), `party`, `level`, `progress`, `gear`, `caravan`, `gold`, `food`,
-  `onTheRoad`, `carriedOrbs`, `allFeatures`, `settings`, `fullStage`, `realLaunch`.
+  `onTheRoad`, `carriedOrbs`, `allFeatures`, `consumables` (class → item → count, on the bar), `settings`, `fullStage`,
+  `realLaunch`, `open` (a state opened on the landed screen with no taps: `abilities:consumables`,
+  `abilities:spells/fire` by breadcrumb names, `info`; add more in `ScenarioLander.Openers`).
 
 ## Owner walkthrough notes
 With Developer options on (`GridGame.App.Dev.DevOptions.Enabled`), the game shows a small Note button in the top-left corner and a

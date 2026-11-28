@@ -12,7 +12,7 @@ namespace GridGame.Core.Rules
     /// </summary>
     public static class TargetText
     {
-        /// <summary>The aim: no aim, a unit or a tile, where it may be, and the area it covers.</summary>
+        /// <summary>The aim: no aim, a unit, several units, a way or a tile, where it may be, and the area it covers.</summary>
         public static string How(AbilityDef a)
         {
             if (a == null) return "";
@@ -21,7 +21,7 @@ namespace GridGame.Core.Rules
             if (a.Escape) return "No aim: the party flees the battle at once.";
             if (a.Revives) return "No aim: the fallen ally rises on a free tile beside you.";
             if (a.Shape == TargetShape.Self || a.Vanishes)
-                return a.Vanishes ? "No aim: smoke spreads around your own tile, then you reappear on a random safe tile at least 2 away." : "No aim: it works on you.";
+                return a.Vanishes ? "No aim: smoke spreads around your own tile and you vanish. On your next turn you reappear on a random safe tile at least 2 away." : "No aim: it works on you.";
             if (a.Shape == TargetShape.AllEnemies || a.Shape == TargetShape.AllAllies) return "No aim: it reaches the whole board.";
 
             if (a.Mode == TargetMode.Auto)
@@ -30,6 +30,18 @@ namespace GridGame.Core.Rules
                 if (a.Shape == TargetShape.Wall) return $"No aim: a row of {2 * a.Radius + 1} tiles through your own tile.";
                 return $"No aim: {Area(a.Shape, a.Radius)} centred on you ({Cells(a.Shape, a.Radius)} tiles).";
             }
+
+            if (a.Mode == TargetMode.PickMulti)
+            {
+                string reach = a.AdjacentOnly ? "[adjacent] to you (beside, not diagonal)"
+                    : a.MaxRange > 0 ? $"within {a.MaxRange} tile{S(a.MaxRange)} of you"
+                    : "anywhere on the board";
+                return $"Pick up to {a.MaxPicks} different units {reach}, then Confirm; it works on each one alone, in the order picked.";
+            }
+
+            if (a.Mode == TargetMode.PickDirection)
+                return IsSingle(a.Shape) ? "Pick a way (one of 4 arrows around you); it works on the tile beside you that way."
+                    : $"Pick a way (one of 4 arrows around you); {Area(a.Shape, a.Radius)} through the tile beside you that way, {Cells(a.Shape, a.Radius)} tiles.";
 
             if (a.Mode == TargetMode.PickActor)
             {
@@ -72,6 +84,9 @@ namespace GridGame.Core.Rules
             if (a.StealsBoon) return "One foe beside you that wears a boon; you take the boon.";
             if (a.RedirectsDebuffs) return "One ally beside you that has a debuff; a foe beside you takes it.";
             if (a.Magnetizes > 0) return $"Plated or Tech foes in reach{Only(a)}, up to {Cells(a.Shape, a.Radius)}.";
+
+            if (a.Mode == TargetMode.PickMulti)
+                return $"Up to {a.MaxPicks} {(a.Filter == TargetFilter.EnemyOnly ? "foes" : a.Filter == TargetFilter.AllyOnly ? "allies, you included" : "units, friend or foe")}, one each{Only(a)}.";
 
             bool single = IsSingle(a.Shape);
             bool youInArea = a.Mode == TargetMode.Auto;

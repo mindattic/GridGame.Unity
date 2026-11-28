@@ -13,7 +13,7 @@ namespace GridGame.App
     public sealed class StageSelectScreen : HubPage
     {
         public override string Id => "stages";
-        protected override string Title => "Adventure";
+        protected override string Title => "Journey";
         protected override string Backdrop => HubScreen.ThemeFor(C, S);
 
         /// <summary>GG-T388 (owner 2026-11-16: "a simple stage select which allows you to travel to and from previous battles
@@ -75,9 +75,10 @@ namespace GridGame.App
                 var t = theme;
                 int cleared = theme.Stages.Count(id => S.ClearedStages.Contains(id));
                 string status = cleared < theme.Stages.Count ? $"New · {cleared}/{theme.Stages.Count} cleared" : $"Cleared {cleared}/{theme.Stages.Count}";
-                if (Features.Bounties && theme.Stages.Any(id => Bounties.OnStage(C, S, id).Count > 0)) status = "☠ " + status; // a hunted target roams here (GG-T431)
+                bool hunted = Features.Bounties && theme.Stages.Any(id => Bounties.OnStage(C, S, id).Count > 0); // a hunted target roams here (GG-T431)
                 var row = Ui.MenuRow(theme.Name, status, () => { region = t.Id; Refresh(); }, list, null, true);
                 row.name = "expedition-" + theme.Id;
+                if (hunted) RowIcon.Prefix(row.Q<Label>("value"), "map-bounty");
                 // GG-T715: the region's board tile leads the row, badged Cleared (every stage won) or New (one still to win).
                 RowIcon.Badge(row.KindIcon(RowKind.Place, theme.Id), cleared == theme.Stages.Count ? RowKind.Cleared : RowKind.New);
                 if (cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
@@ -119,9 +120,10 @@ namespace GridGame.App
                 // LevelOverride, so the index-based curve alone advertised the wrong level for them (GG-T70).
                 int recommended = st.LevelOverride ?? Progression.RecommendedLevel(index);
                 string state = cleared ? (k > 0 ? "Cleared · hunt" : "Cleared") : "New";
-                if (Features.Bounties && Bounties.OnStage(C, S, st.Id).Count > 0) state = "☠ " + state; // a hunted target roams here (GG-T431)
+                bool hunted = Features.Bounties && Bounties.OnStage(C, S, st.Id).Count > 0; // a hunted target roams here (GG-T431)
                 var row = Ui.MenuRow(st.Name, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · Locked", () => Launch(st, index), list, null, can);
                 row.name = "stage-" + st.Id;
+                if (hunted) RowIcon.Prefix(row.Q<Label>("value"), "map-bounty");
                 // GG-T715: the region's tile leads every stage, badged Cleared / New / Locked (was a star, open star or
                 // diamond in the text); an enterable stage ends in the Enter arrow so it reads as a way in, not a line of text.
                 RowIcon.Badge(row.KindIcon(RowKind.Stage, theme.Id), cleared ? RowKind.Cleared : can ? RowKind.New : RowKind.Locked);
@@ -143,8 +145,8 @@ namespace GridGame.App
         /// <summary>The Enter arrow at the right end of an enterable stage row (GG-T715), after its value.</summary>
         private static void EnterMark(VisualElement row)
         {
-            var go = new KindEmblem(RowKind.Enter) { name = "enter-mark" };
-            go.AddToClassList(RowIcon.Class);
+            var go = RowIcon.SetIcon(RowIcon.IconId(RowKind.Enter), RowIcon.Class);
+            go.name = "enter-mark";
             go.style.width = go.style.height = Size.IconS;
             go.style.flexShrink = 0f;
             go.AddToClassList("enter-mark");

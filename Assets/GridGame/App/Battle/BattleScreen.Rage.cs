@@ -20,10 +20,10 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color RageRed = new Color(0.88f, 0.27f, 0.17f);
-        private static readonly Color RageFlush = new Color(1.6f, 0.38f, 0.3f);
-        private static readonly Color SteamWhite = new Color(0.94f, 0.95f, 0.97f);
-        private static readonly Color RampageDust = new Color(0.74f, 0.64f, 0.5f);
+        private static readonly Color RageRed = Palette.Vfx.Rage;
+        private static readonly Color RageFlush = Palette.Vfx.RageFlush;
+        private static readonly Color SteamWhite = Palette.Vfx.Steam;
+        private static readonly Color RampageDust = Palette.Vfx.Dust;
 
         /// <summary>Placeholder cue (docs/SFX.md): a steam-train whistle and chugging. Stand-ins play under it.</summary>
         private const string SteamTrainCue = "minotaur.steamtrain";
@@ -100,7 +100,7 @@ namespace GridGame.App
         {
             CutInsShown++;
             const float h = 440f;
-            var card = ActionCard(foe, h, Team.Enemy, "RAGE!", new Color(1f, 0.55f, 0.42f), out var portrait);
+            var card = ActionCard(foe, h, Team.Enemy, "RAGE!", Palette.Vfx.RageCallout, out var portrait);
             float w = card.style.width.value.value;
             float y = BoardTop + 470f;
             float rest = GameApp.StageWidth - w * 0.8f, off = GameApp.StageWidth + w * 0.75f;
@@ -116,7 +116,7 @@ namespace GridGame.App
                     p.style.position = Position.Absolute;
                     p.style.backgroundColor = SteamWhite;
                     p.style.opacity = 0f;
-                    p.style.borderTopLeftRadius = p.style.borderTopRightRadius = p.style.borderBottomLeftRadius = p.style.borderBottomRightRadius = 999f;
+                    p.style.borderTopLeftRadius = p.style.borderTopRightRadius = p.style.borderBottomLeftRadius = p.style.borderBottomRightRadius = Radius.Pill;
                     card.Add(p);
                     puffs.Add((p, s == 0 ? -1f : 1f, i));
                 }
@@ -139,13 +139,13 @@ namespace GridGame.App
             App.Audio.Sfx("battle.dash", 0.7f, 0.75f);
             const float hold = 0.7f;
             App.Audio.DuckFor(Timing.Quick * 2.3f + hold);
-            var baseTint = new Color(1f, 0.88f, 0.88f);
+            var baseTint = Palette.FoeTint;
             float clock = 0f;
             yield return Tween.Run(Timing.Quick * 1.3f, k =>
             {
                 Put(Mathf.LerpUnclamped(off, rest, Tween.Back(k)));
                 card.style.opacity = Mathf.Min(1f, k * 3f);
-                portrait.style.unityBackgroundImageTintColor = Color.Lerp(new Color(3f, 2.2f, 2.2f), baseTint, k);
+                portrait.style.unityBackgroundImageTintColor = Color.Lerp(Palette.Vfx.RageFlash, baseTint, k);
             });
             App.StartCoroutine(Tween.Shake(card, 12f, Timing.Quick));
             App.Audio.Sfx("element.steam", 0.9f, 0.6f);

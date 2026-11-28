@@ -12,7 +12,7 @@ namespace GridGame.App
 {
     /// <summary>The Hero screen's Abilities tab (§25.6, GG-T435): the battle bar over the Known / Items / Passives /
     /// Locked sub-tabs, plus Board — the skill hexagon (GG-T1079: the gold Learn sub-tab is gone; abilities come from the board).</summary>
-    internal sealed class AbilitiesTab : HeroTab
+    internal sealed partial class AbilitiesTab : HeroTab
     {
         private int slot;
         private int tab = -1;
@@ -20,7 +20,7 @@ namespace GridGame.App
         /// <summary>The Board sub-tab's index (after Known, Items, Passives, Locked): the skill hexagon (GG-T1056),
         /// in place of the old Talents skill trees; its id stays "talents".</summary>
         public const int TalentsSub = 4;
-        private static readonly string[] SubTabs = { "Known", "Items", "Passives", "Locked", "Board" };
+        private static readonly string[] SubTabs = { "Known", "Items", "Passives", "Locked", "Talents" };
 
         public AbilitiesTab(int subTab = -1, (int Q, int R)? boardNode = null) { tab = subTab; talents.Select(boardNode); }
         public override void OnHeroChanged() => talents.OnHeroChanged();
@@ -65,28 +65,31 @@ namespace GridGame.App
             for (int i = 0; i < Progression.MaxBarSlots; i++)
             {
                 int idx = i;
-                var cell = Ui.El("col center", bar);
+                // R3: a kit card; the picked slot is pressed in rather than ringed in gold.
+                var cell = Ui.El("card card-tap" + (i == slot ? " tap--selected" : ""), bar);
+                cell.style.flexDirection = FlexDirection.Column;
+                cell.style.alignItems = Align.Center;
+                cell.style.justifyContent = Justify.Center;
                 // Every bar slot shares the row with even gutters, however many slots or however wide the stage (POL-C8).
                 cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.minHeight = Size.Cell; // GG-T1145: min, not fixed: a long name wraps to 3 lines and grows the cell instead of spilling onto the Supporter line
                 Ui.Margin(cell, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
-                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 14;
-                cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = i == slot ? 6 : 3;
-                var bc = i == slot ? Palette.Gold : Palette.Text.WithA(0.7f);
-                cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = bc;
-                cell.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                if (i >= unlocked) { Ui.Caption("Locked", cell, "dim"); cell.style.opacity = 0.5f; continue; }
+                if (i >= unlocked)
+                {
+                    Ui.Margin(cell.KindIcon(RowKind.Locked), right: Space.S0);
+                    Ui.Caption("Locked", cell, "dim");
+                    cell.style.opacity = Dim.Row;
+                    continue;
+                }
                 var entry = h.Bar[i];
                 var label = EntryName(entry);
-                var icon = EntryIcon(entry);
-                if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); Ui.Margin(ic, right: Space.S0); }
-                else Ui.Margin(cell.KindIcon(RowKind.Ability), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
+                Ui.Margin(cell.KindIcon(RowKind.Ability, EntryIcon(entry)), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
                 if (label == null) { var t = Ui.Caption("Empty", cell, "dim"); t.style.unityTextAlign = TextAnchor.MiddleCenter; }  // GG-T1874: filled slots are icon-only (as in battle, GG-T1819); the full name is under the bar
-                cell.AddToClassList("card-tap");
                 InspectCard.Attach(cell, b => InspectEntry(b, entry));
                 Ui.Tappable(cell, () => { slot = idx; Refresh(); });
             }
             var slotName = slot < unlocked ? EntryName(h.Bar[slot]) : null;
-            Ui.Para(slotName == null ? $"Slot {slot + 1}: empty" : $"Slot {slot + 1}: {slotName}", barW, "gold").name = "abilities-slot-name";
+            bool swap = slotName != null && h.Bar[slot].StartsWith("weapon:");
+            Ui.Para(slotName == null ? $"Slot {slot + 1}: empty" : $"Slot {slot + 1}: {slotName}", swap ? RowIcon.Line("battle-weapon-swap", barW) : barW, "gold").name = "abilities-slot-name";
             // GG-T298: what this hero does when it joins a pincer as a supporter.
             var support = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, C.Class(h.ClassId).Support), "kit-text gold", barW);
             support.name = "abilities-support";
@@ -98,6 +101,7 @@ namespace GridGame.App
             var right = RowIcon.IconButton("Move right", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
+            RowIcon.IconButton("Arrange sheet", RowKind.Menu, OpenTree, "btn--small", tools).name = "abtree-open"; // GG-T2159: the battle Abilities sheet's folders, order and pins
 
             Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
             var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
@@ -157,7 +161,7 @@ namespace GridGame.App
                 foreach (var tome in C.Items.Values.Where(i => i.Type == ItemType.Tome && string.Equals(i.TeachesAbility, a.Id, StringComparison.OrdinalIgnoreCase)))
                     sources.Add($"{tome.Name}: {string.Join(", ", TomeFoundAt(tome.Id).DefaultIfEmpty("not found anywhere yet"))}");
                 var boardPt = SkillHexProgress.Board(C)?.FindAbility(a.Id);
-                if (boardPt != null) sources.Add($"Skill board - {SkillHexProgress.Board(C).Price(boardPt.Value)} SP");
+                if (boardPt != null) sources.Add($"Talents - {SkillHexProgress.Board(C).Price(boardPt.Value)} SP");
                 if (sources.Count == 0) sources.Add("Not taught anywhere yet");
                 result.Add(new LockedSkill { Ability = a, Kit = kit, Sources = sources });
             }
@@ -194,7 +198,7 @@ namespace GridGame.App
         private void Locked(HeroSave h, VisualElement list)
         {
             var locked = LockedSkills(h);
-            Ui.Para("A hero starts with two moves. The rest are bought from the trainer (Learn) or the skill board, or discovered as Tomes.", list, "dim");
+            Ui.Para("A hero starts with two moves. The rest are bought from the trainer (Learn) or in Talents, or discovered as Tomes.", list, "dim");
             if (locked.Count == 0) Ui.Empty("Nothing left to learn.", list);
             foreach (var l in locked)
             {
@@ -274,12 +278,11 @@ namespace GridGame.App
             var card = Ui.Panel(list, null, false, "guided-lesson");
             var head = Ui.El("row", card);
             head.style.alignItems = Align.Center;
-            var icon = Art.AbilityIcon(plan.Skill);
-            if (icon != null) { var ic = Ui.El("menu-icon", head); ic.style.backgroundImage = new StyleBackground(icon); }
+            head.KindIcon(RowKind.Ability, Art.AbilityIcon(plan.Skill));
             Ui.Heading($"{plan.Skill.Name} — {KindLabel(plan.Skill)}", head, "grow");
             GlossaryText.Create(plan.Skill.Description ?? "", "kit-text dim", card);
             string hero = C.TryClass(plan.Hero.ClassId)?.Name ?? plan.Hero.ClassId;
-            Ui.Para($"First lesson free — the {hero} takes this skill board node at no skill point cost, and it goes onto the battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
+            Ui.Para($"First lesson free — the {hero} takes this Talents node at no skill point cost, and it goes onto the battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
             var btn = RowIcon.IconButton("Learn", RowKind.Confirm, () => LearnDone(Training.Teach(C, S), plan.Hero, plan.Skill.Id), "btn--primary", Ui.Actions(card));
             btn.name = CampTips.CraftButton;
         }
@@ -312,7 +315,7 @@ namespace GridGame.App
         {
             if (entry == null) return null;
             if (entry.StartsWith("item:")) { var it = C.TryItem(entry.Substring(5)); return it == null ? null : $"{it.Name} ×{S.Count(it.Id)}"; }  // GG-T711: one line, shrunk to fit the bar cell by TextFit; it wraps (GG-T701) only below the type floor
-            if (entry.StartsWith("weapon:")) { var w = C.TryItem(entry.Substring(7)); return w == null ? null : $"⭾ {w.Name}"; }
+            if (entry.StartsWith("weapon:")) { var w = C.TryItem(entry.Substring(7)); return w?.Name; }
             return C.TryAbility(entry)?.Name;
         }
 

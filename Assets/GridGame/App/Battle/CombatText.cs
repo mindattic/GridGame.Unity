@@ -126,20 +126,20 @@ namespace GridGame.App
             switch (kind)
             {
                 case CombatTextKind.Damage: return new CombatTextStyle(CombatFace.Heavy, Palette.White, 1.35f, 1f, 4f, Edge, true, CombatMotion.Slam, 0.75f, 0f);
-                case CombatTextKind.Crit: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.85f, 0.2f), 1.9f, 0.9f, 5f, new Color(0.35f, 0.1f, 0f), true, CombatMotion.Slam, 0.95f, 0f);
-                case CombatTextKind.Overkill: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.42f, 0.18f), 2.1f, 0.8f, 6f, new Color(0.3f, 0f, 0f), true, CombatMotion.Slam, 1.05f, 0f);
+                case CombatTextKind.Crit: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Crit, 1.9f, 0.9f, 5f, Palette.Vfx.CritEdge, true, CombatMotion.Slam, 0.95f, 0f);
+                case CombatTextKind.Overkill: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Overkill, 2.1f, 0.8f, 6f, Palette.Vfx.OverkillEdge, true, CombatMotion.Slam, 1.05f, 0f);
                 case CombatTextKind.Heal: return new CombatTextStyle(CombatFace.Heavy, Palette.Good, 1.3f, 0.4f, 3f, Edge, true, CombatMotion.Rise, 0.8f, 0.1f);
                 case CombatTextKind.Buff: return new CombatTextStyle(CombatFace.Heavy, Palette.Buff, 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Rise, 0.85f, 0.3f);
-                case CombatTextKind.Debuff: return new CombatTextStyle(CombatFace.Heavy, new Color(0.86f, 0.45f, 1f), 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Drop, 0.85f, 0.3f);
-                case CombatTextKind.StatusTick: return new CombatTextStyle(CombatFace.Heavy, new Color(0.75f, 0.95f, 0.45f), 0.85f, 0.25f, 2f, Edge, true, CombatMotion.Drift, 0.7f, 0f);
-                case CombatTextKind.Timer: return new CombatTextStyle(CombatFace.Heavy, new Color(0.6f, 0.85f, 1f), 1f, 0.2f, 3f, Edge, true, CombatMotion.Tick, 0.8f, 0.3f);
-                case CombatTextKind.TimerEnd: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.9f, 0.55f), 1.4f, 0.4f, 4f, new Color(0.3f, 0.1f, 0f), true, CombatMotion.Flash, 0.9f, 0.3f);
-                case CombatTextKind.Expire: return new CombatTextStyle(CombatFace.Heavy, new Color(0.72f, 0.72f, 0.78f), 0.95f, 0f, 2f, Edge, true, CombatMotion.Fade, 1f, 0.3f);
+                case CombatTextKind.Debuff: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.DebuffText, 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Drop, 0.85f, 0.3f);
+                case CombatTextKind.StatusTick: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Tick, 0.85f, 0.25f, 2f, Edge, true, CombatMotion.Drift, 0.7f, 0f);
+                case CombatTextKind.Timer: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Sky, 1f, 0.2f, 3f, Edge, true, CombatMotion.Tick, 0.8f, 0.3f);
+                case CombatTextKind.TimerEnd: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.TimerEnd, 1.4f, 0.4f, 4f, Palette.Vfx.WarmEdge, true, CombatMotion.Flash, 0.9f, 0.3f);
+                case CombatTextKind.Expire: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Expire, 0.95f, 0f, 2f, Edge, true, CombatMotion.Fade, 1f, 0.3f);
                 case CombatTextKind.Miss: return new CombatTextStyle(CombatFace.Heavy, Palette.Info, 1.1f, 0f, 3f, Edge, true, CombatMotion.Arc, 0.6f, 0.1f);
-                case CombatTextKind.Immune: return new CombatTextStyle(CombatFace.Heavy, new Color(0.82f, 0.84f, 0.9f), 1.3f, 0f, 4f, Edge, true, CombatMotion.Shake, 0.85f, 0.1f);
-                case CombatTextKind.Weak: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.6f, 0.2f), 1.2f, 0.3f, 4f, new Color(0.3f, 0.05f, 0f), true, CombatMotion.Pop, 0.7f, 0.35f);
-                case CombatTextKind.Resist: return new CombatTextStyle(CombatFace.Heavy, new Color(0.75f, 0.85f, 0.95f), 1f, 0f, 3f, Edge, true, CombatMotion.Arc, 0.7f, 0.3f);
-                case CombatTextKind.Combo: return new CombatTextStyle(CombatFace.Heavy, Palette.GoldLight, 1.6f, 0.6f, 5f, new Color(0.3f, 0.12f, 0f), true, CombatMotion.Slam, 0.9f, 0.2f);
+                case CombatTextKind.Immune: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Immune, 1.3f, 0f, 4f, Edge, true, CombatMotion.Shake, 0.85f, 0.1f);
+                case CombatTextKind.Weak: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Weak, 1.2f, 0.3f, 4f, Palette.Vfx.WeakEdge, true, CombatMotion.Pop, 0.7f, 0.35f);
+                case CombatTextKind.Resist: return new CombatTextStyle(CombatFace.Heavy, Palette.Vfx.Resist, 1f, 0f, 3f, Edge, true, CombatMotion.Arc, 0.7f, 0.3f);
+                case CombatTextKind.Combo: return new CombatTextStyle(CombatFace.Heavy, Palette.GoldLight, 1.6f, 0.6f, 5f, Palette.Vfx.ComboEdge, true, CombatMotion.Slam, 0.9f, 0.2f);
                 case CombatTextKind.Callout: return new CombatTextStyle(CombatFace.Display, Palette.GoldLight, 1.5f, 0.5f, 3f, Edge, true, CombatMotion.Pop, 1.1f, 0.35f);
                 default: return new CombatTextStyle(CombatFace.Heavy, Palette.Text, 1f, 0.2f, 2f, Edge, true, CombatMotion.Rise, 0.8f, 0.3f);
             }

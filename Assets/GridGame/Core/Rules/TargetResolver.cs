@@ -5,6 +5,12 @@ using GridGame.Core.Content;
 
 namespace GridGame.Core.Rules
 {
+    /// <summary>The aim-mode catalogue (plan abilities-screen-and-info §3, GG-T2141): every ability aims one of these ways.
+    /// None: commit casts at once (self, the whole board, a passive, a Smokebomb). Unit: tap a highlighted unit. Multi: tap
+    /// up to <see cref="AbilityDef.MaxPicks"/> units, then Confirm. Direction: tap one of 4 arrows around the caster. Tile:
+    /// tap a tile, its area previewed.</summary>
+    public enum Aim { None, Unit, Multi, Direction, Tile }
+
     /// <summary>Shape × mode × filter targeting (bible §5, GG-LAW-5).</summary>
     public static class TargetResolver
     {
@@ -83,12 +89,59 @@ namespace GridGame.Core.Rules
 
         public static Team Opposite(Team t) => t == Team.Hero ? Team.Enemy : Team.Hero;
 
-        /// <summary>Is <paramref name="target"/> a legal pick for this ability (for PickActor / PickTile)?</summary>
+        /// <summary>How the player aims <paramref name="a"/> (<see cref="Aim"/>).</summary>
+        public static Aim AimOf(AbilityDef a)
+        {
+            if (a == null || a.Trigger != null || a.Kind == AbilityKind.Passive || a.Kind == AbilityKind.Reactive) return Aim.None;
+            switch (a.Mode)
+            {
+                case TargetMode.PickActor: return Aim.Unit;
+                case TargetMode.PickMulti: return Aim.Multi;
+                case TargetMode.PickDirection: return Aim.Direction;
+                case TargetMode.PickTile: return Aim.Tile;
+                default: return Aim.None;
+            }
+        }
+
+        /// <summary>Does the pick name a unit (PickActor, or each pick of a PickMulti)?</summary>
+        public static bool PicksUnit(AbilityDef a) => a != null && (a.Mode == TargetMode.PickActor || a.Mode == TargetMode.PickMulti);
+
+        /// <summary>A <see cref="TargetMode.PickDirection"/> pick: the first tile past the caster's footprint from its anchor
+        /// tile, stepping <paramref name="dir"/> (a <see cref="Coord.Cardinals"/> entry); null off the board.</summary>
+        public static Coord? DirectionTile(Unit caster, Coord dir)
+        {
+            if (caster == null) return null;
+            var c = caster.Pos;
+            var own = new HashSet<Coord>(caster.Tiles());
+            do c += dir; while (own.Contains(c));
+            return BattleState.InBounds(c) ? c : (Coord?)null;
+        }
+
+        /// <summary>Is <paramref name="target"/> one of the caster's four <see cref="DirectionTile"/>s?</summary>
+        public static bool IsDirectionTile(Unit caster, Coord target)
+        {
+            foreach (var d in Coord.Cardinals)
+                if (DirectionTile(caster, d) == target) return true;
+            return false;
+        }
+
+        /// <summary>GG-T2141: a PickMulti's picks: 1 to <see cref="AbilityDef.MaxPicks"/> legal tiles, each a different unit.</summary>
+        public static bool IsValidPicks(BattleState s, AbilityDef a, Unit caster, IReadOnlyList<Coord> picks)
+        {
+            if (picks == null || picks.Count == 0 || picks.Count > Math.Max(1, a.MaxPicks)) return false;
+            var seen = new HashSet<Unit>();
+            foreach (var c in picks)
+                if (!IsValidPick(s, a, caster, c) || !seen.Add(s.UnitAt(c))) return false;
+            return true;
+        }
+
+        /// <summary>Is <paramref name="target"/> a legal pick for this ability (one pick of any mode but Auto)?</summary>
         public static bool IsValidPick(BattleState s, AbilityDef a, Unit caster, Coord target)
         {
             if (!BattleState.InBounds(target)) return false;
             var occ = s.UnitAt(target);
             if (a.Mode == TargetMode.Auto) return true;
+            if (a.Mode == TargetMode.PickDirection && !IsDirectionTile(caster, target)) return false; // GG-T2141: then as a PickTile
             if (a.Afterimage > 0) return Afterimage.CanDash(s, caster, target, a.Afterimage); // GG-T867: a straight dash to an empty tile
             if (a.Filter == TargetFilter.EmptyOnly)
             {
@@ -99,12 +152,12 @@ namespace GridGame.Core.Rules
                 return false;
             }
             if (a.AdjacentOnly && (occ == null || !caster.IsAdjacentTo(occ))) return false;
-            if (a.MaxRange > 0 && a.Mode == TargetMode.PickActor && (occ == null || caster.DistanceTo(occ) > a.MaxRange)) return false; // GG-T865
+            if (a.MaxRange > 0 && PicksUnit(a) && (occ == null || caster.DistanceTo(occ) > a.MaxRange)) return false; // GG-T865
             if (a.RedirectsDebuffs && !RedirectFlow.Can(s, caster, occ)) return false; // GG-T887: an ally with a debuff, a foe to take it
             if (a.StealsBoon && !SwipeBoon.Can(s, caster, occ)) return false; // GG-T866: a foe beside the Thief wearing a boon
             // A tame (GG-T303) only ever picks a tameable monster: never a Sentient foe, a boss or remains.
-            if (a.Tame > 0f && a.Mode == TargetMode.PickActor && !Taming.Tameable(occ)) return false;
-            if (a.Mode == TargetMode.PickActor) return occ != null && Passes(a.Filter, caster, occ);
+            if (a.Tame > 0f && PicksUnit(a) && !Taming.Tameable(occ)) return false;
+            if (PicksUnit(a)) return occ != null && Passes(a.Filter, caster, occ);
             if (a.Magnetizes > 0) return Magnetize.Caught(s, a, caster, target).Count > 0; // GG-T878: a tile some metal foe is gripped toward
             // PickTile: any in-bounds tile whose shape catches at least one valid unit, or a trap its tile reactions clear (GG-T371).
             return Collect(s, a, caster, target).Count > 0 || TileReactions.ReachesTrap(s, a, caster, target);

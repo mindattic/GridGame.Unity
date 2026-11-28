@@ -3,7 +3,7 @@
  "device": "iphone17pro",
  "name": "iPhone 17 Pro",
  "shape": "iphone-402",
- "captured": "2026-11-28T02:35:23",
+ "captured": "2026-11-28T08:29:35",
  "frame": {
   "type": "island",
   "corner": 186,
@@ -14,8 +14,17 @@
   "top": 42,
   "r": 56
  },
- "screens": 41,
- "errors": {},
+ "screens": 44,
+ "errors": {
+  "components": "not captured",
+  "drill-picker": "not captured",
+  "codex": "not captured",
+  "overlay-dialogue": "not captured",
+  "overlay-coach": "not captured",
+  "overlay-inspect": "not captured",
+  "overlay-confirm": "not captured",
+  "overlay-toast": "not captured"
+ },
  "totals": {
   "overflow": 0,
   "clipped": 0,
@@ -23,10 +32,11 @@
   "offStage": 0,
   "underCutout": 0,
   "topInset": 0,
-  "homeIndicator": 54,
+  "homeIndicator": 48,
   "targetsUnder44pt": 0,
-  "contrastFails": 25,
+  "contrastFails": 23,
   "contrastUnderCutout": 0,
+  "coveredText": 0,
   "screensWith": {
    "overflow": [],
    "clipped": [],
@@ -39,17 +49,10 @@
     "alchemist",
     "battle",
     "battle-boss",
-    "camp",
     "caravan",
     "credits",
     "enchantress",
-    "equip",
-    "hub",
-    "mercenaries",
-    "overworld",
     "quests",
-    "results",
-    "results-mid",
     "settings",
     "shop",
     "status",
@@ -57,24 +60,19 @@
    ],
    "targetsUnder44pt": [],
    "contrastFails": [
-    "battle",
     "battle-boss",
     "blacksmith",
-    "camp",
-    "createprofile",
     "crucible",
     "diamonds",
     "enchantress",
-    "hub",
+    "levelup",
     "newprofile",
-    "overworld",
-    "results",
-    "results-mid",
     "shop",
-    "splash",
+    "summon",
     "windows"
    ],
-   "contrastUnderCutout": []
+   "contrastUnderCutout": [],
+   "coveredText": []
   }
  },
  "findings": {
@@ -92,6 +90,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 10,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -105,23 +104,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Around the wagons"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Summon Circle",
-     "ratio": 4.15,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#585047"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 38,
-   "minTextPt": 12.7,
+   "coveredText": [],
+   "contrastSamples": 27,
+   "minTextPt": 13.7,
    "layoutProblems": []
   },
   "stages": {
@@ -138,6 +128,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -156,6 +147,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 27,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -170,15 +162,15 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Bonds",
     "No bonds yet. Heroes grow closer pinceri\u2026"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 83,
-   "minTextPt": 13.7,
+   "minTextPt": 13.1,
    "layoutProblems": []
   },
   "equip": {
@@ -190,16 +182,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Ring I",
-    "Iron Band"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 44,
-   "minTextPt": 13.7,
+   "coveredText": [],
+   "contrastSamples": 61,
+   "minTextPt": 10.7,
    "layoutProblems": []
   },
   "abilities": {
@@ -218,6 +208,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 79,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -236,6 +227,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.3,
    "layoutProblems": []
@@ -254,6 +246,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -272,7 +265,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 69,
+   "coveredText": [],
+   "contrastSamples": 68,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -304,6 +298,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -330,6 +325,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -345,13 +341,16 @@
    "topInset": [],
    "homeIndicator": [
     "???",
+    "Missing Arcane Dust",
+    "???",
     "Missing Oni Horn"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 37,
+   "coveredText": [],
+   "contrastSamples": 38,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -376,11 +375,12 @@
      "ratio": 2.15,
      "need": 4.5,
      "fg": "#272d43",
-     "bg": "#505f86"
+     "bg": "#4f5f86"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 46,
+   "coveredText": [],
+   "contrastSamples": 62,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -398,6 +398,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -416,7 +417,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 45,
+   "coveredText": [],
+   "contrastSamples": 29,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -435,10 +437,10 @@
    "contrastFails": [
     {
      "text": "Costs 1 Rested: the energy for a run, up\u2026",
-     "ratio": 3.63,
+     "ratio": 3.62,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#444863"
+     "bg": "#454863"
     },
     {
      "text": "Enter the Crucible",
@@ -449,6 +451,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -467,8 +470,9 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 11,
-   "minTextPt": 13.7,
+   "coveredText": [],
+   "contrastSamples": 13,
+   "minTextPt": 10.7,
    "layoutProblems": []
   },
   "settings": {
@@ -481,12 +485,15 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Display"
+    "Pincer close-ups",
+    "ON",
+    "Sound"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 40,
    "minTextPt": 10.3,
    "layoutProblems": []
@@ -517,6 +524,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 49,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -537,6 +545,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 2,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -555,6 +564,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 7,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -573,6 +583,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 5,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -591,6 +602,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 8,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -617,6 +629,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 4,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -633,17 +646,10 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Next",
-     "ratio": 2.17,
-     "need": 4.5,
-     "fg": "#272e43",
-     "bg": "#506087"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 5,
+   "coveredText": [],
+   "contrastSamples": 6,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -659,17 +665,10 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Next",
-     "ratio": 2.04,
-     "need": 4.5,
-     "fg": "#252b40",
-     "bg": "#4b5a7e"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 5,
+   "coveredText": [],
+   "contrastSamples": 6,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -695,6 +694,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 37,
    "minTextPt": 12.4,
    "layoutProblems": []
@@ -708,25 +708,13 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "As",
-    "a",
-    "Supporter",
-    "(reach",
-    "1):",
-    "strikes",
-    "each",
-    "trapped",
-    "foe",
-    "at",
-    "50%",
-    "power."
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 64,
+   "coveredText": [],
+   "contrastSamples": 22,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -744,6 +732,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -765,6 +754,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -783,6 +773,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -796,24 +787,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Iron Ore",
-    "\u00d72"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "The Tithe Moors I",
-     "ratio": 4.29,
-     "need": 4.5,
-     "fg": "#a4a3bc",
-     "bg": "#363f52"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 36,
-   "minTextPt": 13.7,
+   "coveredText": [],
+   "contrastSamples": 39,
+   "minTextPt": 12.7,
    "layoutProblems": []
   },
   "results-mid": {
@@ -825,23 +806,78 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Tattered Cloth",
-    "\u00d72"
-   ],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 45,
+   "minTextPt": 12.4,
+   "layoutProblems": []
+  },
+  "results-defeat": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone17pro/results-defeat.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 14,
+   "minTextPt": 13.1,
+   "layoutProblems": []
+  },
+  "results-drill": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone17pro/results-drill.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 12,
+   "minTextPt": 13.7,
+   "layoutProblems": []
+  },
+  "levelup": {
+   "landedOn": "levelup",
+   "png": "docs/design/ui-audit/captures/iphone17pro/levelup.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [
     {
-     "text": "The Tithe Moors I",
-     "ratio": 4.35,
+     "text": "TANK",
+     "ratio": 2.89,
      "need": 4.5,
-     "fg": "#a4a3bc",
-     "bg": "#353e52"
+     "fg": "#f25c4c",
+     "bg": "#3e474e"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 37,
+   "coveredText": [],
+   "contrastSamples": 17,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -855,25 +891,25 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Knight",
-    "TANK",
-    "Lv 10",
-    "HEALTH",
-    "272/272"
+    "Roar",
+    "a",
+    "challenge:",
+    "for",
+    "two",
+    "turns",
+    "every",
+    "enemy",
+    "that",
+    "can",
+    "reach",
+    "you"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Info",
-     "ratio": 3.77,
-     "need": 4.5,
-     "fg": "#7a7880",
-     "bg": "#221e26"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 15,
+   "coveredText": [],
+   "contrastSamples": 27,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -887,33 +923,118 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Knight",
-    "TANK",
-    "Lv 4",
-    "HEALTH",
-    "191/191"
+    "Roar",
+    "a",
+    "challenge:",
+    "for",
+    "two",
+    "turns",
+    "every",
+    "enemy",
+    "that",
+    "can",
+    "reach",
+    "you"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [
     {
-     "text": "Info",
-     "ratio": 3.1,
+     "text": "The Captain",
+     "ratio": 3.29,
      "need": 4.5,
-     "fg": "#8a8a89",
-     "bg": "#3e3e36"
+     "fg": "#db66ff",
+     "bg": "#3f465f"
     },
     {
-     "text": "TANK",
-     "ratio": 3.87,
+     "text": "YOU",
+     "ratio": 2.75,
      "need": 4.5,
-     "fg": "#f25c4c",
-     "bg": "#333425"
+     "fg": "#f4f4f6",
+     "bg": "#67a26c"
+    },
+    {
+     "text": "BOSS",
+     "ratio": 2.19,
+     "need": 4.5,
+     "fg": "#db66ff",
+     "bg": "#6e5c62"
+    },
+    {
+     "text": "Roar",
+     "ratio": 1.98,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#737352"
+    },
+    {
+     "text": "a",
+     "ratio": 2.41,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#686544"
+    },
+    {
+     "text": "challenge:",
+     "ratio": 3.14,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#565438"
+    },
+    {
+     "text": "for",
+     "ratio": 3.55,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#4e4b40"
+    },
+    {
+     "text": "two",
+     "ratio": 4.37,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#403e33"
+    },
+    {
+     "text": "every",
+     "ratio": 2.09,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#6e704c"
+    },
+    {
+     "text": "enemy",
+     "ratio": 2.9,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#5b593d"
+    },
+    {
+     "text": "that",
+     "ratio": 2.88,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#5b5946"
+    },
+    {
+     "text": "can",
+     "ratio": 3.97,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#494245"
+    },
+    {
+     "text": "reach",
+     "ratio": 4.49,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#403b37"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 15,
-   "minTextPt": 13.7,
+   "coveredText": [],
+   "contrastSamples": 28,
+   "minTextPt": 8.9,
    "layoutProblems": []
   },
   "overworld": {
@@ -925,23 +1046,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Around the wagons"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Summon Circle",
-     "ratio": 4.15,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#585047"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 38,
-   "minTextPt": 12.7,
+   "coveredText": [],
+   "contrastSamples": 29,
+   "minTextPt": 13.7,
    "layoutProblems": []
   },
   "camp": {
@@ -953,74 +1065,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "0 Mana Shards",
-    "Craft",
-    "Journal"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "200 G",
-     "ratio": 3.83,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#606e78"
-    },
-    {
-     "text": "Heroes",
-     "ratio": 1.85,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#848b79"
-    },
-    {
-     "text": "Summon Circle",
-     "ratio": 1.24,
-     "need": 4.5,
-     "fg": "#97a1b3",
-     "bg": "#8b9280"
-    },
-    {
-     "text": "Opens after The Lantern Road II",
-     "ratio": 1.41,
-     "need": 4.5,
-     "fg": "#8a95a9",
-     "bg": "#757d70"
-    },
-    {
-     "text": "Merchant",
-     "ratio": 1.38,
-     "need": 4.5,
-     "fg": "#8b96bf",
-     "bg": "#777e94"
-    },
-    {
-     "text": "Joins after The Tithe Moors I",
-     "ratio": 1.75,
-     "need": 4.5,
-     "fg": "#7881a4",
-     "bg": "#565c68"
-    },
-    {
-     "text": "Mana Shard Store",
-     "ratio": 1.39,
-     "need": 4.5,
-     "fg": "#8e96a1",
-     "bg": "#7c7f62"
-    },
-    {
-     "text": "0 Mana Shards",
-     "ratio": 1.45,
-     "need": 4.5,
-     "fg": "#8b9197",
-     "bg": "#777751"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 34,
-   "minTextPt": 13.1,
+   "coveredText": [],
+   "contrastSamples": 22,
+   "minTextPt": 13.7,
    "layoutProblems": []
   },
   "skill-hex": {
@@ -1037,6 +1089,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.3,
    "layoutProblems": []
@@ -1053,9 +1106,18 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [],
+   "contrastFails": [
+    {
+     "text": "x1 \u00b7 1 Summon Ticket",
+     "ratio": 1.19,
+     "need": 4.5,
+     "fg": "#0c0c16",
+     "bg": "#1d1d35"
+    }
+   ],
    "contrastUnderCutout": [],
-   "contrastSamples": 23,
+   "coveredText": [],
+   "contrastSamples": 25,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -1076,7 +1138,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 33,
+   "coveredText": [],
+   "contrastSamples": 32,
    "minTextPt": 13.7,
    "layoutProblems": []
   }

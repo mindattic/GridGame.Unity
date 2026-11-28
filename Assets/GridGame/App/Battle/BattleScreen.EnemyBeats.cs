@@ -155,7 +155,7 @@ namespace GridGame.App
             if (CutInsEnabled && !ReduceMotion && !b.OwnCard) yield return IntentSlide(u, callout, b.Major);
             else
             {
-                Text.Show(ViewCenter(u), CombatTextKind.Timer, b.Action + "!", 0f, new Color(1f, 0.55f, 0.5f));
+                Text.Show(ViewCenter(u), CombatTextKind.Timer, b.Action + "!", 0f, Palette.Vfx.FoeText);
                 yield return Tween.Wait(ReduceMotion ? Timing.Instant : Timing.Standard);
             }
             App.StartCoroutine(UnglowLater(v, Timing.Quick));
@@ -173,7 +173,7 @@ namespace GridGame.App
             UnitView v = null;
             if (u != null && board.Units.TryGetValue(u.Id, out v) && !v.Dead) v.SetGlow(Palette.Bad, 0.85f);
             App.Audio.Sfx("battle.channel", 0.45f, 1.35f);
-            var c = new Color(1f, 0.22f, 0.18f);
+            var c = Palette.Vfx.FoeBeat;
             float inset = 6f, size = BoardView.Tile - 2f * inset;
             float secs = ReduceMotion ? Timing.Quick : b.Major ? Timing.Emphasis : Timing.Standard;
             yield return Tween.Run(secs, k =>

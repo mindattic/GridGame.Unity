@@ -161,6 +161,7 @@ namespace GridGame.Meta
             s.Flags ??= new HashSet<string>();
             s.SeenDialogues ??= new HashSet<string>();
             s.SeenCampTips ??= new HashSet<string>();
+            s.SeenGear ??= new HashSet<string>();
             s.Rested ??= new RestedSave();
             s.Jobs ??= new List<PaywallJob>();
             foreach (var h in s.Roster) while (h.Bar.Count < 5) h.Bar.Add(null);
@@ -329,7 +330,6 @@ namespace GridGame.Meta
             if (s.Version < 23) s.Version = 23;
             s.Summon ??= new SummonState();
             s.Summon.Pulls ??= new Dictionary<BannerKind, int>();
-            s.Summon.NewHeroMiss ??= new Dictionary<BannerKind, int>();
             s.Summon.History ??= new List<PullRecord>();
             // GG-T1626: drill progress. An older save that finished the tutorial has, in effect, cleared every drill.
             bool beforeDrills = s.Version < 24;
@@ -366,6 +366,20 @@ namespace GridGame.Meta
                 s.Version = 29;
             }
             s.World.CarriedOrbs = null;
+            // GG-T2127: the Commander's look and pronouns. An older save keeps the female look and is they/them (the
+            // field defaults); any version, a value the enums don't know (a hand-edited or future save) reads as those.
+            if (s.Version < 30) s.Version = 30;
+            // GG-T1917: each hero's Abilities sheet arrangement. An older save's heroes get an empty one (the default tree);
+            // any version, a hand-edited one is tidied.
+            if (s.Version < 31) s.Version = 31;
+            foreach (var h in s.Roster)
+            {
+                if (h == null) continue;
+                h.Actions ??= new ActionLayout();
+                h.Actions.Sanitize();
+            }
+            if (s.CommanderLook != HeroVariant.Female && s.CommanderLook != HeroVariant.Male) s.CommanderLook = HeroVariant.Female;
+            if (!Enum.IsDefined(typeof(CommanderPronouns), s.CommanderPronouns)) s.CommanderPronouns = CommanderPronouns.TheyThem;
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();

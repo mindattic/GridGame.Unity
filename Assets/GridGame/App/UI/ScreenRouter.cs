@@ -99,6 +99,8 @@ namespace GridGame.App
         // screen changes wait in `queued` and are applied in order right after it (GG-T218).
         private bool applied;
         private readonly Queue<Action> queued = new Queue<Action>();
+        // GG-T2028: the screen re-fit after the new top screen was built but before its fade cleared; refreshed then.
+        private bool resizedInTransition;
         private VisualElement loading, loadingFill;
 
         /// <summary>GG-T1205: true while the top screen's <see cref="GameScreen.Prepare"/> runs behind the fade: it is
@@ -120,6 +122,7 @@ namespace GridGame.App
             {
                 var c = Current;
                 if (c == null) return;
+                if (busy) resizedInTransition = true;
                 if (!busy && c.RebuildOnResize) c.Refresh();
                 else GameScreen.BleedBackdrops(c.Root); // the battle, a crawl: new insets still reach their backdrop (GG-T483)
             };
@@ -246,7 +249,7 @@ namespace GridGame.App
             {
                 fade.AddToClassList("fade--on");
                 fade.pickingMode = PickingMode.Position;
-                yield return new WaitForSecondsRealtime(0.2f);
+                yield return new WaitForSecondsRealtime(Timing.ScreenFade);
             }
             // Apply this change, then every change queued while the fade was going on, in call order,
             // and mount only the resulting top screen once.
@@ -289,6 +292,11 @@ namespace GridGame.App
             fade.RemoveFromClassList("fade--on");
             fade.pickingMode = PickingMode.Ignore;
             busy = false;
+            if (resizedInTransition)
+            {
+                resizedInTransition = false;
+                if (Current != null && Current.RebuildOnResize) Current.Refresh();
+            }
         }
 
         /// <summary>The loading bar on the fade (GG-T1205), built on first use.</summary>
@@ -304,13 +312,13 @@ namespace GridGame.App
                 loading.style.alignItems = Align.Center;
                 var label = Ui.Text("Loading", "kit-caption", loading);
                 label.style.color = Palette.GoldLight;
-                label.style.marginBottom = 8;
+                label.style.marginBottom = Space.S8;
                 var track = new VisualElement { name = "loading-track", pickingMode = PickingMode.Ignore };
                 track.style.alignSelf = Align.Stretch;
-                track.style.height = 6;
-                track.style.backgroundColor = new Color(1f, 1f, 1f, 0.12f);
-                track.style.borderTopLeftRadius = track.style.borderTopRightRadius = 3;
-                track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = 3;
+                track.style.height = Size.Track;
+                track.style.backgroundColor = Palette.White.WithA(0.12f);
+                track.style.borderTopLeftRadius = track.style.borderTopRightRadius = Radius.R3;
+                track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = Radius.R3;
                 track.style.overflow = Overflow.Hidden;
                 loading.Add(track);
                 loadingFill = new VisualElement { name = "loading-fill", pickingMode = PickingMode.Ignore };
@@ -326,6 +334,7 @@ namespace GridGame.App
         private void MountTop()
         {
             host.Clear();
+            resizedInTransition = false; // the screen mounted now is built for the stage as it is
             var top = Current;
             if (top == null) { Art.FocusScreenScope(0); return; }
             // GG-T1206: what the mounted screen loads belongs to its own Screen token, or to no token at all (the battle's

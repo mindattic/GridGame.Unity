@@ -13,7 +13,7 @@ namespace GridGame.App
     /// The widget kit. Every screen composes these; nothing positions itself with magic pixel offsets
     /// except the battle board. All styling is in Theme.uss classes.
     /// </summary>
-    public static class Ui
+    public static partial class Ui
     {
         public static VisualElement El(string classes = null, VisualElement parent = null)
         {
@@ -244,7 +244,7 @@ namespace GridGame.App
             if (talk != null) bar.Add(talk);
             if (DiamondExchange.Have(s) > 0 || showZeroShards)
             {
-                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
+                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar, tex: Art.UiIcon("cur-shards"));
                 shards.name = "header-shards";
                 shards.tooltip = ShardText.Store;
                 if (onShards == null) shards.pickingMode = PickingMode.Ignore;
@@ -253,7 +253,7 @@ namespace GridGame.App
             if (SummonTickets.Have(s) > 0 || showZeroTickets)
             {
                 int t = SummonTickets.Have(s);
-                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
+                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar, tex: Art.UiIcon("cur-summon-tickets"));
                 tickets.name = "header-tickets";
                 tickets.pickingMode = PickingMode.Ignore;
                 chips.Add((tickets, tickets.Q<Label>(), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}", Count(t), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}"));
@@ -261,6 +261,11 @@ namespace GridGame.App
             var more = RowIcon.IconButton($"+{chips.Count}", RowKind.Menu, null, "btn--small", bar);
             more.name = "header-more";
             more.style.display = DisplayStyle.None;
+            foreach (var c in chips) { var ci = c.chip.Q(className: RowIcon.Class); ci.style.width = ci.style.height = Size.IconInline; }
+            var goldIcon = RowIcon.SetIcon("cur-gold", "header-gold-icon");
+            goldIcon.name = "header-gold-icon";
+            goldIcon.style.width = goldIcon.style.height = Size.IconInline;
+            bar.Add(goldIcon);
             Text(Gold(s.Gold), "header-gold shadow", bar).name = "header-gold";
 
             int mode = 0;
@@ -292,7 +297,7 @@ namespace GridGame.App
             bar.schedule.Execute(() => bar.parent?.RegisterCallback<GeometryChangedEvent>(Fit));
         }
 
-        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Campaign, Heroes, Summon and Shop off
+        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Journey, Heroes, Recruit and Shop off
         /// <see cref="NavBadges.Tabs"/>, sharing the stage's width, each <see cref="Kit.NavHeight"/> tall. Under a gesture
         /// bar its band reaches the screen's bottom edge, its tabs staying above the inset (like <see cref="Header"/>). The
         /// lit tab is the page directly above the hub on the stack (<paramref name="current"/> with no hub on it); a
@@ -315,10 +320,10 @@ namespace GridGame.App
                 t.name = "nav-" + tab.Id;
                 t.EnableInClassList("kit-navtab--active", tab.Id == lit);
                 t.EnableInClassList("kit-navtab--locked", !tab.Open);
-                var icon = t.KindIcon(NavKind(tab.Id));
+                var icon = t.KindIcon(NavKind(tab.Id), Art.UiIcon("nav-" + tab.Id));
                 if (!tab.Open) RowIcon.Badge(icon, RowKind.Locked);
                 Marquee(Text(tab.Label, "kit-navtab-label", t));
-                if (!string.IsNullOrEmpty(tab.Badge)) Text(tab.Badge, "kit-navtab-badge", t).name = "nav-badge";
+                if (!string.IsNullOrEmpty(tab.Badge)) Badge(tab.Badge, t, "kit-navtab-badge").name = "nav-badge";
                 string id = tab.Id, hint = tab.Hint;
                 if (tab.Open) Tappable(t, () => NavGo(app, id));
                 else Tappable(t, () => app.Toast(hint), "ui.error");
@@ -350,8 +355,8 @@ namespace GridGame.App
             switch (above)
             {
                 case StageSelectScreen _: case StageConfirmScreen _: return CampMenu.Campaign;
-                case HeroScreen _: return CampMenu.Heroes; // Status, Abilities, Party
-                case SummonScreen _: case MercenaryScreen _: return CampMenu.Summon;
+                case HeroScreen _: case ItemsScreen _: case RespecScreen _: return CampMenu.Heroes; // Status, Abilities, Party; the bag and the respec are the hero's own gear and talents
+                case SummonScreen _: case SummonHistoryScreen _: case MercenaryScreen _: return CampMenu.Summon;
                 case ShopHubScreen _: case ShopScreen _: case DiamondStoreScreen _: return CampMenu.Shop;
                 default: return NavBadges.Home;
             }
@@ -377,8 +382,11 @@ namespace GridGame.App
                 case CampMenu.Crucible: return new CrucibleScreen();
                 case CampMenu.Heroes:
                     string lead = s.Party.FirstOrDefault();
-                    return Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
-                case CampMenu.Summon: return new SummonScreen();
+                    if (Training.Step(s)) return new AbilitiesScreen(lead);
+                    // GG-T2061: new gear in the bag opens Equip on the hero it upgrades.
+                    var gear = AutoEquip.FirstNew(GameApp.I.Content, s);
+                    return gear != null ? new EquipScreen(gear.Value.Hero.ClassId) : (GameScreen)new StatusScreen(lead);
+                case CampMenu.Summon: return !CampUnlocks.SummonOpen(s) && Mercenaries.Open(s) ? new MercenaryScreen() : (GameScreen)new SummonScreen();
                 case CampMenu.Shop: return new ShopHubScreen();
                 case CampMenu.Diamonds: return new DiamondStoreScreen();
                 case CampMenu.Respec: return new RespecScreen();
@@ -1021,9 +1029,8 @@ namespace GridGame.App
         /// a clockwise <see cref="CooldownSweep"/> with the turns left in its centre; an item shows its stack count as a
         /// corner badge; a Silenced slot the silenced pip; Locked/Empty a short state word. No ability name is ever drawn
         /// here (the description panel has it), so nothing in the bar is cut or ellipsized. Fill it with
-        /// <see cref="SetAbilitySlot"/>. GG-T1820 (§3.1.0): a spell slot also carries its own <see cref="ManaMeter"/> along
-        /// the bottom (<c>"meter"</c>), a soft glow behind the icon while that meter is full (<c>"ready"</c>) and a short
-        /// "+N%" gain line over the bar (<c>"gain"</c>).</summary>
+        /// <see cref="SetAbilitySlot"/>. A spell slot shows a soft glow behind the icon while the party pool can pay it
+        /// (<c>"ready"</c>); the pool itself is the one <see cref="PartyManaBar"/> above the action row (GG-T1928, §3.1.0).</summary>
         public static void AbilitySlot(VisualElement slot)
         {
             var glow = El(null, slot); glow.name = "ready";
@@ -1058,23 +1065,10 @@ namespace GridGame.App
             badge.style.borderTopLeftRadius = badge.style.borderTopRightRadius = badge.style.borderBottomLeftRadius = badge.style.borderBottomRightRadius = Size.Chip / 2f;
             badge.style.color = Palette.Text;
             Fonts.UseHeavy(badge);
-            var silenced = StatusPip("silenced", "S", new Color(1f, 0.25f, 0.25f), Size.Chip, slot);
+            var silenced = StatusPip("silenced", "S", Palette.Vfx.Silenced, Size.Chip, slot);
             silenced.name = "silenced";
             silenced.style.position = Position.Absolute;
             silenced.style.left = silenced.style.top = Space.S8;
-            var meter = new ManaMeter { name = "meter", Glow = glow };
-            meter.style.position = Position.Absolute;
-            meter.style.left = meter.style.right = Space.S16;
-            meter.style.bottom = Space.S8;
-            meter.style.height = Size.Gauge;
-            meter.style.display = DisplayStyle.None;
-            slot.Add(meter);
-            var gain = Overlay(Text("", "tiny", slot), "gain");
-            gain.style.top = StyleKeyword.Auto;
-            gain.style.bottom = Space.S8 + Size.Gauge;
-            gain.style.unityTextAlign = TextAnchor.LowerCenter;
-            gain.style.color = Palette.Mana;
-            gain.style.opacity = 0f;
         }
 
         /// <summary>A centred label over the whole slot, outlined so it reads over any icon.</summary>
@@ -1093,14 +1087,11 @@ namespace GridGame.App
         /// <summary>Fill an <see cref="AbilitySlot"/> face. <paramref name="cooldown"/>: the share of the recharge still to
         /// go (0 = ready, no sweep) with <paramref name="turnsLeft"/> in its centre; <paramref name="count"/>: an item's
         /// stack (−1 = not an item, no badge); <paramref name="state"/>: a short state word ("Locked", "—") or empty;
-        /// <paramref name="mana"/>: a spell's meter fill 0..1 (−1 = no meter), glowing when <paramref name="ready"/>.</summary>
+        /// <paramref name="ready"/>: a spell the party pool can pay, glowing.</summary>
         public static void SetAbilitySlot(VisualElement slot, Texture2D icon, float cooldown = 0f, int turnsLeft = 0, int count = -1,
-            string state = "", bool silenced = false, float mana = -1f, bool ready = false)
+            string state = "", bool silenced = false, bool ready = false)
         {
-            var meter = slot.Q<ManaMeter>("meter");
-            meter.style.display = mana >= 0f ? DisplayStyle.Flex : DisplayStyle.None;
-            if (mana >= 0f) meter.Fraction = mana;
-            meter.Ready = mana >= 0f && ready;
+            slot.Q("ready").style.display = ready ? DisplayStyle.Flex : DisplayStyle.None;
             slot.Q("icon").style.backgroundImage = icon != null ? new StyleBackground(icon) : new StyleBackground(StyleKeyword.None);
             slot.Q<CooldownSweep>("sweep").Fraction = cooldown;
             slot.Q<Label>("turns").text = cooldown > 0f && turnsLeft > 0 ? turnsLeft.ToString() : "";
@@ -1112,34 +1103,81 @@ namespace GridGame.App
         }
     }
 
-    /// <summary>GG-T1820 (BIBLE §3.1.0, §9.0): a spell slot's own mana meter, a bar that fills left to right as its spell's
-    /// meter charges. A gain eases the fill up; a full meter brightens it and pulses the slot's <see cref="Glow"/>. Under
-    /// Reduce Motion the fill jumps and the glow holds still. It never carries the spell's name.</summary>
-    public sealed class ManaMeter : VisualElement
+    /// <summary>GG-T1928 (BIBLE §3.1.0, §9.0): the party's one thin mana bar, full width above [Abilities][Info][GUARD]. It
+    /// fills left to right over <see cref="Capacity"/> with a tick every <see cref="TickEvery"/> points; a gain eases the
+    /// fill up, a spend drains it over <see cref="DrainSeconds"/>, and while any spell is affordable (<see cref="Ready"/>)
+    /// the fill brightens and a glow pulses around it. Aiming a spell sets <see cref="Price"/>: the share it would spend
+    /// lights up, or the share the pool is short shows red. Under Reduce Motion the fill jumps and the glow holds still.</summary>
+    public sealed class PartyManaBar : VisualElement
     {
-        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Color.white, 0.45f);
-        private readonly VisualElement fill;
-        private float target, shown, clock;
+        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Palette.White, 0.45f);
+        /// <summary>Points between two ticks (a 1-cost spell's price).</summary>
+        public const int TickEvery = 100;
+        /// <summary>How long a spend takes to drain the fill.</summary>
+        public const float DrainSeconds = Timing.Dramatic;
+        private readonly VisualElement glow, fill, cost, ticks;
+        private int capacity, points, price;
+        private float shown, drainRate, clock;
         private bool ready;
 
-        /// <summary>The slot's ready glow: shown and pulsed while the meter is full.</summary>
-        public VisualElement Glow;
-
-        /// <summary>0..1: how full the spell's meter is.</summary>
-        public float Fraction
+        /// <summary>The pool's capacity in points; one tick is drawn every <see cref="TickEvery"/> points inside it.</summary>
+        public int Capacity
         {
-            get => target;
+            get => capacity;
             set
             {
-                value = Mathf.Clamp01(value);
-                if (Mathf.Approximately(value, target)) return;
-                // A spend empties it at once; only a gain is animated.
-                if (value < target || (GameApp.I?.Settings?.ReduceMotion ?? false)) shown = value;
-                target = value;
+                value = Mathf.Max(1, value);
+                if (value == capacity) return;
+                capacity = value;
+                ticks.Clear();
+                for (int p = TickEvery; p < capacity; p += TickEvery)
+                {
+                    var t = new VisualElement { pickingMode = PickingMode.Ignore };
+                    t.style.position = Position.Absolute;
+                    t.style.top = t.style.bottom = Space.S0;
+                    t.style.width = Size.Underline;
+                    t.style.left = Length.Percent(100f * p / capacity);
+                    t.style.marginLeft = -Size.Underline / 2f;
+                    t.style.backgroundColor = Palette.Ink.WithA(0.85f);
+                    ticks.Add(t);
+                }
+                points = Mathf.Min(points, capacity);
+                shown = points / (float)capacity;
                 Apply();
             }
         }
 
+        /// <summary>The pool's points, 0..<see cref="Capacity"/>: a rise eases up, a fall drains.</summary>
+        public int Points
+        {
+            get => points;
+            set
+            {
+                value = Mathf.Clamp(value, 0, capacity);
+                if (value == points) return;
+                float to = value / (float)capacity;
+                if (value < points) drainRate = Mathf.Max(0f, shown - to) / DrainSeconds;
+                points = value;
+                if (GameApp.I?.Settings?.ReduceMotion ?? false) { shown = to; Apply(); }
+                ApplyPrice();
+            }
+        }
+
+        /// <summary>The aimed spell's price in points, 0 for none: the part of the fill it would spend is highlighted, or,
+        /// when the pool can't pay it, the missing stretch past the fill shows red.</summary>
+        public int Price
+        {
+            get => price;
+            set
+            {
+                value = Mathf.Max(0, value);
+                if (value == price) return;
+                price = value;
+                ApplyPrice();
+            }
+        }
+
+        /// <summary>Any spell can be paid from the pool: the fill brightens and the glow shows.</summary>
         public bool Ready
         {
             get => ready;
@@ -1148,49 +1186,88 @@ namespace GridGame.App
                 if (ready == value) return;
                 ready = value;
                 clock = 0f;
-                if (Glow != null) { Glow.style.display = value ? DisplayStyle.Flex : DisplayStyle.None; Glow.style.opacity = 0.8f; }
+                glow.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+                glow.style.opacity = 0.8f;
                 fill.style.backgroundColor = value ? Full : Charging;
             }
         }
 
-        public ManaMeter()
+        /// <summary>A point on the bar at <paramref name="fraction"/> of its width, in panel coordinates (where a mote lands).</summary>
+        public Vector2 PointAt(float fraction)
+        {
+            var b = worldBound;
+            return new Vector2(b.xMin + b.width * Mathf.Clamp01(fraction), b.center.y);
+        }
+
+        public PartyManaBar()
         {
             pickingMode = PickingMode.Ignore;
-            float r = Size.Gauge / 2f;
-            style.backgroundColor = Palette.Ink.WithA(0.75f);
-            style.borderTopLeftRadius = style.borderTopRightRadius = style.borderBottomLeftRadius = style.borderBottomRightRadius = r;
-            style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth = style.borderRightWidth = Size.Underline;
-            style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Palette.Ink;
-            style.overflow = Overflow.Hidden;
-            fill = new VisualElement { pickingMode = PickingMode.Ignore };
+            float r = Size.Bar / 2f;
+            glow = new VisualElement { name = "glow", pickingMode = PickingMode.Ignore };
+            glow.style.position = Position.Absolute;
+            glow.style.left = glow.style.right = glow.style.top = glow.style.bottom = -Space.S16;
+            glow.style.backgroundImage = new StyleBackground(Art.Glow);
+            glow.style.unityBackgroundImageTintColor = Palette.Mana.WithA(0.6f);
+            glow.style.display = DisplayStyle.None;
+            Add(glow);
+            var track = new VisualElement { name = "track", pickingMode = PickingMode.Ignore };
+            track.style.position = Position.Absolute;
+            track.style.left = track.style.right = track.style.top = track.style.bottom = Space.S0;
+            track.style.backgroundColor = Palette.Ink.WithA(0.75f);
+            track.style.borderTopLeftRadius = track.style.borderTopRightRadius = track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = r;
+            track.style.overflow = Overflow.Hidden;
+            Add(track);
+            fill = new VisualElement { name = "fill", pickingMode = PickingMode.Ignore };
             fill.style.position = Position.Absolute;
-            fill.style.left = fill.style.top = fill.style.bottom = 0;
+            fill.style.left = fill.style.top = fill.style.bottom = Space.S0;
             fill.style.backgroundColor = Charging;
-            fill.style.borderTopRightRadius = fill.style.borderBottomRightRadius = r;
-            Add(fill);
-            Apply();
+            track.Add(fill);
+            cost = new VisualElement { name = "price", pickingMode = PickingMode.Ignore };
+            cost.style.position = Position.Absolute;
+            cost.style.top = cost.style.bottom = Space.S0;
+            cost.style.display = DisplayStyle.None;
+            track.Add(cost);
+            ticks = new VisualElement { name = "ticks", pickingMode = PickingMode.Ignore };
+            ticks.style.position = Position.Absolute;
+            ticks.style.left = ticks.style.right = ticks.style.top = ticks.style.bottom = Space.S0;
+            track.Add(ticks);
+            Capacity = 1;
             schedule.Execute(Tick).Every(16);
         }
 
         private void Tick()
         {
             bool calm = GameApp.I?.Settings?.ReduceMotion ?? false;
-            if (ready && Glow != null && !calm)
+            if (ready && !calm)
             {
                 clock += Tween.Dt;
-                Glow.style.opacity = 0.6f + 0.4f * Mathf.Sin(clock * 4f);
+                glow.style.opacity = 0.55f + 0.35f * Mathf.Sin(clock * 4f);
             }
+            else if (ready) glow.style.opacity = 0.8f;
+            float target = points / (float)capacity;
             if (Mathf.Approximately(shown, target)) return;
             if (calm) shown = target;
+            else if (shown > target) shown = Mathf.Max(target, shown - Mathf.Max(drainRate, 0.05f) * Tween.Dt);
             else
             {
                 shown += (target - shown) * Mathf.Min(1f, Tween.Dt * 8f);
-                if (Mathf.Abs(target - shown) < 0.002f) shown = target;
+                if (target - shown < 0.002f) shown = target;
             }
             Apply();
         }
 
         private void Apply() => fill.style.width = Length.Percent(100f * shown);
+
+        private void ApplyPrice()
+        {
+            if (price <= 0) { cost.style.display = DisplayStyle.None; return; }
+            bool shortOf = price > points;
+            int from = shortOf ? points : points - price, to = Mathf.Min(capacity, shortOf ? price : points);
+            cost.style.display = DisplayStyle.Flex;
+            cost.style.left = Length.Percent(100f * from / capacity);
+            cost.style.width = Length.Percent(100f * (to - from) / capacity);
+            cost.style.backgroundColor = shortOf ? Palette.Bad.WithA(0.75f) : Palette.Gold.WithA(0.55f);
+        }
     }
 
     /// <summary>GG-T1819: a WoW-style cooldown sweep: a dark wedge over its box, starting at 12 o'clock and covering the

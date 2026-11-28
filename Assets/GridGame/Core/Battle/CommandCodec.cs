@@ -29,6 +29,7 @@ namespace GridGame.Core.Battle
                     break;
                 case UseSlotCommand u:
                     o = new JObject { ["type"] = "use", ["hero"] = u.HeroId, ["slot"] = u.Slot, ["target"] = new JArray(u.Target.X, u.Target.Y) };
+                    WriteTargets(o, u);
                     break;
                 case ShieldCommand sh:
                     o = new JObject { ["type"] = "guard", ["held"] = sh.HeldSeconds }; // GG-T189: Guard's mana charge depends on it
@@ -63,7 +64,7 @@ namespace GridGame.Core.Battle
                     break;
                 case "use":
                     var target = (JArray)o["target"];
-                    cmd = new UseSlotCommand { HeroId = (int)o["hero"], Slot = (int)o["slot"], Target = new Coord((int)target[0], (int)target[1]) };
+                    cmd = new UseSlotCommand { HeroId = (int)o["hero"], Slot = (int)o["slot"], Target = new Coord((int)target[0], (int)target[1]), Targets = ReadTargets(o) };
                     break;
                 case "guard":
                     cmd = new ShieldCommand { HeldSeconds = (float?)o["held"] ?? 0f };
@@ -82,6 +83,24 @@ namespace GridGame.Core.Battle
             }
             cmd.Player = new PlayerId((int?)o["player"] ?? 0);
             return cmd;
+        }
+
+        /// <summary>GG-T2141: a PickMulti's picks under "targets", written only when there are any, so a single pick encodes
+        /// as it always did and a log from before multi-pick (no key) reads as a single pick.</summary>
+        public static void WriteTargets(JObject o, UseSlotCommand u)
+        {
+            if (u.Targets.Count == 0) return;
+            var arr = new JArray();
+            foreach (var c in u.Targets) arr.Add(new JArray(c.X, c.Y));
+            o["targets"] = arr;
+        }
+
+        public static List<Coord> ReadTargets(JObject o)
+        {
+            var list = new List<Coord>();
+            if (o["targets"] is JArray arr)
+                foreach (var t in arr) list.Add(new Coord((int)t[0], (int)t[1]));
+            return list;
         }
 
         // ── Turn mode (§2.13, GG-T767) ───────────────────────────────────────────

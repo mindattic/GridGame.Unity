@@ -47,7 +47,7 @@ namespace GridGame.App
             ClearTapMove();
             if (!TapMoveAllowed(tile)) return false;
             var hero = State.UnitById(SelectedHeroId);
-            var path = TapMoveRoute(State, hero.Id, tile, BattleEngine.MaxDragSteps(State));
+            var path = MoveReach.Route(State, hero.Id, tile, BattleEngine.MaxDragSteps(State));
             if (path == null)
             {
                 App.Audio.Sfx("ui.error", 0.5f);
@@ -65,35 +65,6 @@ namespace GridGame.App
             var btn = panel.Q<Button>("move-confirm-action");
             if (btn != null) App.StartCoroutine(Tween.Pop(btn, 1.08f, 0.25f));
             return true;
-        }
-
-        /// <summary>
-        /// The shortest cardinal route (one tile at a time, §1.1) from the hero to <paramref name="dest"/> that the move
-        /// rules let it walk in full, within <paramref name="maxSteps"/>; null when there is none. Neighbours are tried in a
-        /// fixed order, so the same board always gives the same route.
-        /// </summary>
-        private static List<Coord> TapMoveRoute(BattleState s, int heroId, Coord dest, int maxSteps)
-        {
-            var hero = s.UnitById(heroId);
-            if (hero == null || hero.Pos == dest || maxSteps <= 0) return null;
-            var seen = new HashSet<Coord> { hero.Pos };
-            var frontier = new Queue<List<Coord>>();
-            frontier.Enqueue(new List<Coord>());
-            while (frontier.Count > 0)
-            {
-                var path = frontier.Dequeue();
-                if (path.Count >= maxSteps) continue;
-                var at = path.Count > 0 ? path[path.Count - 1] : hero.Pos;
-                foreach (var step in new[] { new Coord(at.X, at.Y - 1), new Coord(at.X + 1, at.Y), new Coord(at.X, at.Y + 1), new Coord(at.X - 1, at.Y) })
-                {
-                    if (step.X < 0 || step.Y < 0 || step.X >= BattleConfig.Cols || step.Y >= BattleConfig.Rows || !seen.Add(step)) continue;
-                    var next = new List<Coord>(path) { step };
-                    if (BattleEngine.PreviewMove(s, heroId, next).StepsTaken.Count < next.Count) continue;
-                    if (step == dest) return next;
-                    frontier.Enqueue(next);
-                }
-            }
-            return null;
         }
 
         /// <summary>The picked route as a path arrow from the hero to the tile, the tile itself in gold, and the drop's
@@ -150,10 +121,10 @@ namespace GridGame.App
             SyncAll();
             foreach (var u in State.Units)
                 if (board.Units.TryGetValue(u.Id, out var v) && u.Alive)
-                    v.SetGlow(new Color(1f, 0.9f, 0.5f), u.Id == SelectedHeroId ? 0.65f : 0f);
+                    v.SetGlow(Palette.Vfx.SelectGlow, u.Id == SelectedHeroId ? 0.65f : 0f);
         }
 
-        /// <summary>The move's confirm card in the description panel: where to, the pincers it makes and their damage, then
+        /// <summary>The move's confirm card in the description panel: where to, the pincers it makes and their outcome, then
         /// Cancel and Go.</summary>
         private void TapMoveCard(Unit hero)
         {
@@ -163,29 +134,82 @@ namespace GridGame.App
             int tiles = tapMovePath.Count;
             int pincers = tapMovePreview?.Pincers.Count ?? 0;
             string what = pincers > 1 ? $" · PINCER ×{pincers}" : pincers == 1 ? " · PINCER" : "";
-            var summary = Ui.Text($"Move {hero.Name} {tiles} tile{(tiles == 1 ? "" : "s")}{what}", "small gold", col);
+            var summary = Ui.Text(PanelCopy(PanelState.TapMove, hero.Name, n: tiles, extra: what), "small gold", col);
             summary.name = "move-confirm-summary";
             summary.style.whiteSpace = WhiteSpace.Normal;
-            var p = OutcomePreviewer.Preview(State, new MoveCommand { HeroId = hero.Id, Path = new List<Coord>(tapMovePath) }, 3);
-            if (!p.Refused)
-                foreach (var t in p.Targets)
-                {
-                    var u = State.UnitById(t.UnitId);
-                    if (u == null || u.IsHero || t.DamageMax <= 0) continue;
-                    string ko = t.KillChance > 0f ? (t.KillChance >= 1f ? " · KO" : $" · KO {Mathf.RoundToInt(t.KillChance * 100)}%") : "";
-                    var l = Ui.Text($"{u.Name}: <nobr><color=#{ColorUtility.ToHtmlStringRGB(Palette.Bad)}>−{Range(t.DamageMin, t.DamageMax)}</color>{ko}</nobr>", "t-caption", col);
-                    l.name = "move-confirm-outcome";
-                    l.style.whiteSpace = WhiteSpace.Normal;
-                }
-            // Cancel left, Go right (L7), as the ability confirm card.
+            PincerOutcome(col, hero);
+            // Cancel left, Move right (L7), as the ability confirm card.
             var btns = Ui.El("row", col);
             btns.name = "move-confirm-buttons";
             btns.style.justifyContent = Justify.SpaceBetween;
             btns.style.marginTop = Space.S8;
             var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelTapMove, "btn--small", btns);
             cancel.name = "move-confirm-cancel";
-            var ok = RowIcon.IconButton("Go", RowKind.Confirm, ConfirmTapMove, "btn--primary", btns, confirmTap: false);
+            var ok = RowIcon.IconButton("Move", RowKind.Confirm, ConfirmTapMove, "btn--primary", btns, confirmTap: false);
             ok.name = "move-confirm-action";
+        }
+
+        /// <summary>
+        /// GG-T1946 (UX review §6.4): the drop's pincer outcome, as the turn strip shows units (thumbnails, not names). One
+        /// row of the heroes who strike (both ends and their supporters), then a row per foe caught: its damage range and
+        /// KO odds from <see cref="OutcomePreviewer"/>, and how many seconds its turn is pushed back, as the rules applied
+        /// it in the same samples. Each value stays whole and the line wraps beside the thumb, so nothing is cut off.
+        /// </summary>
+        private void PincerOutcome(VisualElement parent, Unit hero)
+        {
+            var p = OutcomePreviewer.Preview(State, new MoveCommand { HeroId = hero.Id, Path = new List<Coord>(tapMovePath) }, 3);
+            if (p.Refused) return;
+            var strikers = new List<int>();
+            foreach (var pc in tapMovePreview?.Pincers ?? new List<Pincer>())
+                foreach (var list in new[] { new List<Unit> { pc.A, pc.B }, pc.SupportersA, pc.SupportersB })
+                    foreach (var u in list)
+                        if (u != null && u.IsHero && !strikers.Contains(u.Id)) strikers.Add(u.Id);
+            if (strikers.Count > 0)
+            {
+                var who = Ui.El("row", parent);
+                who.name = "move-confirm-strikers";
+                who.style.alignItems = Align.Center;
+                who.style.flexWrap = Wrap.Wrap;
+                who.style.marginTop = Space.S8;
+                Ui.Text("Strike", "t-caption", who).style.marginRight = Space.S8;
+                foreach (var id in strikers)
+                    if (State.UnitById(id) is Unit u) OutcomeThumb(u, who);
+            }
+            foreach (var t in p.Targets)
+            {
+                var u = State.UnitById(t.UnitId);
+                if (u == null || u.IsHero || (t.DamageMax <= 0 && t.PushMax <= 0f)) continue;
+                var parts = new List<string>();
+                if (t.DamageMax > 0) parts.Add($"<color=#{ColorUtility.ToHtmlStringRGB(Palette.Bad)}>−{Range(t.DamageMin, t.DamageMax)}</color>");
+                if (t.KillChance > 0f) parts.Add(t.KillChance >= 1f ? "KO" : $"KO {Mathf.RoundToInt(t.KillChance * 100)}%");
+                if (t.PushMax > 0f) parts.Add($"pushed back {Secs(t.PushMin, t.PushMax)}");
+                var row = Ui.El("row", parent);
+                row.name = "move-confirm-outcome";
+                row.style.alignItems = Align.Center;
+                row.style.marginTop = Space.S8;
+                OutcomeThumb(u, row);
+                var l = Ui.Text(string.Join(" · ", parts.ConvertAll(x => $"<nobr>{x}</nobr>")), "t-caption", row);
+                l.style.flexShrink = 1;
+                l.style.whiteSpace = WhiteSpace.Normal;
+            }
+        }
+
+        private static void OutcomeThumb(Unit u, VisualElement parent)
+        {
+            var t = Ui.Thumb(u.Def.Id, parent, Size.IconS);
+            t.name = "outcome-unit-" + u.Id;
+            t.style.flexShrink = 0;
+            t.pickingMode = PickingMode.Ignore;
+            t.style.marginRight = Space.S8;
+            t.style.borderTopLeftRadius = t.style.borderTopRightRadius = t.style.borderBottomLeftRadius = t.style.borderBottomRightRadius = Space.S8;
+        }
+
+        /// <summary>Seconds as the HUD prints them: "1.5 s", or "1–1.5 s" when the samples differ.</summary>
+        private static string Secs(float a, float b)
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            string x = a.ToString("0.#", inv), y = b.ToString("0.#", inv);
+            return (x == y ? x : $"{x}–{y}") + " s";
         }
     }
 }

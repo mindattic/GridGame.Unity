@@ -3,7 +3,7 @@ using GridGame.Core.Content;
 
 namespace GridGame.Core.Battle
 {
-    public enum BattlePhase { PlayerInput, Victory, Defeat, Escaped, Retreated }
+    public enum BattlePhase { PlayerInput, Victory, Defeat, Escaped, Retreated, Withdrawn }
 
     public sealed class Trap
     {
@@ -29,6 +29,8 @@ namespace GridGame.Core.Battle
         public List<string> EquippedItemIds = new List<string>();
         /// <summary>Ability bar entries: ability id, or "item:id". Null/empty = empty slot.</summary>
         public List<string> Bar = new List<string>();
+        /// <summary>GG-T1917: the hero's saved Abilities sheet arrangement (<c>HeroSave.Actions</c>); null = the default tree.</summary>
+        public GridGame.Core.Rules.ActionLayout Layout;
         /// <summary>Item id → owned count, used to size bar item stacks.</summary>
         public Dictionary<string, int> ItemCounts = new Dictionary<string, int>();
         public Coord? Start;
@@ -132,6 +134,9 @@ namespace GridGame.Core.Battle
         /// <summary>GG-T1111 (§2.13.3): hero turns taken — bumped when the active hero's action lands under
         /// <c>TurnRules.HeroesOnTimeline</c> (a winning action included); 0 in every other mode. Display only.</summary>
         public int HeroTurns;
+        /// <summary>GG-T2070: blows that clanged off an unyielding plate's front for 0, toward a stage's
+        /// <see cref="WithdrawDef.AfterPlateClangs"/>.</summary>
+        public int PlateClangs;
         /// <summary>Banked gold paid out mid-battle (a recruitable's PayGold, GG-T132): the meta layer deducts it whatever the outcome.</summary>
         public int CoinsSpent;
         /// <summary>§1.2.8 (GG-T849): the best combo this battle (display and stats only).</summary>
@@ -164,7 +169,7 @@ namespace GridGame.Core.Battle
             return new BattleResults
             {
                 Coins = Coins, Xp = Xp, ActionsTaken = ActionsTaken, TicksElapsed = TicksElapsed, CoinsSpent = CoinsSpent,
-                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd, Rounds = Rounds, HeroTurns = HeroTurns,
+                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd, Rounds = Rounds, HeroTurns = HeroTurns, PlateClangs = PlateClangs,
                 BestComboRank = BestComboRank, BestComboScore = BestComboScore,
                 ComboAttackerPoints = new Dictionary<string, int>(ComboAttackerPoints),
                 ComboSupporterPoints = new Dictionary<string, int>(ComboSupporterPoints),
@@ -445,43 +450,6 @@ namespace GridGame.Core.Battle
         /// <summary>Sets the pool, clamped to 0..capacity.</summary>
         public void SetPartyMana(int points) =>
             PartyMana = System.Math.Max(0, System.Math.Min(BattleConfig.PartyManaCapacity, points));
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SpellPrice.")]
-        public int ManaFull(Unit h, int slot) => SpellPrice(h, slot);
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana. Returns the pool capped at the slot's price.")]
-        public int ManaIn(int heroId, int slot)
-        {
-            var h = UnitById(heroId);
-            return h == null ? 0 : System.Math.Min(PartyMana, SpellPrice(h, slot));
-        }
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SetPartyMana.")]
-        public void SetMana(int heroId, int slot, int points) => SetPartyMana(points);
-
-        /// <summary>Affordable spell slots and all costed spell slots of the living heroes, in party then slot order.</summary>
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana and SpellReady.")]
-        public void CountMeters(out int full, out int total)
-        {
-            full = 0; total = 0;
-            foreach (var u in Units)
-            {
-                if (!u.IsHero || !u.Alive) continue;
-                for (int i = 0; i < u.Bar.Count; i++)
-                {
-                    int price = SpellPrice(u, i);
-                    if (price <= 0) continue;
-                    total++;
-                    if (PartyMana >= price) full++;
-                }
-            }
-        }
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana and SpellReady.")]
-        public int ReadySpellCount { get { CountMeters(out int full, out _); return full; } }
-
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use PartyManaFull.")]
-        public bool AllSpellsFull => PartyManaFull;
 
         public BattleState Clone()
         {

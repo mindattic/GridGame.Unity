@@ -41,17 +41,29 @@ namespace GridGame.App
             var board = HeroBoard.Board(C);
             if (board == null || h == null)
             {
-                Ui.Empty("There is no skill hexagon.", Ui.Panel(body, null, true));
+                Ui.Empty("There are no Talents.", Ui.Panel(body, null, true));
                 return;
             }
             var owned = HeroBoard.Owned(C, h).Nodes;
             var start = board.StartOf(h.ClassId);
 
             var head = Ui.Panel(body, null, false, "hex-head");
-            Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", head, h.SkillPoints > 0 ? "gold" : "dim").name = "hex-points";
+            var top = Ui.El("row", head);
+            top.style.alignItems = Align.Center;
+            var pointsLine = RowIcon.Line("cur-skill-points", top);
+            pointsLine.style.flexGrow = 1; pointsLine.style.flexShrink = 1; pointsLine.style.minWidth = 0;
+            var points = Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", pointsLine, h.SkillPoints > 0 ? "gold" : "dim");
+            points.name = "hex-points";
+            // GG-T2085: the Inn's Respec opens from here, off the hub's mode banner, while the caravan is camped.
+            if (CampMenu.Build(C, S, App.Settings).Any(d => d.Id == CampMenu.Respec))
+            {
+                var respec = RowIcon.IconButton("Respec", RowKind.Station, () => App.Router.Push(new RespecScreen()), "btn--small", top, false, Art.UiIcon("hub-respec"));
+                respec.name = "hex-respec";
+                respec.style.marginLeft = Space.S16;
+            }
             var have = StatLine(board.StatTotals(owned));
             int bought = SkillHexProgress.Refundable(C, h).Count;
-            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(have.Length > 0 ? " · " + have : "")} · earn 1 a level", head, "dim");
+            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(string.IsNullOrEmpty(have) ? "" : " · " + have)} · earn 1 a level", head, "dim");
 
             var frame = Ui.Panel(body, null, true, "hex-board");
             var host = SkillHexView.Host(board, zoom, out var view);
@@ -92,7 +104,15 @@ namespace GridGame.App
                 var at = pt ?? selected;
                 view.SetPreview(at.HasValue ? board.CheapestRoute(owned, at.Value) : null);
             };
-            view.Tapped += pt => { selected = pt; view.SetSelected(pt); Show(pt); };
+            // GG-T1971: select, then confirm. A tap selects the node (pressed in, its route and Buy route shown); Buy route
+            // is the confirm, so it takes one tap rather than a second select of its own.
+            view.Tapped += pt =>
+            {
+                if (!pt.Equals(selected)) GameApp.I?.Audio?.Sfx("ui.select");
+                selected = pt;
+                view.SetSelected(pt);
+                Show(pt);
+            };
             Show(selected);
         }
 
@@ -102,7 +122,7 @@ namespace GridGame.App
         {
             if (!pt.HasValue)
             {
-                Ui.Para("Tap a node to see the cheapest route to it.", w, "dim");
+                Ui.Para("Tap a node to see the cheapest route to it, then tap Buy route.", w, "dim");
                 return;
             }
             var node = board.Node(pt.Value);
@@ -123,7 +143,7 @@ namespace GridGame.App
             if (abilities.Count > 0) Ui.Para("Learns: " + string.Join(", ", abilities), w, "good").name = "hex-route-abilities";
 
             bool isSelected = pt.Equals(selected);
-            Ui.Para(isSelected ? "" : "Tap it to buy.", foot, "dim grow");
+            Ui.El("grow", foot);
             var target = pt.Value;
             var buy = RowIcon.IconButton($"Buy route · {cost} SP", RowKind.Confirm, () =>
             {
@@ -133,7 +153,7 @@ namespace GridGame.App
                     if (!j.Ok) { Done(j); return; }
                 }
                 Done(SkillHexProgress.BuyRoute(C, h, target));
-            }, "btn--primary btn--small", foot);
+            }, "btn--primary btn--small", foot, confirmTap: false);
             buy.name = "hex-buy";
             Ui.SetEnabled(buy, isSelected && h.SkillPoints >= cost);
         }
@@ -146,7 +166,8 @@ namespace GridGame.App
             {
                 var term = C.TryTerm(kv.Key);
                 string val = $"{(kv.Value >= 0 ? "+" : "")}{kv.Value}";
-                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", w);
+                var id = HeroIcons.Stat(kv.Key);
+                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", id != null ? RowIcon.Line(id, w) : w);
                 t.name = "hex-stat-line";
             }
         }

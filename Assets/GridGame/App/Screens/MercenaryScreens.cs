@@ -14,12 +14,13 @@ namespace GridGame.App
         public override string Id => "mercenaries";
         /// <summary>GG-T1206: the camp's mercenaries (non-party heroes) load into its own Screen art scope, released when it closes.</summary>
         public override bool HoldsScreenArt => true;
-        protected override string Title => "Mercenaries";
+        protected override string Title => "Recruit";
         protected override string Backdrop => "desert";
         private bool haggling;
 
         protected override void BuildBody(VisualElement body)
         {
+            SummonScreen.RecruitTabs(body, 1);
             // GG-T454 (the menu kit): one scrolling list — the terms, who's under contract, then who's for hire.
             var list = Ui.ListPanel(body, null, "merc-board");
             Ui.Para("Swords for hire, paid upfront for a set number of battles. The count runs down every battle, whether they fight or wait in reserve. " +
@@ -34,8 +35,7 @@ namespace GridGame.App
                 {
                     var def = C.TryClass(k.ClassId);
                     if (def == null) continue;
-                    Ui.Card(hired, k.ClassId, null, out var col);
-                    var top = Ui.El("row", col);
+                    var top = Row(hired, k.ClassId, null, out var col);
                     Ui.Name(def.Name, top);
                     MercenaryCamp.Tag(S, k.ClassId, top);
                     Ui.Caption($"{k.BattlesLeft} battle{(k.BattlesLeft == 1 ? "" : "s")} left · {Ui.Gold(k.Rate)} a battle", col);
@@ -45,58 +45,149 @@ namespace GridGame.App
             Ui.Section("For hire", list);
             var board = Mercenaries.Board(C, S);
             if (board.Count == 0) Ui.Empty("No one's looking for work right now.", list);
+            // GG-T2020: one 132-px row per mercenary (thumbnail, name and role, a short line); a tap opens the hire sheet.
             foreach (var m in board)
             {
                 var merc = m;
                 var def = C.Class(m.Class);
-                bool walked = Mercenaries.Walked(S, m.Class);
-                var card = Ui.Card(list, m.Class, null, out var col, "merc-offer-" + m.Class);
-                var top = Ui.El("row", col);
+                var top = Row(list, m.Class, "merc-offer-" + m.Class, out var col);
                 Ui.Name(def.Name, top);
-                Ui.RoleBadge(def.Role, top);
-                Ui.Caption(m.Temperament.ToString(), top, "dim");
-                var pitch = Ui.Para($"\"{m.Pitch}\"", col, "dim");
-                pitch.style.flexShrink = 0; pitch.style.minWidth = 0; pitch.style.whiteSpace = WhiteSpace.Normal; // the full quote wraps to its height inside the card, never cut off
-                GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", col); // GG-T298
-                int adj = Mercenaries.HaggleAdjust(S, m.Class);
-                if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", col, adj < 0 ? "gold" : "bad");
-                if (walked) { Ui.Para("Walked off. Back after the next battle.", col, "bad"); continue; }
-                // GG-T1881: Haggle on the card's right edge beside the name; the hire lengths below as one segmented row.
-                Ui.El("grow", top);
-                var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", top, confirmTap: true);
-                haggle.name = "merc-haggle-" + m.Class;
-                haggle.AddToClassList("target-gap");
-                Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
-                var terms = Ui.Actions(col);
-                terms.style.flexShrink = 0; terms.AddToClassList("merc-terms"); // GG-T700: a clear 24 px (12 + the card's gap) above the hire row, and the row keeps its height
-                foreach (var t in m.Terms.OrderBy(x => x))
-                {
-                    int term = t, price = Mercenaries.Price(C, S, m.Class, t);
-                    var b = Ui.Button($"{term} battles\n{Ui.Gold(price)}", () => Confirm.Show(
-                        $"Hire {def.Name} for {term} battles at {Ui.Gold(price)}, paid now? The contract runs down every battle, used or not.", "Hire",
-                        () =>
-                        {
-                            // The price shown may be stale (a haggle landed since): never charge a different amount than asked.
-                            if (haggling || Mercenaries.Price(C, S, merc.Class, term) != price) { App.Toast("The price has changed"); App.Audio.Sfx("ui.error"); Refresh(); return; }
-                            Done(Mercenaries.Hire(C, S, merc.Class, term));
-                        }), "btn--small merc-term", terms);
-                    b.name = $"merc-hire-{m.Class}-{term}";
-                    b.AddToClassList("target-gap"); // GG-T700: 24 px to the next target, wrapped or not
-                    Ui.SetEnabled(b, S.Gold >= price && !haggling);
-                }
+                Ui.RoleBadge(def.Role, top).AddToClassList("merc-role");
+                Ui.Caption(ShortLine(m), col, Mercenaries.Walked(S, m.Class) ? "bad" : "dim");
+                Ui.Tappable(col.parent, () => OpenSheet(merc), "ui.select");
             }
+            if (sheetClass != null) RenderSheet();
+        }
+
+        /// <summary>A list row <see cref="Kit.Row"/> tall: the baked thumbnail (R9), a top line, and <paramref name="col"/> for the line under it.</summary>
+        private static VisualElement Row(VisualElement parent, string classId, string name, out VisualElement col)
+        {
+            var card = Ui.El("card kit-card merc-row", parent);
+            if (name != null) card.name = name;
+            Ui.Thumb(classId, card, Size.Avatar);
+            col = Ui.El("col grow", card);
+            col.style.flexShrink = 1; col.style.minWidth = 0;
+            var top = Ui.El("row", col);
+            top.style.alignItems = Align.Center;
+            return top;
+        }
+
+        private string ShortLine(MercenaryDef m)
+        {
+            if (Mercenaries.Walked(S, m.Class)) return "Walked off. Back after the next battle.";
+            int from = m.Terms.Min(t => Mercenaries.Price(C, S, m.Class, t));
+            int adj = Mercenaries.HaggleAdjust(S, m.Class);
+            string mood = adj < 0 ? $"Haggled down {-adj}%" : adj > 0 ? $"Price up {adj}%" : m.Temperament.ToString();
+            return $"{mood} · from {Ui.Gold(from)}";
+        }
+
+        // ── The hire sheet (GG-T2020, GG-T2090): the kit's sheet (Ui.Sheet) with the pitch in full, the lengths as a
+        // segmented pick, Haggle and Hire ──
+
+        private VisualElement sheet;
+        private string sheetClass;
+        private int chosenTerm;
+
+        private void OpenSheet(MercenaryDef m)
+        {
+            CloseSheet(false);
+            sheetClass = m.Class;
+            chosenTerm = 0;
+            VisualElement s = null;
+            s = sheet = Ui.Sheet("merc-sheet", () => { if (sheet == s) { sheet = null; sheetClass = null; } });
+            RenderSheet();
+        }
+
+        private void CloseSheet(bool animate)
+        {
+            var s = sheet;
+            sheet = null;
+            sheetClass = null;
+            if (s != null) Ui.CloseSheet(s, animate);
+        }
+
+        private void RenderSheet()
+        {
+            var sh = sheet;
+            var m = sheetClass == null ? null : Mercenaries.Board(C, S).FirstOrDefault(x => x.Class == sheetClass);
+            if (sh == null || sh.parent?.parent == null || m == null) { CloseSheet(false); return; }
+            sh.Clear();
+            var def = C.Class(m.Class);
+
+            var head = Ui.El("row", sh);
+            head.style.alignItems = Align.Center;
+            Ui.Thumb(m.Class, head, Size.Avatar);
+            var who = Ui.El("col grow", head);
+            who.style.flexShrink = 1; who.style.minWidth = 0;
+            var top = Ui.El("row", who);
+            top.style.alignItems = Align.Center;
+            Ui.Name(def.Name, top);
+            Ui.RoleBadge(def.Role, top).AddToClassList("merc-role");
+            Ui.Caption(m.Temperament.ToString(), who, "dim");
+            Ui.IconButton(RowKind.Close, () => CloseSheet(true), head).name = "merc-sheet-close";
+
+            var pitch = Ui.Para($"\"{m.Pitch}\"", sh, "dim");
+            pitch.style.flexShrink = 0; pitch.style.minWidth = 0; pitch.style.whiteSpace = WhiteSpace.Normal; // GG-T1897: the full quote wraps to its height, never cut off
+            GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", sh); // GG-T298
+            int adj = Mercenaries.HaggleAdjust(S, m.Class);
+            if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", sh, adj < 0 ? "gold" : "bad");
+            if (Mercenaries.Walked(S, m.Class)) { Ui.Para("Walked off. Back after the next battle.", sh, "bad"); return; }
+
+            // A segment picks a length (a pick is not an action); Hire names its price and is the one commit.
+            var terms = m.Terms.OrderBy(x => x).ToArray();
+            if (!terms.Contains(chosenTerm))
+                chosenTerm = terms.Where(t => S.Gold >= Mercenaries.Price(C, S, m.Class, t)).DefaultIfEmpty(terms[0]).First();
+            Button hire = null;
+            var seg = Ui.Segmented(terms.Select(t => $"{t} battles").ToArray(), System.Array.IndexOf(terms, chosenTerm),
+                i => { chosenTerm = terms[i]; SyncHire(hire, m); }, sh, "merc-terms");
+            var segs = seg.Query<Button>().ToList();
+            for (int i = 0; i < terms.Length && i < segs.Count; i++)
+            {
+                segs[i].name = $"merc-hire-{m.Class}-{terms[i]}";
+                Ui.SetEnabled(segs[i], S.Gold >= Mercenaries.Price(C, S, m.Class, terms[i]) && !haggling);
+            }
+            Ui.Note("Paid now. The contract runs down every battle, used or not.", sh);
+
+            var foot = Ui.El("kit-footer", sh);
+            var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(m)), null, foot, confirmTap: true);
+            haggle.name = "merc-haggle-" + m.Class;
+            Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
+            Ui.El("grow", foot);
+            hire = RowIcon.IconButton("Hire", RowKind.Confirm, () => Hire(m, chosenTerm, Mercenaries.Price(C, S, m.Class, chosenTerm)), "btn--primary", foot, confirmTap: true);
+            hire.name = "merc-hire";
+            SyncHire(hire, m);
+        }
+
+        /// <summary>The commit names the picked length's price, and is off when it can't be paid.</summary>
+        private void SyncHire(Button hire, MercenaryDef m)
+        {
+            int price = Mercenaries.Price(C, S, m.Class, chosenTerm);
+            bool ready = m.Terms.Contains(chosenTerm) && S.Gold >= price && !haggling;
+            hire.Q<Label>().text = ready ? $"Hire · {Ui.Gold(price)}" : "Hire"; // the IconButton's label, beside its icon
+            Ui.SetEnabled(hire, ready);
+        }
+
+        private void Hire(MercenaryDef m, int term, int price)
+        {
+            // The price shown may be stale (a haggle landed since): never charge a different amount than shown.
+            if (haggling || Mercenaries.Price(C, S, m.Class, term) != price) { App.Toast("The price has changed"); App.Audio.Sfx("ui.error"); RenderSheet(); return; }
+            var r = Mercenaries.Hire(C, S, m.Class, term);
+            if (r.Ok) CloseSheet(false);
+            Done(r);
         }
 
         // The merc weighs the offer for a beat before answering (law 5: nothing lands in a single frame).
-        private IEnumerator Haggle(MercenaryDef m, VisualElement card)
+        private IEnumerator Haggle(MercenaryDef m)
         {
             if (haggling) yield break;
             haggling = true;
-            // Hire and Haggle stay off while the merc thinks (the page isn't rebuilt until the answer lands).
-            Body?.Query<Button>().ForEach(btn => { if (btn.name != null && btn.name.StartsWith("merc-")) Ui.SetEnabled(btn, false); });
+            RenderSheet(); // Hire and Haggle stay off while the merc thinks
             App.Audio.Sfx("ui.press");
-            var think = Ui.Heading("Hmm", card, "gold");
-            yield return Tween.Run(Timing.Dramatic, k => { think.style.opacity = 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)); });
+            if (sheet != null)
+            {
+                var think = Ui.Heading("Hmm", sheet, "gold");
+                yield return Tween.Run(Timing.Dramatic, k => { think.style.opacity = 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)); });
+            }
             var o = Mercenaries.Haggle(C, S, m.Class, out var message);
             haggling = false;
             App.Audio.Sfx(o == HaggleOutcome.Dropped ? "ui.buy" : o == HaggleOutcome.Held ? "ui.select" : "ui.error");
@@ -176,7 +267,7 @@ namespace GridGame.App
             var k = Mercenaries.Contract(S, classId);
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, HubScreen.ThemeFor(C, S), 2);
-            bg.style.unityBackgroundImageTintColor = new Color(0.4f, 0.42f, 0.55f);
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Mercenary;
 
             var portrait = Ui.El(null, root);
             portrait.name = "merc-portrait";

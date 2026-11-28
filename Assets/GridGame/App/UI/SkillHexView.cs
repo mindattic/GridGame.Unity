@@ -31,13 +31,13 @@ namespace GridGame.App
         public const float Margin = 70f;
 
         // The design page's palette (docs/design/skill-hexagon/style.css).
-        public static readonly Color Bg = Hex("#0d0f14");
-        public static readonly Color PanelColor = Hex("#151821");
-        public static readonly Color LineColor = Hex("#2a2f3d");
-        public static readonly Color Fg = Hex("#e6e8ee");
-        public static readonly Color Muted = Hex("#9097a8");
-        public static readonly Color Accent = Hex("#7fd1ff");
-        public static readonly Color Hot = Hex("#ffcf6b");
+        public static readonly Color Bg = Palette.SkillHex.Bg;
+        public static readonly Color PanelColor = Palette.SkillHex.Panel;
+        public static readonly Color LineColor = Palette.SkillHex.Line;
+        public static readonly Color Fg = Palette.SkillHex.Fg;
+        public static readonly Color Muted = Palette.SkillHex.Muted;
+        public static readonly Color Accent = Palette.SkillHex.Accent;
+        public static readonly Color Hot = Palette.SkillHex.Hot;
 
         private static readonly float Sqrt3 = Mathf.Sqrt(3f);
 
@@ -92,7 +92,7 @@ namespace GridGame.App
                 for (int r = -n; r <= n; r++)
                     if (board.Contains((q, r))) points.Add((q, r));
 
-            // Corner labels: the stat ids, just outside each corner. 30 px (the caption floor, POL-A2) in the real Heavy
+            // Corner labels: the stat ids, just outside each corner, at the 30-px floor (POL-A2) in the real Heavy
             // cut, not faux bold (POL-A3) (GG-T1068).
             for (int k = 0; k < 6; k++)
             {
@@ -101,12 +101,12 @@ namespace GridGame.App
                 var at = centre + corners[k] * (BoardRadius + 40f);
                 var label = new Label(id) { pickingMode = PickingMode.Ignore };
                 label.style.position = Position.Absolute;
-                label.style.left = at.x - 50f;
-                label.style.top = at.y - 21f;
-                label.style.width = 100f;
-                label.style.height = 42f;
+                label.style.left = at.x - Size.HexLabelW / 2f;
+                label.style.top = at.y - Size.HexLabelH / 2f;
+                label.style.width = Size.HexLabelW;
+                label.style.height = Size.HexLabelH;
                 label.style.unityTextAlign = TextAnchor.MiddleCenter;
-                label.style.fontSize = 30;
+                label.style.fontSize = TypeFloor.ShrinkMin;
                 Fonts.UseHeavy(label);
                 label.style.color = statColors[k];
                 Add(label);
@@ -149,7 +149,7 @@ namespace GridGame.App
             MarkDirtyRepaint();
         }
 
-        /// <summary>Rings a node in hot (the one a detail panel is showing); null clears it.</summary>
+        /// <summary>Shows a node pressed in and ringed in hot (the one a detail panel is showing); null clears it.</summary>
         public void SetSelected((int Q, int R)? pt)
         {
             selected = pt;
@@ -260,6 +260,16 @@ namespace GridGame.App
                     if ((preview.Contains(nb) && Less(pt, nb)) || (!preview.Contains(nb) && Owns(nb)))
                         Shapes.Bar(p, PositionOf(pt), PositionOf(nb), pv);
 
+            // GG-T1971: the selected node sits pressed in, as a selected card does (.tap--selected): a dark well under it
+            // with a shadowed top rim, drawn before the nodes so the node stays readable on top.
+            bool pressed = selected.HasValue && Board.Contains(selected.Value);
+            if (pressed)
+            {
+                var at = PositionOf(selected.Value);
+                Shapes.Dot(p, at, 13f, new ShapeStyle { Fill = Palette.Black.WithA(0.55f) });
+                Shapes.Ring(p, at, 12f, new ShapeStyle { Width = 3f, Fill = Palette.Black.WithA(0.7f) }, 180f, 180f);
+            }
+
             // Nodes.
             foreach (var pt in points)
             {
@@ -289,9 +299,9 @@ namespace GridGame.App
                 }
             }
 
-            // Selection in hot, hover in faint fg.
-            if (selected.HasValue && Board.Contains(selected.Value))
-                Shapes.Ring(p, PositionOf(selected.Value), 12f, new ShapeStyle { Width = 2f, Fill = Hot });
+            // Selection in hot, set down a little into its well; hover in faint fg.
+            if (pressed)
+                Shapes.Ring(p, PositionOf(selected.Value) + new Vector2(0f, 1.5f), 13f, new ShapeStyle { Width = 2f, Fill = Hot });
             if (Hovered.HasValue && !Hovered.Equals(selected))
                 Shapes.Ring(p, PositionOf(Hovered.Value), 11f, new ShapeStyle { Width = 1.5f, Fill = WithAlpha(Fg, 0.6f) });
         }
@@ -343,7 +353,5 @@ namespace GridGame.App
         private static bool Less((int Q, int R) a, (int Q, int R) b) => a.Q < b.Q || (a.Q == b.Q && a.R < b.R);
 
         private static Color WithAlpha(Color c, float a) { c.a *= a; return c; }
-
-        private static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out var c) ? c : Color.magenta;
     }
 }

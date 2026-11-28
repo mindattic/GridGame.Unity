@@ -11,11 +11,28 @@ namespace GridGame.Meta
     /// on its own fixed seed as a tutorial battle, so its lessons may stage their situations. It is practice: nothing is
     /// earned, spent or worn (no XP, gold, loot, item use or durability wear; wounds stay as they were) and campaign
     /// progress never moves. The Bestiary still counts the foes seen and defeated, and a win marks the drill cleared
-    /// (<see cref="SaveData.ClearedDrills"/>).
+    /// (<see cref="SaveData.ClearedDrills"/>). GG-T2138: campaign.json's Prologue battles are drills too, but story battles:
+    /// a win pays its gold, loot and XP (<see cref="Commit"/>); a practice replay (<see cref="Report"/>) still pays nothing.
     /// </summary>
     public static class Drills
     {
         public static bool IsDrill(StageDef stage) => stage?.Lessons != null && stage.Lessons.Count > 0;
+
+        /// <summary>GG-T2075: the drills a new game plays, in order: campaign.json's Prologue battles, else its Tutorial drills.</summary>
+        public static List<string> NewGameOrder(ContentDb c)
+        {
+            var prologue = c?.Campaign?.Prologue;
+            return prologue != null && prologue.Count > 0 ? prologue : c?.Campaign?.Tutorial ?? new List<string>();
+        }
+
+        /// <summary>GG-T2075: the drill list <paramref name="stageId"/> sits in: the Prologue for a prologue battle, else the
+        /// Tutorial (Play a drill's list).</summary>
+        public static List<string> OrderOf(ContentDb c, string stageId)
+        {
+            var prologue = c?.Campaign?.Prologue;
+            return prologue != null && prologue.Exists(id => string.Equals(id, stageId, StringComparison.OrdinalIgnoreCase))
+                ? prologue : c?.Campaign?.Tutorial ?? new List<string>();
+        }
 
         public static bool IsCleared(SaveData s, string stageId) => s?.ClearedDrills != null && stageId != null && s.ClearedDrills.Contains(stageId);
 
@@ -32,22 +49,54 @@ namespace GridGame.Meta
             Onboarding.Begin(s, OnboardingStep.HubIntro);
         }
 
+        /// <summary>GG-T1959: the lesson that teaches the turn clock; its drill is The Clock.</summary>
+        public const string ClockLesson = "hold";
+
+        /// <summary>GG-T1959: a drill that comes before The Clock in its list's order (Tutorial, or GG-T2075 Prologue) plays
+        /// untimed, so the clock waits even while a hero is held until the drill that teaches it.</summary>
+        public static bool BeforeClock(ContentDb c, StageDef stage)
+        {
+            if (!IsDrill(stage) || c == null) return false;
+            var order = OrderOf(c, stage.Id);
+            int at = order.FindIndex(id => string.Equals(id, stage.Id, StringComparison.OrdinalIgnoreCase));
+            int clock = order.FindIndex(id => c.TryStage(id)?.Lessons?.Any(l => l.Id == ClockLesson) == true);
+            return at >= 0 && clock >= 0 && at < clock;
+        }
+
         /// <summary>Marks every drill cleared: a save that finished the tutorial, and Test Mode.</summary>
         public static void MarkAllCleared(ContentDb c, SaveData s)
         {
             s.ClearedDrills ??= new HashSet<string>();
-            foreach (var id in c?.Campaign?.Tutorial ?? Enumerable.Empty<string>())
+            foreach (var id in (c?.Campaign?.Tutorial ?? Enumerable.Empty<string>()).Concat(c?.Campaign?.Prologue ?? Enumerable.Empty<string>()))
                 if (id != null) s.ClearedDrills.Add(id);
         }
 
-        /// <summary>Commits a finished drill: only the Bestiary and, on a win, the drill's clear.</summary>
+        /// <summary>GG-T2138: <paramref name="stageId"/> is one of campaign.json's Prologue battles.</summary>
+        public static bool IsPrologue(ContentDb c, string stageId)
+        {
+            var prologue = c?.Campaign?.Prologue;
+            return prologue != null && prologue.Count > 0 && ReferenceEquals(OrderOf(c, stageId), prologue);
+        }
+
+        /// <summary>Commits a finished drill: only the Bestiary and, on a win, the drill's clear. GG-T2138: a Prologue battle
+        /// is a story battle, so its win also pays its gold, loot and XP, and its scripted withdrawal (GG-T2070) counts as
+        /// played so the story goes on. A Tutorial drill earns nothing.</summary>
         public static BattleReport Commit(ContentDb c, SaveData s, BattleState battle)
         {
             var r = battle.Results;
             var rep = Report(battle);
+            bool prologue = IsPrologue(c, battle.Stage.Id);
             foreach (var id in r.Seen) BattleFactory.Entry(s, id).Seen = true;
             foreach (var kv in r.Kills) BattleFactory.Entry(s, kv.Key).Defeated += kv.Value;
-            if (rep.Victory)
+            if (rep.Victory && prologue)
+            {
+                rep.Gold = r.Coins;
+                s.Gold += r.Coins;
+                s.LifetimeCoins += r.Coins;
+                BattleFactory.GrantItems(c, s, rep, r.Items);
+                BattleFactory.GrantXp(s, battle, r, rep);
+            }
+            if (rep.Victory || (rep.Withdrawn && prologue))
             {
                 s.ClearedDrills ??= new HashSet<string>();
                 rep.FirstClear = s.ClearedDrills.Add(battle.Stage.Id);
@@ -66,6 +115,8 @@ namespace GridGame.Meta
                 Victory = battle.Phase == BattlePhase.Victory,
                 Escaped = battle.Phase == BattlePhase.Escaped,
                 Retreated = battle.Phase == BattlePhase.Retreated,
+                Withdrawn = battle.Phase == BattlePhase.Withdrawn,
+                WithdrawLine = battle.Phase == BattlePhase.Withdrawn ? battle.Stage.Withdraw?.Line : null,
                 StageId = battle.Stage.Id,
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,

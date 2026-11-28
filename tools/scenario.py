@@ -4,7 +4,8 @@ GG-T1802: show the owner a spot in the game without playing to it.
     python tools/scenario.py <preset|target> [--spec file.json] [--device iphone15pro|<device>|<shape>] [--replace] [--build] [--no-show]
 
 A preset is tools/scenarios/<name>.json; a target is first-boss, boss:N, boss:<class>, final-boss, stage:<id>,
-region:<theme>, screen:<id> or overworld. --spec runs a spec file instead. The player is launched detached on a throwaway
+region:<theme>, screen:<id> or overworld. --spec runs a spec file instead. A spec's "open" (GG-T2129) opens a state on
+the landed screen with no taps: "abilities:consumables", "abilities:spells/fire" or "info" (ScenarioLander.Openers). The player is launched detached on a throwaway
 "Scenario" profile, sized like the device with its safe area and camera cutout / screen corners (GG-T2119) applied,
 and left open. --device takes any device id in
 tools/devices.json or a shape id (its representative device).
@@ -42,6 +43,13 @@ def window_size(device):
     w, h, _, _ = DEVICES[device]
     k = min(1.0, (work_area_height() - 80) / h)
     return int(w * k) // 2 * 2, int(h * k) // 2 * 2
+
+
+def tap_px(device, k):
+    """GG-T2144: window px of the platform's minimum tap target (48 dp on Android, 44 pt on iOS) for a device drawn at k
+    window px per device px; the player reads it as -tapPx, since a desktop player's dpi is the monitor's."""
+    _, per_unit, unit = devices.metrics(device)
+    return (44 if unit == "pt" else 48) * per_unit * k
 
 
 def newest_asset():
@@ -138,10 +146,10 @@ def start(arg, device, run):
     if os.path.exists(log):
         os.remove(log)
     ww, wh = window_size(device)
-    _, dh, top, bottom = DEVICES[device]
+    dw, dh, top, bottom = DEVICES[device]
     cmd = [harness.EXE, "-automation", str(harness.PORT), "-artifacts", art, "-saveRoot", saves,
            "-screen-width", str(ww), "-screen-height", str(wh), "-screen-fullscreen", "0",
-           "-logFile", log, "-scenario", arg]
+           "-logFile", log, "-scenario", arg, "-tapPx", f"{tap_px(device, ww / dw):.2f}"]
     proc = subprocess.Popen(cmd, cwd=ROOT, close_fds=True,
                             creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
     for _ in range(120):

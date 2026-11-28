@@ -215,12 +215,8 @@ Square brackets mark a tap term (BIBLE §9, GG-T300): the brackets are hidden an
 
 Places that break this guide now; each needs its own fix ticket. GG-T2045 changes none of them.
 
-- `BattleScreen.cs` confirm row and `BattleScreen.Tutorial.cs` coach step use **"Go"** for a non-spell move; the
-  rule is **Perform** (the ability sheet already says Perform).
 - Bottom nav and screen titles still read **Summon** and **Campaign** until GG-T1964 lands.
 - `CampMenu` shows **"Make camp"** on the Rest row; the vocabulary is **Set up camp**.
-- Heroes › Abilities sub-tab, the Status column and the party board button read **"Board"**; the default is
-  **Talents**.
 - `Marquee` shows an **ellipsis under Reduce Motion** (BIBLE §26.6), against owner rule 1.
 
 ## 13. Checklist before a string ships

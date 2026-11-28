@@ -29,12 +29,14 @@ namespace GridGame.Core.Battle
         /// ManaGained with Amount 0 and no meters.
         /// v7 (2026-11-28, GG-T1926): one party mana pool (§3.1.0). Every state's "meters" becomes "mana"
         /// ({"points", "capacity"}); "startMana" is the points in the pool before wave 1; ManaGained carries "Before",
-        /// "After", "Capacity" and "Wasted" and no longer "Meters" or "Readied".</summary>
-        public const int SchemaVersion = 7;
+        /// "After", "Capacity" and "Wasted" and no longer "Meters" or "Readied".
+        /// v8 (2026-11-28, GG-T2141): a "use" command may carry "targets", a multi-pick's picks in resolve order (absent: one
+        /// pick, "target").</summary>
+        public const int SchemaVersion = 8;
 
-        /// <summary>The battle rules a record was made under. 3 (GG-T1926): one party mana pool (§3.1.0). 2 (GG-T1812):
+        /// <summary>The battle rules a record was made under. 4 (GG-T2141): multi-pick and direction aims. 3 (GG-T1926): one party mana pool (§3.1.0). 2 (GG-T1812):
         /// per-spell mana meters. A record without it was made under the shared orb bank (1).</summary>
-        public const int RulesVersion = 3;
+        public const int RulesVersion = 4;
         public const string RulesVersionKey = "rulesVersion";
 
         /// <summary>A record made under older rules: shown as it was, never re-simulated (§3.1.0).</summary>
@@ -138,10 +140,72 @@ namespace GridGame.Core.Battle
                 ["itemsUsed"] = JObject.FromObject(r.ItemsConsumed),
                 ["heroesStanding"] = s.Units.Count(u => u.IsHero && u.Alive),
             };
+            if (r.PlateClangs > 0) ((JObject)root["outcome"])["plateClangs"] = r.PlateClangs; // GG-T2070
             return root;
         }
 
         public string ToJson(bool indented = false) => root.ToString(indented ? Formatting.Indented : Formatting.None);
+
+        /// <summary>GG-T1956: the last <paramref name="count"/> blows that cost a hero HP, oldest first, read back from the
+        /// recorded events: who struck (class id), whom, with what (the ability, the ticking status or the trap that preceded
+        /// the blow in its turn; none for a plain attack), how much, and whether it downed the hero.</summary>
+        public List<RecordedHit> LastHeroHits(int count)
+        {
+            var hits = new List<RecordedHit>();
+            if (count <= 0) return hits;
+            var classOf = new Dictionary<int, string>();
+            var heroes = new HashSet<int>();
+            void Learn(JToken state)
+            {
+                if (state?["units"] is JArray units)
+                    foreach (var u in units) if (u["id"] != null) classOf[(int)u["id"]] = (string)u["class"];
+            }
+            Learn(root["opening"]?["state"]);
+            foreach (var t in turns) Learn(t["before"]);
+            if (root["party"] is JArray party)
+                foreach (var p in party) { int id = (int)p["id"]; heroes.Add(id); classOf[id] = (string)p["class"]; }
+
+            for (int ti = turns.Count - 1; ti >= 0 && hits.Count < count; ti--)
+            {
+                if (!(turns[ti]["events"] is JArray ev)) continue;
+                for (int i = ev.Count - 1; i >= 0 && hits.Count < count; i--)
+                {
+                    var e = ev[i];
+                    if ((string)e["type"] != "Damaged") continue;
+                    int target = (int?)e["TargetId"] ?? 0, amount = (int?)e["Amount"] ?? 0;
+                    if (amount <= 0 || !heroes.Contains(target)) continue;
+                    int source = (int?)e["SourceId"] ?? 0;
+                    var hit = new RecordedHit
+                    {
+                        AttackerClass = source != target && classOf.TryGetValue(source, out var a) ? a : null,
+                        TargetClass = classOf[target],
+                        Amount = amount,
+                        Knockout = ((int?)e["HpAfter"] ?? 1) <= 0,
+                    };
+                    Attribute(ev, i, source, target, hit);
+                    hits.Add(hit);
+                }
+            }
+            hits.Reverse();
+            return hits;
+        }
+
+        /// <summary>What dealt the blow at <paramref name="at"/>: the nearest earlier event in its turn that explains it.</summary>
+        private static void Attribute(JArray ev, int at, int source, int target, RecordedHit hit)
+        {
+            for (int j = at - 1; j >= 0; j--)
+            {
+                var e = ev[j];
+                switch ((string)e["type"])
+                {
+                    case "AbilityResolved" when (int?)e["CasterId"] == source: hit.AbilityId = (string)e["AbilityId"]; return;
+                    case "Triggered" when (int?)e["UnitId"] == source: hit.AbilityId = (string)e["AbilityId"]; return;
+                    case "BuffTicked" when (int?)e["UnitId"] == target: hit.BuffId = (string)e["BuffId"]; hit.AttackerClass = null; return;
+                    case "TrapTriggered" when (int?)e["UnitId"] == target: hit.Trap = true; hit.AttackerClass = null; return;
+                    case "Attack" when (int?)e["AttackerId"] == source: return;
+                }
+            }
+        }
 
         // ── Pieces ────────────────────────────────────────────────────────────────
 
@@ -206,7 +270,10 @@ namespace GridGame.Core.Battle
             switch (cmd)
             {
                 case MoveCommand m: return new JObject { ["type"] = "move", ["hero"] = m.HeroId, ["path"] = new JArray(m.Path.Select(c => new JArray(c.X, c.Y))), ["timeLeft"] = m.TimeLeftSeconds, ["held"] = m.HeldSeconds };
-                case UseSlotCommand u: return new JObject { ["type"] = "use", ["hero"] = u.HeroId, ["slot"] = u.Slot, ["target"] = new JArray(u.Target.X, u.Target.Y) };
+                case UseSlotCommand u:
+                    var use = new JObject { ["type"] = "use", ["hero"] = u.HeroId, ["slot"] = u.Slot, ["target"] = new JArray(u.Target.X, u.Target.Y) };
+                    CommandCodec.WriteTargets(use, u); // GG-T2141: a multi-pick's picks
+                    return use;
                 case ShieldCommand sh: return new JObject { ["type"] = "guard", ["held"] = sh.HeldSeconds }; // as CommandCodec keeps it
                 case TalkCommand t: return new JObject { ["type"] = "talk", ["hero"] = t.HeroId, ["target"] = t.TargetId };
                 case TutorialSceneCommand sc: return new JObject { ["type"] = "scene", ["scene"] = sc.Scene };
@@ -224,12 +291,25 @@ namespace GridGame.Core.Battle
                 JObject o;
                 try { o = JObject.FromObject(e, Json); }
                 catch (Exception ex) { o = new JObject { ["serializeError"] = ex.Message }; }
-                if (e is ManaGainedEvent) { o.Remove("Meters"); o.Remove("Readied"); }
                 var name = e.GetType().Name;
                 o.AddFirst(new JProperty("type", name.EndsWith("Event") ? name.Substring(0, name.Length - 5) : name));
                 a.Add(o);
             }
             return a;
         }
+    }
+
+    /// <summary>GG-T1956: one blow a hero took, from <see cref="BattleRecorder.LastHeroHits"/>. <see cref="AttackerClass"/> is
+    /// null for a status tick, a trap or a self-inflicted cost; <see cref="AbilityId"/> and <see cref="BuffId"/> are null for
+    /// a plain attack.</summary>
+    public sealed class RecordedHit
+    {
+        public string AttackerClass;
+        public string TargetClass;
+        public string AbilityId;
+        public string BuffId;
+        public bool Trap;
+        public int Amount;
+        public bool Knockout;
     }
 }

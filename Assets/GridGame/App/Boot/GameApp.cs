@@ -25,11 +25,11 @@ namespace GridGame.App
         /// <summary>The minimum stage: every screen is laid out to fit at least this (19.5:9 portrait).</summary>
         public const int DesignWidth = 1170;
         public const int DesignHeight = 2532;
-        /// <summary>The widest (9:16, 2532*9/16) and tallest (9:23, 1170*23/9) shape the stage grows to fill edge to edge;
+        /// <summary>The widest (9:16, 2532*9/16) and tallest (1170:3000, just past 9:23, so the Z Fold5 cover fits) shape the stage grows to fill edge to edge;
         /// beyond them (tablets, opened foldables, desktop windows) it is letterboxed at the nearest valid shape inside the
         /// blue mystic fog (GG-T706, owner 2026-11-23, bible §26.3; GG-T398's 3:4 fill is withdrawn).</summary>
         public const int MaxStageWidth = 1424;
-        public const int MaxStageHeight = 2990;
+        public const int MaxStageHeight = 3000;
         /// <summary>Design-pixel margin around a framed stage, so its outline is fully on screen.</summary>
         private const float FramePad = 36f;
 
@@ -39,8 +39,11 @@ namespace GridGame.App
         /// <summary>Design px of the stage covered by the device's notch / home bar (§26.5).</summary>
         public static float SafeTop { get; private set; }
         public static float SafeBottom { get; private set; }
-        /// <summary>Raised after the stage changes size (window resize, harness resize).</summary>
+        /// <summary>Raised after the stage is re-fit to a new screen: a new resolution, safe area or density (a Fold folding
+        /// or unfolding, a Flip, a window or harness resize, GG-T2028), a new stage size or new insets.</summary>
         public static event Action StageResized;
+        /// <summary>How many times <see cref="StageResized"/> has fired (automation <c>resize</c> waits on it, GG-T2028).</summary>
+        public static int Relayouts { get; private set; }
 
         public static GameApp I { get; private set; }
 
@@ -127,14 +130,13 @@ namespace GridGame.App
                 global::Unity.Shared.Core.Profiles.SessionMuted = false;
                 Application.runInBackground = false;
             }
-            Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
             projectQualityLevel = QualitySettings.GetQualityLevel();
 
             var cam = new GameObject("Camera").AddComponent<Camera>();
             cam.transform.SetParent(transform, false);
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = Color.black;
+            cam.backgroundColor = Palette.Black;
             cam.cullingMask = 0;
 
             Content = LoadContent();
@@ -155,6 +157,7 @@ namespace GridGame.App
             ApplySettings(); // the profile's settings hold on the title screen too, before any save is loaded
             IdleFrameRate.Install(this); // GG-T1547
             Dev.FeedbackNotes.Install(this); // GG-T1939
+            Dev.PerfStats.Install(this); // GG-T2101: the perf route's window and the Developer perf HUD
 
             // GG-T775: `-turnMode <name>` plays that mode this run (TurnModeSetting.LaunchOverride; never saved to settings.json). A save's New Game lock still wins.
             var turnModeArg = CommandLine.Value("-turnMode");
@@ -220,7 +223,7 @@ namespace GridGame.App
             settings.referenceResolution = new Vector2Int(DesignWidth, DesignHeight);
             settings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
             settings.clearColor = true;
-            settings.colorClearValue = Color.black;
+            settings.colorClearValue = Palette.Black;
 
             var docGo = new GameObject("UI");
             docGo.transform.SetParent(transform, false);
@@ -232,7 +235,7 @@ namespace GridGame.App
             var root = Document.rootVisualElement;
             root.styleSheets.Add(Resources.Load<StyleSheet>("UI/Theme"));
             root.EnableInClassList("no-cursor", !Ui.ShowsCursor); // GG-T1923: touch menus reserve no cursor gutter
-            root.style.backgroundColor = Color.black;
+            root.style.backgroundColor = Palette.Black;
             Fonts.UseBody(root);
 
             letterbox = new VisualElement();
@@ -300,6 +303,9 @@ namespace GridGame.App
             var safeNow = SafeAreaPx();
             if (screen == lastScreen && safeNow == lastSafe && Screen.dpi == lastDpi && uiScale == lastUiScale
                 && thumbMargin == lastThumbMargin && Stage.Q("screens") != null) return;
+            // GG-T2028: a new screen shape or density on a live app (fold / unfold, Flip, resize) re-lays out the current
+            // screen even when the stage size it maps to is unchanged, since its scale and type floor moved.
+            bool screenChanged = lastScreen != Vector2.zero && (screen != lastScreen || Screen.dpi != lastDpi);
             lastScreen = screen;
             lastSafe = safeNow;
             lastDpi = Screen.dpi;
@@ -325,6 +331,8 @@ namespace GridGame.App
             float logicalH = widthLimits ? fit.x / screenAspect : fit.y;
             // GG-T770: the one GUI text size from this scale, dpi and stage width (GG-T551 legibility floor included).
             GuiType.SetScreen(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi, size.x);
+            // GG-T2144: rows and buttons at least 48 dp / 44 pt at this scale.
+            TapTarget.SetScreen(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi);
 
             Stage.style.width = size.x; Stage.style.height = size.y;
             Stage.style.left = (logicalW - size.x) / 2f;
@@ -341,7 +349,11 @@ namespace GridGame.App
             bool insetsChanged = ApplySafeArea(logicalW, logicalH, safeNow);
             // A new notch / gesture bar (a rotation to upside-down portrait, the automation endpoint) changes the usable
             // height Fit.H reads, so the current screen rebuilds as it does for a new stage size (GG-T483).
-            if (resized || insetsChanged) StageResized?.Invoke();
+            if (resized || insetsChanged || screenChanged)
+            {
+                Relayouts++;
+                StageResized?.Invoke();
+            }
         }
 
         /// <summary>The safe area in screen px (bottom-left origin, like <see cref="Screen.safeArea"/>): the device's own, or
@@ -492,28 +504,8 @@ namespace GridGame.App
             Cloud?.Saved(Profile?.Name, Slot, Save); // GG-T608: uploaded at most once a minute, and on pause/quit
         }
 
-        public void Toast(string text, float seconds = 1.8f)
-        {
-            StartCoroutine(ToastRoutine(text, seconds));
-        }
-
-        private IEnumerator ToastRoutine(string text, float seconds)
-        {
-            var t = Ui.Text(text, "toast shadow", Overlay);
-            t.name = "toast";
-            t.style.bottom = 260 + liveToasts * 170; // GG-T1867: a second toast stacks above the first, never over it
-            liveToasts++;
-            t.style.opacity = 0;
-            yield return null;
-            t.style.opacity = 1;
-            yield return new WaitForSecondsRealtime(seconds);
-            t.style.opacity = 0;
-            yield return new WaitForSecondsRealtime(0.25f);
-            t.RemoveFromHierarchy();
-            liveToasts--;
-        }
-
-        private int liveToasts;
+        /// <summary>The kit's toast (<see cref="Ui.Toast"/>).</summary>
+        public void Toast(string text, float seconds = 1.8f) => Ui.Toast(text, seconds);
 
         /// <summary>The quality level the player booted with, for <see cref="SettingsSave.QualityLevel"/> -1.</summary>
         private int projectQualityLevel;
@@ -522,15 +514,14 @@ namespace GridGame.App
         {
             var st = Settings;
             Audio?.Apply(st);
-            // GG-T1221 Graphics: quality level (-1 = the project's own), vsync, and the frame-rate cap (60 by default).
+            // GG-T1221 Graphics: quality level (-1 = the project's own) and vsync; GG-T2102 Display: the frame rate, 60 or 120.
             int quality = st.QualityLevel >= 0 && st.QualityLevel < QualitySettings.names.Length ? st.QualityLevel : projectQualityLevel;
             if (QualitySettings.GetQualityLevel() != quality) QualitySettings.SetQualityLevel(quality, true);
-            // GG-T1240: on mobile vsync is not a setting and -1 means the platform default (often 30), so Uncapped runs at the display's refresh rate.
+            // GG-T1240: on mobile vsync is not a setting.
             bool mobileGfx = Application.isMobilePlatform;
             int cap = GridGame.Meta.GameSettings.ClampFrameRateCap(st.FrameRateCap);
-            if (mobileGfx && cap < 0) cap = Mathf.Max(60, Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value));
             QualitySettings.vSyncCount = !mobileGfx && st.VSync ? 1 : 0;
-            // GG-T1548: the frame cap and Effects amount go through the thermal step-down, which only ever lowers them.
+            // GG-T1548: the frame rate and Effects amount go through the thermal step-down, which only ever lowers them.
             ThermalStepDown.Apply(cap, Mathf.Clamp01(st.VfxAmount));
             Tween.ShakeScale = Mathf.Clamp01(st.ScreenShake);
             Tween.Speed = Dev.DevOptions.BattleSpeed(st.BattleSpeed); // GG-T1938: up to x8 from the pause menu with Cheats on
@@ -870,7 +861,7 @@ namespace GridGame.App
             if (Endless) { EndlessDemo.AfterBattle(report, stageId); return; }
             var app = GameApp.I;
             var c = app.Content;
-            if (!report.Victory)
+            if (!report.Victory && !report.Withdrawn) // GG-T2070: a scripted withdrawal goes on like a win
             {
                 StageLauncher.Launch(stageId, true); // GG-T1786: a loss falls back to camp; the retry sets out again
                 return;
@@ -945,7 +936,7 @@ namespace GridGame.App
         {
             Completed++;
             // GG-T61: an encounter the stall guard ended (EndlessStability) reports "stalled", not a defeat.
-            Debug.Log($"[EndlessDemo] encounter {Completed} ({stageId}): {(EndlessStability.IsStalled(report) ? "stalled" : report.Victory ? "victory" : report.Escaped ? "escaped" : report.Retreated ? "retreated" : "defeat")}");
+            Debug.Log($"[EndlessDemo] encounter {Completed} ({stageId}): {(EndlessStability.IsStalled(report) ? "stalled" : report.Victory ? "victory" : report.Escaped ? "escaped" : report.Retreated ? "retreated" : report.Withdrawn ? "withdrawn" : "defeat")}");
             if (count.HasValue && Completed >= count.Value) { Stop(); return; }
             Next();
         }
@@ -1020,7 +1011,7 @@ namespace GridGame.App
         {
             var app = GameApp.I;
             current?.Battle(app.Content, app.Save, report);
-            losses = report.Victory ? 0 : losses + 1;
+            losses = report.Victory || report.Withdrawn ? 0 : losses + 1;
             GoToCamp(runRoutine: true);
         }
 
@@ -1040,7 +1031,7 @@ namespace GridGame.App
         private static IEnumerator Camp(HubScreen hub, bool runRoutine)
         {
             var app = GameApp.I;
-            yield return new WaitForSecondsRealtime(1.0f);
+            yield return new WaitForSecondsRealtime(Timing.TestModeSettle);
             if (runRoutine && current != null)
             {
                 current.RunCamp(app.Content, app.Save);
@@ -1051,7 +1042,7 @@ namespace GridGame.App
                 if (!learned && Completed == TestLoop.CyclesThatMustLearnAnAbility)
                     Debug.LogWarning($"[TestMode] check failed: {Completed} cycles and camp never learned an ability (GG-T100)");
                 if (app.Router.Current == hub) hub.Refresh();
-                yield return new WaitForSecondsRealtime(1.5f);
+                yield return new WaitForSecondsRealtime(Timing.TestModeRead);
             }
             if (app.Router.Current != hub) yield break; // something else took over the screen; don't fight it
             Launch();

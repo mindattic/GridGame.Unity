@@ -87,6 +87,10 @@ namespace GridGame.Core.Battle
         public bool Burrowed;
         /// <summary>GG-T901: the ability that sent it under, the blow it strikes as it surfaces.</summary>
         public string BurrowAbility;
+        /// <summary>GG-T1916: gone in a Smokebomb's smoke. <see cref="OnBoard"/> is false meanwhile (not <see cref="Alive"/>:
+        /// untargetable, on no tile), but it lives, keeps its turn on the timeline and holds the party in the fight;
+        /// <see cref="Pos"/> is the tile it left. It reappears on its next turn (<c>BattleRunner.Reappear</c>).</summary>
+        public bool Vanished;
 
         public List<BuffInstance> Buffs = new List<BuffInstance>();
         public Dictionary<string, int> Cooldowns = new Dictionary<string, int>();
@@ -97,6 +101,9 @@ namespace GridGame.Core.Battle
         public Dictionary<string, int> TriggerCooldowns = new Dictionary<string, int>();
         public List<AbilitySlot> Bar = new List<AbilitySlot>();
         public int UnlockedSlots = 2;
+        /// <summary>GG-T1917: the hero's own arrangement of its Abilities sheet (<see cref="GridGame.Core.Rules.ActionTree.For"/>),
+        /// or null for the default tree. Never mutated in battle, so Clone()'s shallow copy may share it.</summary>
+        public GridGame.Core.Rules.ActionLayout Layout;
 
         // Equipment (heroes)
         public string WeaponId;
@@ -213,6 +220,9 @@ namespace GridGame.Core.Battle
         public string Title;
         public bool IsBountyTarget => BountyId != null;
         public string Name => Title ?? Def.Name;
+        /// <summary>A boss for every rule that asks (immunities, taming's "Too mighty", the battle's boss bar and BOSS tag,
+        /// GG-T1952): a Boss tag, a rule break, or boss phases.</summary>
+        public bool IsBossLike => Def.HasTag("Boss") || RuleBreak != RuleBreak.None || (Def.BossPhases != null && Def.BossPhases.Count > 0);
         /// <summary>Pincer eligibility (bible §1.2, GG-LAW-2): heroes always; enemies only with a society (tag Sentient, GG-T289);
         /// anything carrying the Pincer keyword (a tamed or domesticated monster, or a class tagged Pincer — GG-T303).</summary>
         public bool CanPincer => Team == Team.Hero || Def.HasTag("Sentient") || HasPincerKeyword;

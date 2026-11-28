@@ -34,7 +34,7 @@ namespace GridGame.App
         {
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, Backdrop, 1);
-            bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.5f, 0.7f, 1f);
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Hub;
             var col = Ui.El("fill col", root);
             // GG-T1335: a page more than one step from the hub also gets Home, back to the hub in one fade.
             var header = Ui.Header(Title, () => App.Router.Back(), col, out CurrencyBar, SubtitleInBody ? null : Subtitle,

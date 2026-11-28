@@ -3,7 +3,7 @@
  "device": "iphone15pro",
  "name": "iPhone 15 Pro",
  "shape": "iphone-island-393",
- "captured": "2026-11-28T02:27:44",
+ "captured": "2026-11-28T09:16:12",
  "frame": {
   "type": "island",
   "corner": 165,
@@ -14,21 +14,31 @@
   "top": 34,
   "r": 56
  },
- "screens": 41,
- "errors": {},
+ "screens": 46,
+ "errors": {
+  "drill-picker": "not captured",
+  "overlay-dialogue": "not captured",
+  "overlay-coach": "not captured",
+  "overlay-inspect": "not captured",
+  "overlay-confirm": "not captured",
+  "overlay-toast": "not captured"
+ },
  "totals": {
-  "overflow": 0,
+  "overflow": 1,
   "clipped": 0,
   "overlap": 0,
   "offStage": 0,
   "underCutout": 0,
   "topInset": 0,
-  "homeIndicator": 52,
+  "homeIndicator": 47,
   "targetsUnder44pt": 7,
-  "contrastFails": 26,
+  "contrastFails": 24,
   "contrastUnderCutout": 0,
+  "coveredText": 116,
   "screensWith": {
-   "overflow": [],
+   "overflow": [
+    "components"
+   ],
    "clipped": [],
    "overlap": [],
    "offStage": [],
@@ -39,28 +49,20 @@
     "alchemist",
     "battle",
     "battle-boss",
-    "camp",
     "caravan",
+    "components",
     "credits",
     "enchantress",
-    "equip",
-    "hub",
-    "mercenaries",
-    "overworld",
     "quests",
-    "results",
-    "results-mid",
     "settings",
     "shop",
     "status",
     "windows"
    ],
    "targetsUnder44pt": [
-    "camp",
-    "equip",
-    "hub",
+    "components",
+    "enchantress",
     "items",
-    "overworld",
     "profiles",
     "title"
    ],
@@ -68,21 +70,21 @@
     "battle",
     "battle-boss",
     "blacksmith",
-    "camp",
-    "createprofile",
+    "components",
     "crucible",
     "diamonds",
     "enchantress",
-    "hub",
+    "levelup",
     "newprofile",
-    "overworld",
-    "results",
-    "results-mid",
     "shop",
-    "splash",
+    "summon",
     "windows"
    ],
-   "contrastUnderCutout": []
+   "contrastUnderCutout": [],
+   "coveredText": [
+    "codex",
+    "components"
+   ]
   }
  },
  "findings": {
@@ -108,6 +110,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 10,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -121,31 +124,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Around the wagons"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [
-    {
-     "target": "Continue",
-     "pt": [
-      339.6,
-      43.7
-     ]
-    }
-   ],
-   "contrastFails": [
-    {
-     "text": "Summon Circle",
-     "ratio": 4.15,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#585048"
-    }
-   ],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 38,
-   "minTextPt": 12.4,
+   "coveredText": [],
+   "contrastSamples": 27,
+   "minTextPt": 13.4,
    "layoutProblems": []
   },
   "stages": {
@@ -162,6 +148,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -188,6 +175,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 27,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -202,15 +190,15 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Bonds",
     "No bonds yet. Heroes grow closer pinceri\u2026"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 83,
-   "minTextPt": 13.4,
+   "minTextPt": 12.8,
    "layoutProblems": []
   },
   "equip": {
@@ -222,24 +210,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Ring I",
-    "Iron Band"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [
-    {
-     "target": "Weapon",
-     "pt": [
-      349.3,
-      43.7
-     ]
-    }
-   ],
+   "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 44,
-   "minTextPt": 13.4,
+   "coveredText": [],
+   "contrastSamples": 61,
+   "minTextPt": 10.4,
    "layoutProblems": []
   },
   "abilities": {
@@ -258,6 +236,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 79,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -276,6 +255,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.1,
    "layoutProblems": []
@@ -294,6 +274,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -312,7 +293,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 69,
+   "coveredText": [],
+   "contrastSamples": 68,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -344,6 +326,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -370,6 +353,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -391,7 +375,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 37,
+   "coveredText": [],
+   "contrastSamples": 38,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -409,18 +394,27 @@
     "Cleric"
    ],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Gutterscrap Stompers",
+     "pt": [
+      349.3,
+      43.7
+     ]
+    }
+   ],
    "contrastFails": [
     {
      "text": "Enchant",
      "ratio": 2.15,
      "need": 4.5,
      "fg": "#272d43",
-     "bg": "#505f86"
+     "bg": "#4f5f86"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 46,
+   "coveredText": [],
+   "contrastSamples": 62,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -438,6 +432,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -456,6 +451,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.1,
    "layoutProblems": []
@@ -475,10 +471,10 @@
    "contrastFails": [
     {
      "text": "Costs 1 Rested: the energy for a run, up\u2026",
-     "ratio": 3.68,
+     "ratio": 3.65,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#454760"
+     "bg": "#474760"
     },
     {
      "text": "Enter the Crucible",
@@ -489,6 +485,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -507,8 +504,9 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 11,
-   "minTextPt": 13.4,
+   "coveredText": [],
+   "contrastSamples": 13,
+   "minTextPt": 10.4,
    "layoutProblems": []
   },
   "settings": {
@@ -521,14 +519,15 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Effects",
-    "100%",
-    "Display"
+    "Pincer close-ups",
+    "ON",
+    "Sound"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 40,
    "minTextPt": 10.1,
    "layoutProblems": []
@@ -559,6 +558,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 49,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -579,6 +579,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 2,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -597,6 +598,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 7,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -615,6 +617,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 5,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -641,6 +644,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 8,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -662,11 +666,12 @@
      "text": "Create",
      "ratio": 2.17,
      "need": 4.5,
-     "fg": "#272e44",
-     "bg": "#506088"
+     "fg": "#272e43",
+     "bg": "#506087"
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 4,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -683,17 +688,10 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Next",
-     "ratio": 2.17,
-     "need": 4.5,
-     "fg": "#272e43",
-     "bg": "#506087"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 5,
+   "coveredText": [],
+   "contrastSamples": 6,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -709,17 +707,10 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "Next",
-     "ratio": 2.17,
-     "need": 4.5,
-     "fg": "#272e43",
-     "bg": "#506087"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 5,
+   "coveredText": [],
+   "contrastSamples": 6,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -745,6 +736,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 37,
    "minTextPt": 12.4,
    "layoutProblems": []
@@ -758,21 +750,13 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "\"I set bones and sit with the Hollow unt\u2026",
-    "As",
-    "a",
-    "Supporter",
-    "(reach",
-    "3):",
-    "heals",
-    "the"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 58,
+   "coveredText": [],
+   "contrastSamples": 22,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -790,6 +774,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -811,6 +796,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -829,7 +815,563 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
+   "minTextPt": 13.4,
+   "layoutProblems": []
+  },
+  "components": {
+   "landedOn": "components",
+   "png": "docs/design/ui-audit/captures/iphone15pro/components.png",
+   "overflow": [
+    {
+     "subject": "Saved",
+     "detail": "wrapped text cut off (58>0)"
+    }
+   ],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Disabled"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Pressed",
+     "pt": [
+      83.3,
+      43.3
+     ]
+    },
+    {
+     "target": "Pressed",
+     "pt": [
+      83.3,
+      43.3
+     ]
+    },
+    {
+     "target": "Pressed",
+     "pt": [
+      83.3,
+      43.3
+     ]
+    }
+   ],
+   "contrastFails": [
+    {
+     "text": "Pressed",
+     "ratio": 3.47,
+     "need": 4.5,
+     "fg": "#0c0c16",
+     "bg": "#5463aa"
+    },
+    {
+     "text": "Disabled",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e44",
+     "bg": "#506088"
+    },
+    {
+     "text": "Disabled",
+     "ratio": 4.34,
+     "need": 4.5,
+     "fg": "#ab737d",
+     "bg": "#2c1824"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "coveredText": [
+    {
+     "text": "btn--small",
+     "by": "clipped"
+    },
+    {
+     "text": "Default",
+     "by": "clipped"
+    },
+    {
+     "text": "Pressed",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "Disabled",
+     "by": "clipped"
+    },
+    {
+     "text": "Icon buttons",
+     "by": "clipped"
+    },
+    {
+     "text": "Icon sizes in a button: inline, button, \u2026",
+     "by": "clipped"
+    },
+    {
+     "text": "Icons",
+     "by": "clipped"
+    },
+    {
+     "text": "Inline 32",
+     "by": "clipped"
+    },
+    {
+     "text": "Button 48",
+     "by": "clipped"
+    },
+    {
+     "text": "Row 64",
+     "by": "clipped"
+    },
+    {
+     "text": "Nav 72",
+     "by": "clipped"
+    },
+    {
+     "text": "Set icons (Art.UiIcon), one per row kind",
+     "by": "clipped"
+    },
+    {
+     "text": "RowIcon.Line: an inline icon before wrap\u2026",
+     "by": "clipped"
+    },
+    {
+     "text": "Have: 3 / 3",
+     "by": "clipped"
+    },
+    {
+     "text": "Need: 1 / 4",
+     "by": "clipped"
+    },
+    {
+     "text": "Menu rows",
+     "by": "clipped"
+    },
+    {
+     "text": "Default",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Pressed",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Disabled",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Compact",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Prefixed label",
+     "by": "clipped"
+    },
+    {
+     "text": "Tabs",
+     "by": "clipped"
+    },
+    {
+     "text": "Active",
+     "by": "clipped"
+    },
+    {
+     "text": "Tab",
+     "by": "clipped"
+    },
+    {
+     "text": "Locked",
+     "by": "clipped"
+    },
+    {
+     "text": "Segmented",
+     "by": "clipped"
+    },
+    {
+     "text": "One",
+     "by": "clipped"
+    },
+    {
+     "text": "Two",
+     "by": "clipped"
+    },
+    {
+     "text": "Three",
+     "by": "clipped"
+    },
+    {
+     "text": "Chips",
+     "by": "clipped"
+    },
+    {
+     "text": "Plain",
+     "by": "clipped"
+    },
+    {
+     "text": "Icon",
+     "by": "clipped"
+    },
+    {
+     "text": "Tap",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "Gold",
+     "by": "clipped"
+    },
+    {
+     "text": "Stepper",
+     "by": "clipped"
+    },
+    {
+     "text": "\u2212",
+     "by": "clipped"
+    },
+    {
+     "text": "5",
+     "by": "clipped"
+    },
+    {
+     "text": "+",
+     "by": "clipped"
+    },
+    {
+     "text": "\u2212",
+     "by": "clipped"
+    },
+    {
+     "text": "1",
+     "by": "clipped"
+    },
+    {
+     "text": "+",
+     "by": "clipped"
+    },
+    {
+     "text": "Badges",
+     "by": "clipped"
+    },
+    {
+     "text": "3",
+     "by": "clipped"
+    },
+    {
+     "text": "New",
+     "by": "clipped"
+    },
+    {
+     "text": "99+",
+     "by": "clipped"
+    },
+    {
+     "text": "Progress bars",
+     "by": "clipped"
+    },
+    {
+     "text": "7 / 20",
+     "by": "clipped"
+    },
+    {
+     "text": "20 / 20",
+     "by": "clipped"
+    },
+    {
+     "text": "Gauges",
+     "by": "clipped"
+    },
+    {
+     "text": "Party mana bar: empty, part, priced, sho\u2026",
+     "by": "clipped"
+    },
+    {
+     "text": "Cards",
+     "by": "clipped"
+    },
+    {
+     "text": "Default",
+     "by": "clipped"
+    },
+    {
+     "text": "HEALER",
+     "by": "clipped"
+    },
+    {
+     "text": "Alchemist",
+     "by": "clipped"
+    },
+    {
+     "text": "Pressed",
+     "by": "clipped"
+    },
+    {
+     "text": "HEALER",
+     "by": "clipped"
+    },
+    {
+     "text": "Alchemist",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "HEALER",
+     "by": "clipped"
+    },
+    {
+     "text": "Alchemist",
+     "by": "clipped"
+    },
+    {
+     "text": "Empty state",
+     "by": "clipped"
+    },
+    {
+     "text": "Nothing here yet.",
+     "by": "clipped"
+    },
+    {
+     "text": "Next step",
+     "by": "clipped"
+    },
+    {
+     "text": "Modal",
+     "by": "clipped"
+    },
+    {
+     "text": "A question for the player?",
+     "by": "clipped"
+    },
+    {
+     "text": "Cancel",
+     "by": "clipped"
+    },
+    {
+     "text": "Yes",
+     "by": "clipped"
+    },
+    {
+     "text": "Sheet",
+     "by": "clipped"
+    },
+    {
+     "text": "Sheet",
+     "by": "clipped"
+    },
+    {
+     "text": "Row",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Toast",
+     "by": "clipped"
+    },
+    {
+     "text": "Saved",
+     "by": "clipped"
+    },
+    {
+     "text": "Shapes",
+     "by": "clipped"
+    },
+    {
+     "text": "Arrow",
+     "by": "clipped"
+    },
+    {
+     "text": "BezierArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "OrthoArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "OrthoPathArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "DashedArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "Chevron",
+     "by": "clipped"
+    },
+    {
+     "text": "Bar",
+     "by": "clipped"
+    },
+    {
+     "text": "Dot",
+     "by": "clipped"
+    },
+    {
+     "text": "Ring",
+     "by": "clipped"
+    },
+    {
+     "text": "Pie",
+     "by": "clipped"
+    },
+    {
+     "text": "RoundedRect",
+     "by": "clipped"
+    },
+    {
+     "text": "Filled rect",
+     "by": "clipped"
+    },
+    {
+     "text": "Dashed rect",
+     "by": "clipped"
+    },
+    {
+     "text": "Progress frame",
+     "by": "clipped"
+    }
+   ],
+   "contrastSamples": 32,
+   "minTextPt": 13.4,
+   "layoutProblems": []
+  },
+  "codex": {
+   "landedOn": "codex",
+   "png": "docs/design/ui-audit/captures/iphone15pro/codex.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [
+    {
+     "text": "Places 15/26",
+     "by": "covered"
+    },
+    {
+     "text": "Factions 2/6",
+     "by": "covered"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "The Arkgrave I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Arkgrave II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Lantern Road I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Lantern Road II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Lantern Road III",
+     "by": "clipped"
+    },
+    {
+     "text": "The Shardfall I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Shardfall II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Shardfall III",
+     "by": "clipped"
+    },
+    {
+     "text": "The Tithe Moors I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Tithe Moors II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Tithe Moors III",
+     "by": "clipped"
+    }
+   ],
+   "contrastSamples": 26,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -842,24 +1384,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Iron Ore",
-    "\u00d72"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "The Tithe Moors I",
-     "ratio": 4.34,
-     "need": 4.5,
-     "fg": "#a4a3bc",
-     "bg": "#363e52"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 36,
-   "minTextPt": 13.4,
+   "coveredText": [],
+   "contrastSamples": 39,
+   "minTextPt": 12.1,
    "layoutProblems": []
   },
   "results-mid": {
@@ -871,25 +1403,78 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Tattered Cloth",
-    "\u00d72",
-    "Empty Bottle",
-    "\u00d72"
-   ],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 45,
+   "minTextPt": 12.1,
+   "layoutProblems": []
+  },
+  "results-defeat": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone15pro/results-defeat.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 14,
+   "minTextPt": 12.8,
+   "layoutProblems": []
+  },
+  "results-drill": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone15pro/results-drill.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 12,
+   "minTextPt": 13.4,
+   "layoutProblems": []
+  },
+  "levelup": {
+   "landedOn": "levelup",
+   "png": "docs/design/ui-audit/captures/iphone15pro/levelup.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [
     {
-     "text": "The Tithe Moors I",
-     "ratio": 4.34,
+     "text": "TANK",
+     "ratio": 2.8,
      "need": 4.5,
-     "fg": "#a4a3bc",
-     "bg": "#363e52"
+     "fg": "#f25c4c",
+     "bg": "#404952"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 37,
+   "coveredText": [],
+   "contrastSamples": 21,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -903,23 +1488,33 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "MANA",
-    "no spells",
-    "STR 18  VIT 50  AGI 22  SPD 22 INT 12  W\u2026"
+    "Roar",
+    "a",
+    "challenge:",
+    "for",
+    "two",
+    "turns",
+    "every",
+    "enemy",
+    "that",
+    "can",
+    "reach",
+    "you"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [
     {
-     "text": "Info",
-     "ratio": 3.83,
+     "text": "YOU",
+     "ratio": 4.25,
      "need": 4.5,
-     "fg": "#77757e",
-     "bg": "#1c1922"
+     "fg": "#f4f4f6",
+     "bg": "#507f54"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 17,
+   "coveredText": [],
+   "contrastSamples": 28,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -933,40 +1528,97 @@
    "underCutout": [],
    "topInset": [],
    "homeIndicator": [
-    "Knight",
-    "TANK",
-    "Lv 4",
-    "HEALTH",
-    "191/191"
+    "Roar",
+    "a",
+    "challenge:",
+    "for",
+    "two",
+    "turns",
+    "every",
+    "enemy",
+    "that",
+    "can",
+    "reach",
+    "you"
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [
     {
-     "text": "Info",
-     "ratio": 2.74,
+     "text": "The Captain",
+     "ratio": 2.35,
      "need": 4.5,
-     "fg": "#919195",
-     "bg": "#4c4c4d"
+     "fg": "#db66ff",
+     "bg": "#5c587b"
     },
     {
-     "text": "TANK",
-     "ratio": 3.62,
+     "text": "500 G",
+     "ratio": 3.46,
      "need": 4.5,
-     "fg": "#f25c4c",
-     "bg": "#343742"
+     "fg": "#e6e6ee",
+     "bg": "#707a8e"
     },
     {
-     "text": "HEALTH",
-     "ratio": 2.65,
+     "text": "YOU",
+     "ratio": 2.57,
+     "need": 4.5,
+     "fg": "#f4f4f6",
+     "bg": "#6ea682"
+    },
+    {
+     "text": "BOSS",
+     "ratio": 2.38,
+     "need": 4.5,
+     "fg": "#db66ff",
+     "bg": "#6a5751"
+    },
+    {
+     "text": "Roar",
+     "ratio": 3.48,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#625f41"
+     "bg": "#4e4e30"
+    },
+    {
+     "text": "a",
+     "ratio": 3.96,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#484430"
+    },
+    {
+     "text": "every",
+     "ratio": 4.26,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#404126"
+    },
+    {
+     "text": "enemy",
+     "ratio": 3.49,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#4d4e2d"
+    },
+    {
+     "text": "reach",
+     "ratio": 2.68,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#605e3d"
+    },
+    {
+     "text": "you",
+     "ratio": 2.59,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#62613e"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 15,
-   "minTextPt": 13.4,
+   "coveredText": [],
+   "contrastSamples": 28,
+   "minTextPt": 8.7,
    "layoutProblems": []
   },
   "overworld": {
@@ -978,31 +1630,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "Around the wagons"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [
-    {
-     "target": "Continue",
-     "pt": [
-      339.6,
-      43.7
-     ]
-    }
-   ],
-   "contrastFails": [
-    {
-     "text": "Summon Circle",
-     "ratio": 4.15,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#585048"
-    }
-   ],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 38,
-   "minTextPt": 12.4,
+   "coveredText": [],
+   "contrastSamples": 29,
+   "minTextPt": 13.4,
    "layoutProblems": []
   },
   "camp": {
@@ -1014,82 +1649,14 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "0 Mana Shards",
-    "Craft",
-    "Journal"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [
-    {
-     "target": "Continue",
-     "pt": [
-      339.6,
-      43.7
-     ]
-    }
-   ],
-   "contrastFails": [
-    {
-     "text": "200 G",
-     "ratio": 3.78,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#616f79"
-    },
-    {
-     "text": "Heroes",
-     "ratio": 1.9,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#82897a"
-    },
-    {
-     "text": "Summon Circle",
-     "ratio": 1.23,
-     "need": 4.5,
-     "fg": "#98a2b3",
-     "bg": "#8c9380"
-    },
-    {
-     "text": "Opens after The Lantern Road II",
-     "ratio": 1.41,
-     "need": 4.5,
-     "fg": "#8a95a9",
-     "bg": "#757d70"
-    },
-    {
-     "text": "Merchant",
-     "ratio": 1.37,
-     "need": 4.5,
-     "fg": "#8c96bf",
-     "bg": "#788095"
-    },
-    {
-     "text": "Joins after The Tithe Moors I",
-     "ratio": 1.76,
-     "need": 4.5,
-     "fg": "#7880a4",
-     "bg": "#565b67"
-    },
-    {
-     "text": "Mana Shard Store",
-     "ratio": 1.39,
-     "need": 4.5,
-     "fg": "#8e96a2",
-     "bg": "#7b7f64"
-    },
-    {
-     "text": "0 Mana Shards",
-     "ratio": 1.46,
-     "need": 4.5,
-     "fg": "#8b9096",
-     "bg": "#767650"
-    }
-   ],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 34,
-   "minTextPt": 12.8,
+   "coveredText": [],
+   "contrastSamples": 22,
+   "minTextPt": 13.4,
    "layoutProblems": []
   },
   "skill-hex": {
@@ -1106,6 +1673,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.1,
    "layoutProblems": []
@@ -1122,9 +1690,18 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [],
+   "contrastFails": [
+    {
+     "text": "x1 \u00b7 1 Summon Ticket",
+     "ratio": 1.19,
+     "need": 4.5,
+     "fg": "#0c0c16",
+     "bg": "#1d1d35"
+    }
+   ],
    "contrastUnderCutout": [],
-   "contrastSamples": 23,
+   "coveredText": [],
+   "contrastSamples": 25,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -1145,7 +1722,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 33,
+   "coveredText": [],
+   "contrastSamples": 32,
    "minTextPt": 13.4,
    "layoutProblems": []
   }

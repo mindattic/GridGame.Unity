@@ -20,6 +20,8 @@ namespace GridGame.App
         public readonly VisualElement HpFill;
         public readonly VisualElement Buffs;
         public readonly VisualElement Glow;
+        /// <summary>GG-T1948: the base plate the token stands on, by side.</summary>
+        public readonly Plinth Base;
         /// <summary>The armor plate (§13.5): a riveted steel bar on the edge the unit faces.</summary>
         public readonly VisualElement Plate;
         /// <summary>Cracked-weapon badge (GG-T39, GG-T1949): shows once the weapon is on its last (x1.5, then shatter) point; the only gear telegraph on the token.</summary>
@@ -42,7 +44,7 @@ namespace GridGame.App
             // Rounded-square outline matching the tile frame (GG-T732); SetGlow tints it, a beat pulses it.
             Glow = new VisualElement { pickingMode = PickingMode.Ignore };
             Glow.style.position = Position.Absolute;
-            Glow.style.left = Glow.style.top = Glow.style.right = Glow.style.bottom = -5f;
+            Glow.style.left = Glow.style.top = Glow.style.right = Glow.style.bottom = -Size.GlowRing;
             float gr = tile * 0.4f + 5f;
             Glow.style.borderTopLeftRadius = Glow.style.borderTopRightRadius = Glow.style.borderBottomLeftRadius = Glow.style.borderBottomRightRadius = gr;
             Glow.style.borderTopWidth = Glow.style.borderBottomWidth = Glow.style.borderLeftWidth = Glow.style.borderRightWidth = 5f;
@@ -72,7 +74,7 @@ namespace GridGame.App
             Art = Ui.PortraitThumb(artHost, u.IsCorpse && u.CorpseOf != null ? u.CorpseOf : u.Def.Id, breed: u.Breed);
             if (u.IsCorpse)
             {
-                Art.style.unityBackgroundImageTintColor = new Color(0.42f, 0.38f, 0.38f);
+                Art.style.unityBackgroundImageTintColor = Palette.Vfx.Corpse;
                 Frame.style.opacity = 0.8f;
             }
 
@@ -100,18 +102,18 @@ namespace GridGame.App
             tileSize = tile;
             Plate = new VisualElement { name = "plate-" + u.Id, pickingMode = PickingMode.Ignore };
             Plate.style.position = Position.Absolute;
-            Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
+            Plate.style.backgroundColor = Palette.Vfx.Steel;
             Plate.style.borderTopWidth = Plate.style.borderBottomWidth = Plate.style.borderLeftWidth = Plate.style.borderRightWidth = 3;
             Plate.style.borderTopColor = Plate.style.borderLeftColor = Palette.Text;
-            Plate.style.borderBottomColor = Plate.style.borderRightColor = new Color(0.3f, 0.32f, 0.4f);
-            Plate.style.borderTopLeftRadius = Plate.style.borderTopRightRadius = Plate.style.borderBottomLeftRadius = Plate.style.borderBottomRightRadius = 6;
+            Plate.style.borderBottomColor = Plate.style.borderRightColor = Palette.Vfx.SteelShadow;
+            Plate.style.borderTopLeftRadius = Plate.style.borderTopRightRadius = Plate.style.borderBottomLeftRadius = Plate.style.borderBottomRightRadius = Radius.R6;
             Plate.style.display = DisplayStyle.None;
             for (int i = 0; i < 3; i++)
             {
                 var rivet = new VisualElement { name = "rivet", pickingMode = PickingMode.Ignore };
                 rivet.style.width = rivet.style.height = Size.Bar;
-                rivet.style.backgroundColor = new Color(0.35f, 0.37f, 0.45f);
-                rivet.style.borderTopLeftRadius = rivet.style.borderTopRightRadius = rivet.style.borderBottomLeftRadius = rivet.style.borderBottomRightRadius = 4;
+                rivet.style.backgroundColor = Palette.Vfx.Rivet;
+                rivet.style.borderTopLeftRadius = rivet.style.borderTopRightRadius = rivet.style.borderBottomLeftRadius = rivet.style.borderBottomRightRadius = Radius.R4;
                 Plate.Add(rivet);
             }
             Plate.style.justifyContent = Justify.SpaceAround; Plate.style.alignItems = Align.Center;
@@ -122,8 +124,8 @@ namespace GridGame.App
             WeaponCrack.style.position = Position.Absolute;
             WeaponCrack.style.left = Space.S16; WeaponCrack.style.bottom = Space.S64;
             WeaponCrack.style.width = WeaponCrack.style.height = Size.Crack;
-            WeaponCrack.style.borderTopLeftRadius = WeaponCrack.style.borderTopRightRadius = WeaponCrack.style.borderBottomLeftRadius = WeaponCrack.style.borderBottomRightRadius = 12;
-            WeaponCrack.style.backgroundColor = new Color(0.5f, 0.06f, 0.05f, 0.92f);
+            WeaponCrack.style.borderTopLeftRadius = WeaponCrack.style.borderTopRightRadius = WeaponCrack.style.borderBottomLeftRadius = WeaponCrack.style.borderBottomRightRadius = Radius.R12;
+            WeaponCrack.style.backgroundColor = Palette.Vfx.Crack;
             WeaponCrack.style.borderTopWidth = WeaponCrack.style.borderBottomWidth = WeaponCrack.style.borderLeftWidth = WeaponCrack.style.borderRightWidth = 2;
             WeaponCrack.style.borderTopColor = WeaponCrack.style.borderBottomColor = WeaponCrack.style.borderLeftColor = WeaponCrack.style.borderRightColor = Palette.Bad;
             WeaponCrack.style.display = DisplayStyle.None;
@@ -165,11 +167,15 @@ namespace GridGame.App
             FloatShadow.style.position = Position.Absolute;
             FloatShadow.style.left = FloatShadow.style.right = tile * u.W * 0.16f;
             FloatShadow.style.bottom = -Space.S4; FloatShadow.style.height = tile * 0.2f;
-            FloatShadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.4f);
+            FloatShadow.style.backgroundColor = Palette.Black.WithA(0.4f);
             FloatShadow.style.borderTopLeftRadius = FloatShadow.style.borderTopRightRadius =
                 FloatShadow.style.borderBottomLeftRadius = FloatShadow.style.borderBottomRightRadius = tile * 0.1f;
             FloatShadow.style.display = DisplayStyle.None;
             Root.Insert(0, FloatShadow);
+            Base = new Plinth { name = "plinth-" + u.Id };
+            Root.Insert(0, Base);
+            SetPlinth(u);
+            Root.schedule.Execute(StepLift).Every(33);
             floatPhase = u.Id * 1.37f; // floaters bob out of step with each other
             Root.schedule.Execute(StepFloat).Every(33);
 
@@ -189,15 +195,26 @@ namespace GridGame.App
             bool wanderer = tamed && u.Wanderer; // GG-T342: its own keyline and tag
             foreach (var cls in new[] { "unit-keyline--guest", "unit-keyline--hero", "unit-keyline--boss", "unit-keyline--foe", "unit-keyline--neutral", "unit-keyline--tamed", "unit-keyline--wanderer" })
                 Keyline.RemoveFromClassList(cls);
-            Keyline.AddToClassList(u.IsNeutral ? "unit-keyline--neutral" : wanderer ? "unit-keyline--wanderer" : tamed ? "unit-keyline--tamed" : u.IsGuest ? "unit-keyline--guest" : independent == false || !u.IsHero ? ((u.Def.HasTag("Boss") || u.IsMultiTile) ? "unit-keyline--boss" : "unit-keyline--foe") : "unit-keyline--hero");
+            Keyline.AddToClassList(u.IsNeutral ? "unit-keyline--neutral" : wanderer ? "unit-keyline--wanderer" : tamed ? "unit-keyline--tamed" : u.IsGuest ? "unit-keyline--guest" : independent == false || !u.IsHero ? ((u.IsBossLike || u.IsMultiTile) ? "unit-keyline--boss" : "unit-keyline--foe") : "unit-keyline--hero");
+            SetPlinth(u, independent);
             Frame.Q<Label>("guest-" + u.Id)?.RemoveFromHierarchy();
             if (!u.IsGuest && !u.IsNeutral && !tamed) return;
             var tag = new Label(u.IsNeutral ? "TALK" : wanderer ? "WANDERER" : tamed ? "TAMED" : "GUEST") { name = "guest-" + u.Id, pickingMode = PickingMode.Ignore };
             tag.AddToClassList("shadow");
             tag.style.position = Position.Absolute; tag.style.left = Space.S8; tag.style.top = Space.S8;
             tag.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(tag);
-            tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : new Color(0.6f, 1f, 0.75f);
+            tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : Palette.Vfx.Ally;
             Frame.Add(tag);
+        }
+
+        /// <summary>GG-T1948: heroes and guests stand on the hero plate, foes on the notched foe plate and a boss
+        /// (<see cref="Unit.IsBossLike"/>, GG-T2128) on the notched boss plate; a neutral, a tamed monster, a wanderer and a
+        /// corpse keep their own keyline and stand on none. Base is null until the ctor builds it.</summary>
+        private void SetPlinth(Unit u, bool? independent = null)
+        {
+            if (Base == null) return;
+            bool tamed = independent ?? u.IsIndependent;
+            Base.Set(u.IsCorpse || u.IsNeutral || tamed ? Plinth.Side.None : u.IsHero && independent != false ? Plinth.Side.Hero : u.IsBossLike ? Plinth.Side.Boss : Plinth.Side.Foe);
         }
 
         private VisualElement cardBack;
@@ -258,9 +275,13 @@ namespace GridGame.App
             Root.style.scale = new Scale(new Vector2(CardFlip.WidthScale(total, onePixel), 1f));
         }
 
+        /// <summary>The HP fraction the gauge shows now (playback's beat, not the resolved state); the top bar's boss bar mirrors it.</summary>
+        public float HpFraction { get; private set; } = 1f;
+
         public void SetHp(int hp, int max)
         {
             float f = max <= 0 ? 0 : Mathf.Clamp01(hp / (float)max);
+            HpFraction = f;
             HpFill.style.width = Length.Percent(f * 100f);
             HpFill.EnableInClassList("gauge-fill--mid", f <= 0.5f && f > 0.25f);
             HpFill.EnableInClassList("gauge-fill--low", f <= 0.25f);
@@ -302,7 +323,7 @@ namespace GridGame.App
                 Art.style.transitionDuration = ease;
             }
             actedBadge.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
-            Art.style.unityBackgroundImageTintColor = on ? new Color(0.5f, 0.5f, 0.55f) : Palette.White;
+            Art.style.unityBackgroundImageTintColor = on ? Palette.Vfx.Dimmed : Palette.White;
             Frame.style.opacity = on ? 0.7f : 1f;
         }
 
@@ -334,6 +355,38 @@ namespace GridGame.App
         private bool floating;
         private float floatPhase, settleStart = -1f;
         private const float FloatLift = 16f, FloatBob = 4f, FloatWobble = 1.2f, SettleTime = 0.35f;
+        private float floatY, floatTilt, lift, liftTarget;
+        private const float SelectLift = 8f, SelectLiftTime = 0.12f;
+
+        /// <summary>
+        /// GG-T1948: the selected token lifts off its base plate (the plate stays, its front edge showing under the card);
+        /// Reduce Motion sets the lift at once instead of easing it.
+        /// </summary>
+        public void SetLifted(bool on)
+        {
+            float target = on ? SelectLift : 0f;
+            if (Mathf.Approximately(target, liftTarget)) return;
+            liftTarget = target;
+            if (GameApp.I?.Settings?.ReduceMotion == true) { lift = target; Pose(); }
+        }
+
+        private void StepLift()
+        {
+            if (Mathf.Approximately(lift, liftTarget)) return;
+            lift = Mathf.MoveTowards(lift, liftTarget, SelectLift * 0.033f / SelectLiftTime);
+            Pose();
+        }
+
+        /// <summary>Raises everything but the plate and the float shadow by the float and selection lifts.</summary>
+        private void Pose()
+        {
+            foreach (var child in Root.Children())
+            {
+                if (child == FloatShadow || child == Base) continue;
+                child.style.translate = new Translate(0, floatY - lift);
+                if (child == Frame || child == Glow) child.style.rotate = new Rotate(floatTilt);
+            }
+        }
 
         /// <summary>
         /// GG-T951 (owner 2026-11-24): a Floating unit's card hovers a little above its tile over a soft shadow, bobbing
@@ -371,12 +424,9 @@ namespace GridGame.App
             }
             FloatShadow.style.opacity = Mathf.Clamp01(shadow);
             FloatShadow.style.scale = new Scale(new Vector2(shadow, 1f));
-            foreach (var child in Root.Children())
-            {
-                if (child == FloatShadow) continue;
-                child.style.translate = new Translate(0, y);
-                if (child == Frame || child == Glow) child.style.rotate = new Rotate(tilt);
-            }
+            floatY = y;
+            floatTilt = tilt;
+            Pose();
         }
 
         /// <summary>
@@ -390,7 +440,7 @@ namespace GridGame.App
             if (stunned) statuses.Add(("stunned", "!", Palette.Gold, 1f)); // pushback stun isn't a buff, but it's why it isn't moving
             foreach (var b in u.Buffs)
                 statuses.Add((b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter,
-                    App.Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f)),
+                    App.Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff),
                     Mathf.Clamp01(b.Remaining / (float)Mathf.Max(1, b.Def.Duration))));
             ShowStatus();
             SetFloating(u.IsFloating && u.Alive);
@@ -445,7 +495,7 @@ namespace GridGame.App
             glowColor = c;
             glowAlpha = alpha;
             Glow.style.borderTopColor = Glow.style.borderBottomColor = Glow.style.borderLeftColor = Glow.style.borderRightColor = c;
-            Glow.style.backgroundColor = new Color(c.r, c.g, c.b, 0.12f);
+            Glow.style.backgroundColor = c.WithA(0.12f);
             Glow.style.opacity = alpha;
         }
 
@@ -497,6 +547,8 @@ namespace GridGame.App
             scrim.style.backgroundColor = Palette.Ink.WithA(0f);
             // Order matters: highlights and lines draw OVER the units so targets and pincer previews read clearly.
             TileLayer = Layer("tiles");
+            // GG-T1950: the grid over the tile art, a light core on a dark keyline so it holds 3:1 on every theme's art.
+            GridLayer = Layer("grid");
             // Under the units: the streak trails behind the moving token (GG-T219).
             Trail = new TrailLayer { name = "trail" };
             Trail.style.position = Position.Absolute;
@@ -524,7 +576,7 @@ namespace GridGame.App
                     bool light = (x + y) % 2 == 0;
                     t.style.backgroundImage = new StyleBackground(App.Art.BoardTile(theme));
                     // Owner direction 2026-10-11: lighter and lower-contrast so the stage background reads clearly through the board.
-                    t.style.unityBackgroundImageTintColor = light ? Palette.White.WithA(0.34f) : new Color(0.78f, 0.82f, 0.9f, 0.24f);
+                    t.style.unityBackgroundImageTintColor = light ? Palette.White.WithA(0.34f) : Palette.Vfx.Shard.WithA(0.24f);
                     TileLayer.Add(t);
                     tiles[x, y] = t;
 
@@ -532,11 +584,31 @@ namespace GridGame.App
                     m.style.position = Position.Absolute;
                     m.style.left = x * Tile + 4; m.style.top = y * Tile + 4;
                     m.style.width = Tile - 8; m.style.height = Tile - 8;
-                    m.style.borderTopLeftRadius = m.style.borderTopRightRadius = m.style.borderBottomLeftRadius = m.style.borderBottomRightRadius = 18;
+                    m.style.borderTopLeftRadius = m.style.borderTopRightRadius = m.style.borderBottomLeftRadius = m.style.borderBottomRightRadius = Radius.R18;
                     m.style.opacity = 0;
                     MarkLayer.Add(m);
                     marks[x, y] = m;
                 }
+            for (int x = 0; x <= BattleConfig.Cols; x++) GridLine(x * Tile, 0f, true);
+            for (int y = 0; y <= BattleConfig.Rows; y++) GridLine(0f, y * Tile, false);
+        }
+
+        public readonly VisualElement GridLayer;
+
+        /// <summary>GG-T1950: one grid line through (<paramref name="x"/>, <paramref name="y"/>) across the whole board.</summary>
+        private void GridLine(float x, float y, bool vertical)
+        {
+            foreach (var (width, color) in new[] { (Size.Hairline + 2 * Size.Underline, Palette.Ink), (Size.Hairline, Palette.Vfx.GridLine) })
+            {
+                var l = new VisualElement { pickingMode = PickingMode.Ignore };
+                l.style.position = Position.Absolute;
+                l.style.backgroundColor = color;
+                l.style.left = vertical ? x - width / 2f : x;
+                l.style.top = vertical ? y : y - width / 2f;
+                l.style.width = vertical ? width : Tile * BattleConfig.Cols;
+                l.style.height = vertical ? Tile * BattleConfig.Rows : width;
+                GridLayer.Add(l);
+            }
         }
 
         private readonly VisualElement scrim;
@@ -575,21 +647,21 @@ namespace GridGame.App
                 shadow.style.position = Position.Absolute;
                 shadow.style.left = c.X * Tile + 14; shadow.style.top = c.Y * Tile + 22;
                 shadow.style.width = Tile - 22; shadow.style.height = Tile - 22;
-                shadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-                SetRadius(shadow, 26);
+                shadow.style.backgroundColor = Palette.Black.WithA(0.45f);
+                SetRadius(shadow, Radius.R26);
                 TileLayer.Add(shadow);
                 var rock = new VisualElement { name = $"block-{c.X}-{c.Y}", pickingMode = PickingMode.Ignore };
                 rock.style.position = Position.Absolute;
                 rock.style.left = c.X * Tile + 8; rock.style.top = c.Y * Tile + 8;
                 rock.style.width = Tile - 16; rock.style.height = Tile - 22;
                 rock.style.backgroundImage = new StyleBackground(App.Art.BoardTile(theme));
-                rock.style.unityBackgroundImageTintColor = new Color(0.85f, 0.85f, 0.9f, 1f);
-                rock.style.backgroundColor = new Color(0.32f, 0.33f, 0.38f, 1f);
-                SetRadius(rock, 26);
+                rock.style.unityBackgroundImageTintColor = Palette.Vfx.RockTint;
+                rock.style.backgroundColor = Palette.Vfx.Rock;
+                SetRadius(rock, Radius.R26);
                 rock.style.borderTopWidth = 6; rock.style.borderLeftWidth = rock.style.borderRightWidth = 4; rock.style.borderBottomWidth = 12;
-                rock.style.borderTopColor = new Color(0.78f, 0.8f, 0.86f, 0.9f);
-                rock.style.borderLeftColor = rock.style.borderRightColor = new Color(0.45f, 0.47f, 0.53f, 1f);
-                rock.style.borderBottomColor = new Color(0.16f, 0.17f, 0.2f, 1f);
+                rock.style.borderTopColor = Palette.Vfx.RockLight;
+                rock.style.borderLeftColor = rock.style.borderRightColor = Palette.Vfx.RockSide;
+                rock.style.borderBottomColor = Palette.Vfx.RockDark;
                 TileLayer.Add(rock);
             }
         }
@@ -612,9 +684,9 @@ namespace GridGame.App
                 amp.style.width = amp.style.height = Tile * 0.5f;
                 amp.style.rotate = new Rotate(45f);
                 amp.style.borderTopWidth = amp.style.borderBottomWidth = amp.style.borderLeftWidth = amp.style.borderRightWidth = 6;
-                amp.style.borderTopColor = amp.style.borderBottomColor = amp.style.borderLeftColor = amp.style.borderRightColor = new Color(1f, 0.95f, 0.7f);
-                amp.style.backgroundColor = new Color(1f, 0.72f, 0.15f, 0.85f);
-                amp.style.borderTopLeftRadius = amp.style.borderTopRightRadius = amp.style.borderBottomLeftRadius = amp.style.borderBottomRightRadius = 10;
+                amp.style.borderTopColor = amp.style.borderBottomColor = amp.style.borderLeftColor = amp.style.borderRightColor = Palette.Vfx.AmpRim;
+                amp.style.backgroundColor = Palette.Vfx.AmpFill;
+                amp.style.borderTopLeftRadius = amp.style.borderTopRightRadius = amp.style.borderBottomLeftRadius = amp.style.borderBottomRightRadius = Radius.R10;
                 var glow = new VisualElement { pickingMode = PickingMode.Ignore };
                 glow.style.position = Position.Absolute;
                 glow.style.left = glow.style.top = glow.style.right = glow.style.bottom = -Space.S32;
@@ -764,7 +836,7 @@ namespace GridGame.App
             glow.style.position = Position.Absolute;
             glow.style.left = glow.style.top = glow.style.right = glow.style.bottom = -Space.S32;
             glow.style.backgroundImage = new StyleBackground(App.Art.Glow);
-            glow.style.unityBackgroundImageTintColor = new Color(c.r, c.g, c.b, 0.85f);
+            glow.style.unityBackgroundImageTintColor = c.WithA(0.85f);
             root.Add(glow);
             var disc = new VisualElement { name = "disc", pickingMode = PickingMode.Ignore };
             disc.style.position = Position.Absolute;
@@ -847,8 +919,8 @@ namespace GridGame.App
                 e.style.width = Tile; e.style.height = Tile;
                 e.style.unityTextAlign = TextAnchor.MiddleCenter;
                 e.style.fontSize = TileGlyphFont;
-                e.style.color = new Color(0.75f, 0.35f, 1f, 0.85f);
-                e.style.backgroundColor = new Color(0.45f, 0.1f, 0.6f, 0.25f);
+                e.style.color = Palette.Vfx.CurseText;
+                e.style.backgroundColor = Palette.Vfx.CurseBack;
                 MarkLayer.Add(e);
                 trapMarks.Add(e);
             }
@@ -897,7 +969,7 @@ namespace GridGame.App
                 // GG-T846: an owned mark's edge wears its painter's team colour (the party blue, a foe red).
                 var edge = kv.Value.OwnerTeam == Team.Hero ? TeamHero : kv.Value.OwnerTeam == Team.Enemy ? Palette.TeamFoe : col;
                 // A hole (GG-T368) is a near-black pit with its rim in the state's colour; other blocks a heavy wash.
-                var fill = def != null && def.Pit ? new Color(0.03f, 0.02f, 0.02f, 0.92f) : col.WithA(kv.Value.Blocks ? 0.55f : 0.3f);
+                var fill = def != null && def.Pit ? Palette.Vfx.Pit : col.WithA(kv.Value.Blocks ? 0.55f : 0.3f);
                 var e = RegionCell(kv.Key, fill, edge, def?.Glyph, kv.Value.Blocks ? 6f : 3f, !faint && !regionSeen.Contains(key));
                 regionCellAt[kv.Key] = e;
                 // GG-T846: hidden outline and hatch pulse (no life ring or countdown on the tile, GG-T1817).
@@ -1119,11 +1191,63 @@ namespace GridGame.App
         }
     }
 
+    /// <summary>
+    /// GG-T1948 (UX review §1.4 #5): the base plate under a token, so side reads by shape as well as colour. A hero stands
+    /// on a rounded plate in the hero blue, a foe on a plate in the foe red with two corners notched off (both follow the
+    /// Colorblind palette); a boss (GG-T2128) keeps the foe's notches on a plate in the boss purple. Each is a filled,
+    /// outlined slab whose darker front edge shows under the card, more of it while the token is lifted.
+    /// </summary>
+    public sealed class Plinth : VisualElement
+    {
+        public enum Side { None, Hero, Foe, Boss }
+        private const float Inset = 3f, Depth = 6f, HeroRadius = 24f, FoeRadius = 10f, Notch = 28f, EdgeShade = 0.55f;
+        private Side side;
+        private bool drawnColorblind;
+
+        public Plinth()
+        {
+            pickingMode = PickingMode.Ignore;
+            style.position = Position.Absolute;
+            style.left = style.top = style.right = style.bottom = Space.S0;
+            generateVisualContent += ctx =>
+            {
+                var r = contentRect;
+                if (side == Side.None || r.width <= 0f) return;
+                var p = ctx.painter2D;
+                drawnColorblind = Palette.Colorblind;
+                var c = side == Side.Hero ? Palette.TeamHero : side == Side.Boss ? Palette.TeamBoss : Palette.TeamFoe;
+                var edge = new Color(c.r * EdgeShade, c.g * EdgeShade, c.b * EdgeShade);
+                var top = new Rect(r.xMin + Inset, r.yMin + Inset, r.width - Inset * 2f, r.height - Inset * 2f - Depth);
+                var front = new Rect(top.x, top.y + Depth, top.width, top.height);
+                var st = ShapeStyle.Small;
+                if (side == Side.Hero)
+                {
+                    Shapes.RoundedRect(p, front, HeroRadius, st.Tint(edge), filled: true);
+                    Shapes.RoundedRect(p, top, HeroRadius, st.Tint(c), filled: true);
+                }
+                else
+                {
+                    Shapes.NotchedRect(p, front, FoeRadius, Notch, st.Tint(edge));
+                    Shapes.NotchedRect(p, top, FoeRadius, Notch, st.Tint(c));
+                }
+            };
+            // The Colorblind palette can change mid-battle (Settings from the pause menu): redraw in the new side colours.
+            schedule.Execute(() => { if (side != Side.None && drawnColorblind != Palette.Colorblind) MarkDirtyRepaint(); }).Every(250);
+        }
+
+        public void Set(Side s)
+        {
+            side = s;
+            style.display = s == Side.None ? DisplayStyle.None : DisplayStyle.Flex;
+            MarkDirtyRepaint();
+        }
+    }
+
     /// <summary>GG-T892: the Heavy badge (Shapes, GG-T735): an ink disc holding an iron kettlebell, its handle a ring arc
     /// over a round steel body with a lighter sheen, so it reads as weight at pip size.</summary>
     public sealed class WeightBadge : VisualElement
     {
-        private static readonly Color Iron = new Color(0.62f, 0.66f, 0.74f), Sheen = new Color(0.86f, 0.89f, 0.95f);
+        private static readonly Color Iron = Palette.Vfx.Iron, Sheen = Palette.Vfx.Sheen;
 
         public WeightBadge()
         {
@@ -1210,7 +1334,7 @@ namespace GridGame.App
                 float perim = 2f * (r.width + r.height) - 8f * rad + 2f * Mathf.PI * rad;
                 float start = perim > 0f ? (r.width * 0.5f - rad) / perim : 0f;
                 var style = ShapeStyle.Indicator.Tint(color).Thick(w);
-                style.Line = new Color(style.Line.r, style.Line.g, style.Line.b, style.Line.a * color.a);
+                style.Line = style.Line.WithA(style.Line.a * color.a);
                 Shapes.RoundedRect(p, r, rad, style, start: start, portion: f);
             }
             foreach (var e in ShapeList)
@@ -1346,7 +1470,7 @@ namespace GridGame.App
                 var normal = new Vector2(-tan.y, tan.x);
                 // The tail stays nearly full width and fades out as a whole, never tapering to a point.
                 float half = width * Mathf.Lerp(0.88f, 1f, fade[i]) * 0.5f;
-                var c = new Color(color.r, color.g, color.b, color.a * alpha * fade[i] * fade[i]);
+                var c = color.WithA(color.a * alpha * fade[i] * fade[i]);
                 var l = pts[i] - normal * half;
                 var r = pts[i] + normal * half;
                 verts[i * 2] = new Vertex { position = new Vector3(l.x, l.y, Vertex.nearZ), tint = c };

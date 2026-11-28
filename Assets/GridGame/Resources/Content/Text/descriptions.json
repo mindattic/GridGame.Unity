@@ -886,6 +886,22 @@
         "long": "Knows every reagent, every breath, and when to spend both."
       }
     },
+    "class:collector": {
+      "key": "class:collector",
+      "id": "description-class-collector",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:479d81d3ec2fbed68ee82cf7b6af50ff72de2db365cbd072f11185a460f8d226",
+      "about": [
+        "class-collector"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "The Captain's man in black-and-steel plate under a white surcoat, helm closed, a tithe ledger chained at his belt and a heavy plate he keeps turned toward you.",
+        "long": "The Captain sent him to the hamlet of Tithe to take the tithe every month, and every month he takes more. He holds the toll bridge with the river at his back and a Red Mage in irons, one who refused to pay. Swords clang off his front plate for nothing; spells go around it, and only a blow that shatters it takes it off. Behind him on the bridge stands his white tithe wagon, loaded."
+      }
+    },
     "class:corpse": {
       "key": "class:corpse",
       "id": "description-class-corpse",
@@ -2534,6 +2550,22 @@
         "long": "Grew up among the pack, and understands every snarl as a word."
       }
     },
+    "class:moorcaptain": {
+      "key": "class:moorcaptain",
+      "id": "description-class-moorcaptain",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9e11ca45a07f26b9769b2ff4ea45f9557a2af7362b25c9bd4024c421b5accb94",
+      "about": [
+        "class-moorcaptain"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "The Captain himself: a tall knight in black-and-steel plate under the Choir's white surcoat crossed with red straps, closed helm, a sword at the hip.",
+        "long": "The Free Holds' militia captain, who sold the holds' tithe to the Choir and sent his Collector to bleed Tithe dry. He calls it keeping the quota. He holds the last stretch of the moor and strikes twice when no one stands beside him."
+      }
+    },
     "class:mountaintroll": {
       "key": "class:mountaintroll",
       "id": "description-class-mountaintroll",
@@ -3990,6 +4022,22 @@
         "long": "Built on vows and iron patience, they stand where others fall back."
       }
     },
+    "class:ward_engine": {
+      "key": "class:ward_engine",
+      "id": "description-class-ward-engine",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ce13a81d1fb53facbc1f67fa6f7011a43ab3de6eac8ab18147cd76341bca2d34",
+      "about": [
+        "class-ward-engine"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A pale Halcyon automaton folded around a sleeping waystone, its tall white shield etched with a lightning mark.",
+        "long": "Halcyon built the Ward-Engines to keep its waystones until someone came who could wake them, then left them on the hills for twelve hundred years. Steel, flame and prayer slide off its wards; only Lightning still answers the old key. No one but the Commander sees the stone it guards, so no one else has ever come to try."
+      }
+    },
     "class:warden": {
       "key": "class:warden",
       "id": "description-class-warden",
@@ -4454,11 +4502,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ae829eb898dfb138eb1c240cd3c78db408f5ea4901bdb9075606c159e871350d",
+      "hash": "sha256:c4634988e7c9fe203be95327abcff0a0ad13fe6ee68017f830d9087de6a510c4",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Every hero earns 1 skill point (SP) a level, and every node on the Skill Board costs 1 SP. Open it from Heroes, Abilities, Board.\n\nThe board is a hexagon with the six identity stats at its corners: VIT, STR, AGI, SPD, WIS and INT. Each edge between two of them is a family: Martial (VIT and STR), Brawn (STR and AGI), Shadow (AGI and SPD), Wild (SPD and WIS), Brains (WIS and INT) and Grace (INT and VIT).\n\nA hero starts on its class's Start path and buys nodes next to the ones it already owns, so it grows outward from home. Tap any node to see the cheapest route to it and what it costs. Passive nodes add stats; ability nodes teach their ability. Luck is not on the board: it grows a little every level and comes from gear."
+        "long": "Every hero earns 1 skill point (SP) a level, and every node in Talents costs 1 SP. Open it from Heroes, Abilities, Talents.\n\nTalents is a hexagon with the six identity stats at its corners: VIT, STR, AGI, SPD, WIS and INT. Each edge between two of them is a family: Martial (VIT and STR), Brawn (STR and AGI), Shadow (AGI and SPD), Wild (SPD and WIS), Brains (WIS and INT) and Grace (INT and VIT).\n\nA hero starts on its class's Start path and buys nodes next to the ones it already owns, so it grows outward from home. Tap any node to see the cheapest route to it and what it costs. Passive nodes add stats; ability nodes teach their ability. Luck is not in Talents: it grows a little every level and comes from gear."
       }
     },
     "codex:place/bloom": {
@@ -5023,6 +5071,19 @@
       "speakers": [],
       "payload": {
         "short": "A banded chest a strong foe was guarding. Open it from the bag."
+      }
+    },
+    "item:chest_tithe": {
+      "key": "item:chest_tithe",
+      "id": "description-item-chest-tithe",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9d59e0a5d7e8490c0a7bd15067f65d8d240477f43c93cec77e2d6d86d4d6cc2e",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "short": "The Tithe Collector's strongbox, heavy with a month of Tithe's colour. Open it."
       }
     },
     "item:chest_wooden": {
@@ -24175,6 +24236,19 @@
       "speakers": [],
       "payload": {
         "short": "A dog-eared field manual. Read it to teach one hero the [Reactive] Blood Rage."
+      }
+    },
+    "item:tome_bolt": {
+      "key": "item:tome_bolt",
+      "id": "description-item-tome-bolt",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:33841eb2489e01fe7f89ac1c8f28d7503ba17a162549b2ca112e31f5c5ea47e7",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "short": "A scorched spellbook from the Collector's chest. Read it to teach the Red Mage the spell Bolt."
       }
     },
     "item:tome_counter_attack": {

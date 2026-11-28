@@ -69,7 +69,7 @@ namespace GridGame.App
             cam.orthographic = true;
             cam.cullingMask = 1 << Layer;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0, 0, 0, 0);
+            cam.backgroundColor = Palette.Clear;
             cam.depth = -50;
             cam.nearClipPlane = 0.1f;
             cam.farClipPlane = 4000f;
@@ -222,7 +222,7 @@ namespace GridGame.App
             if (rt == null) return;
             var prev = RenderTexture.active;
             RenderTexture.active = rt;
-            GL.Clear(true, true, new Color(0, 0, 0, 0));
+            GL.Clear(true, true, Palette.Clear);
             RenderTexture.active = prev;
             overlay.MarkDirtyRepaint();
         }

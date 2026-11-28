@@ -9,7 +9,7 @@ namespace GridGame.App
     /// Silenced cues and any mine it sets off play. Reduce Motion keeps one fading ring.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color EmpColor = new Color(0.35f, 0.9f, 1f);
+        private static readonly Color EmpColor = Palette.Vfx.Emp;
 
         private IEnumerator EmpPulseVfx(AbilityResolvedEvent ar)
         {

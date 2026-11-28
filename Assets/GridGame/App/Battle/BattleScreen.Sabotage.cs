@@ -14,7 +14,7 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color SabotageSpark = new Color(0.55f, 0.95f, 1f);
+        private static readonly Color SabotageSpark = Palette.Vfx.Sabotage;
 
         private static Color TeamEdge(Team t) =>
             t == Team.Hero ? (Palette.Colorblind ? Palette.CbHero : Palette.Hero) : Palette.TeamFoe;
@@ -69,7 +69,7 @@ namespace GridGame.App
                     board.Lines.Add(prev, p, SabotageSpark.WithA(0.5f + 0.5f * i / segs), 3f);
                     prev = p;
                 }
-                board.Lines.Dot(prev, 7f + 3f * UnityEngine.Random.value, Color.white);
+                board.Lines.Dot(prev, 7f + 3f * UnityEngine.Random.value, Palette.White);
             });
 
             // It bites: a clank, a burst of sparks on the tile, and the edge turns (or the hidden charge fades away).

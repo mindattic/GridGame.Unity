@@ -17,9 +17,9 @@ namespace GridGame.Meta
     }
 
     /// <summary>
-    /// The bottom nav's five tabs (GG-T1338, docs/design/hub-navigation): Home, Campaign, Heroes, Summon, Shop, read off
+    /// The bottom nav's five tabs (GG-T1338, docs/design/hub-navigation): Home, Journey, Heroes, Recruit, Shop, read off
     /// <see cref="CampMenu"/> so a tab locks, hints and badges exactly as its Camp destination does. Engine-free: the App
-    /// layer maps <see cref="NavTab.Id"/> to a screen and an icon. Summon follows <see cref="CampUnlocks.SummonOpen"/>;
+    /// layer maps <see cref="NavTab.Id"/> to a screen and an icon. Recruit opens with the Summon Circle or the Mercenaries, whichever comes first;
     /// Shop opens when the Merchant joins or the Shard Store opens, whichever comes first.
     /// </summary>
     public static class NavBadges
@@ -32,9 +32,9 @@ namespace GridGame.Meta
             return new List<NavTab>
             {
                 new NavTab { Id = Home, Label = "Home", Badge = HomeBadge(menu) },
-                new NavTab { Id = CampMenu.Campaign, Label = "Campaign", Badge = CampaignBadge(c, s) },
+                new NavTab { Id = CampMenu.Campaign, Label = "Journey", Badge = CampaignBadge(c, s) },
                 new NavTab { Id = CampMenu.Heroes, Label = "Heroes", Badge = HeroesBadge(c, s) },
-                Group(menu, CampMenu.Summon, "Summon", CampGroup.Summon, SummonBadge(c, s)),
+                Group(menu, CampMenu.Summon, "Recruit", CampGroup.Summon, SummonBadge(c, s)),
                 Group(menu, CampMenu.Shop, "Shop", CampGroup.Shop, ShopBadge(c, s)),
             };
         }
@@ -50,11 +50,17 @@ namespace GridGame.Meta
         private static string HomeBadge(List<CampDestination> menu) =>
             menu.Any(d => d.Badge && d.Group != CampGroup.Heroes && d.Group != CampGroup.Summon && d.Group != CampGroup.Shop && d.Group != CampGroup.Campaign) ? "!" : "";
 
-        /// <summary>"!" while onboarding's train-a-skill step is ahead or a party hero has a new ability ready
-        /// (<see cref="NextAbility.ReadyInParty"/>, GG-T1407), else the party's unspent skill points.</summary>
+        /// <summary>The Heroes badge's text for new gear (GG-T2061).</summary>
+        public const string NewGear = "New";
+
+        /// <summary>"!" while onboarding's train-a-skill step is ahead, <see cref="NewGear"/> while the bag holds an upgrade the
+        /// player hasn't seen on Equip (<see cref="AutoEquip.FirstNew"/>, GG-T2061), "!" while a party hero has a new ability
+        /// ready (<see cref="NextAbility.ReadyInParty"/>, GG-T1407), else the party's unspent skill points.</summary>
         private static string HeroesBadge(ContentDb c, SaveData s)
         {
-            if (Training.Step(s) || NextAbility.ReadyInParty(c, s)) return "!";
+            if (Training.Step(s)) return "!";
+            if (AutoEquip.FirstNew(c, s) != null) return NewGear;
+            if (NextAbility.ReadyInParty(c, s)) return "!";
             int points = s.Party.Select(s.Hero).Where(h => h != null).Sum(h => h.SkillPoints);
             return points > 0 ? points.ToString() : "";
         }

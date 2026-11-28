@@ -45,10 +45,10 @@ namespace GridGame.App
             {
                 int slot = i;
                 var s = App.Saves.Load(i, App.Content);
-                // A slot whose file (and backup) exist but won't read is damaged, not empty: it may hold paid Diamonds.
+                // A slot whose file (and backup) exist but won't read is damaged, not empty: it may hold paid Mana Shards.
                 bool damaged = s == null && App.Saves.Exists(i);
-                string label = s != null ? $"Slot {i + 1} — {s.Name}" : damaged ? $"Slot {i + 1} — Damaged" : $"Slot {i + 1} — Empty";
-                string value = s == null ? "" : $"Stage {s.HighestClearedStage + 2}  {Ui.Gold(s.Gold)}";
+                string label = s != null ? $"Slot {i + 1} · {s.Name}" : damaged ? $"Slot {i + 1} · Can't be read" : $"Slot {i + 1} · Empty";
+                string value = s == null ? "" : $"Stage {s.HighestClearedStage + 2} · {Ui.Gold(s.Gold)}";
                 var row = Ui.MenuRow(label, value, () => Pick(slot, s, damaged), w, null, newGame || s != null);
                 row.KindIcon(RowKind.Save); // GG-T738 (§26.7)
                 if (damaged) row.Q<Label>("label")?.AddToClassList("bad");
@@ -168,7 +168,7 @@ namespace GridGame.App
         private static void AskDrills(Action go)
         {
             var c = App.Content;
-            bool any = c.Campaign?.Tutorial?.Any(id => c.TryStage(id) != null) == true;
+            bool any = Drills.NewGameOrder(c).Any(id => c.TryStage(id) != null);
             if (!any || DemoMode.Active) { go(); return; }
             bool veteran = App.Settings?.DrillsFinished == true;
             void Skip()

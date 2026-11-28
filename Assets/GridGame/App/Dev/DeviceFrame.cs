@@ -22,7 +22,7 @@ namespace GridGame.App.Dev
             name = "device-frame";
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
-            style.left = style.top = style.right = style.bottom = 0;
+            style.left = style.top = style.right = style.bottom = Space.S0;
             generateVisualContent += Draw;
         }
 
@@ -73,7 +73,7 @@ namespace GridGame.App.Dev
             var r = contentRect;
             if (r.width <= 0f || r.height <= 0f) return;
             var p = ctx.painter2D;
-            p.fillColor = Color.black;
+            p.fillColor = Palette.Black;
             float sx = r.width / refW, sy = r.height / refH;
 
             float c = screenRadius * sx;

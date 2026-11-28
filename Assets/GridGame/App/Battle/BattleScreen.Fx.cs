@@ -110,7 +110,7 @@ namespace GridGame.App
                 ring.style.borderTopLeftRadius = ring.style.borderTopRightRadius = ring.style.borderBottomLeftRadius = ring.style.borderBottomRightRadius = r;
                 float w = Mathf.Lerp(14f, 2f, k) * scale;
                 ring.style.borderTopWidth = ring.style.borderBottomWidth = ring.style.borderLeftWidth = ring.style.borderRightWidth = w;
-                var col = new Color(c.r, c.g, c.b, 1f - k);
+                var col = c.WithA(1f - k);
                 ring.style.borderTopColor = ring.style.borderBottomColor = ring.style.borderLeftColor = ring.style.borderRightColor = col;
                 if (k >= 1f) ring.RemoveFromHierarchy();
             }));
@@ -130,7 +130,7 @@ namespace GridGame.App
                 f.style.left = t.X * BoardView.Tile - 30; f.style.top = t.Y * BoardView.Tile - 30;
                 f.style.width = f.style.height = BoardView.Tile + 60;
                 f.style.backgroundImage = new StyleBackground(Art.Glow); // a soft bloom, never an opaque slab over the target
-                f.style.unityBackgroundImageTintColor = new Color(c.r, c.g, c.b, 0.8f);
+                f.style.unityBackgroundImageTintColor = c.WithA(0.8f);
                 f.style.opacity = 0f;
                 board.FxLayer.Add(f);
                 float delay = d * 0.06f;
@@ -155,7 +155,7 @@ namespace GridGame.App
             var def = App.Content.TryBuff(ba.BuffId);
             if (u == null || def == null || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) { RefreshUnit(ba.UnitId); yield break; }
             var at = BoardView.CenterOf(v.Tile, v.W, v.H);
-            var color = Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+            var color = Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
             if (!ReduceMotion) yield return StatusBurst(def.Id, at, color, v);
             else App.Audio.Sfx(def.Kind == BuffKind.Buff ? "battle.cast" : "status.debuff", 0.6f);
             RefreshUnit(u.Id);
@@ -205,7 +205,7 @@ namespace GridGame.App
             yield return Tween.Run(Timing.Emphasis, k =>
             {
                 board.Lines.ClearLines();
-                board.Lines.Ring(at, 50f + 300f * k, new Color(red.r, red.g, red.b, 1f - k), 22f);
+                board.Lines.Ring(at, 50f + 300f * k, red.WithA(1f - k), 22f);
                 if (k > 0.25f) board.Lines.Ring(at, 50f + 300f * (k - 0.25f) / 0.75f, redGlow.WithA(1f - k), 12f);
                 foreach (var f in foes)
                 {
@@ -256,9 +256,9 @@ namespace GridGame.App
         {
             if (a.BaseDamage > 0) return ColorFor(a.DamageType);
             if (a.GrantsOrbs > 0) return Art.Mana;
-            if (a.RemovesDebuffs || a.RemovesBuff != null) return new Color(0.55f, 1f, 0.55f);
+            if (a.RemovesDebuffs || a.RemovesBuff != null) return Palette.Vfx.Purge;
             if (a.Revives) return Palette.Gold;
-            return new Color(1f, 0.4f, 0.5f);
+            return Palette.Vfx.Strip;
         }
 
         private IEnumerator ItemVfx(Unit user, List<Unit> targets, AbilityDef a, string itemId)
@@ -360,7 +360,7 @@ namespace GridGame.App
             if (buff != null && buff.OutgoingDamageMultiplier > 1f)
             {
                 App.Audio.Sfx("battle.warcry");
-                yield return Tween.Run(Timing.Emphasis, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 60f + 520f * k, new Color(c.r, c.g, c.b, 1f - k), 12f); });
+                yield return Tween.Run(Timing.Emphasis, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 60f + 520f * k, c.WithA(1f - k), 12f); });
                 board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
             }
             yield return Tween.Run(Timing.Quick, k => cv.Root.style.scale = new Scale(Vector2.one * (1.16f - 0.16f * k)));
@@ -381,13 +381,13 @@ namespace GridGame.App
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             var at = PlateEdge(v, u.Facing);
             App.Audio.Sfx("battle.clang", 0.9f, Random.Range(0.92f, 1.08f));
-            if (!ReduceMotion) Sparks(at, 10, new Color(1f, 0.95f, 0.75f));
+            if (!ReduceMotion) Sparks(at, 10, Palette.Vfx.Spark);
             v.SetPlate(u.Facing, e.Left > 0 ? e.Left : 1, e.Max);
             v.Plate.style.backgroundColor = Palette.White;
             App.StartCoroutine(Tween.Shake(v.Plate, 8f * Fx, Timing.Quick));
             Text.Show(at + new Vector2(0, -30), CombatTextKind.Resist, e.Amount > 0 ? $"CLANG! −{e.Amount}" : "CLANG!", 0f, Palette.Info); // GG-T2069: an unyielding plate
             yield return Tween.Wait(Timing.Quick);
-            v.Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
+            v.Plate.style.backgroundColor = Palette.Vfx.Steel;
             v.SetPlate(u.Facing, e.Left, e.Max);
         }
 
@@ -398,8 +398,8 @@ namespace GridGame.App
             var u = State.UnitById(e.UnitId);
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             App.Audio.Sfx("battle.shatter", 1f, 0.65f);
-            if (!ReduceMotion) Sparks(PlateEdge(v, u.Facing), 16, new Color(1f, 0.95f, 0.75f));
-            Text.Show(PlateEdge(v, u.Facing) + new Vector2(0, -30), CombatTextKind.Callout, "SHATTERED", 0.8f, new Color(1f, 0.85f, 0.5f));
+            if (!ReduceMotion) Sparks(PlateEdge(v, u.Facing), 16, Palette.Vfx.Spark);
+            Text.Show(PlateEdge(v, u.Facing) + new Vector2(0, -30), CombatTextKind.Callout, "SHATTERED", 0.8f, Palette.Vfx.Shatter);
             yield return Tween.Wait(Timing.Quick);
         }
 
@@ -416,7 +416,7 @@ namespace GridGame.App
                     var shard = new VisualElement { pickingMode = PickingMode.Ignore };
                     shard.style.position = Position.Absolute;
                     shard.style.width = Random.Range(14f, 30f); shard.style.height = Random.Range(8f, 16f);
-                    shard.style.backgroundColor = new Color(0.78f, 0.82f, 0.9f);
+                    shard.style.backgroundColor = Palette.Vfx.Shard;
                     board.FxLayer.Add(shard);
                     var vel = new Vector2(Random.Range(-260f, 260f), Random.Range(-320f, -120f));
                     float spin = Random.Range(-720f, 720f);
@@ -428,7 +428,7 @@ namespace GridGame.App
                     }));
                 }
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Standard));
-            yield return FloatText(u.Id, CombatTextKind.Debuff, "ARMOR BROKEN!", 0.3f, 0.15f, new Color(1f, 0.85f, 0.5f));
+            yield return FloatText(u.Id, CombatTextKind.Debuff, "ARMOR BROKEN!", 0.3f, 0.15f, Palette.Vfx.Shatter);
         }
 
         // ── Pickups (§13.3.1) ──
@@ -487,63 +487,84 @@ namespace GridGame.App
             board.PickupViews.Remove(e.PickupEntryId);
         }
 
-        // ── GG-T1820 (§3.1.0): the spell bars. The state is already the end of the action, so playback keeps each meter as
-        //    far as its beats have filled it; idle, the bars read the state. ──
-        private readonly Dictionary<(int, int), int> shownMana = new Dictionary<(int, int), int>();
+        // ── GG-T1928 (§3.1.0): the party mana bar. The state is already the end of the action, so playback keeps the pool as
+        //    far as its beats have filled or spent it; idle, the bar reads the state. ──
+        private int shownPool = -1;
 
+        private int ShownPool => playing && shownPool >= 0 ? shownPool : State.PartyMana;
+
+        /// <summary>The shown pool capped at the slot's price: how much of a spell's cost the bar holds.</summary>
         private int ShownMana(int heroId, int slot) =>
-            playing && shownMana.TryGetValue((heroId, slot), out var p) ? Mathf.Max(0, p) : State.ManaIn(heroId, slot);
+            State.UnitById(heroId) is Unit h ? Mathf.Min(ShownPool, State.SpellPrice(h, slot)) : 0;
 
-        /// <summary>Every meter this action moves starts where the action found it: the final meter less its gains, plus
-        /// its spends.</summary>
+        /// <summary>The bar starts where the action found the pool: the final pool less its gains, plus its spends.</summary>
         private void BeginMeterPlayback(List<BattleEvent> events)
         {
-            shownMana.Clear();
-            void Rewind(int unit, int slot, int by) =>
-                shownMana[(unit, slot)] = (shownMana.TryGetValue((unit, slot), out var p) ? p : State.ManaIn(unit, slot)) + by;
+            int pool = State.PartyMana;
             foreach (var ev in events)
             {
-                if (ev is ManaGainedEvent g) foreach (var d in g.Meters) Rewind(d.UnitId, d.Slot, -d.Delta);
-                else if (ev is SpellManaSpentEvent sp) Rewind(sp.UnitId, sp.Slot, sp.Points);
+                if (ev is ManaGainedEvent g) pool -= g.Amount;
+                else if (ev is SpellManaSpentEvent sp) pool += sp.Points;
             }
+            shownPool = Mathf.Clamp(pool, 0, BattleConfig.PartyManaCapacity);
         }
 
-        /// <summary>Where a spell's mana motes land, in Overlay (stage) coordinates: the Abilities button's centre now that the
-        /// slots are gone (GG-T1921; GG-T1928 points them at the party bar).</summary>
-        private Vector2 SlotCenter(int slot)
+        /// <summary>Any living hero's spell the shown pool can pay (the bar's glow).</summary>
+        private bool AnySpellAffordable()
         {
-            var b = abilitiesButton != null ? abilitiesButton.worldBound : new Rect(float.NaN, 0, 0, 0);
-            return float.IsNaN(b.x) || b.width <= 0f ? BarCenter() : b.center - App.Stage.worldBound.position;
+            int pool = ShownPool;
+            foreach (var u in State.Units)
+            {
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count && i < u.UnlockedSlots; i++)
+                {
+                    int price = State.SpellPrice(u, i);
+                    if (price > 0 && price <= pool) return true;
+                }
+            }
+            return false;
         }
 
-        /// <summary>A gain reaches the meters: a mote flies from its real source (MintFrom) to each of the shown hero's spell
-        /// bars it moved (Guard's starts gold, its turn time poured into mana), and each bar eases up as it lands with a
-        /// short "+N%" over it; a siphon drains them with "-N%". Time regen has no source on the board, and Reduce Motion
-        /// skips the flight: the bars just fill.</summary>
+        private void SyncPartyMana()
+        {
+            if (partyManaBar == null) return;
+            partyManaBar.Capacity = BattleConfig.PartyManaCapacity;
+            partyManaBar.Points = ShownPool;
+            partyManaBar.Ready = AnySpellAffordable();
+            partyManaBar.Price = TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit h ? State.SpellPrice(h, TargetingSlot) : 0;
+        }
+
+        /// <summary>Where mana motes land, in Overlay (stage) coordinates: the party bar where the gain leaves its fill.</summary>
+        private Vector2 PoolPoint(int points)
+        {
+            var b = partyManaBar != null ? partyManaBar.worldBound : new Rect(float.NaN, 0, 0, 0);
+            if (float.IsNaN(b.x) || b.width <= 0f) return BarCenter();
+            return partyManaBar.PointAt(points / (float)BattleConfig.PartyManaCapacity) - App.Stage.worldBound.position;
+        }
+
+        /// <summary>A gain reaches the pool: motes fly from its real source (MintFrom) into the party bar where the fill will
+        /// end (Guard's start gold, its turn time poured into mana), and the bar eases up as they land; a siphon drains it.
+        /// Time regen has no source on the board, and Reduce Motion skips the flight: the bar just fills.</summary>
         private IEnumerator ManaGainAnim(ManaGainedEvent g)
         {
-            var mine = new List<ManaMeterDelta>();
-            foreach (var d in g.Meters)
-            {
-                if (d.UnitId == SelectedHeroId && d.Slot < BarSlots) mine.Add(d);
-                else shownMana[(d.UnitId, d.Slot)] = d.After;
-            }
-            if (mine.Count == 0) yield break;
+            if (g.Amount == 0) yield break;
             if (g.Amount > 0 && g.Reason != "regen" && !ReduceMotion)
             {
                 var from = MintFrom(g.Reason, g.SourceId);
+                var to = PoolPoint(g.After);
                 bool guard = g.Reason == "guard";
                 float seconds = guard ? Timing.Emphasis : Timing.Standard + Timing.Quick;
-                foreach (var d in mine)
-                    App.StartCoroutine(MoteFlight(from, seconds, false, guard ? Palette.Gold : (Color?)null, 0.7f, SlotCenter(d.Slot)));
+                int motes = Mathf.Clamp(g.Amount / PartyManaBar.TickEvery, 1, 3);
+                for (int m = 0; m < motes; m++)
+                    App.StartCoroutine(MoteFlight(from, seconds, false, guard ? Palette.Gold : (Color?)null, 0.7f, to));
                 yield return Tween.Wait(seconds);
             }
-            foreach (var d in mine) shownMana[(d.UnitId, d.Slot)] = d.After;
+            shownPool = g.After;
             if (g.Amount > 0) App.Audio.Sfx("battle.orb", 0.35f, 1f + Random.Range(-0.05f, 0.1f));
             SyncBar();
         }
 
-        /// <summary>A spell's meter filled: the Abilities button pops with a bright tick (its dot shows from here on).</summary>
+        /// <summary>A spell became affordable: the Abilities button pops with a bright tick (its dot shows from here on).</summary>
         private IEnumerator SpellReadyAnim(SpellReadyEvent sr)
         {
             if (sr.UnitId != SelectedHeroId || sr.Slot < 0 || sr.Slot >= BarSlots || abilitiesButton == null) yield break;
@@ -553,11 +574,12 @@ namespace GridGame.App
             v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
         }
 
-        /// <summary>A cast empties its own spell's meter; only that bar drops.</summary>
+        /// <summary>A cast pays its price from the pool: the party bar drains over time with a falling hum.</summary>
         private void SpellManaSpent(SpellManaSpentEvent sp)
         {
-            shownMana[(sp.UnitId, sp.Slot)] = Mathf.Max(0, ShownMana(sp.UnitId, sp.Slot) - sp.Points);
-            if (sp.UnitId == SelectedHeroId) SyncBar();
+            shownPool = Mathf.Max(0, ShownPool - sp.Points);
+            App.Audio.Sfx("battle.channel", 0.4f, 0.7f);
+            SyncBar();
         }
     }
 }

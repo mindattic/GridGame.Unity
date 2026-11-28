@@ -100,16 +100,12 @@ namespace GridGame.App
             if (layer == null || anchor == null) return false;
             HideNow();
 
-            var c = new VisualElement { name = "inspect-card", pickingMode = PickingMode.Ignore };
+            // The kit's window (§2.5 level 4: rail rim, mana top edge).
+            var c = Ui.Window(null, null, "inspect-card");
+            c.name = "inspect-card";
+            c.pickingMode = PickingMode.Ignore;
             c.style.position = Position.Absolute;
             c.style.width = Mathf.Min(GameApp.StageWidth - Space.S32 * 2f, 860f);
-            c.style.paddingLeft = c.style.paddingRight = Space.S24;
-            c.style.paddingTop = c.style.paddingBottom = Space.S24;
-            c.style.backgroundColor = Palette.Panel;
-            c.style.borderTopWidth = c.style.borderBottomWidth = c.style.borderLeftWidth = c.style.borderRightWidth = 4;
-            var frame = Art.ThemeAccent;
-            c.style.borderTopColor = c.style.borderBottomColor = c.style.borderLeftColor = c.style.borderRightColor = frame;
-            c.style.borderTopLeftRadius = c.style.borderTopRightRadius = c.style.borderBottomLeftRadius = c.style.borderBottomRightRadius = Space.S24;
             c.style.opacity = 0f;
             c.style.visibility = Visibility.Hidden;
             if (!build(c)) return false;
@@ -252,7 +248,7 @@ namespace GridGame.App
             var head = Header(body, itemTex ?? Art.AbilityIcon(a), a.Name, kind, Palette.Gold);
             // Mana in points (§3.1.0): the live meter when the slot gives one, else how many points fill it.
             string meter = !string.IsNullOrEmpty(state) ? state
-                : a.Cost > 0 && a.Kind == AbilityKind.Spell ? $"{a.Cost * BattleConfig.ManaPointsPerOrb} mana to fill its meter" : null;
+                : a.Cost > 0 && a.Kind == AbilityKind.Spell ? $"{a.Cost * BattleConfig.ManaPointsPerOrb} mana from the party bar" : null;
             if (meter != null) { var m = Line(head, meter, "t-caption", a.Kind == AbilityKind.Spell ? Palette.Mana : Palette.Gold); m.name = "ability-state"; }
 
             var does = new List<string>();
@@ -336,7 +332,7 @@ namespace GridGame.App
             if (d == null) return false;
             var row = Ui.El("row", body);
             row.style.alignItems = Align.Center;
-            var col = Art.HexColor(d.Color, d.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+            var col = Art.HexColor(d.Color, d.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
             var pip = Ui.StatusPip(d.Id, string.IsNullOrEmpty(d.Letter) ? d.Name.Substring(0, 1) : d.Letter, col, 72, row);
             pip.style.marginRight = Space.S16;
             var c = Ui.El("col grow", row);
@@ -417,7 +413,7 @@ namespace GridGame.App
             {
                 var r = Ui.El("row", body);
                 r.style.marginTop = Space.S8;
-                var col = Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+                var col = Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
                 var pip = Ui.StatusPip(b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, col, 40, r);
                 pip.style.marginRight = Space.S8;
                 var t = GlossaryText.Create($"{TermOf(b.Def.Name)} — {Ui.BuffEffect(b.Def)} ({b.Remaining} left)", "t-caption", r, false);

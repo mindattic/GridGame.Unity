@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GridGame.Core;
@@ -55,11 +56,11 @@ namespace GridGame.App
             var sl = slot >= 0 && slot < hero.Bar.Count ? hero.Bar[slot] : null;
             if (sl != null && sl.IsItem) parts.Add($"{sl.Charges} / {sl.MaxCharges} left");
             if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) parts.Add($"recharging: ready in {cd} turn{(cd == 1 ? "" : "s")}");
-            int full = State.ManaFull(hero, slot);
-            if (full > 0)
+            int price = State.SpellPrice(hero, slot);
+            if (price > 0)
             {
-                int have = ShownMana(hero.Id, slot);
-                parts.Add(have >= full ? $"{full} / {full} mana · ready" : $"{have} / {full} mana · fills with every gain");
+                int pool = ShownPool;
+                parts.Add(pool >= price ? $"costs {price} mana · bar {pool}" : $"costs {price} mana · bar {pool} · {price - pool} short");
             }
             var status = BattleEngine.GetSlotStatus(State, hero.Id, slot);
             if (status == SlotStatus.Ready) { if (TargetingSlot != slot) parts.Add($"tap to aim with {hero.Name}"); }
@@ -72,7 +73,7 @@ namespace GridGame.App
         private void AttachTimelineInspect(VisualElement icon, TimelineEntry e)
         {
             icon.pickingMode = PickingMode.Position;
-            InspectCard.Attach(icon, body => BuildTimelineCard(body, e), tap: true); // GG-T450: a tap selects and reads
+            InspectCard.Attach(icon, body => !examining && BuildTimelineCard(body, e), tap: true); // GG-T450: a tap selects and reads
         }
 
         /// <summary>The hold card for a timeline entry (an icon or the prominence slot): a cast's ability, else its owner.</summary>
@@ -134,10 +135,10 @@ namespace GridGame.App
                 icon.style.backgroundImage = new StyleBackground(tex ?? Art.AbilityIcon(a) ?? Art.Orb);
                 string name = sl.IsWeapon ? App.Content.TryItem(sl.WeaponId)?.Name ?? a.Name : sl.IsItem ? App.Content.TryItem(sl.ItemId)?.Name ?? a.Name : a.Name;
                 int cd = u.Cooldowns.TryGetValue(a.Id, out var c) ? c : 0;
-                int full = a.Kind == AbilityKind.Spell ? State.ManaFull(u, i) : 0;
+                int price = a.Kind == AbilityKind.Spell ? State.SpellPrice(u, i) : 0;
                 string when = sl.IsItem ? $"item · {sl.Charges}/{sl.MaxCharges} left"
                     : a.Kind == AbilityKind.Skill ? (cd > 0 ? $"skill · ready in {cd} turns" : "skill · ready")
-                    : full > 0 ? $"spell · {ShownMana(u.Id, i)}/{full} mana" : "spell";
+                    : price > 0 ? $"spell · costs {price} mana · bar {ShownPool}" : "spell";
                 var t = Ui.Text($"{name} — {when}", "t-caption", row);
                 t.style.flexShrink = 1;
                 t.style.whiteSpace = WhiteSpace.Normal;
@@ -170,6 +171,175 @@ namespace GridGame.App
             return was;
         }
 
+        // ── Examine mode (GG-T1918, §9.0): Info, then tap anything ─────────────
+
+        /// <summary>Examine mode is on: board and timeline taps read what they land on into the description panel and
+        /// never act, and <see cref="CanCommand"/> is false, so no battle time passes until it closes.</summary>
+        private bool examining;
+        /// <summary>The card the last examine tap picked (null = the prompt alone); rebuilt on every panel sync so it stays live.</summary>
+        private Func<VisualElement, bool> examineCard;
+        private string examineNote;
+        private VisualElement infoButton, examineTint;
+
+        /// <summary>GG-T2129: Examine mode on, as the Info button turns it on; false while the battle can't take a command yet.</summary>
+        public bool OpenExamine()
+        {
+            if (examining) return true;
+            if (!CanCommand()) return false;
+            ToggleExamine();
+            return examining;
+        }
+
+        /// <summary>The Info button: opens Examine mode, or closes it when it is already on.</summary>
+        private void ToggleExamine()
+        {
+            if (examining) { ExitExamine(); App.Audio.Sfx("ui.cancel"); return; }
+            if (ended || State.IsOver || dragging || Paused) { App.Audio.Sfx("ui.error"); return; }
+            CancelTargeting();
+            ClearTapMove();
+            ClearHint();
+            EndBoardInspect();
+            InspectCard.Hide();
+            examining = true;
+            examineCard = null;
+            examineNote = null;
+            if (examineTint == null || examineTint.parent != board.Root)
+            {
+                examineTint = new VisualElement { name = "examine-tint", pickingMode = PickingMode.Ignore };
+                examineTint.style.position = Position.Absolute;
+                examineTint.style.left = examineTint.style.top = examineTint.style.right = examineTint.style.bottom = Space.S0;
+                examineTint.style.backgroundColor = Palette.Info.WithA(0.14f);
+                board.Root.Add(examineTint);
+            }
+            examineTint.BringToFront();
+            examineTint.style.display = DisplayStyle.Flex;
+            SyncInfoButton();
+            App.Audio.Sfx("ui.click");
+            SyncPanel();
+        }
+
+        /// <summary>Closes Examine mode (Info again, Abilities or GUARD); a no-op when it is off.</summary>
+        private void ExitExamine()
+        {
+            if (!examining) return;
+            examining = false;
+            examineCard = null;
+            examineNote = null;
+            if (examineTint != null) examineTint.style.display = DisplayStyle.None;
+            ClearTapArrow();
+            SyncInfoButton();
+            SyncPanel();
+        }
+
+        private void SyncInfoButton()
+        {
+            if (infoButton == null) return;
+            var edge = examining ? new StyleColor(Palette.Gold) : new StyleColor(StyleKeyword.Null);
+            infoButton.style.borderTopColor = infoButton.style.borderBottomColor = infoButton.style.borderLeftColor = infoButton.style.borderRightColor = edge;
+        }
+
+        /// <summary>An examine tap on the board: the unit there (its sheet, gated by the Bestiary), else a pickup, else a
+        /// queued hazard aimed at the tile, else the region mark painted on it.</summary>
+        private void ExamineTile(Coord tile)
+        {
+            examineNote = null;
+            examineCard = null;
+            var u = State.UnitAt(tile);
+            var mark = State.Region?.At(tile);
+            if (u != null)
+            {
+                int id = u.Id;
+                examineCard = b => State.UnitById(id) is Unit x && x.Alive && UnitSheet(b, x);
+                if (!ReduceMotion && board.Units.TryGetValue(id, out var v) && !v.Dead) App.StartCoroutine(Tween.Pop(v.Root, 1.08f, Timing.Quick));
+            }
+            else if (State.PickupAt(tile) is Pickup p)
+            {
+                int pid = p.Id;
+                examineCard = b => State.Pickups.FirstOrDefault(x => x.Id == pid) is Pickup q && PickupCard(b, q);
+            }
+            else if (State.Timeline.FirstOrDefault(e => e.Kind == TimelineKind.Hazard && e.HazardTiles != null && e.HazardTiles.Contains(tile)) is TimelineEntry he)
+                examineCard = b => BuildHazardCard(b, he);
+            else if (RegionBoard.Sees(mark, Team.Hero))
+                examineCard = b => MarkCard(b, mark);
+            else examineNote = "Nothing here: an empty tile.";
+            App.Audio.Sfx("ui.click");
+            SyncPanel();
+        }
+
+        /// <summary>An examine tap on a timeline entry: the tap arrow to its owner (GG-T2118) and that turn, cast or hazard
+        /// explained in the panel.</summary>
+        private void ExamineTimeline(VisualElement from, TimelineEntry e)
+        {
+            ClearTapArrow();
+            var owner = State.UnitById(e.OwnerId);
+            if (owner != null && owner.Alive && board.Units.TryGetValue(owner.Id, out var v) && !v.Dead) ShowTapArrow(from, owner.Id);
+            examineNote = null;
+            examineCard = b => BuildTimelineCard(b, e);
+            App.Audio.Sfx("ui.click");
+            SyncPanel();
+        }
+
+        /// <summary>The panel in Examine mode: the prompt, then the examined card, else the turn rules, the gesture tips
+        /// (GG-T1953) and the region rules in play, each a tap to read it.</summary>
+        private void ExaminePanel()
+        {
+            var head = Ui.Text(PanelCopy(examineCard == null ? PanelState.Examine : PanelState.ExamineCard), "small gold", panel);
+            head.name = "examine-prompt";
+            head.style.whiteSpace = WhiteSpace.Normal;
+            head.style.marginBottom = Space.S8;
+            if (examineCard != null)
+            {
+                var card = Ui.El("col", panel);
+                card.name = "examine-card";
+                if (examineCard(card)) return;
+                card.RemoveFromHierarchy();
+                examineCard = null;
+            }
+            if (examineNote != null) PanelLine(panel, examineNote, "tiny dim", "examine-note");
+            else
+            {
+                PanelLine(panel, Coach.LoopLine, "tiny dim", "examine-loop-line");
+                foreach (var tip in ExamineTips) PanelLine(panel, tip, "tiny dim", "examine-tip");
+            }
+            var rules = State.Region?.Rules;
+            if (rules == null) return;
+            foreach (var id in rules)
+            {
+                var rule = App.Content.TryRegionRule(id);
+                if (rule == null || string.IsNullOrEmpty(rule.Name)) continue;
+                var row = Ui.Text($"Rule: {rule.Name}", "small", panel);
+                row.name = "examine-rule";
+                row.style.marginTop = Space.S8;
+                Ui.Pressable(row);
+                row.RegisterCallback<ClickEvent>(_ =>
+                {
+                    examineNote = null;
+                    examineCard = b => InspectCard.Explain(b, null, rule.Name, "Region rule", Palette.Info, rule.Description, Enumerable.Empty<string>());
+                    App.Audio.Sfx("ui.click");
+                    SyncPanel();
+                });
+            }
+        }
+
+        private bool PickupCard(VisualElement body, Pickup p)
+        {
+            App.Content.Pickups.TryGetValue(p.PickupId ?? "", out var def);
+            return InspectCard.Explain(body, Art.UiIcon(def?.Icon), def?.Name ?? "Pickup", "Pickup", Art.HexColor(def?.Color, Palette.Gold), def?.Description,
+                new[] { "Walk a hero over it to grab it.", $"Fades in {p.ActionsLeft} action{(p.ActionsLeft == 1 ? "" : "s")}." });
+        }
+
+        /// <summary>A painted region mark: the rule that painted it and what the mark does to whoever stands on it.</summary>
+        private bool MarkCard(VisualElement body, TileMark m)
+        {
+            var def = App.Content.TryTileState(m.State);
+            var rule = App.Content.TryRegionRule(m.Rule);
+            var bullets = new List<string>();
+            if (m.Blocks) bullets.Add("Blocks the tile: nothing can enter it.");
+            if (m.Hazard) bullets.Add("Harmful to stand on.");
+            if (m.Counter > 0 && def != null && def.Threshold > 0) bullets.Add($"Counter {m.Counter} / {def.Threshold}.");
+            return InspectCard.Explain(body, null, rule?.Name ?? m.State, m.Hazard ? "Hazard" : "Marked tile", Art.HexColor(def?.Color, Palette.Info), rule?.Description, bullets);
+        }
+
         // ── Outcome preview ─────────────────────────────────────────────────────
 
         private static string Range(int a, int b) => a == b ? a.ToString() : $"{a}–{b}";
@@ -179,7 +349,7 @@ namespace GridGame.App
         {
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null || !PendingTarget.HasValue) return;
-            var p = OutcomePreviewer.Preview(State, new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = PendingTarget.Value }, 6);
+            var p = OutcomePreviewer.Preview(State, PendingCommand(hero), 6);
             if (p.Refused) return;
             int shown = 0;
             foreach (var t in p.Targets.OrderByDescending(t => t.DamageMax + t.HealMax))
@@ -200,7 +370,7 @@ namespace GridGame.App
             }
             if (p.ManaMax > 0)
             {
-                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr>{(p.FillsMax > 0 ? $" · fills <nobr>{Range(p.FillsMin, p.FillsMax)}</nobr>" : "")}", "t-caption", parent);
+                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr>{(p.FillsMax > 0 ? $" · <nobr>{Range(p.FillsMin, p.FillsMax)} spell{(p.FillsMax == 1 ? "" : "s")} affordable</nobr>" : "")}", "t-caption", parent);
                 m.style.color = Palette.Mana;
                 m.style.whiteSpace = WhiteSpace.Normal;
             }

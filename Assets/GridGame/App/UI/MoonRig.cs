@@ -57,7 +57,7 @@ namespace GridGame.App
         {
             BuildMaps(out var albedo, out var normal);
             var gloss = new Texture2D(1, 1, TextureFormat.RGBA32, false, true);
-            gloss.SetPixel(0, 0, new Color(0f, 0f, 0f, 0.06f)); // regolith: not metallic, nearly matte
+            gloss.SetPixel(0, 0, Palette.Black.WithA(0.06f)); // regolith: not metallic, nearly matte
             gloss.Apply();
             var mat = new Material(shader);
             mat.SetTexture("_MainTex", albedo);
@@ -83,7 +83,7 @@ namespace GridGame.App
             cam.farClipPlane = dist + 2f;
             cam.cullingMask = 1 << Layer;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            cam.backgroundColor = Palette.Clear;
             cam.allowHDR = true;
             cam.allowMSAA = true;
             cam.depth = -61;
@@ -97,7 +97,7 @@ namespace GridGame.App
             var key = new GameObject("Light").AddComponent<Light>();
             key.transform.SetParent(transform, false);
             key.type = LightType.Directional;
-            key.color = Color.white;
+            key.color = Palette.White;
             key.intensity = 1f;
             key.shadows = LightShadows.None;
             key.cullingMask = 1 << Layer;
@@ -122,7 +122,7 @@ namespace GridGame.App
             rig.Advance(seconds);
             rig.cam.backgroundColor = background;
             rig.cam.Render();
-            rig.cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            rig.cam.backgroundColor = Palette.Clear;
             return rig.rt;
         }
 
@@ -284,11 +284,11 @@ namespace GridGame.App
                     int idx = j * MapW + i;
                     float grain = (Hash(i, j) - 0.5f) * 0.05f;
                     float g = Mathf.Clamp01(Mathf.Lerp(0.62f, 0.22f, mare[idx]) + bright[idx] + grain);
-                    a[idx] = new Color(g, g * 0.985f, g * 0.95f);
+                    a[idx] = (Palette.Scene.Regolith * g).WithA(1f);
                     float hl = height[j * MapW + (i + MapW - 1) % MapW], hr = height[j * MapW + (i + 1) % MapW];
                     float hd = height[Mathf.Max(0, j - 1) * MapW + i], hu = height[Mathf.Min(MapH - 1, j + 1) * MapW + i];
                     var v = new Vector3(-(hr - hl) * slope / lonScale, -(hu - hd) * slope, 1f).normalized;
-                    n[idx] = new Color(v.x * 0.5f + 0.5f, v.y * 0.5f + 0.5f, v.z * 0.5f + 0.5f, 1f);
+                    n[idx] = (Color)new Vector4(v.x * 0.5f + 0.5f, v.y * 0.5f + 0.5f, v.z * 0.5f + 0.5f, 1f);
                 }
             }
             albedo.SetPixels32(a);

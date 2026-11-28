@@ -18,6 +18,10 @@ namespace GridGame.Meta
         public bool Escaped;
         /// <summary>A voluntary pause-menu Retreat (FFIV-style partial loss, §22.2) — distinct from Defeat.</summary>
         public bool Retreated;
+        /// <summary>GG-T2070: the stage's scripted withdrawal ended it (<see cref="GridGame.Core.Content.WithdrawDef"/>): no
+        /// defeat and no costs, the story goes on; <see cref="WithdrawLine"/> is the party's line to the Commander.</summary>
+        public bool Withdrawn;
+        public string WithdrawLine;
         public string StageId;
         /// <summary>The stage's name and theme as fought, copied at commit so the results flow never has to look the
         /// stage up again: a generated stage (a harness skirmish, a Crucible run) can be pruned from the ContentDb
@@ -73,6 +77,9 @@ namespace GridGame.Meta
         public List<string> GuestsFell = new List<string>();
         /// <summary>Guests lost for good — only ever filled with <see cref="Permadeath"/> on (never in the normal game).</summary>
         public List<string> GuestsLost = new List<string>();
+        /// <summary>GG-T1956: on a defeat, the last blows the heroes took (oldest first), read from the battle record; the
+        /// results list them beside Retry.</summary>
+        public List<RecordedHit> LastHits = new List<RecordedHit>();
         /// <summary>The wanderer this battle held (GG-T342), whatever became of them; null = none.</summary>
         public string Wanderer;
         /// <summary>The wanderer standing at this victory, waiting to talk (the results screen's conversation); null = none.</summary>

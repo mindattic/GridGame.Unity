@@ -107,9 +107,9 @@ namespace GridGame.App
             string first = HubScreen.NextStage(c, s) is string id ? c.TryStage(id)?.Name : null;
             return Coach.Run(new CoachLesson
             {
-                Id = AdventureLesson, Kicker = "Camp", Title = "Adventure",
+                Id = AdventureLesson, Kicker = "Camp", Title = "Journey",
                 Text = (first != null ? $"The campaign starts at {first}. " : "") +
-                       "Adventure opens the map of stages; Continue above it marches straight to the next one.",
+                       "Journey, in the bar at the bottom, opens the map of stages; Fight marches straight to the next one.",
                 Image = "Tutorial/" + AdventureLesson,
                 Steps = TapSteps(s, row),
                 Finished = _ => { if (GameApp.I.Save == s) FinishHubIntro(s); },
@@ -160,7 +160,7 @@ namespace GridGame.App
         {
             var group = CampMenu.Build(GameApp.I.Content, s, GameApp.I.Settings).FirstOrDefault(d => HubScreen.TileName(d) == row)?.Group;
             if (group != CampGroup.Craft && group != CampGroup.Journal)
-                return new List<CoachStep> { new CoachStep { Caption = $"Tap {Label(row)}.", Element = () => CampTipOverlay.Find(row) } };
+                return new List<CoachStep> { new CoachStep { Caption = $"Tap {NavLabel(row) ?? Label(row)}.", Element = () => CampTipOverlay.Find(row) } };
             string name = group == CampGroup.Craft ? "Craft" : "Journal", page = "camp-group-" + name.ToLowerInvariant();
             bool OnGroup() => GameApp.I.Router.Current is CampGroupScreen g && g.Id == page;
             return new List<CoachStep>
@@ -185,8 +185,8 @@ namespace GridGame.App
             return new CoachLesson
             {
                 Id = BoardLesson, Kicker = "Camp", Title = "Skill points",
-                Text = $"The {hero} earned a skill point. Every level gives 1 SP, and every node on the Skill Board costs 1. " +
-                       "Buy nodes next to the ones the hero owns: passives add stats, ability nodes teach the ability. The Codex explains the board and its six families.",
+                Text = $"The {hero} earned a skill point. Every level gives 1 SP, and every node in Talents costs 1. " +
+                       "Buy nodes next to the ones the hero owns: passives add stats, ability nodes teach the ability. The Codex explains Talents and its six families.",
                 Image = "Tutorial/" + BoardLesson,
                 Steps = new List<CoachStep>
                 {
@@ -195,7 +195,7 @@ namespace GridGame.App
                     new CoachStep { Caption = "Tap Abilities.", Element = () => CampTipOverlay.Find("tab-abilities"), Done = OnAbilities },
                     new CoachStep { Caption = $"Tap the {hero}.", Element = () => CampTipOverlay.Find("hero-pick-" + id),
                         Done = () => OnAbilities() && GameApp.I.Router.Current is HeroScreen hs && hs.HeroId == id },
-                    new CoachStep { Caption = "Tap Board.", Element = () => CampTipOverlay.Find("tab-board"),
+                    new CoachStep { Caption = "Tap Talents.", Element = () => CampTipOverlay.Find("tab-talents"),
                         Done = () => GameApp.I.Router.Current is HeroScreen hs && hs.Id == "talents" },
                     new CoachStep { Caption = "Tap a node next to your trail to see its route and cost, then Buy route.",
                         Element = () => CampTipOverlay.Find("hex-board"), Info = true },
@@ -208,6 +208,12 @@ namespace GridGame.App
 
         private static string Label(string row) =>
             row == "camp-summon-circle" ? "Summon Circle" : char.ToUpperInvariant(row[5]) + row.Substring(6);
+
+        /// <summary>The label of the nav tab a destination's hidden marker sits over on the hub (Heroes, Summon, Shop), or null
+        /// for a destination on a tile.</summary>
+        private static string NavLabel(string row) =>
+            CampTipOverlay.Find(row)?.parent is VisualElement tab && tab.ClassListContains("kit-navtab") && tab.Q<Label>(className: "kit-navtab-label") is Label l
+                ? TextFit.SourceOf(l) : null;
 
         /// <summary>The first party hero with an empty slot that a piece in the bag fits (and that the hero may wear).</summary>
         public static (HeroSave, EquipmentSlot, ItemDef)? EquipPlan(ContentDb c, SaveData s)

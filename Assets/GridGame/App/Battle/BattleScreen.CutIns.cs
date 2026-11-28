@@ -17,7 +17,7 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        private static Color BandColor(Team team) => team == Team.Hero ? new Color(0.16f, 0.36f, 0.95f) : new Color(0.85f, 0.15f, 0.2f);
+        private static Color BandColor(Team team) => team == Team.Hero ? Palette.Vfx.BandHero : Palette.Vfx.BandFoe;
 
         private static Texture2D bandTex;
 
@@ -31,7 +31,7 @@ namespace GridGame.App
                 for (int x = 0; x < 128; x++)
                 {
                     float u = x / 127f, a = Ease.InOut(Mathf.Clamp01(Mathf.Min(u, 1f - u) * 3.2f));
-                    for (int y = 0; y < 8; y++) bandTex.SetPixel(x, y, new Color(1f, 1f, 1f, a));
+                    for (int y = 0; y < 8; y++) bandTex.SetPixel(x, y, Palette.White.WithA(a));
                 }
                 bandTex.Apply();
                 return bandTex;
@@ -61,12 +61,12 @@ namespace GridGame.App
                 root.Add(e);
                 return e;
             }
-            Stripe(h * 0.22f, h * 0.56f, new Color(c.r * 0.5f, c.g * 0.5f, c.b * 0.6f, 0.75f), 0.9f); // dark under-band
-            Stripe(h * 0.3f, h * 0.4f, new Color(c.r, c.g, c.b, 0.92f), 0.7f);                         // the band
+            Stripe(h * 0.22f, h * 0.56f, (c * Palette.Vfx.UnderBandShade).WithA(0.75f), 0.9f); // dark under-band
+            Stripe(h * 0.3f, h * 0.4f, c.WithA(0.92f), 0.7f);                         // the band
             Stripe(h * 0.48f, h * 0.035f, Palette.White.WithA(0.95f), 0.6f);                         // bright core
             for (int i = 0; i < 7; i++)
             {
-                var streak = Stripe(h * Random.Range(0.28f, 0.7f), Random.Range(3f, 8f), new Color(1f, 1f, 1f, Random.Range(0.4f, 0.85f)), 0f);
+                var streak = Stripe(h * Random.Range(0.28f, 0.7f), Random.Range(3f, 8f), Palette.White.WithA(Random.Range(0.4f, 0.85f)), 0f);
                 streak.name = "streak";
                 streak.style.left = StyleKeyword.Auto; streak.style.right = StyleKeyword.Auto;
                 streak.style.width = Random.Range(w * 0.3f, w * 0.8f);
@@ -81,8 +81,8 @@ namespace GridGame.App
             window.style.rotate = new Rotate(tilt);
             window.style.borderTopWidth = window.style.borderBottomWidth = window.style.borderLeftWidth = window.style.borderRightWidth = 6;
             window.style.borderTopColor = window.style.borderBottomColor = window.style.borderLeftColor = window.style.borderRightColor = Palette.White.WithA(0.95f);
-            window.style.borderTopLeftRadius = window.style.borderTopRightRadius = window.style.borderBottomLeftRadius = window.style.borderBottomRightRadius = 18;
-            window.style.backgroundColor = new Color(c.r * 0.25f, c.g * 0.25f, c.b * 0.35f, 0.85f);
+            window.style.borderTopLeftRadius = window.style.borderTopRightRadius = window.style.borderBottomLeftRadius = window.style.borderBottomRightRadius = Radius.R18;
+            window.style.backgroundColor = (c * Palette.Vfx.CutInShade).WithA(0.85f);
             portrait = new VisualElement { pickingMode = PickingMode.Ignore };
             portrait.style.position = Position.Absolute;
             portrait.style.left = -w * 0.25f; portrait.style.right = -w * 0.25f; portrait.style.top = -h * 0.04f; portrait.style.height = h * 2.0f;
@@ -92,7 +92,7 @@ namespace GridGame.App
             portrait.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Left, Length.Percent(crop?.X ?? 50f));
             portrait.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Top, Length.Percent(crop?.Y ?? 0f));
             portrait.style.rotate = new Rotate(-tilt); // keep the hero upright inside the tilted window
-            portrait.style.unityBackgroundImageTintColor = team == Team.Hero ? Color.white : new Color(1f, 0.88f, 0.88f);
+            portrait.style.unityBackgroundImageTintColor = team == Team.Hero ? Palette.White : Palette.FoeTint;
             window.Add(portrait);
             root.Add(window);
             if (!string.IsNullOrEmpty(tag))
@@ -136,7 +136,7 @@ namespace GridGame.App
                 var e = new VisualElement { name = "cutin-veil", pickingMode = PickingMode.Ignore };
                 e.style.position = Position.Absolute;
                 e.style.left = e.style.right = e.style.bottom = -pad; e.style.top = top - pad;
-                e.style.backgroundColor = new Color(0.01f, 0.01f, 0.05f, 1f);
+                e.style.backgroundColor = Palette.Vfx.Void;
                 e.style.opacity = 0f;
                 parent.Add(e);
                 return e;
@@ -174,7 +174,7 @@ namespace GridGame.App
                 card.style.scale = new Scale(Vector2.one * Mathf.LerpUnclamped(1.9f, 1f, e));
                 card.style.rotate = new Rotate(Mathf.LerpUnclamped(spin, 0f, e));
                 card.style.opacity = Mathf.Min(1f, k * 3f);
-                portrait.style.unityBackgroundImageTintColor = Color.Lerp(new Color(3f, 3f, 3f), Color.white, k);
+                portrait.style.unityBackgroundImageTintColor = Color.Lerp(Palette.Overbright, Palette.White, k);
             });
             App.StartCoroutine(Tween.Shake(card, 16f * Fx, Timing.Quick));
             float t = 0f;
@@ -230,7 +230,7 @@ namespace GridGame.App
         {
             CutInsShown++;
             float h = major ? 420f : 320f;
-            var card = ActionCard(foe, h, Team.Enemy, callout, major ? Palette.GoldLight : new Color(1f, 0.82f, 0.78f), out var portrait);
+            var card = ActionCard(foe, h, Team.Enemy, callout, major ? Palette.GoldLight : Palette.Vfx.FoeCallout, out var portrait);
             float w = card.style.width.value.value;
             float y = BoardTop + (major ? 470f : 410f);
             float rest = GameApp.StageWidth - w * 0.8f, off = GameApp.StageWidth + w * 0.75f;
@@ -245,7 +245,7 @@ namespace GridGame.App
             {
                 Put(Mathf.LerpUnclamped(off, rest, Tween.Back(k)));
                 card.style.opacity = Mathf.Min(1f, k * 3f);
-                portrait.style.unityBackgroundImageTintColor = Color.Lerp(new Color(3f, 2.4f, 2.4f), new Color(1f, 0.88f, 0.88f), k);
+                portrait.style.unityBackgroundImageTintColor = Color.Lerp(Palette.Vfx.FoeFlash, Palette.FoeTint, k);
             });
             App.StartCoroutine(Tween.Shake(card, 10f * Fx, Timing.Quick));
             yield return Tween.Run(hold, k => card.style.scale = new Scale(Vector2.one * (1f + 0.03f * k)));
@@ -301,7 +301,7 @@ namespace GridGame.App
         {
             if (!CutInsEnabled || ReduceMotion || !supportersShown.Add(sup.Id)) return;
             int index = supportersShown.Count - 1;
-            var card = ActionCard(sup, 300f, team, tag, new Color(0.6f, 0.92f, 1f), out var portrait);
+            var card = ActionCard(sup, 300f, team, tag, Palette.Vfx.SupportCallout, out var portrait);
             bool left = index % 2 == 0;
             var at = new Vector2(left ? 170f : GameApp.StageWidth - 170f, BoardTop + 330f + 300f * (index / 2));
             App.Audio.Sfx("battle.pickup", 0.6f, 1.3f + 0.1f * index);
@@ -320,7 +320,7 @@ namespace GridGame.App
                 if (mc.Chain > 1) why += $" · chain ×{1f + BattleConfig.ChargeChainBonus * (mc.Chain - 1):0.##}";
                 Billboard($"Mana +{mc.Amount}{why}", null, Palette.Mana); // GG-T408
             }
-            else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into every spell
+            else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into the party bar
             {
                 float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
                 Billboard($"Guard · Mana +{mc.Amount} · {secs:0.#}s banked", null, Palette.Mana); // §2.5

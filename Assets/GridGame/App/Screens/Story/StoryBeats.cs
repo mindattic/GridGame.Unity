@@ -123,12 +123,17 @@ namespace GridGame.App
         }
 
         /// <summary>The onboarding after the team pick (SaveSlotScreen.Start), in order: each step returns its screen,
-        /// leading to the next step's, or the next step's screen when it has nothing to play. After the last, Camp.</summary>
-        private static readonly Func<Func<GameScreen>, GameScreen>[] NewCampaignSteps = { OpeningCrawl, Founding, Drill };
+        /// leading to the next step's, or the next step's screen when it has nothing to play. After the last, Camp. A drill
+        /// is a battle, so its results card carries on (<see cref="AfterFirstDrill"/>, then the next drill).</summary>
+        private static readonly Func<Func<GameScreen>, GameScreen>[] NewCampaignSteps = { FirstDrill, OpeningCrawl, Founding, Drill };
 
-        /// <summary>A new campaign's first screen (GG-T1358, the one onboarding sequencer): the opening crawl (if any),
-        /// then the Founding scene (GG-T1594, if one is due), then the first tutorial drill when drills exist, else Camp.</summary>
+        /// <summary>A new campaign's first screen (GG-T1358, the one onboarding sequencer): the first tutorial drill, The
+        /// Trap (GG-T1958, REVIEW.md §4.3), then the opening crawl (if any), then the Founding scene (GG-T1594, if one is
+        /// due), then the second drill when it exists, else Camp.</summary>
         public static GameScreen NewCampaign() => NewCampaignStep(0);
+
+        /// <summary>GG-T1958: the first drill's results card Next: the opening crawl, the Founding, then the second drill.</summary>
+        public static GameScreen AfterFirstDrill() => NewCampaignStep(1);
 
         private static GameScreen NewCampaignStep(int i) =>
             i >= NewCampaignSteps.Length ? new HubScreen() : NewCampaignSteps[i](() => NewCampaignStep(i + 1));
@@ -148,26 +153,43 @@ namespace GridGame.App
             return new StoryCrawlScreen(p, next);
         }
 
+        /// <summary>The Founding scene, opened (GG-T2127) by the Commander's look and pronouns pick; runs that don't stop
+        /// to ask (<see cref="VariantPicker.Asks"/>) keep the defaults.</summary>
         private static GameScreen Founding(Func<GameScreen> next)
         {
             var app = GameApp.I;
             var founding = DialogueRunner.PendingFounding(app.Content, app.Save);
-            return founding == null ? next() : Play(founding, next, OpeningBackdrop(app.Content.Campaign.Opening));
+            if (founding == null) return next();
+            string backdrop = OpeningBackdrop(app.Content.Campaign.Opening);
+            GameScreen Scene() => Play(founding, next, backdrop);
+            return VariantPicker.Asks ? new CommanderLookScreen(Scene, backdrop) : Scene();
         }
 
-        /// <summary>The first tutorial drill (campaign.json Tutorial, GG-T1374) when its stage exists.</summary>
+        /// <summary>GG-T1958: the first tutorial drill (campaign.json Tutorial, GG-T1374), before the crawl, when its stage
+        /// exists and the drills weren't skipped.</summary>
+        private static GameScreen FirstDrill(Func<GameScreen> next)
+        {
+            var app = GameApp.I;
+            var first = TutorialStage(app.Content, 0);
+            return first == null || Drills.Skipped(app.Save) ? next() : DrillAt(0, first.Id);
+        }
+
+        /// <summary>The second tutorial drill when its stage exists; else (or with the drills skipped) Camp's first visit.</summary>
         private static GameScreen Drill(Func<GameScreen> next)
         {
             var app = GameApp.I;
-            var c = app.Content;
-            if (Drills.Skipped(app.Save))
-            {
-                Onboarding.Begin(app.Save, OnboardingStep.HubIntro); // GG-T1645: Start Campaign's Skip to Camp
-                app.Persist();
-                return next();
-            }
-            var first = c.Campaign.Tutorial.Count > 0 ? c.TryStage(c.Campaign.Tutorial[0]) : null;
-            return first == null ? next() : DrillAt(0, first.Id);
+            var second = Drills.Skipped(app.Save) ? null : TutorialStage(app.Content, 1);
+            if (second != null) return DrillAt(1, second.Id);
+            Onboarding.Begin(app.Save, OnboardingStep.HubIntro); // GG-T1645: Start Campaign's Skip to Camp
+            app.Persist();
+            return next();
+        }
+
+        /// <summary>GG-T2075: a new game's drill <paramref name="n"/>: campaign.json's Prologue battles, else its Tutorial drills.</summary>
+        private static StageDef TutorialStage(ContentDb c, int n)
+        {
+            var order = Drills.NewGameOrder(c);
+            return n < order.Count ? c.TryStage(order[n]) : null;
         }
 
         /// <summary>Tutorial drill <paramref name="n"/>, its checkpoint written as it starts. A drill always starts from
@@ -189,7 +211,9 @@ namespace GridGame.App
             var r = Onboarding.Next(app.Save, app.Content);
             switch (r.Step)
             {
-                case OnboardingStep.Crawl: return NewCampaign();
+                case OnboardingStep.Crawl: // GG-T1958: past The Trap, unless the save stopped at the crawl before drill 1 moved ahead of it
+                    var first = TutorialStage(app.Content, 0);
+                    return first == null || Drills.Skipped(app.Save) || Drills.IsCleared(app.Save, first.Id) ? AfterFirstDrill() : NewCampaign();
                 case OnboardingStep.Drill: return DrillAt(r.Drill, r.StageId);
                 case OnboardingStep.HubIntro:
                     Onboarding.Begin(app.Save, OnboardingStep.HubIntro);

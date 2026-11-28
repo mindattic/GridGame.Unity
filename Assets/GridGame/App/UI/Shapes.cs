@@ -24,19 +24,19 @@ namespace GridGame.App
         /// <summary>Body colour (white unless tinted) and outline colour.</summary>
         public Color Fill, Line;
 
-        public static readonly Color Ink = new Color(0f, 0f, 0.05f, 0.9f);
+        public static readonly Color Ink = Palette.Scene.ShapeInk;
 
         /// <summary>On-board pointers and target arrows.</summary>
         public static ShapeStyle Indicator => new ShapeStyle
-        { Width = 8f, Outline = 3f, HeadLength = 34f, HeadWidth = 42f, Dash = 18f, Gap = 12f, Fill = Color.white, Line = Ink };
+        { Width = 8f, Outline = 3f, HeadLength = 34f, HeadWidth = 42f, Dash = 18f, Gap = 12f, Fill = Palette.White, Line = Ink };
 
         /// <summary>Coach marks: the caption's pointer, a move's route, the destination box.</summary>
         public static ShapeStyle Tutorial => new ShapeStyle
-        { Width = 10f, Outline = 3f, HeadLength = 46f, HeadWidth = 58f, Dash = 22f, Gap = 14f, Fill = Color.white, Line = Ink };
+        { Width = 10f, Outline = 3f, HeadLength = 46f, HeadWidth = 58f, Dash = 22f, Gap = 14f, Fill = Palette.White, Line = Ink };
 
         /// <summary>Inline glyph-sized marks (chevrons on rows, small rings).</summary>
         public static ShapeStyle Small => new ShapeStyle
-        { Width = 4f, Outline = 2f, HeadLength = 14f, HeadWidth = 16f, Dash = 8f, Gap = 6f, Fill = Color.white, Line = Ink };
+        { Width = 4f, Outline = 2f, HeadLength = 14f, HeadWidth = 16f, Dash = 8f, Gap = 6f, Fill = Palette.White, Line = Ink };
 
         public ShapeStyle Tint(Color c) { var s = this; s.Fill = c; return s; }
         public ShapeStyle Outlined(Color c, float width) { var s = this; s.Line = c; s.Outline = width; return s; }
@@ -293,6 +293,33 @@ namespace GridGame.App
             var run = Sub(twice, from, from + len);
             if (!dashed) { Paint(p, s, Band(run, hw)); return; }
             Paint(p, s, Dashes(run, s, 0f, Length(run)));
+        }
+
+        /// <summary>
+        /// GG-T1948: a filled, outlined plate whose top-left and bottom-right corners are cut straight across at 45° by
+        /// <paramref name="notch"/> px, the other two rounded by <paramref name="radius"/>: a shape that reads apart from a
+        /// <see cref="RoundedRect"/> without its colour.
+        /// </summary>
+        public static void NotchedRect(Painter2D p, Rect r, float radius, float notch, ShapeStyle s)
+        {
+            float half = Mathf.Min(r.width, r.height) * 0.5f;
+            radius = Mathf.Clamp(radius, 0f, half);
+            notch = Mathf.Clamp(notch, 0f, half);
+            var pts = new List<Vector2> { new Vector2(r.xMin + notch, r.yMin) };
+            void Corner(Vector2 c, float a0)
+            {
+                for (int k = 0; k <= CornerSegments; k++)
+                {
+                    float a = (a0 + 90f * k / CornerSegments) * Mathf.Deg2Rad;
+                    pts.Add(c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius);
+                }
+            }
+            Corner(new Vector2(r.xMax - radius, r.yMin + radius), -90f);
+            pts.Add(new Vector2(r.xMax, r.yMax - notch));
+            pts.Add(new Vector2(r.xMax - notch, r.yMax));
+            Corner(new Vector2(r.xMin + radius, r.yMax - radius), 90f);
+            pts.Add(new Vector2(r.xMin, r.yMin + notch));
+            Paint(p, s, pts);
         }
 
         // ── Painting ────────────────────────────────────────────────────────────────

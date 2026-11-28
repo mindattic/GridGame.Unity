@@ -397,9 +397,7 @@ namespace GridGame.Core.Battle
         /// <summary>
         /// A mana gain (§3.1.0, GG-LAW-6): <paramref name="points"/> go into the party pool, capped at
         /// <see cref="BattleConfig.PartyManaCapacity"/> (a negative amount is a siphon, floored at 0). Callers damp earned
-        /// gains first (<see cref="DampedCharge"/>). Returns the change, or null when the pool didn't move; each spell slot
-        /// of a living hero this gain made affordable is listed in <see cref="ManaGainedEvent.Readied"/>, party then slot
-        /// order. No RNG.
+        /// gains first (<see cref="DampedCharge"/>). Returns the change, or null when the pool didn't move. No RNG.
         /// </summary>
         public static ManaGainedEvent GainMana(BattleState s, int points, string reason, int sourceId = -1)
         {
@@ -413,22 +411,6 @@ namespace GridGame.Core.Battle
                 SourceId = sourceId, Amount = after - before, Reason = reason, Kind = points < 0 ? ManaGainKind.Siphon : ManaGainKind.Grant,
                 Before = before, After = after, Capacity = BattleConfig.PartyManaCapacity, Wasted = points > 0 ? points - (after - before) : 0,
             };
-#pragma warning disable CS0618
-            foreach (var u in s.Units)
-            {
-                if (!u.IsHero || !u.Alive) continue;
-                for (int i = 0; i < u.Bar.Count; i++)
-                {
-                    int price = s.SpellPrice(u, i);
-                    if (price <= 0) continue;
-                    int was = System.Math.Min(before, price), now = System.Math.Min(after, price);
-                    if (was == now) continue;
-                    var d = new ManaMeterDelta { UnitId = u.Id, Slot = i, Delta = now - was, After = now, Full = price };
-                    e.Meters.Add(d);
-                    if (now >= price) e.Readied.Add(d);
-                }
-            }
-#pragma warning restore CS0618
             return e;
         }
 

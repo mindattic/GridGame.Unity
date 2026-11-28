@@ -140,7 +140,7 @@ namespace GridGame.App
             var w = Ui.Window(null, veil);
             w.name = "variant-window";
             w.style.width = Fit.Column - 2 * Kit.Gutter;
-            var title = Ui.Text(joining ? $"{name} joins you!" : name, "h1 shadow gold", w);
+            var title = Ui.Text(joining ? $"{name} joins you" : name, "h1 shadow gold", w);
             Fonts.UseDisplay(title);
             title.style.unityTextAlign = TextAnchor.MiddleCenter;
             title.style.whiteSpace = WhiteSpace.Normal;

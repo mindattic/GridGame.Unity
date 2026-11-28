@@ -18,6 +18,14 @@ namespace GridGame.App
         /// <summary>A window's subtitle line (USS <c>--color-sub</c>, <c>.window-sub</c>).</summary>
         public static readonly Color TextSub = new Color(0.816f, 0.816f, 0.84f);
         public static readonly Color White = Color.white;
+        public static readonly Color Black = Color.black;
+        /// <summary>A neutral mid grey: the fallback when a content colour does not parse.</summary>
+        public static readonly Color Gray = Color.gray;
+        /// <summary>The loud fallback for a colour that should never be missing, so it shows in a capture.</summary>
+        public static readonly Color Missing = Color.magenta;
+        public static readonly Color Clear = Color.clear;
+        /// <summary>A multiplier over 1: an image tinted with it flashes overbright, then eases back to White.</summary>
+        public static readonly Color Overbright = new Color(3f, 3f, 3f);
         public static readonly Color Ink = new Color(0.055f, 0.055f, 0.07f);
         public static readonly Color Panel = new Color(0.17f, 0.17f, 0.19f, 0.94f);
         public static readonly Color Shade = new Color(0f, 0f, 0f, 0.6f);
@@ -37,7 +45,7 @@ namespace GridGame.App
         public static readonly Color Info = new Color(0.86f, 0.88f, 1f);
         /// <summary>A tappable glossary [term] (GG-T300): the same light blue class cards always marked keywords with.</summary>
         public static readonly Color Term = new Color(0.61f, 0.78f, 1f);
-        public static readonly Color Mana = Art.Mana;
+        public static readonly Color Mana = new Color(0.42f, 0.78f, 1f);
         // GG-T673: the battle's mana orbs, their bloom and their trails, sampled from the blue Manalith art (GG-T674,
         // owner: "it's blue like mana is expected to be"): near-black navy glass, indigo liquid, a lighter violet bloom and
         // the art's red-pink glint.
@@ -55,6 +63,10 @@ namespace GridGame.App
         public static readonly Color Pewter = new Color(0x60 / 255f, 0x64 / 255f, 0x6F / 255f);
         public static readonly Color PewterDark = new Color(0x34 / 255f, 0x36 / 255f, 0x3F / 255f);
         public static readonly Color PewterLight = new Color(0x8C / 255f, 0x90 / 255f, 0x9C / 255f);
+        /// <summary>A dialogue nameplate's rim while its speaker is not talking.</summary>
+        public static readonly Color PlateRim = new Color(0.42f, 0.46f, 0.62f);
+        /// <summary>The Manalith's rock: the base texture's average colour (104, 92, 132) x 0.5.</summary>
+        public static readonly Color ManalithRock = new Color(0x34 / 255f, 0x2E / 255f, 0x42 / 255f);
         // The conduit's glass always holds a dim charge of mana (it reads as a mana line even between pulses).
         public static readonly Color ConduitGlass = new Color(0x2D / 255f, 0x34 / 255f, 0x6C / 255f, 0.9f);
         public static readonly Color ConduitMana = new Color(0x9C / 255f, 0xB2 / 255f, 0xE2 / 255f, 0.95f);
@@ -68,6 +80,8 @@ namespace GridGame.App
         public static readonly Color Tamed = new Color(0.76f, 0.92f, 0.28f);
         /// <summary>A wanderer fighting the monsters on its own (GG-T342): its keyline, WANDERER tag, turn icon and trust meter.</summary>
         public static readonly Color Wanderer = new Color(1f, 0.56f, 0.8f);
+        /// <summary>The faint red a foe's portrait is tinted with in its cut-in.</summary>
+        public static readonly Color FoeTint = new Color(1f, 0.88f, 0.88f);
         public static readonly Color Neutral = new Color(1f, 0.8f, 0.37f);
         // Casts riding the timeline (GG-T287): never the red of an enemy turn, so a spell reads apart from a foe.
         public static readonly Color CastHero = new Color(0.15f, 0.77f, 0.9f);
@@ -84,8 +98,19 @@ namespace GridGame.App
         public static readonly Color CbBoss = new Color(0.75f, 0.3f, 0.02f);
         /// <summary>A foe's mark (keyline, timeline icon): enemy red, or the colourblind orange.</summary>
         public static Color TeamFoe => Colorblind ? CbFoe : Enemy;
+        /// <summary>A boss's mark (keyline, timeline icon, the notched base plate of GG-T2128): boss purple, or the colourblind
+        /// burnt orange. Apart from the next actor ring (aqua, or reddish purple under Colorblind palette) and the enemy
+        /// intent red.</summary>
         public static Color TeamBoss => Colorblind ? CbBoss : Boss;
         public static Color TeamCast(bool hero) => Colorblind ? (hero ? CbHero : CbFoe) : hero ? CastHero : CastEnemy;
+        /// <summary>A hero's mark (base plate, turn ring): hero blue, or the colourblind sky blue.</summary>
+        public static Color TeamHero => Colorblind ? CbHero : Hero;
+        /// <summary>GG-T1948: the next actor's ring on the board. Never gold (gold marks pincer spots, the timeline's next foe
+        /// and the Abilities preview) and never a team colour: an aqua, or under Colorblind palette Okabe-Ito's reddish
+        /// purple, which stays apart from the sky blue and orange sides (the boss is burnt orange there).</summary>
+        public static readonly Color NextActor = new Color(0.25f, 0.93f, 0.88f);
+        public static readonly Color CbNextActor = new Color(0.8f, 0.47f, 0.65f);
+        public static Color NextActorRing => Colorblind ? CbNextActor : NextActor;
 
         /// <summary>The lightest stop of the Classic blue window (#2C46AA), the background text contrast is checked against
         /// (GG-T495).</summary>
@@ -149,7 +174,7 @@ namespace GridGame.App
         {
             switch (role)
             {
-                case "Tank": return new Color(0.95f, 0.36f, 0.3f);
+                case "Tank": return new Color(1f, 0.45f, 0.38f); // GG-T2154: 4.5:1+ on the badge plate even over bright art
                 case "Healer": return new Color(0.4f, 0.9f, 0.5f);
                 case "Mage": return new Color(0.55f, 0.6f, 1f);
                 case "Striker": return new Color(1f, 0.66f, 0.25f);
@@ -177,9 +202,232 @@ namespace GridGame.App
 
         public static Color WithA(this Color c, float a) => new Color(c.r, c.g, c.b, a);
 
+        /// <summary>A computed grey <paramref name="v"/> (a generated texture's shade, a dimmed portrait).</summary>
+        public static Color Grey(float v, float a = 1f) => new Color(v, v, v, a);
+
         /// <summary>A #RRGGBB content color (vfxstyle.json), or <paramref name="fallback"/> when absent or malformed.</summary>
         public static Color Hex(string hex, Color fallback) =>
             hex != null && ColorUtility.TryParseHtmlString(hex, out var c) ? c : fallback;
+
+        /// <summary>GG-T2139: battle effect colours (sparks, rings, glows, marks, cut-ins, combat text), grouped by what
+        /// they show. A computed alpha stays at the call site: <c>Vfx.Spark.WithA(1f - k)</c>.</summary>
+        public static class Vfx
+        {
+            /// <summary>Hex colours of the vfxstyle fallbacks used before content loads (VfxStyleDef takes strings).</summary>
+            public const string FallbackCore = "#D9E0F2", SmokeCore = "#E6E8EE", SmokeGlow = "#FFFFFF", SmokeAccent = "#C9CCD6";
+            /// <summary>The selected hero's glow.</summary>
+            public static readonly Color SelectGlow = new Color(1f, 0.9f, 0.5f);
+            /// <summary>A harmful aim, an empty hold, no gap on the timeline.</summary>
+            public static readonly Color Harmful = new Color(1f, 0.3f, 0.25f);
+            /// <summary>A helpful aim and its border.</summary>
+            public static readonly Color Helpful = new Color(0.4f, 0.9f, 0.5f);
+            /// <summary>A threatened tile.</summary>
+            public static readonly Color Danger = new Color(1f, 0.25f, 0.2f);
+            /// <summary>A threatening unit's glow, a trap tile, taunting.</summary>
+            public static readonly Color Threat = new Color(1f, 0.3f, 0.2f);
+            /// <summary>A charged line attack's tiles.</summary>
+            public static readonly Color LineDanger = new Color(1f, 0.2f, 0.15f);
+            /// <summary>A debuff whose content colour does not parse.</summary>
+            public static readonly Color Debuff = new Color(0.8f, 0.4f, 0.9f);
+            /// <summary>A buff whose colour does not parse, support, timers.</summary>
+            public static readonly Color Sky = new Color(0.6f, 0.85f, 1f);
+            public static readonly Color Afterimage = new Color(0.62f, 0.88f, 1f);
+            public static readonly Color AnchorSteel = new Color(0.62f, 0.72f, 0.84f);
+            public static readonly Color AnchorRim = new Color(1f, 0.84f, 0.45f);
+            public static readonly Color Vine = new Color(0.37f, 0.55f, 0.23f);
+            public static readonly Color Bark = new Color(0.61f, 0.48f, 0.27f);
+            /// <summary>A hero cut-in band.</summary>
+            public static readonly Color BandHero = new Color(0.16f, 0.36f, 0.95f);
+            /// <summary>A foe cut-in band.</summary>
+            public static readonly Color BandFoe = new Color(0.85f, 0.15f, 0.2f);
+            /// <summary>Multiplier: a cut-in's dark under-band.</summary>
+            public static readonly Color UnderBandShade = new Color(0.5f, 0.5f, 0.6f);
+            /// <summary>Multiplier: a cut-in's window.</summary>
+            public static readonly Color CutInShade = new Color(0.25f, 0.25f, 0.35f);
+            /// <summary>Near-black behind a cut-in or wave veil.</summary>
+            public static readonly Color Void = new Color(0.01f, 0.01f, 0.05f);
+            public static readonly Color FoeCallout = new Color(1f, 0.82f, 0.78f);
+            /// <summary>Overbright: a foe portrait's flash.</summary>
+            public static readonly Color FoeFlash = new Color(3f, 2.4f, 2.4f);
+            public static readonly Color SupportCallout = new Color(0.6f, 0.92f, 1f);
+            public static readonly Color Emp = new Color(0.35f, 0.9f, 1f);
+            /// <summary>A foe's beat or pincer line.</summary>
+            public static readonly Color FoeText = new Color(1f, 0.55f, 0.5f);
+            public static readonly Color FoeBeat = new Color(1f, 0.22f, 0.18f);
+            /// <summary>Buffs.json floating #9FD3F0.</summary>
+            public static readonly Color Float = new Color(0.62f, 0.83f, 0.94f);
+            /// <summary>An ability that removes debuffs.</summary>
+            public static readonly Color Purge = new Color(0.55f, 1f, 0.55f);
+            /// <summary>An ability that strips buffs.</summary>
+            public static readonly Color Strip = new Color(1f, 0.4f, 0.5f);
+            /// <summary>White-hot sparks.</summary>
+            public static readonly Color Spark = new Color(1f, 0.95f, 0.75f);
+            /// <summary>Armour plate, heavy tint.</summary>
+            public static readonly Color Steel = new Color(0.72f, 0.76f, 0.84f);
+            public static readonly Color Shatter = new Color(1f, 0.85f, 0.5f);
+            public static readonly Color Shard = new Color(0.78f, 0.82f, 0.9f);
+            /// <summary>GG-T1950: the board's grid line, drawn over a <see cref="Palette.Ink"/> keyline on each side. Over the
+            /// battle art dimmed by the board scrim (sky.json BoardScrim, 0.35) the light core alone is 3.8:1 or better against
+            /// every campaign theme's median art, and core or keyline is 3.5:1 or better against any of it.</summary>
+            public static readonly Color GridLine = new Color(0.8f, 0.82f, 0.88f);
+            public static readonly Color Well = new Color(0.55f, 0.30f, 0.95f);
+            public static readonly Color WellEye = new Color(0.12f, 0.04f, 0.2f, 0.9f);
+            public static readonly Color Burning = new Color(1f, 0.45f, 0.1f);
+            public static readonly Color Frozen = new Color(0.6f, 0.9f, 1f);
+            public static readonly Color Poisoned = new Color(0.5f, 1f, 0.3f);
+            public static readonly Color Sleep = new Color(0.7f, 0.7f, 1f);
+            public static readonly Color EdgeNeutral = new Color(0.8f, 0.8f, 0.9f);
+            public static readonly Color EdgeBronze = new Color(0.86f, 0.62f, 0.36f);
+            public static readonly Color HeroTrail = new Color(1f, 0.9f, 0.45f);
+            public static readonly Color FoeDrag = new Color(1f, 0.55f, 0.2f);
+            public static readonly Color Roar = new Color(0.55f, 0.80f, 1f);
+            public static readonly Color Fear = new Color(0.69f, 0.49f, 0.91f);
+            public static readonly Color Link = new Color(0.70f, 0.42f, 1f);
+            public static readonly Color Magnet = new Color(0.45f, 0.78f, 1f);
+            public static readonly Color Twist = new Color(0.7f, 0.35f, 1f);
+            public static readonly Color Armored = new Color(0.7f, 0.7f, 0.75f);
+            public static readonly Color Crit = new Color(1f, 0.85f, 0.2f);
+            public static readonly Color HeroHurt = new Color(1f, 0.5f, 0.45f);
+            public static readonly Color HeroHurtFeed = new Color(1f, 0.65f, 0.6f);
+            public static readonly Color HurtTint = new Color(1f, 0.55f, 0.55f);
+            public static readonly Color HealGlow = new Color(0.4f, 1f, 0.5f);
+            public static readonly Color HeroDown = new Color(1f, 0.45f, 0.4f);
+            public static readonly Color FoePincer = new Color(1f, 0.3f, 0.3f);
+            public static readonly Color Bond = new Color(1f, 0.6f, 0.8f);
+            public static readonly Color DimHero = new Color(0.02f, 0.03f, 0.08f);
+            public static readonly Color DimFoe = new Color(0.12f, 0.0f, 0.02f);
+            public static readonly Color Shove = new Color(1f, 0.6f, 0.4f);
+            public static readonly Color AmpRing = new Color(1f, 0.8f, 0.3f);
+            public static readonly Color FoeTurn = new Color(1f, 0.6f, 0.5f);
+            public static readonly Color FoeCast = new Color(1f, 0.7f, 0.65f);
+            public static readonly Color GoldBurst = new Color(1f, 0.88f, 0.5f);
+            public static readonly Color Coin = new Color(1f, 0.82f, 0.25f);
+            public static readonly Color Loot = new Color(0.7f, 1f, 0.8f);
+            /// <summary>A guest joining, a guest's tag.</summary>
+            public static readonly Color Ally = new Color(0.6f, 1f, 0.75f);
+            public static readonly Color Revive = new Color(0.75f, 1f, 0.75f);
+            public static readonly Color Egg = new Color(0.85f, 1f, 0.75f);
+            public static readonly Color Wave = new Color(1f, 0.55f, 0.3f);
+            public static readonly Color Rage = new Color(0.88f, 0.27f, 0.17f);
+            /// <summary>Overbright.</summary>
+            public static readonly Color RageFlush = new Color(1.6f, 0.38f, 0.3f);
+            public static readonly Color Steam = new Color(0.94f, 0.95f, 0.97f);
+            public static readonly Color Dust = new Color(0.74f, 0.64f, 0.5f);
+            public static readonly Color RageCallout = new Color(1f, 0.55f, 0.42f);
+            /// <summary>Overbright.</summary>
+            public static readonly Color RageFlash = new Color(3f, 2.2f, 2.2f);
+            public static readonly Color Chi = new Color(0.55f, 1f, 0.82f);
+            public static readonly Color Trap = new Color(1f, 0.45f, 0.3f);
+            public static readonly Color Lure = new Color(1f, 0.78f, 0.38f);
+            public static readonly Color LureTrail = new Color(1f, 0.9f, 0.6f);
+            public static readonly Color Fire = new Color(1f, 0.45f, 0.15f);
+            public static readonly Color Rubble = new Color(0.25f, 0.18f, 0.12f);
+            public static readonly Color BreakThrough = new Color(0.85f, 0.65f, 0.4f);
+            public static readonly Color RuleBreak = new Color(1f, 0.3f, 0.75f);
+            public static readonly Color Sabotage = new Color(0.55f, 0.95f, 1f);
+            public static readonly Color Log = new Color(0.55f, 0.35f, 0.17f);
+            public static readonly Color Swipe = new Color(1f, 0.82f, 0.35f);
+            public static readonly Color GapRoomy = new Color(0.35f, 0.85f, 0.45f);
+            public static readonly Color GapTight = new Color(1f, 0.72f, 0.2f);
+            public static readonly Color Smoke = new Color(0.62f, 0.64f, 0.7f);
+            public static readonly Color VaultDust = new Color(0.78f, 0.70f, 0.56f);
+            public static readonly Color VaultPole = new Color(0.92f, 0.86f, 0.70f);
+            public static readonly Color Corpse = new Color(0.42f, 0.38f, 0.38f);
+            public static readonly Color SteelShadow = new Color(0.3f, 0.32f, 0.4f);
+            public static readonly Color Rivet = new Color(0.35f, 0.37f, 0.45f);
+            public static readonly Color Crack = new Color(0.5f, 0.06f, 0.05f, 0.92f);
+            public static readonly Color Dimmed = new Color(0.5f, 0.5f, 0.55f);
+            public static readonly Color RockTint = new Color(0.85f, 0.85f, 0.9f);
+            public static readonly Color Rock = new Color(0.32f, 0.33f, 0.38f);
+            public static readonly Color RockLight = new Color(0.78f, 0.8f, 0.86f, 0.9f);
+            public static readonly Color RockSide = new Color(0.45f, 0.47f, 0.53f);
+            public static readonly Color RockDark = new Color(0.16f, 0.17f, 0.2f);
+            public static readonly Color AmpRim = new Color(1f, 0.95f, 0.7f);
+            public static readonly Color AmpFill = new Color(1f, 0.72f, 0.15f, 0.85f);
+            public static readonly Color CurseText = new Color(0.75f, 0.35f, 1f, 0.85f);
+            public static readonly Color CurseBack = new Color(0.45f, 0.1f, 0.6f, 0.25f);
+            public static readonly Color Pit = new Color(0.03f, 0.02f, 0.02f, 0.92f);
+            public static readonly Color Iron = new Color(0.62f, 0.66f, 0.74f);
+            public static readonly Color Sheen = new Color(0.86f, 0.89f, 0.95f);
+            /// <summary>Combat text outline.</summary>
+            public static readonly Color CritEdge = new Color(0.35f, 0.1f, 0f);
+            public static readonly Color Overkill = new Color(1f, 0.42f, 0.18f);
+            public static readonly Color OverkillEdge = new Color(0.3f, 0f, 0f);
+            public static readonly Color DebuffText = new Color(0.86f, 0.45f, 1f);
+            public static readonly Color Tick = new Color(0.75f, 0.95f, 0.45f);
+            public static readonly Color TimerEnd = new Color(1f, 0.9f, 0.55f);
+            public static readonly Color WarmEdge = new Color(0.3f, 0.1f, 0f);
+            public static readonly Color Expire = new Color(0.72f, 0.72f, 0.78f);
+            public static readonly Color Immune = new Color(0.82f, 0.84f, 0.9f);
+            public static readonly Color Weak = new Color(1f, 0.6f, 0.2f);
+            public static readonly Color WeakEdge = new Color(0.3f, 0.05f, 0f);
+            public static readonly Color Resist = new Color(0.75f, 0.85f, 0.95f);
+            public static readonly Color ComboEdge = new Color(0.3f, 0.12f, 0f);
+            public static readonly Color Wood = new Color(0.62f, 0.45f, 0.26f);
+            public static readonly Color WoodWorn = new Color(0.3f, 0.2f, 0.12f);
+            /// <summary>A silenced pip.</summary>
+            public static readonly Color Silenced = new Color(1f, 0.25f, 0.25f);
+            /// <summary>The CRUCIBLE results title.</summary>
+            public static readonly Color Crucible = new Color(1f, 0.6f, 0.3f);
+        }
+
+        /// <summary>The combo rank badge, D to SSS.</summary>
+        public static class Combo
+        {
+            public static readonly Color D = new Color(0.62f, 0.7f, 0.82f);
+            public static readonly Color C = new Color(0.45f, 0.9f, 0.55f);
+            public static readonly Color B = new Color(0.35f, 0.8f, 1f);
+            public static readonly Color A = new Color(0.78f, 0.5f, 1f);
+            public static readonly Color S = new Color(1f, 0.84f, 0.25f);
+            public static readonly Color SS = new Color(1f, 0.55f, 0.15f);
+            public static readonly Color SSS = new Color(1f, 0.22f, 0.3f);
+        }
+
+        /// <summary>Tints over a screen's full-bleed background art.</summary>
+        public static class Backdrop
+        {
+            public static readonly Color Battle = new Color(0.78f, 0.78f, 0.86f);
+            public static readonly Color Credits = new Color(0.25f, 0.25f, 0.32f);
+            public static readonly Color Hub = new Color(0.45f, 0.5f, 0.7f);
+            public static readonly Color Mercenary = new Color(0.4f, 0.42f, 0.55f);
+            public static readonly Color Results = new Color(0.45f, 0.45f, 0.55f);
+        }
+
+        /// <summary>Generated textures and scene rigs: placeholder art, the card back, the moon, the fog, the coach shade.</summary>
+        public static class Scene
+        {
+            /// <summary>The missing-art texture.</summary>
+            public static readonly Color Placeholder = new Color(0.35f, 0.2f, 0.45f);
+            /// <summary>The arrow glyph's lower shade.</summary>
+            public static readonly Color ArrowShade = new Color(0.78f, 0.78f, 1f);
+            public static readonly Color ArrowEdge = new Color(0.05f, 0.05f, 0.15f);
+            public static readonly Color SkullFill = new Color(0.42f, 0.04f, 0.05f, 0.95f);
+            public static readonly Color CardBack = new Color(0.10f, 0.09f, 0.20f);
+            public static readonly Color CardLine = new Color(0.22f, 0.20f, 0.38f);
+            public static readonly Color CardTrim = new Color(0.78f, 0.66f, 0.36f);
+            public static readonly Color CoachShade = new Color(0f, 0f, 0.04f);
+            public static readonly Color ManalithBlue = new Color(0.365f, 0.392f, 0.639f);
+            /// <summary>Multiplier: the moon's albedo.</summary>
+            public static readonly Color Regolith = new Color(1f, 0.985f, 0.95f);
+            public static readonly Color FogGround = new Color(0.035f, 0.05f, 0.11f);
+            public static readonly Color FogDeep = new Color(0.16f, 0.22f, 0.47f, 0.85f);
+            /// <summary>Manalith blue #7590C8.</summary>
+            public static readonly Color FogMana = new Color(0.46f, 0.56f, 0.78f, 0.42f);
+            public static readonly Color FogGlint = new Color(0.66f, 0.77f, 0.94f, 0.16f);
+            public static readonly Color ShapeInk = new Color(0f, 0f, 0.05f, 0.9f);
+        }
+
+        /// <summary>The skill hexagon's own palette (docs/design/skill-hexagon/style.css).</summary>
+        public static class SkillHex
+        {
+            public static readonly Color Bg = Hex("#0d0f14", Missing);
+            public static readonly Color Panel = Hex("#151821", Missing);
+            public static readonly Color Line = Hex("#2a2f3d", Missing);
+            public static readonly Color Fg = Hex("#e6e8ee", Missing);
+            public static readonly Color Muted = Hex("#9097a8", Missing);
+            public static readonly Color Accent = Hex("#7fd1ff", Missing);
+            public static readonly Color Hot = Hex("#ffcf6b", Missing);
+        }
     }
 
     /// <summary>
@@ -196,6 +444,9 @@ namespace GridGame.App
 
         /// <summary>The one GUI text size in design px for this screen and Text size; see <see cref="GuiType"/>.</summary>
         public static float Base => GuiType.Base;
+
+        /// <summary>GG-T1969: a celebration title in the display face (the results' VICTORY): the one size above the GUI size.</summary>
+        public static float Celebration => Base * 2f;
     }
 
     /// <summary>
@@ -205,7 +456,7 @@ namespace GridGame.App
     /// <see cref="TargetDp"/> dp (body text on a phone held at reading distance), held between <see cref="MinDesign"/>
     /// and <see cref="MaxDesign"/> so a desktop window or a tablet (lower dpi, further away) never draws smaller than
     /// the reference phone and a tiny dense screen never blows the layout apart; then times Settings → Text size; then
-    /// at least <see cref="TypeFloor"/>'s legibility floor; then at most the size that still fits
+    /// at least <see cref="TypeFloor"/>'s legibility floor (GG-T2114: the target itself grows on a narrow screen, <see cref="ReferenceWidthIn"/>); then at most the size that still fits
     /// <see cref="MinLineChars"/> characters across the stage; rounded to <see cref="Step"/> px for the USS bucket. The
     /// UI root takes the matching <c>type-base-N</c> class (Theme.uss) so every USS-sized label follows with no rebuild;
     /// sizes set in code read <see cref="TypeScale.Base"/> when their screen builds (the router rebuilds on resize).
@@ -213,14 +464,18 @@ namespace GridGame.App
     /// </summary>
     public static class GuiType
     {
-        /// <summary>Physical size of GUI text in dp (1/160 inch): 40 design px on the reference phone.</summary>
-        public const float TargetDp = 14f;
+        /// <summary>Physical size of GUI text in dp (1/160 inch) on the baseline phone (GG-T2114: 15, was 14); 42 design px on the iPhone 15 Pro.</summary>
+        public const float TargetDp = 15f;
         /// <summary>The smallest and largest base in design px before Text size and the floor.</summary>
         public const float MinDesign = 40f, MaxDesign = 56f;
         /// <summary>The bucket step and the range Theme.uss has <c>type-base-N</c> classes for.</summary>
         public const int Step = 2, Lowest = 40, Highest = 72;
         /// <summary>Fewest characters (at about half an em each) a line across the full stage must hold.</summary>
         public const float MinLineChars = 28f, GlyphEm = 0.5f;
+        /// <summary>GG-T2114: the baseline phone's drawn width in inches (iPhone 15 Pro, 1179 px at 460 dpi). A narrower
+        /// screen takes <see cref="TargetDp"/> times this over its own width, up to <see cref="NarrowBoostMax"/>, so a
+        /// narrow phone (Z Fold cover, 2.25 in) reads body text at about 16 dp where the baseline reads 14.</summary>
+        public const float ReferenceWidthIn = 2.56f, NarrowBoostMax = 1.2f;
 
         private static float scale, dpi, stageWidth = 1170f;
         private static int pct = 100;
@@ -234,7 +489,9 @@ namespace GridGame.App
         public static int Compute(float screenPxPerDesignPx, float screenDpi, float stageW, int textPct)
         {
             float d = screenDpi > 0f ? screenDpi : 160f;
-            float physical = screenPxPerDesignPx > 0f ? TargetDp * d / 160f / screenPxPerDesignPx : TypeScale.Nominal;
+            float widthIn = stageW > 0f && screenPxPerDesignPx > 0f && screenDpi > 0f ? stageW * screenPxPerDesignPx / screenDpi : ReferenceWidthIn;
+            float boost = Mathf.Clamp(ReferenceWidthIn / widthIn, 1f, NarrowBoostMax);
+            float physical = screenPxPerDesignPx > 0f ? TargetDp * boost * d / 160f / screenPxPerDesignPx : TypeScale.Nominal;
             float size = Mathf.Clamp(physical, MinDesign, MaxDesign) * TextSize.Clamp(textPct) / 100f;
             size = Mathf.Max(size, TypeFloor.NeedFor(screenPxPerDesignPx, screenDpi));
             if (stageW > 0f) size = Mathf.Min(size, stageW / (MinLineChars * GlyphEm));
@@ -321,13 +578,104 @@ namespace GridGame.App
         }
     }
 
-    /// <summary>8-px spacing scale (POL-C1); S4 is the half step for hairline insets inside small widgets.</summary>
+    /// <summary>
+    /// GG-T2144: the live tap-target height in design px. <see cref="Size.Target"/> (132) is 44 pt on the iPhone 15 Pro,
+    /// but the stage scales down on a narrower logical width, so on a 360-dp Galaxy a 132-px row is 40 dp and on a Z Fold
+    /// cover 34-36 dp. <see cref="Current"/> is the design height that reaches <see cref="MinDp"/> dp on Android or
+    /// <see cref="MinPt"/> pt on iOS on this screen, never under <see cref="Size.Target"/>, rounded up to <see cref="Step"/>
+    /// for the USS bucket. The UI root takes the matching <c>tap-target-N</c> class (Theme.uss), so every row, button, tab
+    /// and nav tab sized by <c>--size-target</c> follows; code reads <see cref="Kit.Row"/>. The battle HUD action row follows it too (BIBLE 9.0, GG-T2158).
+    /// </summary>
+    public static class TapTarget
+    {
+        /// <summary>The platform minimums: Android 48 dp, iOS 44 pt.</summary>
+        public const float MinDp = 48f, MinPt = 44f;
+        /// <summary>Panel ppi per iOS point scale (an @3x iPhone is about 460 ppi, an @2x iPad about 264-326).</summary>
+        public const float IosPpiPerScale = 163f;
+        /// <summary>The bucket step and the range Theme.uss has <c>tap-target-N</c> classes for.</summary>
+        public const int Step = 4, Highest = 200;
+        /// <summary>Headroom over the platform minimum: the audit measures a 132-px row 1-2 % under the exact maths (43.7 pt on
+        /// the iPhone 15 Pro, 43.0 on the 16e), so the target aims at 3 % over and the rendered row clears 44 pt / 48 dp.</summary>
+        public const float Margin = 1.03f;
+        /// <summary>Debug launch option: screen px the minimum target must span (tools/scenario.py passes the device's
+        /// 48 dp / 44 pt at the window's size, since a desktop player's dpi is the monitor's).</summary>
+        public const string ForceFlag = "-tapPx";
+
+        private static UnityEngine.UIElements.VisualElement root;
+
+        /// <summary>The live target height in design px; set by <see cref="SetScreen"/>.</summary>
+        public static int Current { get; private set; } = (int)Size.Target;
+
+        /// <summary>The target for a stage drawn at <paramref name="screenPxPerDesignPx"/> when the minimum spans
+        /// <paramref name="minScreenPx"/> screen px.</summary>
+        public static int Compute(float screenPxPerDesignPx, float minScreenPx)
+        {
+            if (screenPxPerDesignPx <= 0f || minScreenPx <= 0f) return (int)Size.Target;
+            int need = Mathf.CeilToInt(minScreenPx * Margin / screenPxPerDesignPx / Step - 0.001f) * Step;
+            return Mathf.Clamp(need, (int)Size.Target, Highest);
+        }
+
+        /// <summary>Screen px of the platform minimum on a screen of <paramref name="screenDpi"/> (0 = unknown, read as 160):
+        /// 48 dp at Android's own display density, 44 pt at the iPhone's point scale, else 48 dp of the reported dpi.</summary>
+        public static float MinScreenPx(float screenDpi)
+        {
+            var forced = CommandLine.Value(ForceFlag);
+            if (forced != null && float.TryParse(forced, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var px) && px > 0f)
+                return px;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            float density = AndroidDensity();
+            if (density > 0f) return MinDp * density;
+#elif UNITY_IOS && !UNITY_EDITOR
+            if (screenDpi > 0f) return MinPt * Mathf.Max(2f, Mathf.Round(screenDpi / IosPpiPerScale));
+#endif
+            return MinDp * (screenDpi > 0f ? screenDpi : 160f) / 160f;
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        /// <summary>DisplayMetrics.density: Android's px per dp at the current display size, which is what 48 dp means.</summary>
+        private static float AndroidDensity()
+        {
+            try
+            {
+                using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+                using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
+                using (var res = activity.Call<AndroidJavaObject>("getResources"))
+                using (var metrics = res.Call<AndroidJavaObject>("getDisplayMetrics"))
+                    return metrics.Get<float>("density");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[TapTarget] display density unavailable: " + e.Message);
+                return 0f;
+            }
+        }
+#endif
+
+        /// <summary>The screen changed (resize, rotation, dpi): re-derive the target. Called from the stage layout.</summary>
+        public static void SetScreen(UnityEngine.UIElements.VisualElement uiRoot, float screenPxPerDesignPx, float screenDpi)
+        {
+            if (uiRoot != null) root = uiRoot;
+            Current = Compute(screenPxPerDesignPx, MinScreenPx(screenDpi));
+            if (root == null) return;
+            for (int s = (int)Size.Target; s <= Highest; s += Step) root.EnableInClassList("tap-target-" + s, s == Current);
+        }
+    }
+
+    /// <summary>8-px spacing scale (POL-C1); S2 and S4 are the half steps for hairline insets inside small widgets.</summary>
     public static class Space
     {
-        public const float S0 = 0, S4 = 4, S8 = 8, S16 = 16, S24 = 24, S32 = 32, S48 = 48, S64 = 64, S96 = 96;
+        public const float S0 = 0, S2 = 2, S4 = 4, S8 = 8, S16 = 16, S24 = 24, S32 = 32, S48 = 48, S64 = 64, S96 = 96;
         /// <summary>Half of the 24-px gap between tap targets (POL-C3): each neighbour's margin, so two add up to S24
         /// (USS <c>--space-12</c>).</summary>
         public const float TargetHalfGap = 12;
+    }
+
+    /// <summary>Corner radii in design px (USS <c>--radius-N</c>, the same steps). <see cref="Pill"/> rounds any box into a
+    /// capsule or circle.</summary>
+    public static class Radius
+    {
+        public const float R2 = 2, R3 = 3, R4 = 4, R5 = 5, R6 = 6, R7 = 7, R8 = 8, R10 = 10, R12 = 12, R14 = 14, R16 = 16, R17 = 17,
+            R18 = 18, R20 = 20, R22 = 22, R26 = 26, R28 = 28, Pill = 999;
     }
 
     /// <summary>Named element sizes in design px (POL-C1). Design px already scale uniformly to every resolution
@@ -336,7 +684,14 @@ namespace GridGame.App
     {
         // Lines, bars and pips
         public const float Underline = 2, Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
-        // Icons and pictures
+        // How far a board tile's glow ring sits outside the tile.
+        public const float GlowRing = 5;
+        // A toast's top below the safe top (just under the header, GG-T2156), and how much lower each one already showing
+        // pushes the next.
+        public const float ToastTop = Kit.HeaderHeight + Kit.Gap, ToastStack = 170;
+        // Icons and pictures. The menu icon set's roles (docs/ICONS.md): IconInline in text and chips, IconButton in
+        // header and dialog buttons, Icon leading a row or tile, IconNav on the bottom nav tabs.
+        public const float IconInline = 32, IconButton = 48, IconNav = 72;
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
             ArtW = 420, ArtH = 620;
@@ -351,6 +706,8 @@ namespace GridGame.App
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
         /// <summary>A multi-line paste box (a save transfer code).</summary>
         public const float CodeBox = 360;
+        /// <summary>A skill hex's corner label (the talent id beside each corner).</summary>
+        public const float HexLabelW = 100, HexLabelH = 42;
     }
 
     /// <summary>
@@ -373,15 +730,15 @@ namespace GridGame.App
         public const float HeaderHeight = 150f;
         /// <summary>The hub's bottom nav bar height (USS <c>.kit-navbar</c>, GG-T1590): one tap target; under a gesture bar
         /// it grows by the inset.</summary>
-        public const float NavHeight = Size.Target;
+        public static float NavHeight => TapTarget.Current;
         /// <summary>Stage edge to window edge, left and right (= <see cref="Fit.Edge"/>).</summary>
         public const float Gutter = Fit.Edge;
         /// <summary>Between stacked windows, and between the header and the first window (each window's S8 margin, twice).</summary>
         public const float Gap = Space.S16;
         /// <summary>A window's inner padding: <see cref="PadY"/> top and bottom, <see cref="PadX"/> left and right.</summary>
         public const float PadY = Space.S16, PadX = Space.S24;
-        /// <summary>A menu row's height: one tap target (POL-C2).</summary>
-        public const float Row = Size.Target;
+        /// <summary>A menu row's height: one tap target (POL-C2), at least 48 dp / 44 pt on this screen (GG-T2144).</summary>
+        public static float Row => TapTarget.Current;
         /// <summary>Where a row's label starts inside it (row padding 8, then on PC the cursor 56 + 8): a row's note and a
         /// section header line up with it. Without a cursor there is no gutter for one (GG-T1923).</summary>
         public static float Indent => Ui.ShowsCursor ? Space.S8 + Size.IconM + Space.S8 : Space.S8;
@@ -394,7 +751,7 @@ namespace GridGame.App
     }
 
     /// <summary>Aspect-agnostic layout units (GG-T272): fractions of the safe-area stage, which grows from 1170×2532 up to
-    /// 3:4 (1899 wide) or 9:23 (2990 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
+    /// 3:4 (1899 wide) or 9:23 (3000 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
     /// current screen on <see cref="GameApp.StageResized"/> (the battle re-lays itself out).</summary>
     public static class Fit
     {
@@ -452,9 +809,13 @@ namespace GridGame.App
         public const float Instant = 0.08f, Quick = 0.15f, Standard = 0.25f, Emphasis = 0.4f, Dramatic = 0.7f, Cinematic = 1.2f;
         /// <summary>GG-T673: a mana trail drops a spark every TrailSparkEvery seconds, each living TrailSparkLife.</summary>
         public const float TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
+        /// <summary>The screen change's fade through black (ScreenRouter; Theme.uss .fade runs 0.22 s, so the screen swaps under full black).</summary>
+        public const float ScreenFade = 0.2f;
         /// <summary>GG-T761: a Manapunk conduit's Quake light style steps ConduitStep seconds a letter (10 Hz), and the
         /// tube idles a random ConduitIdleMin..ConduitIdleMax seconds between bursts of power.</summary>
         public const float ConduitStep = 0.1f, ConduitIdleMin = 2.5f, ConduitIdleMax = 9f;
+        /// <summary>TestMode pacing: a beat before camp runs, and the time a camp result stays readable.</summary>
+        public const float TestModeSettle = 1f, TestModeRead = 1.5f;
     }
 
     /// <summary>GG-T668: a damage number strikes the target (falls onto it big and fast, squashes, settles, holds, drops

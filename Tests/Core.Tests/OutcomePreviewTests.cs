@@ -13,9 +13,6 @@ namespace GridGame.Tests
         private static MoveCommand Pincer(BattleState s) =>
             new MoveCommand { HeroId = s.Units.First(u => u.Def.Id == "cleric").Id, Path = new List<Coord> { new Coord(2, 1) } };
 
-        private static List<(int, int)> Meters(BattleState s) =>
-            new List<(int, int)> { (0, s.PartyMana) };
-
         [Test]
         public void A_pincer_preview_shows_damage_on_the_flanked_foe()
         {
@@ -36,15 +33,15 @@ namespace GridGame.Tests
             var (s, _) = Battle(Mini(), Stage(("goblin", 2, 2)), ("knight", 2, 3), ("cleric", 2, 0));
             var k = s.Units.First(u => u.Def.Id == "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.SetMana(k.Id, 0, 1);
+            s.SetPartyMana(1);
             var before = s.Units.Select(u => (u.Id, u.Hp, u.Pos)).ToList();
             long clock = s.Clock;
-            var meters = Meters(s);
+            int pool = s.PartyMana;
             var rng = s.Rng.Clone();
             OutcomePreviewer.Preview(s, Pincer(s));
             Assert.That(s.Units.Select(u => (u.Id, u.Hp, u.Pos)).ToList(), Is.EqualTo(before));
             Assert.That(s.Clock, Is.EqualTo(clock));
-            Assert.That(Meters(s), Is.EqualTo(meters), "no spell meter moves");
+            Assert.That(s.PartyMana, Is.EqualTo(pool), "the party pool doesn't move");
             Assert.That(s.Rng.NextUInt(), Is.EqualTo(rng.NextUInt()), "the real dice are untouched");
         }
 
@@ -62,14 +59,16 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_preview_reports_the_points_the_action_adds_to_every_spell()
+        public void The_preview_reports_the_points_the_action_adds_to_the_party_pool()
         {
-            var (s, _) = Battle(Mini(), Stage(("goblin", 2, 2)), ("knight", 2, 3), ("cleric", 2, 0));
+            var db = Mini();
+            db.Abilities["fireball"].Cost = BattleConfig.MaxSpellOrbCost; // priced well past what one pincer can earn
+            var (s, _) = Battle(db, Stage(("goblin", 2, 2)), ("knight", 2, 3), ("cleric", 2, 0));
             var k = s.Units.First(u => u.Def.Id == "knight");
             var c = s.Units.First(u => u.Def.Id == "cleric");
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             c.Bar[0] = new AbilitySlot { AbilityId = "heal" };
-            s.SetMana(c.Id, 0, s.ManaFull(c, 0) - 1); // any gain fills the Heal
+            s.SetPartyMana(s.SpellPrice(c, 0) - 1); // any gain makes the Heal affordable
 
             var p = OutcomePreviewer.Preview(s, Pincer(s));
             var ev = BattleEngine.Apply(s, Pincer(s));
@@ -78,9 +77,10 @@ namespace GridGame.Tests
             int filled = mine.OfType<SpellReadyEvent>().Count();
 
             Assert.That(p.ManaMax, Is.GreaterThan(0), "a pincer earns mana");
-            Assert.That(gained, Is.InRange(p.ManaMin, p.ManaMax), "points to every spell, as the command then adds them");
+            Assert.That(gained, Is.InRange(p.ManaMin, p.ManaMax), "points into the pool, as the command then adds them");
+            Assert.That(p.ManaMax, Is.LessThan(s.SpellPrice(k, 0) - s.SpellPrice(c, 0)), "no pincer reaches the Fireball's price");
             Assert.That(filled, Is.InRange(p.FillsMin, p.FillsMax));
-            Assert.That(p.FillsMax, Is.EqualTo(1), "only the Heal fills; the Fireball is still charging");
+            Assert.That(p.FillsMax, Is.EqualTo(1), "only the Heal becomes affordable; the Fireball is still out of reach");
         }
     }
 }

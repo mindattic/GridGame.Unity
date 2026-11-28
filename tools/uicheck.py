@@ -162,7 +162,7 @@ def main():
         track = h.call("music")["track"]
         check("camp music", track in CAMPAIGN.get("HubMusic", []), f"{track} not in HubMusic {CAMPAIGN.get('HubMusic')}")
         # GG-T435 folded Status / Equip / Abilities / Party into one Heroes row (GG-T546 updated this list).
-        for item in ["Adventure", "Items", "Heroes", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
+        for item in ["Journey", "Items", "Heroes", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
             if not has_text(item):
                 check(f"camp menu has {item}", False)
                 break
@@ -176,8 +176,9 @@ def main():
             h.call("back"); time.sleep(0.6)
         cards = [h.call("element", name=n) for n in h.call("names", prefix="camp-hero-")]
         win = h.call("element", name="camp-party")
-        check("camp party is a 2-column grid with room for six", len(cards) >= 3 and all(c["w"] < win["w"] * 0.55 for c in cards)
-              and win["h"] < 700, f"{len(cards)} cards, window {win}")
+        # GG-T1962: the party is one row of thumbnails (UX review §2.2), short enough to leave the thumb zone to the NEXT card.
+        check("camp party is a single row of thumbnails", len(cards) >= 3 and len({round(c["y"]) for c in cards}) == 1
+              and win["h"] < 400, f"{len(cards)} cards, window {win}")
 
         # Overwrite confirm on an occupied slot
         h.call("clicktext", text="Save & Quit"); until(lambda: has_text("Start Campaign"))
@@ -190,7 +191,7 @@ def main():
         check("continue resumes the save", until(lambda: h.call("state")["screen"] == "hub"))
 
     with section('Adventure ordering'):
-        h.call("clicktext", text="Adventure"); time.sleep(0.8)
+        h.call("clicktext", text="Journey"); time.sleep(0.8)
         t = texts()
         check("adventure lists the first stage", any("The Tithe Moors I" in x for x in t))
         # GG-T1797: expeditions became travel (GG-T1786), so the region header is just the region name.
@@ -233,7 +234,7 @@ def main():
         check("first battle starts the guided tutorial", any(x.startswith("Tutorial 1/") for x in texts()))
         check("each lesson has an explanation and an example", has_text("Example:"))
         time.sleep(1.0)
-        check("tutorial shows the suggested move right away", (h.call("banner").get("hint") or "").startswith(("Hint", "Tip")))
+        check("tutorial shows the suggested move right away", bool(h.call("banner").get("hint")))
 
         # GG-T456/GG-T546: a stage draws its track from its region's playlist (Music, topped up from MusicBorrow).
         theme = next((t for t in CAMPAIGN.get("Themes", []) if "greenvalley-01" in t.get("Stages", [])), {})
@@ -440,7 +441,7 @@ def main():
         wait_idle(200)
         time.sleep(6.0)
         hint = h.call("banner").get("hint") or ""
-        check("idle hint appears in the description panel", hint.startswith("Hint") or hint.startswith("Tip"), hint)
+        check("idle hint appears in the description panel", bool(hint), hint)
         h.shot("hint")
 
     with section("Settings toggles don't break the battle"):

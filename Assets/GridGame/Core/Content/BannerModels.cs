@@ -29,10 +29,6 @@ namespace GridGame.Core.Content
         public int Rotation;
         /// <summary>How long a rotation slot runs, in days.</summary>
         public int Days;
-        /// <summary>Hard pity: the Nth pull in a row without a new hero brings an unowned one (0 off).</summary>
-        public int NewHeroPity;
-        /// <summary>The Nth Featured pull without a featured hero brings one (0 off; Featured only).</summary>
-        public int FeaturedPity;
         /// <summary>Every N pulls on this banner kind earn a Spark, a free pick of any hero on the banner (0 off).</summary>
         public int SparkPulls;
         /// <summary>Whether a pull can be paid in Summon Tickets (Tickets first).</summary>
@@ -59,7 +55,7 @@ namespace GridGame.Core.Content
                 if (b == null) { p.Add("banners: an empty row"); continue; }
                 string at = $"banner {b.Id}";
                 if (string.IsNullOrWhiteSpace(b.Name)) p.Add($"{at}: needs a Name");
-                if (b.NewHeroPity < 0 || b.FeaturedPity < 0 || b.SparkPulls < 0 || b.Days < 0 || b.Rotation < 0
+                if (b.SparkPulls < 0 || b.Days < 0 || b.Rotation < 0
                     || b.PullTickets < 0 || b.PullShards < 0 || b.MultiTickets < 0 || b.MultiShards < 0) p.Add($"{at}: negative number");
                 if (b.PullShards <= 0) p.Add($"{at}: needs a Shard price (PullShards)");
                 if (b.AcceptsTickets != b.PullTickets > 0) p.Add($"{at}: PullTickets must be positive exactly when AcceptsTickets");
@@ -68,7 +64,7 @@ namespace GridGame.Core.Content
                     p.Add($"{at}: a x{b.MultiCount} must cost exactly {b.MultiCount} pulls (§25.10.3)");
                 if (b.Kind == BannerKind.Standard)
                 {
-                    if (b.Featured.Count > 0 || b.FeaturedShare != 0f || b.FeaturedPity != 0) p.Add($"{at}: a Standard banner has no Featured heroes, share or pity");
+                    if (b.Featured.Count > 0 || b.FeaturedShare != 0f) p.Add($"{at}: a Standard banner has no Featured heroes or share");
                     if (b.StartUtc != null || b.EndUtc != null || b.Rotation != 0 || b.Days != 0) p.Add($"{at}: a Standard banner is always open (no dates or rotation)");
                     continue;
                 }

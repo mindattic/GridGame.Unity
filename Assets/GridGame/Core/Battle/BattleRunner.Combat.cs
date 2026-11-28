@@ -476,6 +476,7 @@ namespace GridGame.Core.Battle
             if (side != target.Facing) return false;
             if (Unyielding(target))
             {
+                S.Results.PlateClangs++; // GG-T2070: toward a scripted withdrawal
                 Emit(new PlateHitEvent { UnitId = target.Id, AttackerId = attacker.Id, Amount = 0, Left = target.PlateHp, Max = target.PlateMax });
                 return true;
             }
@@ -699,7 +700,7 @@ namespace GridGame.Core.Battle
                     if (ip < 0) { entry.StunTicks += (-ip + rate - 1) / rate; ip = 0; }
                     entry.Ip = ip;
                 }
-                Emit(new PushedBackEvent { UnitId = target.Id, FromU = from, ToU = BattleEngine.BarU(S, entry), StunTicks = entry.StunTicks, RecoverTicks = recoverAdded });
+                Emit(new PushedBackEvent { UnitId = target.Id, FromU = from, ToU = BattleEngine.BarU(S, entry), StunTicks = entry.StunTicks, RecoverTicks = recoverAdded, Ticks = ticks });
                 return;
             }
             var cast = S.CastEntryOf(target.Id);

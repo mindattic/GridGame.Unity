@@ -14,7 +14,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var col = Ui.El("fill col", root);
-            Ui.Header("Play a drill", () => App.Router.Back(), col, out _);
+            Ui.Header("Play a Drill", () => App.Router.Back(), col, out _);
             var list = Ui.ListPanel(Ui.PageBody(col), null, "drill-list");
             var c = App.Content;
             var drills = c.Campaign?.Tutorial ?? new List<string>();
@@ -27,6 +27,7 @@ namespace GridGame.App
                 row.name = "drill-" + id;
                 row.KindIcon(RowKind.Stage);
             }
+            if (list.childCount == 0) Ui.EmptyState(list, RowKind.Stage, "No drills in this build yet. Back returns to Settings.", "drill-empty");
         }
     }
 }

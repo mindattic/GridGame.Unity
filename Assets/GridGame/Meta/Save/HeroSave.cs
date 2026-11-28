@@ -52,6 +52,9 @@ namespace GridGame.Meta
         /// (<see cref="Progression.NewHero"/>); the game asks at its next quiet moment and clears it, or clears it silently
         /// (Female) when the class has no male art yet. A save from before v14 has it clear.</summary>
         public bool VariantPending;
+        /// <summary>GG-T1917: the player's arrangement of this hero's Abilities sheet (folders, order, pins), laid over the
+        /// default tree by <see cref="ActionTree.Arrange"/>. A save from before v31 has an empty one (the default tree).</summary>
+        public ActionLayout Actions = new ActionLayout();
 
         public string WeaponId;
         public int WeaponDurability;

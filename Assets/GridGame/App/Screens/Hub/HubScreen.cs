@@ -15,6 +15,8 @@ namespace GridGame.App
         public override string Id => "hub";
         /// <summary>GG-T456: the Camp's peaceful track, redrawn after each trip to the field.</summary>
         public override string Music => App.Playlist.Hub(App.Content.Campaign) ?? "minstrel-guild-00";
+        /// <summary>The bottom nav shows on the hub root too, Home lit (BIBLE §11.3, GG-T1963).</summary>
+        public override bool ShowsNav => true;
 
         protected override void Build(VisualElement root)
         {
@@ -24,9 +26,10 @@ namespace GridGame.App
                 foreach (var done in Paywall.FinishReady(c, s, DateTime.UtcNow)) { App.Toast(done.Message ?? "Done"); App.Persist(); }
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, ThemeFor(c, s), 2);
-            bg.style.unityBackgroundImageTintColor = Palette.TextDim;
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Hub; // the hub pages' tint: gold and captions on the backdrop keep 4.5:1 (GG-T2085)
 
-            var col = Ui.El("fill col", root);
+            var frame = Ui.El("fill col", root);
+            var col = Ui.El("col grow", frame);
             // Camp's header is a corner bar, not a title bar: the hamburger top-left, gold (and shards) top-right (GG-T1845);
             // its windows keep the kit's gutters (Kit.Gutter at the sides, Kit.Gap at the bottom).
             col.style.paddingTop = Space.S8; col.style.paddingLeft = col.style.paddingRight = Kit.Gutter - Space.S8; col.style.paddingBottom = Kit.Gap - Space.S8;
@@ -39,120 +42,103 @@ namespace GridGame.App
             RowIcon.HamburgerButton(() => OpenMenu(), corners);
             var currencies = Ui.El("header-currencies", corners);
             currencies.name = "header-currencies";
-            Ui.Currencies(currencies, s, () => App.Router.PushOrReturn(new DiamondStoreScreen()));
+            Ui.Currencies(currencies, s, () => App.Router.PushOrReturn(ShopHubScreen.OnShards()));
 
-            // Party window (portraits, level, HP): a 2-column grid so a full party of six fits above the menu.
-            // GG-T313: built as explicit two-card rows, not a flex-wrap of six cards sized by a reactive
-            // GeometryChangedEvent pixel hack. That hack (party.contentRect.width-driven, with a 1px slack
-            // fudge) measured correctly but still wrapped every card into a single column at the 2:3/3:4 tablet
-            // frame (confirmed live: a hand-built 6-hero save showed 1 column there and 2 everywhere else on
-            // an otherwise identical 1424x2532 stage) - some layout pass during that frame transform resolved
-            // the wrap decision against different available width than the one the callback later measured.
-            // A row that can only ever hold two cards has no wrap arithmetic to get wrong.
-            var party = Ui.Window(null, col);
+            // Party strip (UX review §2.2, GG-T1962): one row of hero thumbnails with an HP ring each; a tap opens that hero's
+            // Status. Full art waits for a tap there (R9), so the strip stays a single short row at any party size.
+            var party = Ui.El("row", col);
             party.name = "camp-party";
-            // Edge = gap = 24 (row padding 12 + card margin 12): even gutters at every width (POL-C8), and
-            // 24 px between the tappable cards (POL-C3). The 12 sits on each card row, not the window, so the row's
-            // own box carries it.
-            party.style.paddingLeft = party.style.paddingRight = Space.S0;
-            var ids = s.Party;
-            // Two cards abreast on a phone; three on a 2:3 / 3:4 tablet, which has the width for them (GG-T398).
-            int perRow = Fit.Roomy ? 3 : 2;
-            for (int i = 0; i < ids.Count; i += perRow)
+            party.style.flexShrink = 0;
+            party.style.justifyContent = Justify.SpaceEvenly;
+            party.style.marginTop = party.style.marginBottom = Space.S8;
+            foreach (var id in s.Party)
             {
-                var row = Ui.El("row", party);
-                row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
-                for (int j = i; j < Math.Min(i + perRow, ids.Count); j++)
-                {
-                    var id = ids[j];
-                    var h = s.Hero(id);
-                    if (h == null) continue;
-                    var u = Progression.Preview(c, h);
-                    var card = Ui.El("card", row);
-                    card.name = "camp-hero-" + id;
-                    // Two cards split the row exactly in half; a lone trailing card keeps its half (a hidden twin, below).
-                    card.style.flexGrow = 1; card.style.flexShrink = 1; card.style.flexBasis = Length.Percent(0);
-                    card.style.marginTop = card.style.marginBottom = card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
-                    card.style.paddingTop = card.style.paddingBottom = card.style.paddingLeft = card.style.paddingRight = Space.S8;
-                    var thumb = Ui.Thumb(id, card, Kit.Avatar);
-                    thumb.style.marginRight = Space.S16;
-                    var info = Ui.El("col grow", card);
-                    info.style.flexShrink = 1; info.style.minWidth = 0;
-                    var top = Ui.El("row", info);
-                    // A compact card (kit, GG-T454): name and meta caption size, the name heavy — the Heroes roster strip's look.
-                    var name = Ui.Caption(c.Class(id).Name, top, "t-heavy");
-                    Ui.Marquee(name);
-                    // The name has its row to itself, so a long one is never cut by the badge (GG-T395).
-                    name.style.flexGrow = 1; name.style.flexShrink = 1; name.style.minWidth = 0;
-                    var meta = Ui.El("row", info);
-                    meta.style.alignItems = Align.Center;
-                    Ui.RoleBadge(Ui.RoleOf(h, c.Class(id)), meta).style.marginLeft = Space.S0;
-                    Ui.Caption($"Lv {u.Level}", meta, "gold").style.marginLeft = Space.S8;
-                    int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
-                    Ui.Gauge(hp / (float)u.MaxHp, info, 300).style.marginTop = Space.S8;
-                    Ui.Caption($"{hp}/{u.MaxHp}", info, "dim");
-                    MercenaryCamp.Tag(s, id, info);
-                    // A short last row's cards keep their column width: invisible twins hold the empty columns, so the
-                    // window stays an even grid with even gutters (POL-C8) at every party size.
-                    for (int gap = j == ids.Count - 1 ? (perRow - ids.Count % perRow) % perRow : 0; gap > 0; gap--)
-                    {
-                        var spacer = Ui.El("card", row);
-                        spacer.style.flexGrow = 1; spacer.style.flexShrink = 1; spacer.style.flexBasis = Length.Percent(0);
-                        spacer.style.marginTop = spacer.style.marginBottom = spacer.style.marginLeft = spacer.style.marginRight = Space.TargetHalfGap;
-                        spacer.style.visibility = Visibility.Hidden;
-                        spacer.pickingMode = PickingMode.Ignore;
-                    }
-                    card.AddToClassList("card-tap");
-                    Ui.Tappable(card, () => App.Router.Push(new StatusScreen(id)), "ui.select");
-                }
+                var h = s.Hero(id);
+                if (h == null) continue;
+                var u = Progression.Preview(c, h);
+                int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
+                var slot = Ui.El("col", party);
+                slot.name = "camp-hero-" + id;
+                slot.style.alignItems = Align.Center;
+                var ring = Ui.El(null, slot);
+                ring.style.width = ring.style.height = Size.Thumb + 2 * Space.S16;
+                var thumb = Ui.Thumb(id, ring, Size.Thumb);
+                thumb.style.position = Position.Absolute;
+                thumb.style.left = thumb.style.top = Space.S16;
+                ring.Add(new HpRing(hp / (float)u.MaxHp));
+                Ui.Caption($"Lv {u.Level}", slot, "gold");
+                MercenaryCamp.Tag(s, id, slot);
+                Ui.Tappable(slot, () => App.Router.Push(new StatusScreen(id)), "ui.select");
             }
 
             var dests = CampMenu.Build(c, s, App.Settings);
             CampDestination Dest(string id) => dests.FirstOrDefault(d => d.Id == id);
-            // The Inn and the Respec sit with the party they heal and refund (GG-T1612).
+            // Mode banner (GG-T1962): names the road-or-camp mode (TravelRules) in one line and carries its one action, the
+            // Inn's rest: "Set up camp" on the road, "Rest" once camped (GG-T1612, GG-T1786). Respec lives on Talents (GG-T2085).
+            bool road = TravelRules.OnTheRoad(s);
+            int wounded = s.Party.Select(s.Hero).Count(h => h != null && GridGame.Meta.Inn.MissingHp(c, s, h) > 0);
             var inn = Dest(CampMenu.Inn);
-            if (inn != null)
-            {
-                var innRow = Ui.MenuRow(inn.Label, inn.Value, inn.Open ? (Action)Rest : null, party, null, inn.Open);
-                innRow.name = (inn.Open ? "camp-" : "locked-") + "inn";
-                innRow.KindIcon(inn.Open ? RowKind.Keeper : RowKind.Locked, inn.Open ? CampNpcs.Innkeeper + "-00" : null);
-                if (!inn.Open) Subline(innRow, inn.Hint);
-            }
             var respec = Dest(CampMenu.Respec);
-            if (respec != null)
+            var banner = Ui.Window(null, col);
+            banner.name = "camp-mode";
+            banner.style.flexShrink = 0;
+            var modeRow = Ui.El("row", banner);
+            modeRow.style.alignItems = Align.Center;
+            var mode = Ui.Para(ModeLine(s, wounded, inn != null && inn.Open, respec != null), modeRow);
+            mode.name = "camp-travel";
+            mode.style.flexGrow = 1; mode.style.flexShrink = 1; mode.style.minWidth = 0;
+            if (inn != null && inn.Open)
             {
-                var respecRow = Ui.MenuRow(respec.Label, respec.Value, () => App.Router.Push(new RespecScreen()), party);
-                respecRow.name = "camp-respec";
-                respecRow.KindIcon(RowKind.Keeper, CampNpcs.Innkeeper + "-00");
+                var rest = RowIcon.IconButton(road ? "Set up camp" : "Rest", RowKind.Station, Rest, "btn--small", modeRow, true, Art.UiIcon("hub-inn"));
+                rest.name = "camp-inn";
+                rest.style.marginLeft = Space.S16;
             }
+            if (inn != null && !inn.Open && !string.IsNullOrEmpty(inn.Hint)) Ui.Note(inn.Hint, banner).name = "locked-inn";
 
+            // The NEXT card anchors to the bottom of the body, so its one filled Fight button sits in the thumb zone above
+            // the tiles and nav (DESIGN_SYSTEM §5); a short screen scrolls instead of clipping.
             var body = new ScrollView();
             body.style.flexGrow = 1;
             col.Add(body);
             var page = body.contentContainer;
+            page.style.justifyContent = Justify.FlexEnd;
+            body.contentViewport.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                float vh = body.contentViewport.layout.height;
+                if (!float.IsNaN(vh) && vh > 0f) page.style.minHeight = Mathf.Floor(vh);
+            });
 
-            // Campaign card: Continue launches the next stage straight away; the Adventure row opens Stage select.
+            // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark at the top of the body.
+            if (Features.Caravan && CampUnlocks.CaravanOpen(s))
+            {
+                var gossip = Ui.Panel(page, null, false, "camp-gossip");
+                Ui.Caption("Around the wagons", gossip, "dim");
+                CaravanScreen.BarkLine(c, s, gossip);
+            }
+
+            // Crucible card (§22.10): endless waves; closed mid-expedition or before its milestone, saying why.
+            var crucible = Dest(CampMenu.Crucible);
+            if (crucible != null)
+            {
+                var card = Ui.Window(null, page);
+                var row = Ui.MenuRow(crucible.Label, crucible.Value, crucible.Open ? (Action)(() => App.Router.Push(new CrucibleScreen())) : null, card, null, crucible.Open);
+                row.name = crucible.Open ? "camp-crucible" : "locked-crucible";
+                row.KindIcon(crucible.Open ? RowKind.Crucible : RowKind.Locked);
+                if (!crucible.Open) Subline(row, crucible.Hint);
+            }
+
             var campaign = Ui.Window(null, page);
             campaign.name = "camp-campaign";
             string next = NextStage(c, s);
-            var cont = Ui.Button(next != null ? "Continue" : "Adventure", () =>
-            {
-                if (next != null) StageLauncher.Launch(next, false);
-                else App.Router.Push(new StageSelectScreen());
-            }, null, campaign);
-            cont.name = "camp-continue";
-            if (next != null)
-            {
-                var st = c.TryStage(next);
-                if (st != null) Ui.Caption(st.Name, campaign, "gold");
-                if (!RestedPool.Exempt(s)) Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", campaign, "dim");
-            }
-            if (TravelRules.OnTheRoad(s)) // GG-T1786: travel (§28) replaces the expedition line
-                Ui.Caption(TravelLine(s), campaign, "dim").name = "camp-travel";
             var adv = Dest(CampMenu.Campaign);
-            var advRow = Ui.MenuRow(adv?.Label ?? "Adventure", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
-            advRow.name = "camp-adventure";
-            advRow.KindIcon(RowKind.Place, ThemeFor(c, s));
+            var st = next != null ? c.TryStage(next) : null;
+            Ui.Section("Next", campaign);
+            if (st != null)
+            {
+                var title = Ui.Heading(st.Name, campaign);
+                title.name = "camp-next";
+                Ui.Caption($"Recommended Lv {Progression.StageRecommendedLevel(c, s, st)}", campaign, "dim");
+            }
             Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");
             if (s.NewGamePlus > 0) Ui.Caption($"New Game+ {s.NewGamePlus}", campaign, "gold");
             var ngp = Dest(CampMenu.NewGamePlus);
@@ -167,56 +153,50 @@ namespace GridGame.App
                 ngpRow.name = "camp-newgameplus";
                 ngpRow.KindIcon(RowKind.NewGamePlus).parent.Q<Label>("label").AddToClassList("gold");
             }
-            RestedGate.PanelIn(campaign, Refresh);
-
-            // Crucible card (§22.10): endless waves; closed mid-expedition or before its milestone, saying why.
-            var crucible = Dest(CampMenu.Crucible);
-            if (crucible != null)
+            // Rested shows here only while it gates: below full, its meter, timer and refills (§25.18).
+            if (!RestedPool.Exempt(s) && RestedPool.Points(s, DateTime.UtcNow) < RestedPool.Max) RestedGate.PanelIn(campaign, Refresh);
+            // The card's one filled button closes it, lowest on the body, so it sits in the thumb zone (GG-T2085).
+            var cont = RowIcon.IconButton(next != null ? "Fight" : adv?.Label ?? "Journey", next != null ? RowKind.Enter : RowKind.Place, () =>
             {
-                var card = Ui.Window(null, page);
-                var row = Ui.MenuRow(crucible.Label, crucible.Value, crucible.Open ? (Action)(() => App.Router.Push(new CrucibleScreen())) : null, card, null, crucible.Open);
-                row.name = crucible.Open ? "camp-crucible" : "locked-crucible";
-                row.KindIcon(crucible.Open ? RowKind.Crucible : RowKind.Locked);
-                if (!crucible.Open) Subline(row, crucible.Hint);
-            }
+                if (next != null) StageLauncher.Launch(next, false);
+                else App.Router.Push(new StageSelectScreen());
+            }, "btn--primary", campaign, false, Art.UiIcon(next != null ? "hub-continue" : "hub-stage-select"));
+            cont.name = "camp-continue";
+            cont.style.marginTop = Space.S16;
+            if (next != null && !RestedPool.Exempt(s))
+                Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", campaign, "dim").name = "camp-fight-cost";
 
-            // Every other destination is a tile, named for its old Camp row. Craft and Journal collapse into one group tile
-            // each (camp-craft / camp-journal, locked-* when nothing in the group is open) that opens a CampGroupScreen of
-            // their members (GG-T1613). The members' old names live on as hidden full-size markers inside the group tile, so
-            // camp tips, the coach and the harness still find them on the hub:
+            // The tiles are the two groups the nav has no tab for (GG-T1963): Craft and Journal, each opening a CampGroupScreen of
+            // its members (GG-T1613). Every destination keeps its old Camp row name as a hidden full-size marker, so camp tips,
+            // the coach and the harness still find it on the hub: inside its group tile, or over the nav tab that now opens it.
             //   camp-craft:   camp-items, camp-blacksmith, camp-alchemist, camp-manasmith, camp-enchantress, camp-caravan
-            //   camp-journal: camp-quests, camp-bounties, camp-mercenaries, camp-talk, camp-codex, camp-bestiary
+            //   camp-journal: camp-quests, camp-bounties, camp-talk, camp-codex, camp-bestiary
+            //   nav-campaign: camp-adventure;  nav-heroes: camp-heroes;  nav-summon: camp-summon-circle, camp-mercenaries;
+            //   nav-shop: camp-merchant, camp-diamonds
             // (each locked-<name> while that member is closed).
             var grid = Ui.El("kit-pillar", page);
             grid.name = "camp-tiles";
+            var nav = Ui.NavBar(frame, this);
             var groups = new Dictionary<CampGroup, VisualElement>();
             foreach (var d in dests)
             {
-                switch (d.Id)
-                {
-                    case CampMenu.Campaign: case CampMenu.Crucible: case CampMenu.Inn: case CampMenu.Respec: case CampMenu.NewGamePlus: case CampMenu.Quit: case CampMenu.Settings: continue;
-                }
+                VisualElement host;
                 if (d.Group == CampGroup.Craft || d.Group == CampGroup.Journal)
                 {
-                    if (!groups.TryGetValue(d.Group, out var groupTile)) groups[d.Group] = groupTile = GroupTile(grid, dests, d.Group);
-                    var marker = Ui.El(null, groupTile);
-                    marker.name = TileName(d);
-                    marker.style.position = Position.Absolute;
-                    marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = 0;
-                    marker.style.visibility = Visibility.Hidden;
-                    marker.pickingMode = PickingMode.Ignore;
-                    continue;
+                    if (!groups.TryGetValue(d.Group, out host)) groups[d.Group] = host = GroupTile(grid, dests, d.Group);
                 }
-                Tile(grid, d);
-            }
-            Ui.Select(cont);
-
-            // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark under the tiles.
-            if (Features.Caravan && CampUnlocks.CaravanOpen(s))
-            {
-                var gossip = Ui.Panel(page, null, false, "camp-gossip");
-                Ui.Caption("Around the wagons", gossip, "dim");
-                CaravanScreen.BarkLine(c, s, gossip);
+                else
+                {
+                    string tab = d.Id == CampMenu.Campaign ? CampMenu.Campaign : d.Id == CampMenu.Heroes ? CampMenu.Heroes : d.Group == CampGroup.Summon ? CampMenu.Summon : d.Group == CampGroup.Shop ? CampMenu.Shop : null;
+                    host = tab != null ? nav.Q("nav-" + tab) : null;
+                    if (host == null) continue;
+                }
+                var marker = Ui.El(null, host);
+                marker.name = d.Id == CampMenu.Campaign ? "camp-adventure" : TileName(d);
+                marker.style.position = Position.Absolute;
+                marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = Space.S0;
+                marker.style.visibility = Visibility.Hidden;
+                marker.pickingMode = PickingMode.Ignore;
             }
 
             // GG-T518: a closed destination's hint sits whole, wrapping if it must, in small type under the row's name.
@@ -269,6 +249,40 @@ namespace GridGame.App
             return "On the road · " + (n == 0 ? "no mana carried" : $"{n} mana carried");
         }
 
+        /// <summary>GG-T1962: the mode banner's line. On the road, wounds carry; once camped, the Inn is open and Respec waits
+        /// on Talents (GG-T2085).</summary>
+        internal static string ModeLine(SaveData s, int wounded, bool innOpen, bool respecOpen)
+        {
+            if (!TravelRules.OnTheRoad(s)) return respecOpen ? "Camped · Respec heroes on Talents" : "Camped";
+            if (wounded > 0) return $"On the road · {wounded} {(wounded == 1 ? "hero" : "heroes")} wounded" + (innOpen ? " · Set up camp to heal" : "");
+            int n = TravelRules.StartMana(s);
+            return "On the road · " + (n == 0 ? "wounds carry" : $"{n} mana carried · wounds carry");
+        }
+
+        /// <summary>GG-T1962: the party strip's HP ring around a thumbnail: a pewter track and an arc for the HP left,
+        /// good, warn or bad by how much is left (the arc's length carries it too, never colour alone).</summary>
+        private sealed class HpRing : VisualElement
+        {
+            public HpRing(float frac)
+            {
+                frac = Mathf.Clamp01(frac);
+                pickingMode = PickingMode.Ignore;
+                style.position = Position.Absolute;
+                style.left = style.top = style.right = style.bottom = Space.S0;
+                generateVisualContent += ctx =>
+                {
+                    var r = contentRect;
+                    var st = ShapeStyle.Small.Thick(Size.Track);
+                    float radius = Mathf.Min(r.width, r.height) / 2f - st.Width / 2f - st.Outline;
+                    if (radius <= 0f) return;
+                    Shapes.Ring(ctx.painter2D, r.center, radius, st.Tint(Palette.PewterDark));
+                    if (frac <= 0f) return;
+                    var tone = frac > 0.5f ? Palette.Good : frac > 0.25f ? Palette.Warn : Palette.Bad;
+                    Shapes.Ring(ctx.painter2D, r.center, radius, st.Tint(tone), -90f, 360f * frac);
+                };
+            }
+        }
+
         /// <summary>A destination's tile name: camp-&lt;old row&gt; when open, locked-&lt;old row&gt; when closed.</summary>
         internal static string TileName(CampDestination d) =>
             (d.Open ? "camp-" : "locked-") + (d.Id == CampMenu.Diamonds ? "diamonds" : d.Label.ToLowerInvariant().Replace(' ', '-'));
@@ -279,7 +293,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = TileName(d);
             tile.EnableInClassList("kit-tile--locked", !d.Open);
-            var icon = d.Id == CampMenu.Shop ? tile.KindIcon(RowKind.Shop) : d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
+            var icon = d.Id != CampMenu.Shop && d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id), Art.UiIcon(TileIcon(d.Id)));
             if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
             else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
@@ -300,7 +314,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = (open ? "camp-" : "locked-") + label.ToLowerInvariant();
             tile.EnableInClassList("kit-tile--locked", !open);
-            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex);
+            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex, Art.UiIcon(group == CampGroup.Craft ? "hub-craft" : "hub-journal"));
             if (!open) RowIcon.Badge(icon, RowKind.Locked);
             else if (CampMenu.GroupBadge(dests, group)) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(label, "kit-tile-label", tile));
@@ -310,10 +324,26 @@ namespace GridGame.App
             return tile;
         }
 
+        /// <summary>A destination's icon in the menu set (docs/ICONS.md, hub tiles and stations).</summary>
+        internal static string TileIcon(string id)
+        {
+            switch (id)
+            {
+                case CampMenu.Campaign: return "hub-stage-select";
+                case CampMenu.Diamonds: return "hub-diamond-store";
+                case CampMenu.NewGamePlus: return "hub-new-game-plus";
+                case CampMenu.Quit: return "hub-quit-to-title";
+                case CampMenu.Blacksmith: case CampMenu.Alchemist: case CampMenu.Enchantress: case CampMenu.Aetherist: case CampMenu.Caravan:
+                    return "station-" + id;
+                default: return "hub-" + id;
+            }
+        }
+
         private static RowKind TileKind(string id)
         {
             switch (id)
             {
+                case CampMenu.Shop: return RowKind.Shop;
                 case CampMenu.Heroes: case CampMenu.Mercenaries: return RowKind.Hero;
                 case CampMenu.Items: return RowKind.Item;
                 case CampMenu.Talk: return RowKind.Talk;

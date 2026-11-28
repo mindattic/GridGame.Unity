@@ -116,6 +116,13 @@ def manifest_permissions(root):
                    for e in root.iter(tag)} - {None})
 
 
+def is_androidx_internal(perm, package):
+    """AndroidX core merges <package>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION into every app targeting API 33+ and
+    needs it at runtime for non-exported dynamic receivers. It is signature-level and never shown to users, so it is
+    not a Data safety entry (GG-T2126)."""
+    return bool(package) and perm == package + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("aab", nargs="?", default=os.path.join(ROOT, "Build", "AndroidRelease", "GridGame.aab"))
@@ -134,6 +141,8 @@ def main():
     root = dump_manifest(a.aab, java, jar)
     problems += manifest_screen(root, a.min_aspect)
     perms, allowed = manifest_permissions(root), allowed_permissions()
+    package = root.get("package")
+    allowed |= {p for p in perms if is_androidx_internal(p, package)}
     for p in perms:
         print("permission", p, "" if p in allowed else "NOT ALLOWED")
     problems += [f"manifest permission {p} is not in {os.path.relpath(DOC, ROOT)}" for p in perms if p not in allowed]

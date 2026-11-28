@@ -5,6 +5,7 @@ using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using GridGame.Core.Rules;
+using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -32,6 +33,7 @@ namespace GridGame.App
             ClearHint();
             DropAdvice();
             DropRefusal();
+            if (examining) { if (!pressing && !dragging && !OffBoard(evt.localPosition)) ExamineTile(board.TileAt(evt.localPosition)); return; }
             if (!CanCommand() || pressing) return;
             activePointerId = evt.pointerId;
             var tile = board.TileAt(evt.localPosition);
@@ -234,7 +236,8 @@ namespace GridGame.App
                 var hero = State.UnitById(SelectedHeroId);
                 var a = hero == null ? null : BattleEngine.SlotAbility(State, hero, TargetingSlot);
                 bool legal = hero != null && a != null && a.Mode != TargetMode.Auto && TargetResolver.IsValidPick(State, a, hero, t);
-                if (legal && (!ConfirmActions || AutoPlay)) Commit(new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = t });
+                if (legal && a.Mode == TargetMode.PickMulti) ToggleMultiPick(hero, a, t);
+                else if (legal && (!ConfirmActions || AutoPlay)) Commit(new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = t });
                 else if (legal && PendingTarget == t) ConfirmPending(); // a second tap on the same pick confirms
                 else if (legal) SetPending(t);
                 else
@@ -340,15 +343,15 @@ namespace GridGame.App
 
         /// <summary>GG-T1978 (§2.0.1): the player's turns have no real-time limit — the hold and Mode C turn clocks stand
         /// still, no drop or Guard is forced, and a drop reports the human drag model's seconds (<see cref="HeldSeconds"/>).
-        /// The bot's own simulated drag keeps its timed hold.</summary>
-        private bool Untimed => App.Settings.UntimedTurns;
+        /// The bot's own simulated drag keeps its timed hold. A drill before The Clock (GG-T1959) is untimed too.</summary>
+        private bool Untimed => App.Settings.UntimedTurns || Drills.BeforeClock(App.Content, State?.Stage);
 
         private float holdElapsed, holdWindow = -1f, holdLastTime;
         private int holdTurnTicks = -1;
         private VisualElement holdDrain, holdDrainFill, holdLane;
         private Label holdLabel;
         private IVisualElementScheduledItem holdTicker;
-        private static readonly Color HoldFull = Palette.Good, HoldEmpty = new Color(1f, 0.3f, 0.25f);
+        private static readonly Color HoldFull = Palette.Good, HoldEmpty = Palette.Vfx.Harmful;
 
         private void BeginHold()
         {
@@ -462,7 +465,7 @@ namespace GridGame.App
             if (!limited) return;
             float laneW = XOfU(nextU) - XOfU(0f);
             holdLane.style.width = laneW; // the stretch between the left edge (acts) and the next enemy
-            holdLane.style.backgroundColor = Color.Lerp(new Color(1f, 0.3f, 0.25f, 0.7f), Palette.Gold.WithA(0.55f), 1f - k);
+            holdLane.style.backgroundColor = Color.Lerp(Palette.Vfx.Harmful.WithA(0.7f), Palette.Gold.WithA(0.55f), 1f - k);
             holdLabel.text = $"{Mathf.Max(0f, holdWindow - holdElapsed):0.0}s";
             holdLabel.style.left = XOfU(0f) + Mathf.Max(0f, laneW * 0.5f - 30f);
         }
@@ -553,7 +556,7 @@ namespace GridGame.App
             HeavyThud(v, blocked);
         }
 
-        private static readonly Color HeroTrail = new Color(1f, 0.9f, 0.45f), EnemyTrail = Palette.Bad;
+        private static readonly Color HeroTrail = Palette.Vfx.HeroTrail, EnemyTrail = Palette.Bad;
 
         /// <summary>Slide displaced actors to their preview tiles and draw the pincers this drop would make.</summary>
         private void ApplyPreview(MovePreview pv, int heroId)
@@ -574,7 +577,7 @@ namespace GridGame.App
             board.ClearMarks();
             if (heroId == dragHeroId && dragging && !simulatingDrag) ShowDragOutcome(pv, dragHeroId, dragPath);
             foreach (var u in State.Units)
-                if (board.Units.TryGetValue(u.Id, out var uv) && u.Alive && u.Id != heroId) uv.SetGlow(Color.white, 0f);
+                if (board.Units.TryGetValue(u.Id, out var uv) && u.Alive && u.Id != heroId) uv.SetGlow(Palette.White, 0f);
             // GG-T190: shoving is a tactic, so show the whole migration — a ghost on every displaced hero's and
             // enemy's current tile and an arrow to where the drop leaves it (the tokens themselves already slid there).
             var shove = ShovePreview.Of(State, heroId, pv);
@@ -602,8 +605,8 @@ namespace GridGame.App
                 }
                 foreach (var o in p.Opponents)
                 {
-                    foreach (var t in o.Tiles()) board.Mark(t, new Color(1f, 0.25f, 0.2f), 0.32f);
-                    if (board.Units.TryGetValue(o.Id, out var ov)) ov.SetGlow(new Color(1f, 0.3f, 0.2f), 0.8f);
+                    foreach (var t in o.Tiles()) board.Mark(t, Palette.Vfx.Danger, 0.32f);
+                    if (board.Units.TryGetValue(o.Id, out var ov)) ov.SetGlow(Palette.Vfx.Threat, 0.8f);
                 }
                 foreach (var s in p.SupportersA) if (board.Units.TryGetValue(s.Id, out var sv)) sv.SetGlow(Palette.Mana, 0.7f);
                 foreach (var s in p.SupportersB) if (board.Units.TryGetValue(s.Id, out var sv)) sv.SetGlow(Palette.Mana, 0.7f);
@@ -641,7 +644,7 @@ namespace GridGame.App
         /// <summary>GG-T190: a displaced actor's ghost tile plus an arrow to where the drop leaves it (amber for a foe, blue for a hero).</summary>
         private void DrawShoveArrow(ShovedActor d)
         {
-            var col = d.IsEnemy ? new Color(1f, 0.55f, 0.2f, 0.9f) : Palette.Mana.WithA(0.9f);
+            var col = d.IsEnemy ? Palette.Vfx.FoeDrag.WithA(0.9f) : Palette.Mana.WithA(0.9f);
             board.Mark(d.From, col, 0.16f);
             var a = BoardView.CenterOf(d.From);
             var b = BoardView.CenterOf(d.To);
@@ -715,7 +718,7 @@ namespace GridGame.App
             foreach (var vt in BattleEngine.ValidTargets(State, hero.Id, TargetingSlot)) board.Mark(vt, Palette.Gold, 0.25f);
             if (!TargetResolver.IsValidPick(State, a, hero, tile)) return;
             bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
-            var color = harmful ? new Color(1f, 0.3f, 0.25f) : new Color(0.4f, 0.9f, 0.5f);
+            var color = harmful ? Palette.Vfx.Harmful : Palette.Vfx.Helpful;
             if (a.IsTeleport) { board.Mark(tile, Palette.Mana, 0.6f); return; }
             foreach (var t in TargetResolver.Tiles(tile, a.Shape, a.Radius, hero.Pos)) board.Mark(t, color, 0.38f); // GG-T933: a Wall lies across the caster's line
         }

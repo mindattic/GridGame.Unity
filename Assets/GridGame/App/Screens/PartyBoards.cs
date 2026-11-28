@@ -27,22 +27,18 @@ namespace GridGame.App
             int unlocked = Progression.UnlockedSlots(s);
             for (int i = 0; i < Progression.MaxBarSlots; i++)
             {
+                // Each slot at the row icon size (docs/ICONS.md): its ability or item, an empty slot the Ability emblem and a
+                // locked one the padlock, both dimmed.
+                bool open = i < unlocked;
+                var entry = open && h.Bar != null && i < h.Bar.Count ? h.Bar[i] : null;
                 var cell = Ui.El(null, row);
                 cell.pickingMode = PickingMode.Ignore;
-                cell.style.flexShrink = 0;
-                cell.style.width = cell.style.height = Size.IconM;
-                Ui.Margin(cell, right: Space.S8, bottom: Space.S8);
-                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 4;
-                cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 1;
-                var bc = Palette.Text.WithA(0.4f);
-                cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = bc;
-                cell.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                if (i >= unlocked) { cell.style.opacity = 0.3f; continue; }
-                var icon = EntryIcon(c, h.Bar != null && i < h.Bar.Count ? h.Bar[i] : null);
-                if (icon != null) cell.style.backgroundImage = new StyleBackground(icon);
+                var icon = cell.KindIcon(open ? RowKind.Ability : RowKind.Locked, open ? EntryIcon(c, entry) : null);
+                Ui.Margin(icon, right: Space.S8, bottom: Space.S8);
+                if (entry == null) icon.style.opacity = Dim.Row;
             }
             string id = h.ClassId;
-            var board = RowIcon.IconButton("Board", RowKind.Ability,
+            var board = RowIcon.IconButton("Talents", RowKind.Ability,
                 () => GameApp.I.Router.Push(new HeroScreen(HeroScreen.AbilitiesTabIndex, id, AbilitiesTab.TalentsSub)), "btn--small", row);
             board.name = "party-board-" + id;
             Ui.Margin(board, bottom: Space.S8);

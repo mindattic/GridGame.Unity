@@ -1,0 +1,16 @@
+{
+  "schema": "prose-text/1",
+  "id": "description-class-ward-engine",
+  "universe": "gridgame",
+  "kind": "description",
+  "key": "class:ward_engine",
+  "about": [
+    "class-ward-engine"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "short": "A white Halcyon automaton gone pale and cold, folded around a sleeping waystone, its shield etched with a lightning mark.",
+    "long": "Halcyon built the Ward-Engines to keep its waystones until someone came who could wake them. Steel, flame and prayer slide off its wards. Only Lightning still answers the old key."
+  }
+}
