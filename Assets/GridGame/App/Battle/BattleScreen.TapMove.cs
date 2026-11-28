@@ -150,7 +150,7 @@ namespace GridGame.App
             SyncAll();
             foreach (var u in State.Units)
                 if (board.Units.TryGetValue(u.Id, out var v) && u.Alive)
-                    v.SetGlow(new Color(1f, 0.9f, 0.5f), u.Id == SelectedHeroId ? 0.65f : 0f);
+                    v.SetGlow(Palette.Vfx.SelectGlow, u.Id == SelectedHeroId ? 0.65f : 0f);
         }
 
         /// <summary>The move's confirm card in the description panel: where to, the pincers it makes and their damage, then

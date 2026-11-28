@@ -41,7 +41,7 @@ namespace GridGame.App
         };
 
         /// <summary>The silhouette tint on a locked entry's art (the Bestiary's unseen tint).</summary>
-        private static readonly Color Shadow = new Color(0f, 0f, 0f, 0.92f);
+        private static readonly Color Shadow = Palette.Black.WithA(0.92f);
 
         private int tab;
         private string selected;

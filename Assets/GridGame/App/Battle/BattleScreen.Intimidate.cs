@@ -12,8 +12,8 @@ namespace GridGame.App
     /// boss or a Heavy foe). Reduce Motion keeps one fading ring.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color RoarColor = new Color(0.55f, 0.80f, 1f);
-        private static readonly Color FearColor = new Color(0.69f, 0.49f, 0.91f);
+        private static readonly Color RoarColor = Palette.Vfx.Roar;
+        private static readonly Color FearColor = Palette.Vfx.Fear;
 
         private IEnumerator IntimidateVfx(Unit caster, AbilityResolvedEvent ar)
         {

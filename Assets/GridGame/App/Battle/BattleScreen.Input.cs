@@ -350,7 +350,7 @@ namespace GridGame.App
         private VisualElement holdDrain, holdDrainFill, holdLane;
         private Label holdLabel;
         private IVisualElementScheduledItem holdTicker;
-        private static readonly Color HoldFull = Palette.Good, HoldEmpty = new Color(1f, 0.3f, 0.25f);
+        private static readonly Color HoldFull = Palette.Good, HoldEmpty = Palette.Vfx.Harmful;
 
         private void BeginHold()
         {
@@ -464,7 +464,7 @@ namespace GridGame.App
             if (!limited) return;
             float laneW = XOfU(nextU) - XOfU(0f);
             holdLane.style.width = laneW; // the stretch between the left edge (acts) and the next enemy
-            holdLane.style.backgroundColor = Color.Lerp(new Color(1f, 0.3f, 0.25f, 0.7f), Palette.Gold.WithA(0.55f), 1f - k);
+            holdLane.style.backgroundColor = Color.Lerp(Palette.Vfx.Harmful.WithA(0.7f), Palette.Gold.WithA(0.55f), 1f - k);
             holdLabel.text = $"{Mathf.Max(0f, holdWindow - holdElapsed):0.0}s";
             holdLabel.style.left = XOfU(0f) + Mathf.Max(0f, laneW * 0.5f - 30f);
         }
@@ -555,7 +555,7 @@ namespace GridGame.App
             HeavyThud(v, blocked);
         }
 
-        private static readonly Color HeroTrail = new Color(1f, 0.9f, 0.45f), EnemyTrail = Palette.Bad;
+        private static readonly Color HeroTrail = Palette.Vfx.HeroTrail, EnemyTrail = Palette.Bad;
 
         /// <summary>Slide displaced actors to their preview tiles and draw the pincers this drop would make.</summary>
         private void ApplyPreview(MovePreview pv, int heroId)
@@ -604,8 +604,8 @@ namespace GridGame.App
                 }
                 foreach (var o in p.Opponents)
                 {
-                    foreach (var t in o.Tiles()) board.Mark(t, new Color(1f, 0.25f, 0.2f), 0.32f);
-                    if (board.Units.TryGetValue(o.Id, out var ov)) ov.SetGlow(new Color(1f, 0.3f, 0.2f), 0.8f);
+                    foreach (var t in o.Tiles()) board.Mark(t, Palette.Vfx.Danger, 0.32f);
+                    if (board.Units.TryGetValue(o.Id, out var ov)) ov.SetGlow(Palette.Vfx.Threat, 0.8f);
                 }
                 foreach (var s in p.SupportersA) if (board.Units.TryGetValue(s.Id, out var sv)) sv.SetGlow(Palette.Mana, 0.7f);
                 foreach (var s in p.SupportersB) if (board.Units.TryGetValue(s.Id, out var sv)) sv.SetGlow(Palette.Mana, 0.7f);
@@ -643,7 +643,7 @@ namespace GridGame.App
         /// <summary>GG-T190: a displaced actor's ghost tile plus an arrow to where the drop leaves it (amber for a foe, blue for a hero).</summary>
         private void DrawShoveArrow(ShovedActor d)
         {
-            var col = d.IsEnemy ? new Color(1f, 0.55f, 0.2f, 0.9f) : Palette.Mana.WithA(0.9f);
+            var col = d.IsEnemy ? Palette.Vfx.FoeDrag.WithA(0.9f) : Palette.Mana.WithA(0.9f);
             board.Mark(d.From, col, 0.16f);
             var a = BoardView.CenterOf(d.From);
             var b = BoardView.CenterOf(d.To);
@@ -717,7 +717,7 @@ namespace GridGame.App
             foreach (var vt in BattleEngine.ValidTargets(State, hero.Id, TargetingSlot)) board.Mark(vt, Palette.Gold, 0.25f);
             if (!TargetResolver.IsValidPick(State, a, hero, tile)) return;
             bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
-            var color = harmful ? new Color(1f, 0.3f, 0.25f) : new Color(0.4f, 0.9f, 0.5f);
+            var color = harmful ? Palette.Vfx.Harmful : Palette.Vfx.Helpful;
             if (a.IsTeleport) { board.Mark(tile, Palette.Mana, 0.6f); return; }
             foreach (var t in TargetResolver.Tiles(tile, a.Shape, a.Radius, hero.Pos)) board.Mark(t, color, 0.38f); // GG-T933: a Wall lies across the caster's line
         }

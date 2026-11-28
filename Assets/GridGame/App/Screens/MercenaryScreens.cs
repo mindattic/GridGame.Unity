@@ -177,7 +177,7 @@ namespace GridGame.App
             var k = Mercenaries.Contract(S, classId);
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, HubScreen.ThemeFor(C, S), 2);
-            bg.style.unityBackgroundImageTintColor = new Color(0.4f, 0.42f, 0.55f);
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Mercenary;
 
             var portrait = Ui.El(null, root);
             portrait.name = "merc-portrait";

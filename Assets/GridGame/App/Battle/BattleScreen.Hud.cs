@@ -57,6 +57,9 @@ namespace GridGame.App
         private Label waveLabel, coinLabel, timerLabel;
         private VisualElement bossBox, bossHpFill;
         private Label stageName, bossName;
+        /// <summary>GG-T1951: the stage name and the goal take turns on the stage-name line, this long each.</summary>
+        private const int StageLineSwapMs = 4000;
+        private bool stageLineShowsGoal;
         private int bossBarId = -1;
         private float bossBarFraction = -1f;
 
@@ -87,6 +90,10 @@ namespace GridGame.App
             mid.style.minWidth = Space.S0;
             stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
             stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            // GG-T1951 (§9.0): the goal ("Defeat every foe", or what ends a scripted fight) takes turns with the stage name on
+            // the same line, so it costs the bar no third line. A plain swap, nothing slides.
+            stageLineShowsGoal = false;
+            stageName.schedule.Execute(SwapStageLine).Every(StageLineSwapMs).StartingIn(StageLineSwapMs);
             var sep = Ui.Text("·", "small shadow", mid);
             sep.style.flexShrink = 0; sep.style.marginLeft = sep.style.marginRight = Space.S8;
             // Full-colour, not .dim: the LivingBackdrop's drifting shards pass behind the top bar, and dim grey "1/5"
@@ -111,6 +118,15 @@ namespace GridGame.App
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
             BuildTurnStrip(col);
+        }
+
+        private string GoalText => InCrucible ? "Last as many waves as you can" : State.Stage.GoalText();
+
+        private void SwapStageLine()
+        {
+            if (State == null) return;
+            stageLineShowsGoal = !stageLineShowsGoal && !ended;
+            stageName.text = stageLineShowsGoal ? GoalText : State.Stage.Name;
         }
 
         /// <summary>The turn strip (GG-T1943, UX review §1.4 #2): whose turn it is and the heroes who can still act.</summary>
@@ -382,7 +398,7 @@ namespace GridGame.App
                 v.SetWeaponCracked(weaponDef != null && weaponDef.Durability > 0 && u.WeaponDurability == 1, !ReduceMotion);
                 bool sel = u.Id == SelectedHeroId;
                 var aura = AuraFor(u);
-                if (sel) v.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
+                if (sel) v.SetGlow(Palette.Vfx.SelectGlow, 0.65f);
                 else if (aura.a > 0f && !ReduceMotion) v.SetGlow(aura, 0.45f);
                 else v.SetGlow(Palette.White, 0f);
             }
@@ -434,15 +450,15 @@ namespace GridGame.App
             foreach (var b in u.Buffs)
                 switch (b.Def.Id)
                 {
-                    case "burning": return new Color(1f, 0.45f, 0.1f, 1f);
-                    case "frozen": return new Color(0.6f, 0.9f, 1f, 1f);
-                    case "poisoned": return new Color(0.5f, 1f, 0.3f, 1f);
+                    case "burning": return Palette.Vfx.Burning;
+                    case "frozen": return Palette.Vfx.Frozen;
+                    case "poisoned": return Palette.Vfx.Poisoned;
                     case "regen": return Palette.Good;
-                    case "sleep": return new Color(0.7f, 0.7f, 1f, 1f);
-                    case "taunting": return new Color(1f, 0.3f, 0.2f, 1f);
+                    case "sleep": return Palette.Vfx.Sleep;
+                    case "taunting": return Palette.Vfx.Threat;
                     case "empowered": return Palette.Buff;
                 }
-            return new Color(0, 0, 0, 0);
+            return Palette.Clear;
         }
 
         /// <summary>The effect that stops this unit's clock or turn, if any: buffs that halt/immobilise, else pushback stun.</summary>
@@ -450,7 +466,7 @@ namespace GridGame.App
         {
             foreach (var b in u.Buffs)
                 if (b.Def.HaltsTimeline || b.Def.Immobile)
-                    return (b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, Art.HexColor(b.Def.Color, new Color(0.6f, 0.85f, 1f)), b.Def.Name);
+                    return (b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, Art.HexColor(b.Def.Color, Palette.Vfx.Sky), b.Def.Name);
             if (turn != null && turn.StunTicks > 0) return ("stunned", "!", Palette.Gold, "Stunned");
             return null;
         }
@@ -516,13 +532,13 @@ namespace GridGame.App
             bool silenced = status == SlotStatus.Silenced;
             if (sl.IsWeapon)
             {
-                border = new Color(0.8f, 0.8f, 0.9f);
+                border = Palette.Vfx.EdgeNeutral;
                 Ui.SetAbilitySlot(v, Art.ItemIcon(sl.WeaponId) ?? Art.Orb, silenced: silenced);
                 return false;
             }
             if (sl.IsItem)
             {
-                border = new Color(0.86f, 0.62f, 0.36f);
+                border = Palette.Vfx.EdgeBronze;
                 Ui.SetAbilitySlot(v, Art.ItemIcon(sl.ItemId) ?? Art.AbilityIcon(a) ?? Art.Orb, count: sl.Charges, silenced: silenced);
                 return false;
             }
@@ -530,7 +546,7 @@ namespace GridGame.App
             float sweep = 0f, mana = -1f; int left = 0;
             if (a.Kind == AbilityKind.Skill)
             {
-                border = new Color(0.4f, 0.9f, 0.5f);
+                border = Palette.Vfx.Helpful;
                 if (status == SlotStatus.Cooldown && hero.Cooldowns.TryGetValue(a.Id, out left) && left > 0)
                     sweep = (float)left / Mathf.Max(left, a.CooldownTurns);
             }
@@ -582,8 +598,13 @@ namespace GridGame.App
                 idle.style.whiteSpace = WhiteSpace.Normal;
                 idle.style.marginBottom = Space.S8;
             }
+            // GG-T2111: a commandable hero's skills come right under the instruction, so a short panel (9:20, 3:4) shows the
+            // instruction and the first skill and scrolls to the hero's card, instead of clipping the skills below it.
+            bool skillsFirst = u.IsHero && u.IsCommandable;
+            if (skillsFirst) SkillReadout(u);
             var row = Ui.El("row", panel);
             row.style.alignItems = Align.FlexStart;
+            if (skillsFirst) row.style.marginTop = Space.S8;
             Ui.Thumb(u.Def.Id, row, Size.Thumb).style.marginRight = Space.S16;
             var col = Ui.El("col grow", row);
             col.style.flexShrink = 1;
@@ -640,11 +661,10 @@ namespace GridGame.App
             foreach (var b in u.Buffs)
             {
                 var pip = StatusRow(col, b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter,
-                    Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f)),
+                    Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff),
                     b.Def.Name, $"{Ui.BuffEffect(b.Def)} ({b.Remaining} {(b.Def.Unit == GridGame.Core.Content.DurationUnit.Turns ? "turns" : "s")} left)");
                 AttachStatusInspect(pip, b.Def, b.Remaining);
             }
-            if (u.IsHero && u.IsCommandable) SkillReadout(u);
         }
 
         private static string SideName(Coord f) => f.Y > 0 ? "front (facing down)" : f.Y < 0 ? "front (facing up)" : f.X > 0 ? "front (facing right)" : "front (facing left)";

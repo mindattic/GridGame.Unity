@@ -9,7 +9,7 @@ namespace GridGame.App
     /// (FacingChangedEvents) play. Reduce Motion: the arcs hold still for a beat and fade.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color MagnetColor = new Color(0.45f, 0.78f, 1f);
+        private static readonly Color MagnetColor = Palette.Vfx.Magnet;
 
         private IEnumerator MagnetizedAnim(MagnetizedEvent e)
         {

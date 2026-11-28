@@ -77,6 +77,9 @@ namespace GridGame.Meta
         public List<string> GuestsFell = new List<string>();
         /// <summary>Guests lost for good — only ever filled with <see cref="Permadeath"/> on (never in the normal game).</summary>
         public List<string> GuestsLost = new List<string>();
+        /// <summary>GG-T1956: on a defeat, the last blows the heroes took (oldest first), read from the battle record; the
+        /// results list them beside Retry.</summary>
+        public List<RecordedHit> LastHits = new List<RecordedHit>();
         /// <summary>The wanderer this battle held (GG-T342), whatever became of them; null = none.</summary>
         public string Wanderer;
         /// <summary>The wanderer standing at this victory, waiting to talk (the results screen's conversation); null = none.</summary>

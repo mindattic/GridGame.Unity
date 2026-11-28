@@ -10,7 +10,7 @@ namespace GridGame.App
     /// <see cref="DisplacedEvent"/> slides it one tile in. Reduce Motion keeps one fading ring.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color WellColor = new Color(0.55f, 0.30f, 0.95f);
+        private static readonly Color WellColor = Palette.Vfx.Well;
 
         private IEnumerator GravityWellVfx(AbilityResolvedEvent ar)
         {
@@ -50,7 +50,7 @@ namespace GridGame.App
                     var p = at + new Vector2(Mathf.Cos(th), Mathf.Sin(th)) * rad;
                     board.Lines.Dot(p, 9f + 7f * (1f - kk), Color.Lerp(WellColor, Palette.White, 0.35f * kk).WithA(1f - 0.6f * kk));
                 }
-                board.Lines.Dot(at, 18f + 10f * Ease.Arc(k), new Color(0.12f, 0.04f, 0.2f, 0.9f)); // the dark eye
+                board.Lines.Dot(at, 18f + 10f * Ease.Arc(k), Palette.Vfx.WellEye); // the dark eye
             });
             board.Lines.Rings.Clear(); board.Lines.ClearLines(); board.Lines.MarkDirtyRepaint();
             App.StartCoroutine(Tween.Shake(shake, 6f * Fx, Timing.Quick));
