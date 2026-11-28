@@ -120,10 +120,7 @@ namespace GridGame.Core.Battle
                 int points = S.ManaIn(hero.Id, cmd.Slot);
                 S.SetMana(hero.Id, cmd.Slot, 0);
                 if (points > 0)
-                {
                     Emit(new SpellManaSpentEvent { UnitId = hero.Id, Slot = cmd.Slot, AbilityId = a.Id, Points = points });
-                    Emit(new OrbsSpentEvent { Count = 1 });
-                }
                 if (a.CastTime > 0f)
                 {
                     int ticks = Formulas.SecondsToTicks(Formulas.CastTime(a.CastTime, hero.Effective));
@@ -414,7 +411,6 @@ namespace GridGame.Core.Battle
                 int points = copy.Cost * BattleConfig.ManaPointsPerOrb;
                 S.SetMana(caster.Id, slot, S.ManaIn(caster.Id, slot) - points);
                 Emit(new SpellManaSpentEvent { UnitId = caster.Id, Slot = slot, AbilityId = caster.Bar[slot].AbilityId, Points = points });
-                Emit(new OrbsSpentEvent { Count = copy.Cost });
             }
             Announce($"Echo: {copy.Name}!", caster.Id);
             Remember(caster, copy, plan.Value.Anchor);
@@ -458,8 +454,7 @@ namespace GridGame.Core.Battle
         {
             if (S.IsOver || caster.Team != Team.Enemy) return;
             int n = a.DrainsOrbs;
-            if (n <= 0 || !GainMana(-n * BattleConfig.ManaPointsPerOrb, caster.Id, "siphon")) { Announce("No mana to take", caster.Id); return; }
-            Emit(new OrbsSpentEvent { Count = n, Drained = true, DrainedById = caster.Id });
+            if (n <= 0 || !GainMana(-n * BattleConfig.ManaPointsPerOrb, caster.Id, "siphon", e => e.Orbs = n)) { Announce("No mana to take", caster.Id); return; }
             Announce(n == 1 ? "Siphoned an orb!" : $"Siphoned {n} orbs!", caster.Id);
         }
 

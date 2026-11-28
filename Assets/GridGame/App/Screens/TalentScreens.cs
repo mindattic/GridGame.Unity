@@ -40,7 +40,7 @@ namespace GridGame.App
                 GlossaryText.Create(C.TryClass(hero.ClassId)?.Card ?? "", "kit-text dim", col);
                 card.AddToClassList("card-tap");
                 card.AddToClassList("card--fill");
-                if (!ok) card.style.opacity = 0.55f;
+                if (!ok) card.style.opacity = Dim.Row;
                 Ui.Tappable(card, () =>
                 {
                     if (!ok) { GameApp.I?.Audio?.Sfx("ui.error"); return; }

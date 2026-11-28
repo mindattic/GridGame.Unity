@@ -420,7 +420,7 @@ namespace GridGame.Core.Battle
                     int after = System.Math.Max(0, System.Math.Min(full, before + points));
                     if (after == before) continue;
                     s.SetMana(u.Id, i, after);
-                    if (e == null) e = new ManaGainedEvent { SourceId = sourceId, Amount = points, Reason = reason };
+                    if (e == null) e = new ManaGainedEvent { SourceId = sourceId, Amount = points, Reason = reason, Kind = points < 0 ? ManaGainKind.Siphon : ManaGainKind.Grant };
                     var d = new ManaMeterDelta { UnitId = u.Id, Slot = i, Delta = after - before, After = after, Full = full };
                     e.Meters.Add(d);
                     if (after >= full) e.Readied.Add(d);

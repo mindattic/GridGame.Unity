@@ -126,7 +126,7 @@ namespace GridGame.App
                 Short = "Commander, our pincers fill every spell's bar with mana.",
                 Text = "Commander, our pincers pour mana into every spell's bar. Lean pincers earn the most: every extra one of us divides the mana, every chain link multiplies it.",
                 Example = "Example: two of us taking half a foe's HP earn 60 mana for every spell.",
-                Done = (b, c, e) => e.Exists(x => x is ManaChargedEvent m && m.Reason == "pincer"), Patience = 3,
+                Done = (b, c, e) => e.Exists(x => x is ManaGainedEvent m && m.Kind == ManaGainKind.Earned && m.Reason == "pincer"), Patience = 3,
                 Marks = b => b.ManaMarks() },
             new Lesson { Id = "chain", Title = "Chain them", DemoMove = true, Waits = true, Scene = "chain",
                 Short = "Commander, one order can set off several pincers at once: a CHAIN. Every link strikes and earns more mana.",

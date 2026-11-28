@@ -299,21 +299,6 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Loot from {FromUnitId}: {Coins}c {Xp}xp items={Items.Count}";
     }
 
-    public sealed class OrbMintedEvent : BattleEvent
-    {
-        public int SourceUnitId; public bool Landed; public string Reason;
-        public override string ToString() => $"Orb from {SourceUnitId} {(Landed ? $"landed" : "overflow")} ({Reason})";
-    }
-
-    public sealed class OrbsSpentEvent : BattleEvent
-    {
-        public int Count;
-        /// <summary>GG-T332: a foe's siphon drained these orbs (the party didn't spend them).</summary>
-        public bool Drained;
-        public int DrainedById = -1;
-        public override string ToString() => $"Orbs{(Drained ? "Drained" : "Spent")} {Count}";
-    }
-
     public sealed class TimelineAdvancedEvent : BattleEvent
     {
         public int Ticks;
@@ -700,12 +685,9 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Reinforcements wave {Wave + 1} [{string.Join(",", Spawned)}]";
     }
 
-    /// <summary>Mana charge gained (§3.1.9).</summary>
-    public sealed class ManaChargedEvent : BattleEvent
-    {
-        public int SourceId; public int Amount; public string Reason; public int Participants; public int Chain;
-        public override string ToString() => $"ManaCharged +{Amount} ({Reason})";
-    }
+    /// <summary>Where a <see cref="ManaGainedEvent"/> came from (§3.1.0): an earned gain is damped, a whole grant is not, a
+    /// foe's siphon takes points away.</summary>
+    public enum ManaGainKind { Grant, Earned, Siphon }
 
     /// <summary>One spell meter's change in a <see cref="ManaGainedEvent"/> (§3.1.0).</summary>
     public sealed class ManaMeterDelta
@@ -719,6 +701,12 @@ namespace GridGame.Core.Battle
     public sealed class ManaGainedEvent : BattleEvent
     {
         public int SourceId = -1; public int Amount; public string Reason;
+        public ManaGainKind Kind;
+        /// <summary>A <see cref="ManaGainKind.Grant"/>'s whole orbs, or the orbs a <see cref="ManaGainKind.Siphon"/> took.
+        /// A grant that found every meter full still reports them, with <see cref="Amount"/> 0 and no meters.</summary>
+        public int Orbs;
+        /// <summary>An earned pincer gain's hero count and chain link (the Billboard shows the arithmetic).</summary>
+        public int Participants; public int Chain;
         public List<ManaMeterDelta> Meters = new List<ManaMeterDelta>();
         /// <summary>The meters this gain filled (each also gets a <see cref="SpellReadyEvent"/>).</summary>
         public List<ManaMeterDelta> Readied = new List<ManaMeterDelta>();
