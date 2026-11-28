@@ -379,7 +379,7 @@ namespace GridGame.App
             var row = Ui.El("row", list);
             row.name = "move" + slot;
             row.style.alignItems = Align.Center;
-            row.style.minHeight = Size.Target;
+            row.style.minHeight = Kit.Row;
             row.style.marginBottom = Space.S8;
             if (slot == highlightedMove) row.style.backgroundColor = Palette.Gold.WithA(0.18f);
             var face = MoveFace(row, hero, slot, status);
@@ -438,16 +438,9 @@ namespace GridGame.App
             foot.style.marginTop = Space.S8;
             var back = RowIcon.IconButton("Back", RowKind.Back, SheetBack, "btn--small", foot);
             back.name = "abilities-back";
-            var go = RowIcon.IconButton(CommitVerb(hero, slot, a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
+            var go = RowIcon.IconButton(CommitVerb(a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
             go.name = "abilities-commit";
             go.SetEnabled(ready && CanCommand());
-        }
-
-        /// <summary>The detail page's commit button: Use for an item, Cast for a spell, else Perform.</summary>
-        private static string CommitVerb(Unit hero, int slot, AbilityDef a)
-        {
-            var sl = hero.Bar[slot];
-            return sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
         }
 
         /// <summary>Perform / Cast / Use: the sheet slides away and the board takes that move's own aiming.</summary>

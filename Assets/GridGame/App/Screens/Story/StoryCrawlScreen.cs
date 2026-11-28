@@ -67,7 +67,7 @@ namespace GridGame.App
             clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
             // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).
-            clip.style.bottom = Space.S48 + Size.Target + Space.S24;
+            clip.style.bottom = Space.S48 + Kit.Row + Space.S24;
             page = -1;
             TurnPage();
             // Hold anywhere to fast-forward (as the credits roll does); only Skip ends it.
