@@ -84,6 +84,7 @@ SHAPES = [
 # island (a pill floating below the top edge), notch (hangs from the top edge, bottom corners rounded) or punch (a circle).
 # Each device's cutout and corner radius, and which of them are estimates (DEVICES.md, "Camera cutouts", cites both).
 ISLAND = ("island", 126.0, 37.33, 11.33, 18.67)
+PUNCH = ("punch", 18.0, 18.0, 11.0, 9.0)
 CUTOUTS = {
  # id: (cutout or None, display corner radius pt, estimated fields)
  "iphone12mini": (None, 44.0, []), "iphone13mini": (None, 44.0, []),
@@ -102,6 +103,12 @@ CUTOUTS = {
  "iphone16promax": (("island", 126.0, 37.33, 14.0, 18.67), 62.0, ["cutout"]),
  **{k: (("island", 126.0, 37.33, 14.0, 18.67), 62.0, ["cutout", "screen_radius"]) for k in ("iphone17", "iphone17pro", "iphone17promax")},
  "iphoneair": (("island", 126.0, 37.33, 20.0, 18.67), 62.0, ["cutout", "screen_radius"]),
+ # Galaxy (dp): one centred punch-hole under the 32 dp status bar on every in-target model.
+ **{k: (PUNCH, 30.0, ["cutout", "screen_radius"]) for k in ("galaxys23", "galaxys23plus", "galaxys23fe", "galaxys23ultra", "galaxys24",
+                                                             "galaxys24plus", "galaxys24fe", "galaxys25", "galaxys25plus", "galaxys25fe")},
+ **{k: (PUNCH, 26.0, ["cutout", "screen_radius"]) for k in ("galaxys24ultra", "galaxys25ultra", "galaxys25edge")},
+ **{k: (PUNCH, 34.0, ["cutout", "screen_radius"]) for k in ("galaxyzflip5", "galaxyzflip6")},
+ **{k: (PUNCH, 28.0, ["cutout", "screen_radius"]) for k in ("galaxyzfold5cover", "galaxyzfold6cover")},
 }
 devices = {}
 for r in rows:

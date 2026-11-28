@@ -27,6 +27,16 @@ namespace GridGame.App.Automation
             {
                 case "ping": return new { ok = true, screen = app.Router.Current?.Id };
                 case "state": return StateDump();
+                case "perf":
+                {
+                    // GG-T2101: the frame-time window since the last perf?reset=1 (fps, frame ms percentiles, GC alloc,
+                    // texture memory, UI ms, cold start) -- tools/harness.py perf records one battle and one camp scroll.
+                    if (q["reset"] == "1") { Dev.PerfStats.Reset(); return new { ok = true }; }
+                    var p = Dev.PerfStats.Snapshot();
+                    p["screen"] = app.Router.Current?.Id;
+                    p["screen_size"] = new[] { Screen.width, Screen.height };
+                    return p;
+                }
                 case "boardaudit":
                     // GG-T97: drawn-token audit totals (see BoardAudit); ?reset=1 zeroes them first.
                     if (q["reset"] == "1") BoardAudit.Reset();

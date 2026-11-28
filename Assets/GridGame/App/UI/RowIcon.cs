@@ -217,10 +217,8 @@ namespace GridGame.App
         /// <see cref="HamburgerFrac"/> of the target, named <c>menu</c>.</summary>
         public static Button HamburgerButton(Action onClick, VisualElement parent)
         {
-            var b = IconButton("", RowKind.Hamburger, onClick, "btn--small btn--icon", parent);
+            var b = Ui.IconButton(RowKind.Hamburger, onClick, parent, Size.Target * HamburgerFrac, "btn--small");
             b.name = "menu";
-            var icon = b.Q(className: Class);
-            icon.style.width = icon.style.height = Size.Target * HamburgerFrac;
             return b;
         }
 
