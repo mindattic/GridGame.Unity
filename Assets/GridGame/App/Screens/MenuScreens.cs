@@ -22,6 +22,8 @@ namespace GridGame.App
         protected virtual string Subtitle => null;
         /// <summary>The automation name the subtitle label takes (default "header-sub").</summary>
         protected virtual string SubtitleName => null;
+        /// <summary>True: the subtitle is the first line of the page body, not under the title, so a long line does not squeeze the header's title and currencies (GG-T1859).</summary>
+        protected virtual bool SubtitleInBody => false;
         /// <summary>The Camp NPC who keeps this station (GG-T119), or null: the header gets a Talk button for them.</summary>
         protected virtual string Npc => null;
         /// <summary>The camp tip this page shows (GG-T173): its own Id, unless a tab has its own tip (the Blacksmith's Forge, GG-T177).</summary>
@@ -35,7 +37,7 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.5f, 0.7f, 1f);
             var col = Ui.El("fill col", root);
             // GG-T1335: a page more than one step from the hub also gets Home, back to the hub in one fade.
-            var header = Ui.Header(Title, () => App.Router.Back(), col, out CurrencyBar, Subtitle,
+            var header = Ui.Header(Title, () => App.Router.Back(), col, out CurrencyBar, SubtitleInBody ? null : Subtitle,
                 App.Save != null && App.Router.OnHubTrail && App.Router.PagesAboveHub > 1 ? () => App.Router.Home() : (Action)null);
             if (SubtitleName != null && header.Q<Label>("header-sub") is Label subLabel) subLabel.name = SubtitleName;
             // Every Camp NPC can be talked to from their own station as well as from Camp's Talk row (GG-T119).
@@ -48,6 +50,7 @@ namespace GridGame.App
             }
             // GG-T454 (the menu kit): the kit's page body, the centred column with the kit's gutters (GG-T398).
             Body = Ui.PageBody(col);
+            if (SubtitleInBody && Subtitle != null) Ui.Note(Subtitle, Body).name = SubtitleName ?? "header-sub";
             BuildBody(Body);
             Typography.Watch(Body);
             // GG-T1590: the hub's bottom nav under the body.
