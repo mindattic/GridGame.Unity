@@ -80,15 +80,9 @@ namespace GridGame.App
         /// <summary>GG-T1377: the battle lessons by id, in their first-battle order; a drill's stage picks and places them.</summary>
         private static readonly Lesson[] AllLessons =
         {
-            new Lesson { Id = "move", Title = "Move us", DemoMove = true, Waits = true,
-                Short = "Commander, drag any of us tile by tile. Whoever stands in the way swaps into the tile we leave, and moving never hurts.",
-                Text = "Commander, send us where you want us: drag one of us across the board, tile by tile. Anyone in the way swaps into the tile we just left — moving never hurts anyone.",
-                Example = "Example: follow the glowing path to the glowing tile.",
-                Done = (b, c, e) => c is MoveCommand,
-                Marks = b => b.MoveMarks(b.BotMove(), null) },
             new Lesson { Id = "pincer", Title = "Pincer it", DemoMove = true, Waits = true, Scene = "pincer",
-                Short = "Commander, put a foe in a straight line between two of us and we PINCER it. Both of us strike.",
-                Text = "Commander, put an enemy in a straight line between two of us and we PINCER it — both of us strike. Any of us linked to an attacker by an unbroken chain of allies joins in as a supporter, each with our own support action.",
+                Short = "Commander, drag one of us tile by tile; moving never hurts. Put a foe in a straight line between two of us and we PINCER it. Both of us strike.",
+                Text = "Commander, drag one of us across the board, tile by tile: anyone in the way swaps into the tile we just left, and moving never hurts. Put an enemy in a straight line between two of us and we PINCER it — both of us strike. Any of us linked to an attacker by an unbroken chain of allies joins in as a supporter, each with our own support action.",
                 Example = "Example: Hero · Slime · Hero in a row or column.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero)), "Drag the {0} along the dotted line: the drop traps the foe between two heroes.") },
@@ -115,19 +109,6 @@ namespace GridGame.App
                 Example = "Example: lift one of us, then drag off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
-            // GG-T731: what mana is, before Mana teaches how to earn it (each spell's own fill bar, §3.1.0, GG-T1821).
-            new Lesson { Id = "orbs", Title = "Spell mana", Patience = 2,
-                Short = "Commander, each of our spells has its own bar. Mana fills it as we fight; a full bar glows, ready to cast.",
-                Text = "Commander, every spell on our bar has its own mana bar. As we earn mana, every spell's bar fills by the same amount, so a cheap spell fills sooner than a costly one. A full bar glows: that spell is ready to cast, and casting it empties only its own bar.",
-                Example = "Example: watch the spell bars fill as our pincers land.",
-                Done = (b, c, e) => e.Exists(x => x is ManaGainedEvent g && g.Amount > 0),
-                Marks = b => b.OrbMarks() },
-            new Lesson { Id = "mana", Title = "Earn mana",
-                Short = "Commander, our pincers fill every spell's bar with mana.",
-                Text = "Commander, our pincers pour mana into every spell's bar. Lean pincers earn the most: every extra one of us divides the mana, every chain link multiplies it.",
-                Example = "Example: two of us taking half a foe's HP earn 60 mana for every spell.",
-                Done = (b, c, e) => e.Exists(x => x is ManaGainedEvent m && m.Kind == ManaGainKind.Earned && m.Reason == "pincer"), Patience = 3,
-                Marks = b => b.ManaMarks() },
             new Lesson { Id = "chain", Title = "Chain them", DemoMove = true, Waits = true, Scene = "chain",
                 Short = "Commander, one order can set off several pincers at once: a CHAIN. Every link strikes and earns more mana.",
                 Text = "Commander, one drag can set off several pincers in a row — a CHAIN. Every link strikes, and every link earns more mana than the last.",
@@ -166,9 +147,9 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is BuffAppliedEvent a && a.BuffId == "taunting"),
                 Marks = b => b.SlotMarks(a => (a.Id ?? "").Contains("taunt")) },
             new Lesson { Id = "guard", Title = "Guard us", Patience = 2,
-                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time. Time we don't use is banked as mana in every spell's bar.",
-                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action. The turn time we leave unused is banked as mana in every spell's bar.",
-                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time. Time we don't use is banked as mana in every spell's bar.",
+                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time. Time we don't use is banked as mana.",
+                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action. The turn time we leave unused is banked as mana.",
+                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time. Time we don't use is banked as mana.",
                 TextHeroTimeline = "Commander, GUARD gives up the acting hero's turn: that hero is shielded and the clock runs on to the next hero's icon, foes acting on the way. Call it when there is no good move, or when the gap before the next icon is too short for any action.",
                 Example = "Example: tap GUARD at the top right.",
                 Done = (b, c, e) => c is ShieldCommand,
@@ -191,12 +172,6 @@ namespace GridGame.App
                 Example = "Example: hold an armored foe later on to see its plate and which way it faces.",
                 Done = (b, c, e) => e.Exists(x => x is PlateBrokenEvent),
                 Marks = b => b.PlateMarks() },
-            new Lesson { Id = "ready", Title = "Ready, Commander", Patience = 99,
-                Short = "That's all we know, Commander: move us, pincer, chain for mana, cast with care, let the Tank take the hits. Lead us through the last wave!",
-                Text = "That's all we know, Commander: move us, pincer, chain for mana, cast with care, let the Tank take the hits. Lead us through the last wave!",
-                Example = "Tip: Settings → How to play has all of this, and can replay the lessons.",
-                Done = (b, c, e) => false,
-                Marks = b => b.ReadyMarks() },
         };
 
         /// <summary>GG-T190: did this command's drag shove an enemy into a line that its drop then pincered?</summary>
@@ -589,8 +564,37 @@ namespace GridGame.App
                 return;
             }
             if (Coach.Pending(s, "battle-hidden") && HiddenMine() is Coord mine)
+            {
                 RunSystem("battle-hidden", "Hidden mines", "A buried [Mine] shows for a moment, then fades: it is [Hidden]. Foes can't see yours and you can't see theirs, until someone steps on it and it pops.", HiddenMarks(mine));
+                return;
+            }
+            StartJustInTimeLesson();
         }
+
+        /// <summary>GG-T1960: the drill lessons that left the drills (UX review §4.4), each taught the first time its situation
+        /// is on the board in a real stage, at most one per <see cref="JustInTimeGapSeconds"/>.</summary>
+        private static readonly string[] JustInTimeLessons = { "support", "shove", "buffs", "taunt", "pickup", "interrupt", "plate" };
+
+        private const float JustInTimeGapSeconds = 60f;
+        private float lastJustInTimeAt = float.NegativeInfinity;
+
+        private void StartJustInTimeLesson()
+        {
+            if (State.Tutorial || Time.unscaledTime - lastJustInTimeAt < JustInTimeGapSeconds) return;
+            foreach (var id in JustInTimeLessons)
+            {
+                if (!Coach.Pending(App.Save, "battle-" + id) || (id == "taunt" && !HealerHurt())) continue;
+                var l = AllLessons.First(x => x.Id == id);
+                var marks = SafeMarks(l.Marks);
+                if (marks.Count == 0) continue;
+                lastJustInTimeAt = Time.unscaledTime;
+                RunSystem("battle-" + id, l.Title, l.Short, marks);
+                return;
+            }
+        }
+
+        /// <summary>GG-T1960: Taunt is taught once a foe has reached the party's Healer.</summary>
+        private bool HealerHurt() => State.Units.Exists(u => u.IsCommandable && u.Alive && u.Def.Role == "Healer" && u.HpFraction < 1f);
 
         // ── GG-T908: Heavy foes, tactical tiles, hidden mines ──
 
@@ -888,26 +892,6 @@ namespace GridGame.App
 
         /// <summary>A coach step on the commandable hero's first spell bar (§3.1.0: mana fills each spell's own bar,
         /// GG-T1821), or null when it carries no spell.</summary>
-        private List<CoachStep> SpellBarMarks(Func<AbilityDef, string> caption)
-        {
-            var hero = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive);
-            for (int i = 0; hero != null && i < slotViews.Count; i++)
-            {
-                var a = BattleEngine.SlotAbility(State, hero, i);
-                if (a == null || State.ManaFull(hero, i) <= 0) continue;
-                int k = i;
-                return new List<CoachStep> { new CoachStep { Caption = caption(a), Element = () => k < slotViews.Count ? slotViews[k].Q("meter") : null, Info = true } };
-            }
-            return null;
-        }
-
-        /// <summary>GG-T731: what mana is, shown on a spell's own fill bar.</summary>
-        private List<CoachStep> OrbMarks() =>
-            SpellBarMarks(_ => "Each spell has its own bar. Mana fills it as we fight; a full bar glows: that spell is ready to cast.");
-
-        private List<CoachStep> ManaMarks() =>
-            SpellBarMarks(a => $"Pincers, strikes, kills and Clutch! moments fill every spell's bar: {a.Name} glows when its bar is full and ready to cast (tap the bar).");
-
         /// <summary>A cast mark: tap the hero, its slot, the target (when it has one), then Cast / Use / Go.</summary>
         private List<CoachStep> CastMarks(Unit hero, int slot)
         {
@@ -975,12 +959,6 @@ namespace GridGame.App
             }
             return marks;
         }
-
-        /// <summary>Ready: the last wave's foes, all of the board (GG-T542: every lesson points at something).</summary>
-        private List<CoachStep> ReadyMarks() => board == null ? null : new List<CoachStep>
-        {
-            new CoachStep { Caption = "Clear the last wave: every foe on the board (tap to begin).", Element = () => board?.Root, Info = true },
-        };
 
         private List<CoachStep> GuardMarks() => guardButton == null ? null : new List<CoachStep>
         {
