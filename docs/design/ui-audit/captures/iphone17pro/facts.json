@@ -38567,7 +38567,7 @@
     "total": 15
    },
    "text": {
-    "count": 24,
+    "count": 25,
     "captionFloor": {
      "px": 30,
      "pt": 10.3,
@@ -38584,7 +38584,7 @@
      "mm": 2.3
     },
     "underCaptionFloor": 0,
-    "contrastSamples": 24,
+    "contrastSamples": 25,
     "contrastFails": 1,
     "minContrast": 1.19,
     "items": [
@@ -38776,7 +38776,7 @@
       "text": "Any of 51 heroes may answer, each as lik\u2026",
       "rect": [
        51.0,
-       894.0,
+       890.0,
        1067.0,
        126.0
       ],
@@ -38788,9 +38788,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#25233a",
-       "ratio": 6.19,
-       "worstStop": 6.19,
+       "bg": "#25243a",
+       "ratio": 6.13,
+       "worstStop": 6.13,
        "need": 4.5,
        "pass": true
       }
@@ -38799,7 +38799,7 @@
       "text": "Always open",
       "rect": [
        51.0,
-       1026.0,
+       1022.0,
        1067.0,
        66.0
       ],
@@ -38822,7 +38822,7 @@
       "text": "Each of these 51 heroes: 1 in 51 (2%)",
       "rect": [
        62.0,
-       1304.0,
+       1294.0,
        787.0,
        66.0
       ],
@@ -38834,9 +38834,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#211f32",
-       "ratio": 16.07,
-       "worstStop": 16.07,
+       "bg": "#211f33",
+       "ratio": 16.05,
+       "worstStop": 16.05,
        "need": 4.5,
        "pass": true
       }
@@ -38845,7 +38845,7 @@
       "text": "Rates",
       "rect": [
        948.0,
-       1304.0,
+       1294.0,
        120.0,
        66.0
       ],
@@ -38868,7 +38868,7 @@
       "text": "History",
       "rect": [
        155.0,
-       1460.0,
+       1450.0,
        157.0,
        66.0
       ],
@@ -38888,11 +38888,11 @@
       }
      },
      {
-      "text": "Mana Shards: 0 \u00b7 Summon Tickets: 10",
+      "text": "Mana Shards: 0",
       "rect": [
-       120.0,
-       1739.0,
-       985.0,
+       122.0,
+       1736.0,
+       311.0,
        66.0
       ],
       "size": {
@@ -38902,10 +38902,33 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#ffffff",
-       "bg": "#1c1b2b",
-       "ratio": 16.92,
-       "worstStop": 16.92,
+       "fg": "#ffd959",
+       "bg": "#0a0c1a",
+       "ratio": 14.18,
+       "worstStop": 14.18,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Summon Tickets: 10",
+      "rect": [
+       523.0,
+       1736.0,
+       406.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.7,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#0a0b1a",
+       "ratio": 15.73,
+       "worstStop": 15.73,
        "need": 4.5,
        "pass": true
       }
@@ -39165,15 +39188,15 @@
    "polish": {
     "counts": {
      "POL-A2": {
-      "checkedCount": 24,
+      "checkedCount": 25,
       "failed": 0
      },
      "POL-A3": {
-      "checkedCount": 24,
+      "checkedCount": 25,
       "failed": 0
      },
      "POL-C5": {
-      "checkedCount": 46,
+      "checkedCount": 49,
       "failed": 0
      },
      "POL-A5": {
@@ -40622,11 +40645,11 @@
       }
      },
      {
-      "text": "Ritualist",
+      "text": "Myrmidon",
       "rect": [
        185.0,
        1211.0,
-       187.0,
+       206.0,
        66.0
       ],
       "size": {
@@ -40645,11 +40668,11 @@
       }
      },
      {
-      "text": "MAGE",
+      "text": "TANK",
       "rect": [
-       391.0,
+       410.0,
        1211.0,
-       134.0,
+       126.0,
        62.0
       ],
       "size": {
@@ -40659,16 +40682,16 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#8c99ff",
+       "fg": "#f25c4c",
        "bg": "#0c0c16",
-       "ratio": 7.52,
-       "worstStop": 7.52,
+       "ratio": 5.94,
+       "worstStop": 5.94,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "Fair \u00b7 from 195 G",
+      "text": "Fair \u00b7 from 180 G",
       "rect": [
        185.0,
        1283.0,
@@ -40691,11 +40714,11 @@
       }
      },
      {
-      "text": "Doctor",
+      "text": "Ritualist",
       "rect": [
        185.0,
        1640.0,
-       144.0,
+       187.0,
        66.0
       ],
       "size": {
@@ -40714,11 +40737,11 @@
       }
      },
      {
-      "text": "HEALER",
+      "text": "MAGE",
       "rect": [
-       348.0,
+       391.0,
        1640.0,
-       179.0,
+       134.0,
        62.0
       ],
       "size": {
@@ -40728,16 +40751,16 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#66e680",
-       "bg": "#11181b",
-       "ratio": 11.19,
-       "worstStop": 11.19,
+       "fg": "#8c99ff",
+       "bg": "#11111e",
+       "ratio": 7.24,
+       "worstStop": 7.24,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "Easygoing \u00b7 from 210 G",
+      "text": "Fair \u00b7 from 195 G",
       "rect": [
        185.0,
        1712.0,
@@ -40752,19 +40775,19 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#212031",
-       "ratio": 6.49,
-       "worstStop": 6.49,
+       "bg": "#212030",
+       "ratio": 6.5,
+       "worstStop": 6.5,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "Myrmidon",
+      "text": "Courier",
       "rect": [
        185.0,
        2072.0,
-       206.0,
+       159.0,
        66.0
       ],
       "size": {
@@ -40783,11 +40806,11 @@
       }
      },
      {
-      "text": "TANK",
+      "text": "SUPPORT",
       "rect": [
-       410.0,
+       363.0,
        2072.0,
-       126.0,
+       210.0,
        62.0
       ],
       "size": {
@@ -40797,16 +40820,16 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#f25c4c",
-       "bg": "#0c0c16",
-       "ratio": 5.94,
-       "worstStop": 5.94,
+       "fg": "#59d9d9",
+       "bg": "#10161e",
+       "ratio": 10.67,
+       "worstStop": 10.67,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "Fair \u00b7 from 180 G",
+      "text": "Greedy \u00b7 from 135 G",
       "rect": [
        185.0,
        2144.0,
@@ -41215,9 +41238,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#31285d",
-       "ratio": 10.63,
-       "worstStop": 10.63,
+       "bg": "#2e2754",
+       "ratio": 11.0,
+       "worstStop": 11.0,
        "need": 4.5,
        "pass": true
       }
@@ -41238,9 +41261,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#3e3562",
-       "ratio": 8.95,
-       "worstStop": 8.95,
+       "bg": "#3f3662",
+       "ratio": 8.83,
+       "worstStop": 8.83,
        "need": 4.5,
        "pass": true
       }
