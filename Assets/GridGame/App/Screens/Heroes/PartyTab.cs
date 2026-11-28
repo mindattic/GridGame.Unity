@@ -10,7 +10,8 @@ using UnityEngine.UIElements;
 
 namespace GridGame.App
 {
-    /// <summary>The Hero screen's Party tab (§25.5, GG-T435): every roster hero as a card; tap to swap in or out.</summary>
+    /// <summary>The Hero screen's Party tab (§25.5, GG-T435): the active party first, then the reserve, then the party's
+    /// cohesion pairs (GG-T1970). Every hero is a card; tap to select it, tap again to swap it in or out.</summary>
     internal sealed class PartyTab : HeroTab
     {
         public override string Id => "party";
@@ -18,25 +19,30 @@ namespace GridGame.App
 
         public override void BuildBody(VisualElement body)
         {
-            BondsUi.CohesionGrid(C, S, body); // GG-T1299
-            var list = Ui.ListPanel(body, $"Active party {S.Party.Count}/{Progression.MaxPartySize} — tap to swap", "party-list");
-            foreach (var h in S.Roster.OrderByDescending(x => S.Party.Contains(x.ClassId)).ThenBy(x => x.ClassId))
+            var list = Ui.ListPanel(body, $"Active party {S.Party.Count}/{Progression.MaxPartySize}", "party-list");
+            foreach (var h in S.Party.Select(S.Hero).Where(h => h != null)) HeroCard(list, h, true);
+            var reserve = S.Roster.Where(h => !S.Party.Contains(h.ClassId)).OrderBy(h => h.ClassId).ToList();
+            if (reserve.Count > 0)
             {
-                var hero = h;
-                var u = Progression.Preview(C, h);
-                bool active = S.Party.Contains(h.ClassId);
-                var card = Ui.Card(list, h.ClassId, null, out var col);
-                card.EnableInClassList("card--selected", active);
-                var nameRow = Ui.El("row", col);
-                Ui.Name(C.Class(h.ClassId).Name, nameRow);
-                Ui.RoleBadge(Ui.RoleOf(h, C.Class(h.ClassId)), nameRow);
-                MercenaryCamp.Tag(S, h.ClassId, nameRow);
-                Ui.Caption($"Lv {u.Level}   HP {u.MaxHp}   {(active ? "<color=#78EC96>Active</color>" : "Reserve")}", col);
-                GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
-                PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
-                card.AddToClassList("card-tap");
-                Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.confirm", confirmTap: true);
+                Ui.Section("Reserve", list).name = "party-reserve";
+                foreach (var h in reserve) HeroCard(list, h, false);
             }
+            BondsUi.PairLines(C, S, list);
+        }
+
+        private void HeroCard(VisualElement list, HeroSave h, bool active)
+        {
+            var u = Progression.Preview(C, h);
+            var card = Ui.Card(list, h.ClassId, null, out var col);
+            var nameRow = Ui.El("row", col);
+            Ui.Name(C.Class(h.ClassId).Name, nameRow);
+            Ui.RoleBadge(Ui.RoleOf(h, C.Class(h.ClassId)), nameRow);
+            MercenaryCamp.Tag(S, h.ClassId, nameRow);
+            Ui.Caption($"Lv {u.Level} · HP {u.MaxHp}", col);
+            GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
+            if (active) PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
+            card.AddToClassList("card-tap");
+            Ui.Tappable(card, () => Done(Party.Toggle(S, h.ClassId)), "ui.confirm", confirmTap: true);
         }
     }
 }
