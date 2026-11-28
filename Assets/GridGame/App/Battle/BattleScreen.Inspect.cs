@@ -206,12 +206,12 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step.</summary>
-        private void ShowDragOutcome(MovePreview pv)
+        /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step or tap-move pick.</summary>
+        private void ShowDragOutcome(MovePreview pv, int heroId, List<Coord> path)
         {
             ClearOutcomeTags();
-            if (pv.Pincers.Count == 0 || dragPath.Count == 0) return;
-            var p = OutcomePreviewer.Preview(State, new MoveCommand { HeroId = dragHeroId, Path = new List<Coord>(dragPath) }, 3);
+            if (pv.Pincers.Count == 0 || path.Count == 0) return;
+            var p = OutcomePreviewer.Preview(State, new MoveCommand { HeroId = heroId, Path = new List<Coord>(path) }, 3);
             if (p.Refused) return;
             foreach (var t in p.Targets)
             {

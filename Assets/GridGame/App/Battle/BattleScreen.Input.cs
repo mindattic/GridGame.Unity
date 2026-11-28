@@ -36,6 +36,14 @@ namespace GridGame.App
             activePointerId = evt.pointerId;
             var tile = board.TileAt(evt.localPosition);
             var unit = State.UnitAt(tile);
+            // GG-T1977: with a hero selected, an empty tile is a tap-to-move pick, taken on the release over it.
+            if (tapMoveTile != tile) ClearTapMove();
+            if (unit == null && TapMoveAllowed(tile))
+            {
+                tapMovePress = tile;
+                board.Root.CapturePointer(evt.pointerId);
+                return;
+            }
 
             if (TargetingSlot >= 0)
             {
@@ -162,6 +170,7 @@ namespace GridGame.App
             var hero = State.UnitById(heroId);
             if (hero == null || !hero.IsHero || !BattleEngine.CanMove(State, heroId)) return false;
             ClearHint();
+            ClearTapMove();
             SelectHero(heroId);
             pressing = true;
             dragHeroId = heroId;
@@ -185,6 +194,13 @@ namespace GridGame.App
             activePointerId = -1;
             bool wasPressing = pressing;
             if (board.Root.HasPointerCapture(evt.pointerId)) board.Root.ReleasePointer(evt.pointerId);
+            if (tapMovePress.HasValue)
+            {
+                var picked = tapMovePress.Value;
+                tapMovePress = null;
+                if (!Paused && !OffBoard(evt.localPosition) && board.TileAt(evt.localPosition) == picked) TapMoveTo(picked);
+                return;
+            }
             // A release while paused (hold, Escape, let go) can't commit: the drag goes back where it started.
             if (Paused)
             {
@@ -549,7 +565,7 @@ namespace GridGame.App
             }
             board.Lines.ClearLines();
             board.ClearMarks();
-            if (heroId == dragHeroId && dragging && !simulatingDrag) ShowDragOutcome(pv);
+            if (heroId == dragHeroId && dragging && !simulatingDrag) ShowDragOutcome(pv, dragHeroId, dragPath);
             foreach (var u in State.Units)
                 if (board.Units.TryGetValue(u.Id, out var uv) && u.Alive && u.Id != heroId) uv.SetGlow(Color.white, 0f);
             // GG-T190: shoving is a tactic, so show the whole migration — a ghost on every displaced hero's and

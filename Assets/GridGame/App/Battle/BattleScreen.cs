@@ -219,6 +219,10 @@ namespace GridGame.App
                 // (left set, CanCommand stayed false and the battle soft-locked); darkness re-hides on the fresh views.
                 TargetingSlot = -1;
                 PendingTarget = null;
+                tapMoveTile = tapMovePress = null;
+                tapMovePath = null;
+                tapMovePreview = null;
+                tapMoveHeroId = -1;
                 targetGlows.Clear();
                 EndHold();
                 dragging = pressing = false;
@@ -678,6 +682,7 @@ namespace GridGame.App
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
                 if (ab != null) { AbilityInfo(caster, TargetingSlot, ab); return; }
             }
+            if (TapMoving && State.UnitById(tapMoveHeroId) is Unit mover) { TapMoveCard(mover); return; }
             if (advice != null) PanelLine(panel, advice, "small gold", "advice");
             // A slot read without aiming (a hold, or a tap on one that can't aim) stays in the panel until a unit is read or
             // another hero is selected (GG-T1823).
@@ -697,7 +702,7 @@ namespace GridGame.App
             // Idle (§9.0): one line for the selected hero, then its card and every skill's readout.
             if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable)
             {
-                var idle = Ui.Text($"{u.Name}: tap a skill to aim it · hold one to read it · drag {u.Name} to move", "small gold", panel);
+                var idle = Ui.Text($"{u.Name}: tap a skill to aim it · hold one to read it · drag {u.Name} or tap a tile to move", "small gold", panel);
                 idle.name = "idle-prompt";
                 idle.style.whiteSpace = WhiteSpace.Normal;
                 idle.style.marginBottom = Space.S8;
@@ -1044,6 +1049,7 @@ namespace GridGame.App
         public void Commit(BattleCommand cmd, bool skipMovePrefix = false, BattleCommand perfectCmd = null)
         {
             if (!CanCommand()) return;
+            ClearTapMove();
             bool wasTargeting = TargetingSlot >= 0;
             CancelTargeting();
             readSlot = -1;
@@ -1071,6 +1077,7 @@ namespace GridGame.App
         private void OnSlot(int slot)
         {
             DropRefusal();
+            ClearTapMove();
             if (!CanCommand()) { TapSlotCard(slot); return; } // GG-T450: looking is free, even mid-playback
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null) return;
@@ -1235,6 +1242,7 @@ namespace GridGame.App
             if (pauseVeil != null) { closePause?.Invoke(); return false; }
             if (AbilitiesOpen) { SheetBack(); return false; }
             if (TargetingSlot >= 0) { CancelByPlayer(); return false; }
+            if (TapMoving) { CancelTapMove(); return false; }
             OpenMenu();
             return false;
         }
@@ -1684,6 +1692,7 @@ namespace GridGame.App
                 return;
             }
             CancelTargeting();
+            ClearTapMove();
             SelectedHeroId = id;
             panelUnitId = -1;
             foreach (var u in State.Units)
