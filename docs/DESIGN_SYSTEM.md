@@ -45,6 +45,8 @@ Code reads `Tokens.cs`; USS reads `Theme.uss` `:root`. A literal colour, size, s
 | Term | #9CC7FF | `Palette.Term` | a tappable glossary [term] |
 | Danger | #3C1A26 face, #963659 rim, #FFB0B8 text | `.btn--danger` | destructive buttons only |
 | Hero, Foe, Boss | #78ABFF, #EB454A, #DB66FF | `--color-hero`, `-enemy`, `-boss` | team keylines and timeline marks, always with a shape |
+| Team marks in code | Hero #78ABFF (CB #57B5E8), Foe #EB454A (CB #F57A0A), Boss #DB66FF (CB #BF4D05) | `Palette.TeamHero`, `TeamFoe`, `TeamBoss` | the battle base plates (hero rounded, foe and boss notched, GG-T1948, GG-T2128), keylines and turn icons; each swaps to its CB value under the Colorblind palette |
+| Next actor | #40EDE0 (CB #CC78A6) | `Palette.NextActorRing` | the next actor's board ring; never gold, never a team colour, never the enemy intent red |
 | Veil | #05050C at 0.72 | `.veil` | behind every modal and sheet |
 
 Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-gauge-*`) are gameplay colours and stay the same in every theme. Each hue family has one meaning (POL-B4). The reference page lists every USS colour token.
@@ -54,6 +56,8 @@ Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-g
 Palette additions for code: `Palette.Black`, `Palette.Gray` (the fallback when a content colour does not parse), `Palette.Missing` (magenta, for a colour that must never be missing), `Palette.Overbright` (3, 3, 3: an image flashes overbright and eases back to White), `Palette.FoeTint` (a foe's cut-in portrait), `Palette.PlateRim` (a dialogue nameplate whose speaker is not talking) and `Palette.ManalithRock`.
 
 Grouped code colours (GG-T2139), each at the exact value its call sites drew before: `Palette.Vfx.*` holds the battle effects (selection and intent glows such as `SelectGlow`, `Harmful`, `Helpful`, `Threat`; element and status hues such as `Fire`, `Burning`, `Frozen`; sparks, rings, marks, cut-in bands, the board's rock, plate and amplifier, combat text and its outlines; and the vfxstyle fallback hex strings), `Palette.Combo.D` to `SSS` the combo rank badge, `Palette.Backdrop.*` the tints over a screen's background art, `Palette.Scene.*` generated textures and rigs (placeholder art, the card back, the moon's albedo, the fog banks, the coach shade), and `Palette.SkillHex.*` the skill hexagon's own palette. `Palette.Clear` is fully transparent and `Palette.Grey(v, a)` a computed grey. A colour whose alpha is computed at runtime keeps that computation at the call site and tokenizes only the base: `Palette.Vfx.Spark.WithA(1f - k)`, `c.WithA(0.5f)`. TestMode's pacing waits are `Timing.TestModeSettle` and `Timing.TestModeRead`.
+
+**Battle board grid (GG-T1950).** The board sits on a `Palette.Ink` backing at sky.json `BoardScrim` 0.35 (a region's own `BoardScrim` can only darken it), over the battle backdrop tint. Each grid line is a `Palette.Vfx.GridLine` core (`Size.Hairline`) on a `Palette.Ink` keyline (`Size.Underline` each side). Measured against the dimmed art under the board for every campaign theme: the core alone is 3.8:1 (Shardfall) to 7.5:1 (Cathedral) against the median art, the core or its keyline is at least 3.5:1 against any of it, and core to keyline is 12.6:1. Window themes (ThemeChrome, WindowThemes) don't paint the board, so they don't change these numbers.
 
 ### 2.2 Type
 

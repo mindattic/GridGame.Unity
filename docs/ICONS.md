@@ -298,7 +298,7 @@ Role: row 64. Where: SettingsScreen (Settings/SettingsScreen.cs).
 | Pincer close-ups | `RowKind.Focus` | emblem | `delapouite/crosshair` | manapunk |
 | Confirm before acting | `RowKind.Confirm` | emblem | `delapouite/check-mark` | manapunk |
 | Quality | `Quality row (RowKind.Diamond today)` | emblem Diamond | `lorc/gems` | manapunk |
-| Frame rate cap | `RowKind.Gauge` | emblem | `delapouite/speedometer` | manapunk |
+| Frame rate | `RowKind.Gauge` | emblem | `delapouite/speedometer` | manapunk |
 | Effects | `Effects row (RowKind.New today)` | emblem New | `delapouite/sparkles` | manapunk |
 | VSync | `RowKind.Sync` | emblem | `delapouite/clockwise-rotation` | manapunk |
 | Screen shake | `RowKind.Shake` | emblem | `delapouite/vibrating-smartphone` | manapunk |
@@ -396,7 +396,7 @@ Every `RowKind` that draws a code emblem today, and the inventory row whose icon
 | `Speed` | settings/Battle speed |
 | `Timer` | settings/Drag timer, Untimed turns |
 | `Focus` | settings/Pincer close-ups |
-| `Gauge` | settings/Frame rate cap |
+| `Gauge` | settings/Frame rate |
 | `Shake` | settings/Screen shake |
 | `Sync` | settings/VSync |
 | `Window` | settings/Window mode, Windows |

@@ -221,7 +221,7 @@ namespace GridGame.Meta
             var route = o.Trust >= o.TrustNeeded ? JoinRoute.Rapport : JoinRoute.Hire;
             bool party = BattleFactory.JoinRoster(c, s, o.ClassId, o.Level, o.Hp, o.MaxHp, route);
             var name = c.Class(o.ClassId).Name;
-            return party ? $"{name} joins the caravan!" : $"{name} joins the caravan (in reserve)";
+            return party ? $"{name} joins the caravan" : $"{name} joins the caravan (in reserve)";
         }
     }
 }
