@@ -34,7 +34,8 @@ namespace GridGame.Meta
             s.World.CarriedOrbs = 0;
         }
 
-        /// <summary>Orbs the next battle starts with: what the last win on the road left in the bank; none at camp.</summary>
+        /// <summary>Orbs the next battle starts with: the full spell meters the last win on the road ended with (each arrives
+        /// as 100 points to every meter, §3.1.0); none at camp.</summary>
         public static int StartOrbs(SaveData s) => OnTheRoad(s) ? Math.Max(0, s.World.CarriedOrbs) : 0;
 
         /// <summary>After a battle fought on the road (wounds are already written by the commit): a win carries the bank's
@@ -95,6 +96,15 @@ namespace GridGame.Meta
         {
             public bool Ate;
             public bool WellRested;
+        }
+
+        /// <summary>Whole orbs Well Rested adds to a battle's opening grant (§3.1.0, GG-T1811): N x 100 points to every spell
+        /// meter while the party is Well Rested (<see cref="CampRestConfig.WellRestedExtraOrbs"/>), else 0.</summary>
+        public static int WellRestedOrbs(SaveData s, WorldTimeConfig time = null, CampRestConfig config = null)
+        {
+            if (s?.World == null) return 0;
+            bool rested = CampRest.IsWellRested(WorldSaveAdapter.Night(s.World), WorldSaveAdapter.Clock(s.World, time));
+            return rested ? Math.Max(0, (config ?? new CampRestConfig()).WellRestedExtraOrbs) : 0;
         }
 
         public static Result Rest(SaveData s, out Outcome outcome, WorldTimeConfig time = null, CampRestConfig config = null)

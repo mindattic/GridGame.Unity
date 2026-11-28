@@ -6,44 +6,38 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>Owned Mana Orbs (GG-T677, BIBLE §3.1.4.3) and unspent orbs settling into Mana Dust (GG-T676, §3.1.4.2).</summary>
+    /// <summary>Mana Orbs retired as progression (GG-T1811, BIBLE §3.1.0) and full spell meters settling into Mana Dust
+    /// (GG-T676, §3.1.4.2).</summary>
     public class ManaOrbsTests
     {
         [Test]
-        public void Every_orb_source_adds_up_to_the_cap_and_a_new_game_holds_one()
+        public void A_new_game_owns_no_orbs_and_its_battle_has_no_orb_cap()
         {
             var c = Real;
-            int sources = BattleConfig.StartOwnedOrbs + BattleConfig.MaxBrokenOrbs
-                + c.Campaign.Themes.Count(t => t.MilestoneOrb)
-                + c.Campaign.Themes.Where(t => t.OrbFindChance > 0f).Sum(t => t.Stages.Count);
-            Assert.That(sources, Is.EqualTo(BattleConfig.MaxOrbCapacity), "20 possible orbs (owner 2026-11-22)");
             var s = Progression.NewGame(c, "T");
-            Assert.That(ManaOrbs.Owned(c, s), Is.EqualTo(1));
-            Assert.That(BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 1).OrbCapacity, Is.EqualTo(1), "the battle row fills what you own");
+            Assert.That(s.OwnedOrbs, Is.EqualTo(0));
+            Assert.That(BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 1).OrbCapacity, Is.EqualTo(0), "nothing caps a battle's mana");
         }
 
         [Test]
-        public void An_old_save_gets_the_orbs_its_milestones_earned()
+        public void An_old_save_is_paid_once_for_its_owned_orbs_and_broken_orbs()
         {
             var c = Real;
             var s = Progression.NewGame(c, "T");
-            s.OwnedOrbs = 0;
-            foreach (var t in c.Campaign.Themes.Where(t => t.MilestoneOrb).Take(3)) s.Milestones.Add(t.Id);
-            SaveMigrations.GrantOwnedOrbs(s, c);
-            Assert.That(s.OwnedOrbs, Is.EqualTo(1 + 3));
-        }
-
-        [Test]
-        public void The_manasmith_restores_a_broken_orb_for_dust_and_gold()
-        {
-            var c = Real;
-            var s = Progression.NewGame(c, "T");
-            s.AddItem(ManaOrbs.BrokenOrbId, 1);
-            s.AddItem(DustEconomy.DustId, ManaOrbs.RestoreDust);
-            s.Gold = ManaOrbs.RestoreGold;
-            Assert.That(ManaOrbs.Restore(c, s).Ok, Is.True);
-            Assert.That((s.OwnedOrbs, s.Count(ManaOrbs.BrokenOrbId), DustEconomy.Have(s), s.Gold), Is.EqualTo((2, 0, 0, 0)));
-            Assert.That(ManaOrbs.Restore(c, s).Ok, Is.False, "nothing left to restore");
+            var milestones = c.Campaign.Themes.Where(t => t.MilestoneOrb).Take(2).ToList();
+            foreach (var t in milestones) s.Milestones.Add(t.Id);
+            s.OrbFinds.Add("some_ruin_stage");
+            s.OwnedOrbs = BattleConfig.StartOwnedOrbs + milestones.Count + 1 + 1; // two milestones, a find, a restored orb
+            s.AddItem(ManaOrbs.BrokenOrbId, 2);
+            int shards = DiamondExchange.Have(s), dust = DustEconomy.Have(s);
+            s.Version = 27;
+            SaveMigrations.Migrate(s, c);
+            Assert.That(DiamondExchange.Have(s) - shards, Is.EqualTo(milestones.Count * ManaOrbs.MilestoneShards));
+            Assert.That(DustEconomy.Have(s) - dust, Is.EqualTo(ManaOrbs.HalcyonFindDust + 3 * ManaOrbs.BrokenOrbDust));
+            Assert.That(s.Count(ManaOrbs.BrokenOrbId), Is.EqualTo(0));
+            int after = DustEconomy.Have(s);
+            SaveMigrations.Migrate(s, c);
+            Assert.That(DustEconomy.Have(s), Is.EqualTo(after), "paid once");
         }
 
         [Test]

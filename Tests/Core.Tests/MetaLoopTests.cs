@@ -204,7 +204,6 @@ namespace GridGame.Tests
         public void A_win_on_the_road_carries_its_orbs_and_wounds_into_the_next_battle_with_rest_closed()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex");
-            s.OwnedOrbs = ManaBank.DefaultCapacity; // GG-T685: a new save owns 1 orb (GG-T677); room to carry the 4 below
             Assert.That(s.World.Camped, Is.True, "a new game starts at camp");
             var theme = c.Campaign.Themes[0];
             var b1 = Fight(c, s, theme.Stages[0], true);
@@ -227,7 +226,6 @@ namespace GridGame.Tests
         public void A_defeat_on_the_road_falls_back_to_camp_with_no_orbs()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex3");
-            s.OwnedOrbs = ManaBank.DefaultCapacity;
             var theme = c.Campaign.Themes[0];
             var b1 = Fight(c, s, theme.Stages[0], true);
             b1.Bank.Add(2);
