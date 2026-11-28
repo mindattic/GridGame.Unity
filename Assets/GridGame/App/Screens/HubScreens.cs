@@ -2674,7 +2674,6 @@ namespace GridGame.App
 
         private int buyAmount = 10;
         private int refineAmount = 1;
-        private static readonly int[] Steps = { -10, -1, 1, 10 };
 
         protected override void BuildBody(VisualElement body)
         {
@@ -2694,19 +2693,11 @@ namespace GridGame.App
             var buy = Ui.Panel(body, "Buy Dust with gold", false, "aetherist-buy-panel");
             var pick = Ui.Actions(buy);
             pick.style.alignItems = Align.Center;
-            foreach (var step in Steps)
-            {
-                int d = step;
-                if (d > 0) continue;
-                RowIcon.IconButton($"−{-d}", RowKind.Station, () => { buyAmount = Math.Max(1, buyAmount + d); Refresh(); }, "btn--small", pick).name = $"aetherist-buy-minus{-d}";
-            }
-            Ui.Name($"{buyAmount:N0}", pick, "gold").name = "aetherist-buy-amount";
-            foreach (var step in Steps)
-            {
-                int d = step;
-                if (d < 0) continue;
-                RowIcon.IconButton($"+{d}", RowKind.Station, () => { buyAmount += d; Refresh(); }, "btn--small", pick).name = $"aetherist-buy-plus{d}";
-            }
+            var buyCount = Ui.Stepper(pick, buyAmount.ToString("N0"), () => { buyAmount = Math.Max(1, buyAmount - 1); Refresh(); }, () => { buyAmount += 1; Refresh(); }, out var buyMinus, out var buyPlus, "gold");
+            buyMinus.name = "aetherist-buy-minus";
+            buyCount.name = "aetherist-buy-amount";
+            buyPlus.name = "aetherist-buy-plus";
+            Ui.SetEnabled(buyMinus, buyAmount > 1);
             var maxBuyBtn = RowIcon.IconButton("Max", RowKind.Station, () => { buyAmount = Math.Max(1, maxBuy); Refresh(); }, "btn--small", pick);
             maxBuyBtn.name = "aetherist-buy-max";
             Ui.SetEnabled(maxBuyBtn, maxBuy > 0);
@@ -2718,19 +2709,11 @@ namespace GridGame.App
             var refine = Ui.Panel(body, "Refine into " + ShardText.Plural, false, "aetherist-refine-panel");
             var rpick = Ui.Actions(refine);
             rpick.style.alignItems = Align.Center;
-            foreach (var step in Steps)
-            {
-                int d = step;
-                if (d > 0) continue;
-                RowIcon.IconButton($"−{-d}", RowKind.Station, () => { refineAmount = Math.Max(1, refineAmount + d); Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-minus{-d}";
-            }
-            Ui.Name($"{refineAmount:N0}", rpick, "gold").name = "aetherist-refine-amount";
-            foreach (var step in Steps)
-            {
-                int d = step;
-                if (d < 0) continue;
-                RowIcon.IconButton($"+{d}", RowKind.Station, () => { refineAmount += d; Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-plus{d}";
-            }
+            var refineCount = Ui.Stepper(rpick, refineAmount.ToString("N0"), () => { refineAmount = Math.Max(1, refineAmount - 1); Refresh(); }, () => { refineAmount += 1; Refresh(); }, out var refineMinus, out var refinePlus, "gold");
+            refineMinus.name = "aetherist-refine-minus";
+            refineCount.name = "aetherist-refine-amount";
+            refinePlus.name = "aetherist-refine-plus";
+            Ui.SetEnabled(refineMinus, refineAmount > 1);
             var maxRefineBtn = RowIcon.IconButton("Max", RowKind.Station, () => { refineAmount = Math.Max(1, maxRefine); Refresh(); }, "btn--small", rpick);
             maxRefineBtn.name = "aetherist-refine-max";
             Ui.SetEnabled(maxRefineBtn, maxRefine > 0);
