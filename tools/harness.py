@@ -2354,7 +2354,7 @@ def _trust_scene(party):
 
 def bonds(run="bonds"):
     """GG-T1621 (GG-T1300): a Trust scene end to end. A new game; devbond lifts a party hero with a Trust scene to its
-    trigger tier's floor; Camp's Talk row offers the scene (talk-scene-<id>); playing it through counts it seen, shows a
+    trigger tier's floor; the hero's Talk sheet offers the scene (talk-scene-<id>); playing it through counts it seen, shows a
     bond chip (dlg-bond-*) and moves the hero's Trust in the state's save.trust."""
     fails = []
     launch(run, fresh=True)
@@ -2372,6 +2372,7 @@ def bonds(run="bonds"):
         if not _goto("talk"):
             fails.append("Talk didn't open")
         shot("01-talk")
+        call("click", name=f"talk-{hero}"); time.sleep(1.0)  # GG-T2023: a hero's scenes live in their Talk sheet
         if not call("names", prefix=f"talk-scene-{scene}"):
             fails.append(f"no talk-scene-{scene} row after devbond to tier {tier}")
         else:

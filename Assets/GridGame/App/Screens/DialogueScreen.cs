@@ -640,7 +640,9 @@ namespace GridGame.App
         }
     }
 
-    /// <summary>Camp's Talk row (§27.1, GG-T117): the party and every joined Camp NPC, each with what they'd talk about.</summary>
+    /// <summary>Camp's Talk row (§27.1, GG-T117): the party and every joined Camp NPC, one row each with what they'd talk
+    /// about. GG-T2023: a hero's bond scenes, open or locked, sit in that hero's own sheet (<see cref="TalkPartnerScreen"/>),
+    /// not as rows under them; the row carries the New badge and a count when anything there is new.</summary>
     public sealed class TalkScreen : HubPage
     {
         public override string Id => "talk";
@@ -650,47 +652,99 @@ namespace GridGame.App
         {
             var list = Ui.ListPanel(body, null, out var scroll, "talk-list");
             var scenes = DialogueRunner.BondScenes(C, S);
-            foreach (var who in DialogueRunner.TalkPartners(S))
+            var partners = DialogueRunner.TalkPartners(S);
+            foreach (var who in partners)
             {
                 bool npc = who.StartsWith(ContentLoader.NpcFlagPrefix);
                 string npcId = npc ? who.Substring(ContentLoader.NpcFlagPrefix.Length) : null;
                 var topic = DialogueRunner.TalkTopic(C, S, who);
                 string name = npc ? DialogueRunner.Npc(npcId) : C.TryClass(who)?.Name ?? who;
-                string value = topic == null ? "Nothing to say" : S.SeenDialogues.Contains(topic.Id) ? topic.Title ?? "" : "New!";
-                var row = Ui.MenuRow(name, value, () => App.Router.Push(new DialogueScreen(topic, npc ? null : who, null)),
-                    list, null, topic != null);
+                var own = npc ? new List<BondScene>() : TalkPartnerScreen.ScenesOf(scenes, who);
+                int fresh = (topic != null && !S.SeenDialogues.Contains(topic.Id) ? 1 : 0) + own.Count(b => b.Unlocked);
+                string value = fresh > 1 ? $"{fresh} new" : fresh == 1 ? "New!"
+                    : topic == null ? (own.Count > 0 ? "Nothing new" : "Nothing to say") : topic.Title ?? "";
+                Action open = own.Count > 0 ? () => App.Router.Push(new TalkPartnerScreen(who))
+                    : (Action)(() => App.Router.Push(new DialogueScreen(topic, npc ? null : who, null)));
+                var row = Ui.MenuRow(name, value, open, list, null, topic != null || own.Count > 0);
                 // GG-T748: every partner leads with its kind icon (BIBLE §26.7). An NPC: the thumbnail of the topic's first
                 // speaker with art (GG-T225), else the bust emblem; a hero: its baked thumbnail (§12.1.1, GG-T720). The whole
                 // figure stands only in the conversation itself.
-                if (npc) row.KindIcon(RowKind.Npc, topic?.Speakers.Select(sp => sp.Portrait ?? sp.Class).FirstOrDefault(DialogueScreen.HasPortrait));
-                else row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(who) ? who : null);
+                var icon = npc ? row.KindIcon(RowKind.Npc, topic?.Speakers.Select(sp => sp.Portrait ?? sp.Class).FirstOrDefault(DialogueScreen.HasPortrait))
+                    : row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(who) ? who : null);
                 row.name = "talk-" + (npc ? npcId : who);
-                if (topic != null && !S.SeenDialogues.Contains(topic.Id)) row.Q<Label>("value").AddToClassList("gold");
-                if (!npc)
-                    foreach (var b in scenes.Where(b => b.Def.Trigger.Kind == DialogueTriggerKind.Trust && string.Equals(b.Def.Trigger.Id, who, StringComparison.OrdinalIgnoreCase)))
-                        SceneRow(list, b, who);
+                if (fresh > 0)
+                {
+                    RowIcon.Badge(icon, RowKind.New);
+                    row.Q<Label>("value").AddToClassList("gold");
+                }
             }
-            var together = scenes.Where(b => b.Def.Trigger.Kind == DialogueTriggerKind.Cohesion).ToList();
+            var together = scenes.Where(b => b.Unlocked && b.Def.Trigger.Kind == DialogueTriggerKind.Cohesion).ToList();
             if (together.Count > 0)
             {
                 Ui.Section("Together", list).name = "talk-together";
-                foreach (var b in together) SceneRow(list, b, null);
+                foreach (var b in together) TalkPartnerScreen.SceneRow(list, b, null);
             }
+            if (partners.Count == 0 && together.Count == 0) Ui.EmptyState(list, RowKind.Talk, "No one to talk to yet.", "talk-empty");
+            Ui.SelectFirst(list);
+        }
+    }
+
+    /// <summary>GG-T2023: one hero's Talk sheet, opened from their Talk row when they have bond scenes: their Talk topic,
+    /// then their open scenes, then the locked ones (their Trust scenes and the pair scenes they're in) with the tier each
+    /// needs.</summary>
+    public sealed class TalkPartnerScreen : HubPage
+    {
+        private readonly string hero;
+
+        public TalkPartnerScreen(string hero) { this.hero = hero; }
+
+        public override string Id => "talk-partner";
+        protected override string Title => C.TryClass(hero)?.Name ?? hero;
+        protected override string TipStation => "talk";
+
+        /// <summary>The bond scenes that belong in <paramref name="hero"/>'s sheet: every Trust scene of theirs, and every
+        /// locked pair scene they're in (an open one plays from the Talk screen's Together section). Open ones first.</summary>
+        public static List<BondScene> ScenesOf(List<BondScene> scenes, string hero) => scenes.Where(b =>
+                b.Def.Trigger.Kind == DialogueTriggerKind.Trust ? string.Equals(b.Def.Trigger.Id, hero, StringComparison.OrdinalIgnoreCase)
+                : b.Def.Trigger.Kind == DialogueTriggerKind.Cohesion && !b.Unlocked
+                  && (string.Equals(b.With, hero, StringComparison.OrdinalIgnoreCase) || string.Equals(b.Other, hero, StringComparison.OrdinalIgnoreCase)))
+            .OrderBy(b => b.Unlocked ? 0 : 1).ThenBy(b => b.Def.Trigger.Level).ToList();
+
+        protected override void BuildBody(VisualElement body)
+        {
+            var list = Ui.ListPanel(body, null, out var scroll, "talk-partner-list");
+            var topic = DialogueRunner.TalkTopic(C, S, hero);
+            if (topic != null)
+            {
+                bool fresh = !S.SeenDialogues.Contains(topic.Id);
+                var row = Ui.MenuRow(topic.Title ?? "Talk", fresh ? "New!" : "", () => App.Router.Push(new DialogueScreen(topic, hero, null)), list);
+                row.name = "talk-topic";
+                var icon = row.KindIcon(RowKind.Talk);
+                if (fresh)
+                {
+                    RowIcon.Badge(icon, RowKind.New);
+                    row.Q<Label>("value").AddToClassList("gold");
+                }
+            }
+            foreach (var b in ScenesOf(DialogueRunner.BondScenes(C, S), hero)) SceneRow(list, b, hero);
+            if (list.childCount == 0) Ui.EmptyState(list, RowKind.Talk, "Nothing to talk about right now.", "talk-empty");
             Ui.SelectFirst(list);
         }
 
-        /// <summary>GG-T1598 (§27.1): one bond scene's row, under its hero (<paramref name="hero"/>) or in Together: open, it
-        /// reads New! in gold and plays with "$with" as the trigger hero; locked, it's disabled and says the tier it needs.</summary>
-        private void SceneRow(VisualElement list, BondScene b, string hero)
+        /// <summary>GG-T1598 (§27.1): one bond scene's row, in a hero's sheet (<paramref name="hero"/>) or in Together: open,
+        /// it reads New! in gold and plays with "$with" as the trigger hero; locked, it's disabled and says the tier it needs.</summary>
+        internal static void SceneRow(VisualElement list, BondScene b, string hero)
         {
+            var c = App.Content;
             var t = b.Def.Trigger;
             bool generic = ContentLoader.IsGenericCohesion(b.Def);
-            string pair = $"{C.TryClass(b.With)?.Name ?? b.With} and {C.TryClass(b.Other)?.Name ?? b.Other}";
-            string title = generic ? (b.Def.Title != null ? $"{pair}: {b.Def.Title}" : pair) : b.Def.Title ?? (hero != null ? "A word alone" : pair);
-            string value = b.Unlocked ? "New!" : $"{(t.Kind == DialogueTriggerKind.Trust ? "Trust" : "Cohesion")} {t.Level} needed";
-            var row = Ui.MenuRow(title, value, () => App.Router.Push(DialogueScreen.ForRunner(b.Begin(C, S), null)), list, null, b.Unlocked);
+            bool trust = t.Kind == DialogueTriggerKind.Trust;
+            string pair = $"{c.TryClass(b.With)?.Name ?? b.With} and {c.TryClass(b.Other)?.Name ?? b.Other}";
+            string title = generic ? (b.Def.Title != null ? $"{pair}: {b.Def.Title}" : pair) : b.Def.Title ?? (trust ? "A word alone" : pair);
+            string value = b.Unlocked ? "New!" : $"{(trust ? "Trust" : "Cohesion")} {t.Level} needed";
+            var row = Ui.MenuRow(title, value, () => App.Router.Push(DialogueScreen.ForRunner(b.Begin(c, App.Save), null)), list, null, b.Unlocked);
             row.name = "talk-scene-" + b.Def.Id + (generic ? "-" + Bonds.PairKey(b.With, b.Other) : "");
-            RowIcon.Badge(hero != null ? row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(hero) ? hero : null) : row.KindIcon(RowKind.Talk),
+            RowIcon.Badge(trust && hero != null ? row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(hero) ? hero : null) : row.KindIcon(RowKind.Talk),
                 b.Unlocked ? RowKind.New : RowKind.Locked);
             if (b.Unlocked) row.Q<Label>("value")?.AddToClassList("gold");
         }
