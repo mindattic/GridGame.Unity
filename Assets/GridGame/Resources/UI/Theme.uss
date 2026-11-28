@@ -387,6 +387,9 @@
 .kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
 /* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
 .diamond-amount-box { align-self: stretch; -unity-text-align: middle-center; margin: var(--space-8) var(--space-12); padding: var(--space-8) var(--space-12); min-height: var(--size-target); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
+/* Shared count stepper (GG-T1880): boxed value at least a column wide, growing with Text size (GG-T495). */
+.stepper-value { min-width: 70px; flex-shrink: 0; -unity-text-align: middle-center; padding: var(--space-4) var(--space-8); margin: 0 var(--space-4); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
+.stepper-btn { padding: 0 var(--space-8); }
 .diamond-steps { flex-wrap: nowrap; padding: 0; }
 .diamond-step { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 0 var(--space-4); }
 .kit-field { flex-direction: row; align-items: center; margin: var(--space-4) 0; }

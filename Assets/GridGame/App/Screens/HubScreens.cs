@@ -1006,10 +1006,7 @@ namespace GridGame.App
                     ownLabel.name = "shop-own";
                     ownLabel.style.whiteSpace = WhiteSpace.NoWrap;
                 }
-                var minus = RowIcon.IconButton("−", RowKind.Shop, () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
-                var n = Ui.Name(q.ToString(), row);
-                n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter; // grows with Text size (GG-T495)
-                var plus = RowIcon.IconButton("+", RowKind.Shop, () => { Step(cart, item.Id, +1, max); }, "btn--small btn--icon", row);
+                Ui.Stepper(row, q.ToString(), () => { Step(cart, item.Id, -1, max); }, () => { Step(cart, item.Id, +1, max); }, out var minus, out var plus);
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
                 Ui.SetEnabled(plus, q < max);
@@ -2425,13 +2422,9 @@ namespace GridGame.App
             Ui.Pad(row, left: Kit.Indent); // the label lines up with the menu rows' labels
             row.KindIcon(RowKind.Bounty); // GG-T750 (§26.7): lines up with the setting rows' icons
             Ui.Text("Difficulty", "menu-label grow", row);
-            var minus = RowIcon.IconButton("−", RowKind.Back, () => Set(level - 1), "btn--small", row);
+            var n = Ui.Stepper(row, level.ToString(), () => Set(level - 1), () => Set(level + 1), out var minus, out var plus, "gold");
             minus.name = "difficulty-down";
-            var n = Ui.Name(level.ToString(), row, "gold");
             n.name = "difficulty-level";
-            // At least a column wide, wider when Text size grows the number (GG-T495: a fixed width ellipsized "10" at 130%).
-            n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var plus = RowIcon.IconButton("+", RowKind.Enter, () => Set(level + 1), "btn--small", row);
             plus.name = "difficulty-up";
             Ui.SetEnabled(minus, level > DifficultyTable.Min);
             Ui.SetEnabled(plus, level < DifficultyTable.Max);

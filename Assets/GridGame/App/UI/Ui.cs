@@ -113,6 +113,16 @@ namespace GridGame.App
             root.Query(className: "window").ForEach(w => { TintWindow(w); WindowThemes.Dress(w); });
         }
 
+        /// <summary>The shared count stepper (GG-T1880): plain − and + buttons around the value in a boxed field, the
+        /// Diamonds treatment (GG-T1869). The caller names the buttons and enables them.</summary>
+        public static Label Stepper(VisualElement parent, string value, Action onMinus, Action onPlus, out Button minus, out Button plus, string tone = null)
+        {
+            minus = Button("−", onMinus, "btn--small stepper-btn", parent);
+            var n = Text(value, "kit-name stepper-value " + (tone ?? ""), parent);
+            plus = Button("+", onPlus, "btn--small stepper-btn", parent);
+            return n;
+        }
+
         public static Button Button(string text, Action onClick, string classes = null, VisualElement parent = null)
         {
             var b = new Button(() =>
