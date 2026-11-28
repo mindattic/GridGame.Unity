@@ -124,6 +124,7 @@ namespace GridGame.App.Automation
                 foreach (var (o, q) in tappable)
                 {
                     if (o == e || e.Contains(o) || o.Contains(e) || r.Overlaps(q)) continue;
+                    if (e.ClassListContains("kit-navtab") && o.ClassListContains("kit-navtab")) continue; // GG-T1900: the bottom nav is one segmented bar; its tabs abut by design
                     float dx = Mathf.Max(0, Mathf.Max(r.xMin, q.xMin) - Mathf.Min(r.xMax, q.xMax));
                     float dy = Mathf.Max(0, Mathf.Max(r.yMin, q.yMin) - Mathf.Min(r.yMax, q.yMax));
                     float scale = 0.5f * (se + LayoutScale(o) * k);

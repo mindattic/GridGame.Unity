@@ -498,6 +498,14 @@ namespace GridGame.App
             if (bottom.HasValue) e.style.marginBottom = bottom.Value;
         }
 
+        /// <summary>GG-T1887 (X4, X7), GG-T1898: a soft dark plate behind text over the backdrop art keeps it at 4.5:1.</summary>
+        public static void Scrim(Label l)
+        {
+            l.style.backgroundColor = Palette.Ink.WithA(0.6f);
+            Ui.Pad(l, Space.S16, Space.S4, Space.S16, Space.S4);
+            l.style.borderTopLeftRadius = l.style.borderTopRightRadius = l.style.borderBottomLeftRadius = l.style.borderBottomRightRadius = Space.S8;
+        }
+
         /// <summary>Set the padding a layout computes at build time; only the sides given change.</summary>
         public static void Pad(VisualElement e, float? left = null, float? top = null, float? right = null, float? bottom = null)
         {
