@@ -92,8 +92,12 @@ namespace GridGame.App
             Active.BuildBody(body);
         }
 
-        /// <summary>The roster strip: one card per hero (portrait, name, level), the party first and marked, the picked hero
-        /// highlighted. It scrolls sideways when the roster is wider than the column and its cards share the row when not.</summary>
+        /// <summary>Compact roster cards the strip fits across before it scrolls sideways (GG-T1876).</summary>
+        private const int PickerAcross = 5;
+
+        /// <summary>The roster strip: one row of compact cards (thumbnail with the level on it, name under), the party first
+        /// and reserves dimmed, the picked hero highlighted. Up to <see cref="PickerAcross"/> share the row; more scroll
+        /// sideways (GG-T1876: the wrapped grid spent two rows of the tab on four heroes).</summary>
         private void Picker(VisualElement body)
         {
             var w = Ui.Panel(body, name: "hero-picker");
@@ -101,15 +105,15 @@ namespace GridGame.App
             // Edge = gap = 24 (row padding 12 + card margin 12): the Camp party window's even gutters (POL-C8). The 12 sits
             // on the scrolled row, not the window, so the row's own box shows it and scrolled cards reach the window edge.
             Ui.Pad(w, Space.S0, Space.S8, Space.S0, Space.S8);
-            var strip = new ScrollView(ScrollViewMode.Vertical) { name = "hero-strip" };  // GG-T760: wraps to more rows instead of scrolling sideways
+            var strip = new ScrollView(ScrollViewMode.Horizontal) { name = "hero-strip" };
             strip.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             strip.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             w.Add(strip);
             var row = strip.contentContainer;
             row.style.flexDirection = FlexDirection.Row;
-            row.style.flexWrap = Wrap.Wrap;
             row.style.minWidth = Length.Percent(100);
             Ui.Pad(row, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
+            float cardW = Mathf.Floor((Fit.Width - 2 * Kit.Gutter - 2 * Space.TargetHalfGap) / PickerAcross - 2 * Space.TargetHalfGap);
 
             var heroes = S.Party.Select(S.Hero).Where(h => h != null)
                 .Concat(S.Roster.Where(h => !S.Party.Contains(h.ClassId))).ToList();
@@ -121,23 +125,28 @@ namespace GridGame.App
                 bool sel = id == HeroId;
                 var card = Ui.El("card" + (sel ? " card--selected" : ""), row);
                 card.name = "hero-pick-" + id;
-                card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = Length.Percent(26); // three to a row, more wrap below (GG-T760)
+                card.style.flexDirection = FlexDirection.Column;
+                card.style.alignItems = Align.Center;
+                card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = cardW;
                 Ui.Margin(card, Space.TargetHalfGap, Space.S16, Space.TargetHalfGap, Space.TargetHalfGap);
                 Ui.Pad(card, Space.S8, Space.S8, Space.S8, Space.S8);
                 var bw = sel ? 4f : 0f;
                 card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = bw;
                 card.style.borderTopColor = card.style.borderBottomColor = card.style.borderLeftColor = card.style.borderRightColor = Palette.Gold;
-                var thumb = Ui.Thumb(id, card, Kit.Avatar);
-                Ui.Margin(thumb, right: Space.S16);
-                bool ready = NextAbility.Ready(C, S, id);
-                if (ready) RowIcon.Badge(thumb, RowKind.New);
-                var info = Ui.El("col grow", card);
-                info.style.flexShrink = 1; info.style.minWidth = 0;
-                // A compact card (kit, GG-T454): name and meta both caption size, the name heavy.
-                var name = Ui.Caption(C.TryClass(id)?.Name ?? id, info, "t-heavy");
+                var thumb = Ui.Thumb(id, card, Kit.Thumb);
+                var lv = Ui.Caption($"Lv {Progression.Level(h)}", thumb, "gold");
+                lv.name = "hero-level";
+                lv.pickingMode = PickingMode.Ignore;
+                lv.style.position = Position.Absolute;
+                lv.style.left = lv.style.bottom = Space.S0;
+                lv.style.backgroundColor = Palette.Shade;
+                Ui.Pad(lv, Space.S8, Space.S0, Space.S8, Space.S0);
+                if (NextAbility.Ready(C, S, id)) RowIcon.Badge(thumb, RowKind.New);
+                var name = Ui.Caption(C.TryClass(id)?.Name ?? id, card, inParty ? "t-heavy" : "t-heavy dim");
+                Ui.Margin(name, top: Space.S8);
+                name.style.alignSelf = Align.Stretch;
+                name.style.unityTextAlign = TextAnchor.MiddleCenter;
                 Ui.Marquee(name);
-                Ui.Caption($"Lv {Progression.Level(h)}", info, "gold");
-                Ui.Caption(inParty ? "Party" : "Reserve", info, inParty ? "good" : "dim");
                 card.AddToClassList("card-tap");
                 Ui.Tappable(card, () =>
                 {
@@ -148,7 +157,7 @@ namespace GridGame.App
                 }, "ui.select");
                 if (sel) picked = card;
             }
-            // Keep the picked hero in view when the roster runs taller than the strip.
+            // Keep the picked hero in view when the roster runs wider than the strip.
             if (picked != null) strip.schedule.Execute(() => strip.ScrollTo(picked)).ExecuteLater(30);
         }
     }
