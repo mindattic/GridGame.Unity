@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
@@ -12,7 +13,8 @@ namespace GridGame.Meta
     /// sources pay replacement rewards, all pending owner:
     /// <list type="bullet">
     /// <item>a <see cref="ThemeDef.MilestoneOrb"/> theme's first full clear pays <see cref="MilestoneShards"/> Mana Shards;</item>
-    /// <item>a Halcyon ruin stage's find (<see cref="ThemeDef.OrbFindChance"/>) pays <see cref="HalcyonFindDust"/> Mana Dust;</item>
+    /// <item>a Halcyon ruin stage's find (<see cref="ThemeDef.OrbFindChance"/>) pays <see cref="HalcyonFindDust"/> Mana Dust
+    /// and one piece of gear (<see cref="HalcyonGear"/>);</item>
     /// <item>Broken Mana Orbs no longer drop and the Manasmith no longer restores them; one still carried pays
     /// <see cref="BrokenOrbDust"/> Mana Dust once, through the save migration (<see cref="RetirePayout"/>).</item>
     /// </list>
@@ -27,6 +29,9 @@ namespace GridGame.Meta
         public const int HalcyonFindDust = 15;
         /// <summary>Mana Dust paid once for each Broken Mana Orb carried, and for each owned orb a save had restored from one.</summary>
         public const int BrokenOrbDust = 20;
+        /// <summary>GG-T1842: how many progress tiers above the ruin's own shop shelf (<see cref="VendorTiers.RegionTier"/>) a
+        /// Halcyon find's gear sits; the tier picks the rarity through <see cref="VendorTiers.RarityTier"/>.</summary>
+        public const int HalcyonGearTiersAbove = 1;
 
         /// <summary>A won campaign stage's former orb rewards: Shards for a milestone theme just paid, and the Halcyon find's
         /// Dust. The find is rolled from <see cref="SaveData.OrbRolls"/>, so a save replays it identically; each stage's find
@@ -42,13 +47,41 @@ namespace GridGame.Meta
             }
 
             var theme = c.ThemeOf(stageId);
-            if (theme != null && theme.OrbFindChance > 0f && !s.OrbFinds.Contains(stageId) && Roll(s, stageId).Chance(theme.OrbFindChance))
+            Rng rng = null;
+            if (theme != null && theme.OrbFindChance > 0f && !s.OrbFinds.Contains(stageId) && (rng = Roll(s, stageId)).Chance(theme.OrbFindChance))
             {
                 s.OrbFinds.Add(stageId);
                 s.AddItem(DustEconomy.DustId, HalcyonFindDust);
                 rep.DustEarned += HalcyonFindDust;
-                rep.OrbRewards.Add($"{HalcyonFindDust:N0} {DustEconomy.DustName}: found in the ruins of {theme.Name}");
+                var gear = HalcyonGear(c, s, theme, rng);
+                if (gear != null)
+                {
+                    var paid = new BattleReport();
+                    BattleFactory.GrantItems(c, s, paid, new Dictionary<string, int> { [gear.Id] = 1 });
+                    foreach (var kv in paid.Items) { rep.Items.TryGetValue(kv.Key, out var had); rep.Items[kv.Key] = had + kv.Value; }
+                    rep.Gold += paid.Gold;
+                    rep.AutoSold += paid.AutoSold;
+                }
+                rep.OrbRewards.Add($"{HalcyonFindDust:N0} {DustEconomy.DustName}{(gear != null ? " and " + gear.Name : "")}: found in the ruins of {theme.Name}");
             }
+        }
+
+        /// <summary>GG-T1842: the Halcyon find's gear roll. The rarity is the highest one whose <see cref="VendorTiers.RarityTier"/>
+        /// is open <see cref="HalcyonGearTiersAbove"/> tiers past the ruin's shop shelf; the pool is every piece of equipment of
+        /// that rarity some drop table already holds that a hero in the party can wear (<see cref="Equipment.ProficiencyGate"/>),
+        /// in id order, picked with the find's own roll. Null when the pool is empty.</summary>
+        public static ItemDef HalcyonGear(ContentDb c, SaveData s, ThemeDef theme, Rng rng)
+        {
+            if (c == null || s == null || theme == null || rng == null) return null;
+            int tier = Math.Min(VendorTiers.Count, VendorTiers.RegionTier(c, theme.Id) + HalcyonGearTiersAbove);
+            var rarity = ((ItemRarity[])Enum.GetValues(typeof(ItemRarity))).Where(r => VendorTiers.RarityTier(r) <= tier).Max();
+            var party = (s.Party ?? new List<string>()).Select(s.Hero).Where(h => h != null).ToList();
+            var dropped = new HashSet<string>(c.DropTables.Values.SelectMany(t => t.Entries).Select(e => e.Item), StringComparer.OrdinalIgnoreCase);
+            var pool = c.Items.Values
+                .Where(i => i.Type == ItemType.Equipment && i.Rarity == rarity && dropped.Contains(i.Id)
+                    && party.Any(h => Equipment.ProficiencyGate(c, h, i) == null))
+                .OrderBy(i => i.Id, StringComparer.Ordinal).ToList();
+            return pool.Count == 0 ? null : rng.Pick(pool);
         }
 
         /// <summary>The one-time payout for a save made while orbs were owned (GG-T1811 migration): every owned orb beyond
