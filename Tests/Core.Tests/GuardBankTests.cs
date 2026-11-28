@@ -66,16 +66,16 @@ namespace GridGame.Tests
 
             var ev = BattleEngine.Apply(s, new ShieldCommand());
 
-            Assert.That(ev.OfType<ManaChargedEvent>().Single(e => e.Reason == "guard").Amount, Is.EqualTo(expected));
             var g = GuardGain(ev);
             Assert.That(g, Is.Not.Null);
             Assert.That(g.Amount, Is.EqualTo(expected));
+            Assert.That(g.Kind, Is.EqualTo(ManaGainKind.Earned));
             Assert.That(g.Meters.Count, Is.EqualTo(2), "one meter per Spell slot of every living hero");
             Assert.That(Delta(g, k, 0).After, Is.EqualTo(System.Math.Min(expected, s.ManaFull(k, 0))));
             Assert.That(Delta(g, c, 0).After, Is.EqualTo(System.Math.Min(expected, s.ManaFull(c, 0))));
             Assert.That(Delta(g, k, 0).Full, Is.EqualTo(2 * BattleConfig.ManaPointsPerOrb), "Fireball costs 2");
             Assert.That(Delta(g, c, 0).Full, Is.EqualTo(1 * BattleConfig.ManaPointsPerOrb), "Heal costs 1, so the same points fill it twice as fast");
-            Assert.That(ev.Any(e => e is OrbMintedEvent), Is.False, "Guard mints no orb");
+            Assert.That(ev.Any(e => e is ManaGainedEvent m && m.Kind == ManaGainKind.Grant), Is.False, "Guard grants no orb");
         }
 
         [Test]
@@ -99,6 +99,7 @@ namespace GridGame.Tests
 
             var g = GuardGain(ev);
             Assert.That(g.Amount, Is.EqualTo(expected));
+            Assert.That(g.Kind, Is.EqualTo(ManaGainKind.Earned));
             Assert.That(Delta(g, k, 0).Delta, Is.EqualTo(System.Math.Min(expected, s.ManaFull(k, 0))));
             Assert.That(Delta(g, c, 0), Is.Null, "a full meter takes nothing");
         }
@@ -129,7 +130,6 @@ namespace GridGame.Tests
             s.SetMana(k.Id, 0, s.ManaFull(k, 0));
             s.SetMana(c.Id, 0, s.ManaFull(c, 0));
             var ev = BattleEngine.Apply(s, new ShieldCommand());
-            Assert.That(ev.Any(e => e is ManaChargedEvent m && m.Reason == "guard"), Is.False);
             Assert.That(GuardGain(ev), Is.Null);
             Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(s.ManaFull(k, 0)));
             Assert.That(s.ManaIn(c.Id, 0), Is.EqualTo(s.ManaFull(c, 0)));

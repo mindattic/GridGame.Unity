@@ -308,10 +308,12 @@ namespace GridGame.App
             App.StartCoroutine(TwistCard(card, portrait, at, 0.3f, left ? -18f : 18f, new Vector2(0f, 1f)));
         }
 
-        // ── Mana charge (§3.1.0): the arithmetic of an earned gain, in the points it adds to every spell meter. The
-        //    bars themselves fill from the ManaGainedEvent that follows (ManaGainAnim). ──
-        private void ChargeLines(ManaChargedEvent mc)
+        // ── Mana gain lines (§3.1.0): an earned gain's arithmetic, in the points it adds to every spell meter; a whole
+        //    grant's Log line; a siphon's cast sound. The bars themselves fill in ManaGainAnim. ──
+        private void ManaLines(ManaGainedEvent mc)
         {
+            if (mc.Kind == ManaGainKind.Grant) { GrantLine(mc); return; }
+            if (mc.Kind == ManaGainKind.Siphon) { App.Audio.Sfx("battle.cast", 0.6f); return; }
             if (mc.Reason == "pincer")
             {
                 string why = mc.Participants > 2 ? $" · {mc.Participants} heroes ÷{1f + BattleConfig.ChargeParticipantPenalty * (mc.Participants - 2):0.#}" : " · clean pincer";

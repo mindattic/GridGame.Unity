@@ -132,7 +132,7 @@ namespace GridGame.Tests
             int expected = BattleEngine.DampedCharge(s, BattleEngine.GuardChargeFor(2f));
 
             var ev = BattleEngine.Apply(s, new ShieldCommand());
-            Assert.That(ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "guard").Amount, Is.EqualTo(expected));
+            Assert.That(ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "guard").Amount, Is.EqualTo(expected));
             Assert.That(ev.OfType<TurnStartedEvent>().Any(), Is.True, "the cleric and mage gave up their actions: the wolf acts");
             Assert.That(ev.Last() is PlayerControlEvent pc && pc.NewWindow, Is.True);
             Assert.That(s.Units.Any(u => u.IsHero && u.ActedThisWindow), Is.False);

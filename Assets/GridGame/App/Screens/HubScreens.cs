@@ -1154,7 +1154,7 @@ namespace GridGame.App
                     string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
                     row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
-                    if (!can) row.style.opacity = 0.55f;
+                    if (!can) row.style.opacity = Dim.Row;
                 }
                 else
                 {
@@ -1205,7 +1205,7 @@ namespace GridGame.App
                     var rec = r;
                     var row = ItemUi.Row(c.Item(r.Result), value, () => ShowLocked(detail, c, s, rec, LockReason(c, s, rec)), list, true, false);
                     row.name = "recipe-locked-" + r.Id;
-                    row.style.opacity = 0.55f;
+                    row.style.opacity = Dim.Row;
                 }
                 if (set.Count > VendorTiers.PreviewRows) Ui.Note($"+{set.Count - VendorTiers.PreviewRows} more {more}", list);
             }
@@ -1551,7 +1551,7 @@ namespace GridGame.App
                     () => { enchant = ench; Refresh(); }, elist);
                 row.KindIcon(RowKind.Ability, passive != null ? Art.AbilityIcon(passive) : null); // GG-T746 (§26.7), else the Ability emblem
                 row.name = ArmorEnchanting.EnchantRowPrefix + e.Id;
-                if (!can) row.style.opacity = 0.55f;
+                if (!can) row.style.opacity = Dim.Row;
                 if (enchant == e) Ui.Select(row);
             }
 
@@ -1610,12 +1610,20 @@ namespace GridGame.App
                 var top = Ui.El("row", col);
                 Ui.Name(d.Name, top, "grow");
                 Ui.Caption($"Lv {lv}/{d.Levels.Count}", top, "gold");
-                if (!string.IsNullOrEmpty(d.Crew)) Ui.Caption("Crew: " + CaravanUpgrades.CrewName(d), col, "gold");
                 var crewBlurb = ContentDb.Blurb(C.CrewBlurbs, d.Id); // GG-T374: Prose "character:<crew>"
-                if (!string.IsNullOrEmpty(crewBlurb)) Ui.Para(crewBlurb, col, "dim");
-                Ui.Para(d.Description, col, "dim");
                 if (lv > 0) Ui.Para("Now: " + d.Levels[lv - 1].Text, col, "good");
                 if (next != null) Ui.Para("Next: " + next.Text, col);
+                // GG-T1868: the keeper's lore and the full description are one tap (or a hold) away, not printed on every row.
+                Func<VisualElement, bool> read = sheet =>
+                {
+                    Ui.Name(d.Name, sheet);
+                    if (!string.IsNullOrEmpty(d.Crew)) Ui.Caption("Crew: " + CaravanUpgrades.CrewName(d), sheet, "gold");
+                    if (!string.IsNullOrEmpty(crewBlurb)) Ui.Para(crewBlurb, sheet, "dim");
+                    Ui.Para(d.Description, sheet, "dim");
+                    return true;
+                };
+                InspectCard.Attach(ic, read, tap: true);
+                InspectCard.Attach(top, read, tap: true);
                 var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
                 b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);

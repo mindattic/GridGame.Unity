@@ -106,7 +106,7 @@ namespace GridGame.Tests
                 if (targets.Count == 0) { problems.Add($"{item.Id}: no target"); continue; }
                 var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = h.Id, Slot = 0, Target = targets.Contains(h.Pos) ? h.Pos : targets[0] });
                 if (!ev.Any(e => e is ItemUsedEvent)) { problems.Add($"{item.Id}: refused {string.Join(" | ", ev.OfType<AbilityRefusedEvent>())}"); continue; }
-                bool effect = ev.Any(e => e is HealedEvent || e is DamagedEvent || e is RevivedEvent || e is BattleEndedEvent || e is OrbMintedEvent || (e is BuffRemovedEvent r && (r.Reason == "cured" || r.Reason == "cleansed")));
+                bool effect = ev.Any(e => e is HealedEvent || e is DamagedEvent || e is RevivedEvent || e is BattleEndedEvent || (e is ManaGainedEvent g && g.Kind == ManaGainKind.Grant) || (e is BuffRemovedEvent r && (r.Reason == "cured" || r.Reason == "cleansed")));
                 if (!effect) problems.Add($"{item.Id}: used but nothing happened");
                 AssertInvariants(s);
             }

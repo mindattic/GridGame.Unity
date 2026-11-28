@@ -67,15 +67,15 @@ namespace GridGame.Tests
                         {
                             switch (ev[i])
                             {
-                                case OrbMintedEvent o:
-                                    if (o.Landed) { t.Landed++; t.BySource[o.Reason] = t.BySource.TryGetValue(o.Reason, out var v) ? v + 1 : 1; }
-                                    else t.Faded++;
+                                case ManaGainedEvent o when o.Kind == ManaGainKind.Grant:
+                                    if (o.Meters.Count > 0) { t.Landed += o.Orbs; t.BySource[o.Reason] = (t.BySource.TryGetValue(o.Reason, out var v) ? v : 0) + o.Orbs; }
+                                    else t.Faded += o.Orbs;
                                     break;
-                                case OrbsSpentEvent sp:
+                                case SpellManaSpentEvent sp:
                                     // A spell pays at command time, before its CastQueued/AbilityResolved in the same list.
-                                    t.Spent += sp.Count;
+                                    t.Spent++;
                                     var key = SpellAfter(ev, i) ?? "?";
-                                    t.SpendBy[key] = t.SpendBy.TryGetValue(key, out var w) ? w + sp.Count : sp.Count;
+                                    t.SpendBy[key] = t.SpendBy.TryGetValue(key, out var w) ? w + 1 : 1;
                                     break;
                                 case PlayerControlEvent _:
                                     turn++; t.Turns++;
