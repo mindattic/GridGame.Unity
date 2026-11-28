@@ -18,8 +18,8 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>
-    /// The battle. Layout follows the bible HUD rows (§9.0): top bar (hamburger · stage and wave · gold) · timeline + GUARD ·
-    /// 6×8 board · icon-only ability bar · description panel to the safe bottom. The simulation (BattleState) is the only truth;
+    /// The battle. Layout follows the bible HUD rows (§9.0): top bar (hamburger · stage and wave · gold) · timeline ·
+    /// 6×8 board · icon-only ability bar with GUARD at its right end · description panel to the safe bottom. The simulation (BattleState) is the only truth;
     /// this screen turns input into commands and plays the resulting events back.
     /// </summary>
     public sealed partial class BattleScreen : GameScreen
@@ -375,7 +375,7 @@ namespace GridGame.App
 
         public override void OnShown() { GameApp.StageResized -= OnStageResized; GameApp.StageResized += OnStageResized; }
 
-        /// <summary>The ability row (named "abilitybar"), one row of five cells under the board.</summary>
+        /// <summary>The ability row (named "abilitybar") under the board: five skill cells, then GUARD.</summary>
         private VisualElement abilityBar;
 
         /// <summary>Lays the ability cells out as one row under the board, inside the HUD column.</summary>
@@ -406,8 +406,8 @@ namespace GridGame.App
             var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
-            // Exactly five slots fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit that
-            // row"); even gutters on the space scale, and the
+            // Five skill slots and GUARD fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit
+            // that row"; GG-T1904 adds GUARD as the sixth); even gutters on the space scale, and the
             // cells, not the gaps, take a wider stage (POL-C1/C8). Laid out by LayoutAbilityBar.
             bar.style.top = BarTop; bar.style.height = BarHeight; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
@@ -424,6 +424,48 @@ namespace GridGame.App
                 Ui.AbilitySlot(slot);
                 slotViews.Add(slot);
             }
+            BuildGuardCell(bar);
+        }
+
+        /// <summary>The GUARD cell for <see cref="SyncGuardCall"/>'s gold call and Guard's mana motes (<see cref="MintFrom"/>).</summary>
+        private VisualElement guardButton;
+        /// <summary>The GUARD cell's resting edge: pewter on the dark window, apart from the skills' plain frames.</summary>
+        private static readonly Color GuardEdge = Palette.PewterLight;
+
+        /// <summary>GG-T1904 (owner 2026-11-28, §9.0): GUARD at the right end of the bottom action row, in thumb reach, built
+        /// apart from the slot cells so they can be swapped out (GG-T1914). Its Protection shield fills the cell; the GUARD
+        /// caption shows only while it fits whole.</summary>
+        private void BuildGuardCell(VisualElement bar)
+        {
+            var cell = guardButton = HudCell(bar);
+            cell.name = "shield";
+            cell.AddToClassList("guard");
+            cell.style.backgroundImage = new StyleBackground(Art.WindowDark);
+            cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = GuardEdge;
+            Ui.Pressable(cell);
+            cell.RegisterCallback<ClickEvent>(_ => { if (CanCommand()) Commit(new ShieldCommand()); });
+            var icon = Ui.El(null, cell); icon.name = "icon";
+            icon.pickingMode = PickingMode.Ignore;
+            icon.style.position = Position.Absolute;
+            icon.style.left = icon.style.top = icon.style.right = Space.S16;
+            icon.style.backgroundImage = new StyleBackground(Art.StatusIcon("protection"));
+            icon.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+            var caption = Ui.Text("GUARD", "tiny shadow", cell);
+            caption.name = "guard-label";
+            caption.pickingMode = PickingMode.Ignore;
+            caption.style.position = Position.Absolute;
+            caption.style.left = caption.style.right = Space.S0;
+            caption.style.bottom = Space.S8;
+            caption.style.unityTextAlign = TextAnchor.LowerCenter;
+            caption.style.whiteSpace = WhiteSpace.NoWrap;
+            Fonts.UseHeavy(caption);
+            cell.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                var need = caption.MeasureTextSize(caption.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                bool fits = need.x <= cell.contentRect.width - 2 * Space.S8 && need.y <= cell.contentRect.height / 3f;
+                caption.style.display = fits ? DisplayStyle.Flex : DisplayStyle.None;
+                icon.style.bottom = fits ? Space.S8 + need.y : Space.S16;
+            });
         }
 
         /// <summary>One cell of the ability row: a window-framed column that takes an even share of the row.</summary>

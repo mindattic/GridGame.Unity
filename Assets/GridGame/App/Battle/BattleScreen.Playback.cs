@@ -1627,8 +1627,8 @@ namespace GridGame.App
         }
 
         /// <summary>Where a mint or a charge came from, in Overlay (stage) coordinates, from the real event (GG-T405): Guard
-        /// from the GUARD button, a time-banked orb from the drag timer, battle-start gear and carried orbs from the top
-        /// bar, and everything else from its source unit's tile (the pincer's attacker, the robbed foe, the hero on the
+        /// from the GUARD cell (the bottom row's right end), a time-banked orb from the drag timer, battle-start gear and
+        /// carried orbs from the top bar, and everything else from its source unit's tile (the pincer's attacker, the robbed foe, the hero on the
         /// pickup, the rule's unit, the caster).</summary>
         private Vector2 MintFrom(string reason, int sourceId)
         {

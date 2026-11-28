@@ -318,9 +318,7 @@ namespace GridGame.App
             bool forced = BattleEngine.TooLittleTime(State);
             guard.EnableInClassList("guard--forced", forced);
             guard.style.borderTopColor = guard.style.borderBottomColor = guard.style.borderLeftColor = guard.style.borderRightColor =
-                forced ? new StyleColor(Palette.Gold) : new StyleColor(StyleKeyword.Null);
-            guard.style.borderTopWidth = guard.style.borderBottomWidth = guard.style.borderLeftWidth = guard.style.borderRightWidth =
-                forced ? new StyleFloat(4f) : new StyleFloat(StyleKeyword.Null);
+                forced ? Palette.Gold : GuardEdge;
             guard.style.backgroundColor = forced ? new StyleColor(Palette.Gold.WithA(0.35f)) : new StyleColor(StyleKeyword.Null);
         }
 
