@@ -196,8 +196,10 @@ namespace GridGame.Core.Battle
                         if (heroes.TryGetValue(rv.UnitId, out var revived)) revived.Revives++;
                         break;
                     case SpellManaSpentEvent sp: record.ManaSpent += sp.Points; break; // §3.1.0: points a cast emptied (a siphon isn't spending)
-                    case ManaChargedEvent mc: record.ManaCharged += mc.Amount; break;
-                    case ManaGainedEvent mg when mg.Amount > 0: record.ManaGained += mg.Amount; break;
+                    case ManaGainedEvent mg when mg.Amount > 0:
+                        record.ManaGained += mg.Amount;
+                        if (mg.Kind == ManaGainKind.Earned) record.ManaCharged += mg.Amount;
+                        break;
                     case WeaponShatteredEvent ws:
                         context = "shatter";
                         record.WeaponShatters.Add(new WeaponShatter { UnitId = ws.UnitId, ClassId = ClassOf(ws.UnitId), WeaponId = ws.WeaponId, Wave = currentWave });

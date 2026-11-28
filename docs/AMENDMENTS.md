@@ -176,7 +176,7 @@ updated: 2026-10-09
 - **Armor wears in battle**: −1 durability per landing enemy hit; at 0 it breaks and its bonuses vanish
   (no shatter damage — that stays weapon-only). Repair works as for weapons.
 - **Relic passives** (§24.1.1 named passives): `PincerDamageBonus`, `RegenPerTurn`, `StartsProtected`,
-  `BankCapacityBonus` (the §3.1.4 knob, max +4 slots), authored on Bloodstone, Jade, Sunfire, Phantom, Stars.
+  ~~`BankCapacityBonus` (the §3.1.4 knob, max +4 slots)~~ (retired, GG-T1829: no bank, no cap), authored on Bloodstone, Jade, Sunfire, Phantom, Stars.
 - **Ability-bar weapon swap** (old US feature): a bar slot can hold `weapon:<id>` from the bag; using it
   swaps weapons (costs a turn; incoming weapon at factory durability); the save follows the swap.
 - **Battle end is checked after every action**, not only after kills/turns (robustness).

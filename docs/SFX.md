@@ -66,11 +66,10 @@ sound exists (`Resources/Audio/Sfx/<group>-<name>-00.ogg`).
 | BondGrewEvent, TrustGrewEvent | `ui.select`, `battle.warcry` when full | |
 | TameEndedEvent, RoseAgainEvent | `status.debuff` | undead rise |
 | WandererJoinedEvent | `battle.pickup` | |
-| AmplifierSpawnedEvent, ManaChargedEvent | `battle.orb` | |
+| AmplifierSpawnedEvent, ManaGainedEvent | `battle.orb` | |
 | AmplifierMovedEvent, PickupMovedEvent, PushedBackEvent, CastStaggeredEvent | `battle.slide` | |
 | AmplifierUsedEvent, EggHatchedEvent | `battle.crit` | shell crack |
-| OrbMintedEvent | `battle.orb` / `battle.pickup` / `battle.miss` (lost) | |
-| OrbsSpentEvent, AbilityResolvedEvent | `battle.cast` + the ability's VFX cues | per-element casts |
+| SpellManaSpentEvent, siphon ManaGainedEvent, AbilityResolvedEvent | `battle.cast` + the ability's VFX cues | per-element casts |
 | TimelineAdvancedEvent | `battle.whoosh` (slot change), `battle.channel` (last seconds) | |
 | HastenedEvent | `battle.cast` (haste burst) | |
 | TempoChangedEvent | `battle.powerup` / `status.debuff` | |

@@ -192,9 +192,9 @@
 .menu-row:hover { background-color: rgba(255, 255, 255, 0.06); }
 .menu-row--selected { background-color: rgba(140, 170, 255, 0.20); }
 /* GG-T495: a locked row greys its name, value and icon, not the whole row, so the hint under it ("Joins when gear
-   wears below 60%") stays readable dim text (4.9:1) instead of dim at 42% opacity (1.8:1). */
+   wears below 60%") stays readable dim text (4.9:1) instead of dim at 42% opacity (1.8:1). GG-T1864: 0.6, not 0.45, so a grey label that still informs (the shop's "More stock after ..." row) clears 4.5:1, not 3.76. */
 .menu-row--disabled .menu-label, .menu-row--disabled .menu-value, .menu-row--disabled .menu-icon,
-.menu-row--disabled .marquee { opacity: 0.45; }
+.menu-row--disabled .marquee { opacity: 0.6; }
 .menu-cursor { width: 56px; height: 56px; margin-right: var(--space-8); opacity: 0; background-size: contain; flex-shrink: 0; }
 .menu-row--selected > .menu-cursor { opacity: 1; }
 .menu-label { flex-grow: 1; font-size: var(--type-base); flex-shrink: 1; min-width: 0; white-space: normal; }
@@ -358,6 +358,7 @@
     background-color: rgba(12, 18, 60, 0.96);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
+    white-space: normal;
     transition-property: opacity, translate;
     transition-duration: 0.18s;
 }
@@ -384,6 +385,9 @@
 .kit-section--first { margin-top: 0; }
 .kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
 /* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
+.diamond-amount-box { align-self: stretch; -unity-text-align: middle-center; margin: var(--space-8) var(--space-12); padding: var(--space-8) var(--space-12); min-height: var(--size-target); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
+.diamond-steps { flex-wrap: nowrap; padding: 0; }
+.diamond-step { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 0 var(--space-4); }
 .kit-field { flex-direction: row; align-items: center; margin: var(--space-4) 0; }
 .kit-field__label { width: 220px; flex-shrink: 0; font-size: var(--type-base); color: var(--color-dim); }
 .kit-field__value { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: var(--type-base); white-space: normal; }
