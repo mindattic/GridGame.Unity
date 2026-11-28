@@ -183,6 +183,7 @@ namespace GridGame.App
             DisposePrefabFx();
             ReleaseStageArt(); // GG-T1205
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; ResumeBattle(); }
+            CloseAbilities(false);
             awayOnSettings = false;
             // The billboard lives on the Overlay too; without this, each battle left one behind (lines from the
             // last ~1.6 s showing over the PostBattle screen) and they piled up battle after battle (GG-T70).
@@ -207,6 +208,7 @@ namespace GridGame.App
             bool firstBuild = !built;
             built = true;
             slotViews.Clear();
+            CloseAbilities(false);
             timelineIconViews.Clear();
             shownCoins = -1;
             if (!firstBuild)
@@ -411,6 +413,7 @@ namespace GridGame.App
             // cells, not the gaps, take a wider stage (POL-C1/C8). Laid out by LayoutAbilityBar.
             bar.style.top = BarTop; bar.style.height = BarHeight; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
+            BuildAbilitiesCell(bar);
             for (int i = 0; i < 5; i++)
             {
                 int idx = i;
@@ -641,39 +644,8 @@ namespace GridGame.App
                 }
                 else
                 {
-                    var sl = hero.Bar[i];
-                    var a = BattleEngine.SlotAbility(State, hero, i);
-                    bool silenced = status == SlotStatus.Silenced, charging = false;
-                    if (sl.IsWeapon)
-                    {
-                        border = new Color(0.8f, 0.8f, 0.9f);
-                        Ui.SetAbilitySlot(v, Art.ItemIcon(sl.WeaponId) ?? Art.Orb, silenced: silenced);
-                    }
-                    else if (sl.IsItem)
-                    {
-                        border = new Color(0.86f, 0.62f, 0.36f);
-                        Ui.SetAbilitySlot(v, Art.ItemIcon(sl.ItemId) ?? Art.AbilityIcon(a) ?? Art.Orb, count: sl.Charges, silenced: silenced);
-                    }
-                    else if (a != null)
-                    {
-                        float sweep = 0f, mana = -1f; int left = 0;
-                        if (a.Kind == AbilityKind.Skill)
-                        {
-                            border = new Color(0.4f, 0.9f, 0.5f);
-                            if (status == SlotStatus.Cooldown && hero.Cooldowns.TryGetValue(a.Id, out left) && left > 0)
-                                sweep = (float)left / Mathf.Max(left, a.CooldownTurns);
-                        }
-                        else
-                        {
-                            border = Palette.Mana;
-                            // GG-T1820 (§3.1.0): the spell's own meter, as far as playback has filled it.
-                            int full = State.ManaFull(hero, i);
-                            if (full > 0) mana = ShownMana(hero.Id, i) / (float)full;
-                        }
-                        charging = mana >= 0f && mana < 1f;
-                        Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, mana: mana, ready: mana >= 1f && !silenced);
-                    }
-                    else Ui.SetAbilitySlot(v, null, silenced: silenced);
+                    bool silenced = status == SlotStatus.Silenced;
+                    bool charging = FillMoveFace(v, hero, i, status, out border);
                     if (silenced) border = new Color(1f, 0.25f, 0.25f);
                     // Charging replaces "unaffordable": the icon dims and its bar stays bright.
                     if (charging && (status == SlotStatus.Ready || status == SlotStatus.Unaffordable)) iconAlpha = 0.45f;
@@ -687,6 +659,45 @@ namespace GridGame.App
                 v.style.opacity = alpha;
                 v.Q("icon").style.opacity = iconAlpha;
             }
+            SyncAbilitiesButton();
+        }
+
+        /// <summary>Fills one move's <see cref="Ui.AbilitySlot"/> face (the bar's slot or an Abilities modal row's icon): the
+        /// recharge sweep for a skill, the spell's readiness fill (<see cref="SpellFill"/>), an item's stack. Returns whether
+        /// the spell is still charging; <paramref name="border"/> is the kind's frame colour.</summary>
+        private bool FillMoveFace(VisualElement v, Unit hero, int i, SlotStatus status, out Color border)
+        {
+            border = Palette.Text.WithA(0.75f);
+            var sl = hero.Bar[i];
+            var a = BattleEngine.SlotAbility(State, hero, i);
+            bool silenced = status == SlotStatus.Silenced;
+            if (sl.IsWeapon)
+            {
+                border = new Color(0.8f, 0.8f, 0.9f);
+                Ui.SetAbilitySlot(v, Art.ItemIcon(sl.WeaponId) ?? Art.Orb, silenced: silenced);
+                return false;
+            }
+            if (sl.IsItem)
+            {
+                border = new Color(0.86f, 0.62f, 0.36f);
+                Ui.SetAbilitySlot(v, Art.ItemIcon(sl.ItemId) ?? Art.AbilityIcon(a) ?? Art.Orb, count: sl.Charges, silenced: silenced);
+                return false;
+            }
+            if (a == null) { Ui.SetAbilitySlot(v, null, silenced: silenced); return false; }
+            float sweep = 0f, mana = -1f; int left = 0;
+            if (a.Kind == AbilityKind.Skill)
+            {
+                border = new Color(0.4f, 0.9f, 0.5f);
+                if (status == SlotStatus.Cooldown && hero.Cooldowns.TryGetValue(a.Id, out left) && left > 0)
+                    sweep = (float)left / Mathf.Max(left, a.CooldownTurns);
+            }
+            else
+            {
+                border = Palette.Mana;
+                mana = SpellFill(hero, i);
+            }
+            Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, mana: mana, ready: mana >= 1f && !silenced);
+            return mana >= 0f && mana < 1f;
         }
 
         private int panelUnitId = -1;
@@ -1247,6 +1258,7 @@ namespace GridGame.App
             if (leaving) { leaving = false; return true; }
             // Back/Escape on the open pause menu resumes, like its Resume row.
             if (pauseVeil != null) { closePause?.Invoke(); return false; }
+            if (AbilitiesOpen) { SheetBack(); return false; }
             if (TargetingSlot >= 0) { CancelByPlayer(); return false; }
             OpenMenu();
             return false;
