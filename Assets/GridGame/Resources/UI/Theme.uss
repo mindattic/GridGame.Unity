@@ -358,6 +358,7 @@
     background-color: rgba(12, 18, 60, 0.96);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
+    white-space: normal;
     transition-property: opacity, translate;
     transition-duration: 0.18s;
 }
