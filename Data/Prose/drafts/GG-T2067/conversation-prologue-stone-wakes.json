@@ -1,0 +1,42 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-stone-wakes",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_stone_wakes",
+  "about": [
+    "character-commander",
+    "class-cleric",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Stone Wakes",
+    "start": "circle",
+    "nodes": [
+      {
+        "id": "circle",
+        "speaker": "character-commander",
+        "line": "The stone hums awake. A circle of light rolls out over the moor, and the fog lifts off every road it touches.",
+        "next": "ease"
+      },
+      {
+        "id": "ease",
+        "speaker": "class-cleric",
+        "line": "Look up. The Manalith. It eased, just a hair.",
+        "next": "more"
+      },
+      {
+        "id": "more",
+        "speaker": "class-knight",
+        "line": "If one stone does that, there are more of them out there. Only you can see them. Lead the way."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-cleric",
+    "class-knight"
+  ]
+}

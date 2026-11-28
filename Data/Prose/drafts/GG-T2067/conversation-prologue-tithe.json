@@ -1,0 +1,56 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-tithe",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_tithe",
+  "about": [
+    "character-commander",
+    "character-merchant",
+    "class-cleric",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Hamlet of Tithe",
+    "start": "arrive",
+    "nodes": [
+      {
+        "id": "arrive",
+        "speaker": "character-commander",
+        "line": "A dozen turf roofs around a well, and every door shut. Grey paint on every wall where the colour used to be.",
+        "next": "monthly"
+      },
+      {
+        "id": "monthly",
+        "speaker": "class-knight",
+        "line": "The Captain's Tithe Collector takes the colour every month now. Paint, cloth, flowers, anything bright. He says the Choir needs it.",
+        "next": "bridge"
+      },
+      {
+        "id": "bridge",
+        "speaker": "class-cleric",
+        "line": "He's holding a Red Mage at the toll bridge. She wouldn't pay, and he wants the whole hamlet to see what that costs.",
+        "next": "merchant"
+      },
+      {
+        "id": "merchant",
+        "speaker": "character-merchant",
+        "line": "If you're going to that bridge, I've one Healing Potion left. Take it. I'd rather it went your way than his.",
+        "next": "plan"
+      },
+      {
+        "id": "plan",
+        "speaker": "class-knight",
+        "line": "One potion. Give it to whoever stands in front. That's me."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-knight",
+    "class-cleric",
+    "character-merchant"
+  ]
+}
