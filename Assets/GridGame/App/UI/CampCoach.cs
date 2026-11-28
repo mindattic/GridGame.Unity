@@ -107,9 +107,9 @@ namespace GridGame.App
             string first = HubScreen.NextStage(c, s) is string id ? c.TryStage(id)?.Name : null;
             return Coach.Run(new CoachLesson
             {
-                Id = AdventureLesson, Kicker = "Camp", Title = "Adventure",
+                Id = AdventureLesson, Kicker = "Camp", Title = "Journey",
                 Text = (first != null ? $"The campaign starts at {first}. " : "") +
-                       "Adventure opens the map of stages; Continue above it marches straight to the next one.",
+                       "Journey opens the map of stages; Continue above it marches straight to the next one.",
                 Image = "Tutorial/" + AdventureLesson,
                 Steps = TapSteps(s, row),
                 Finished = _ => { if (GameApp.I.Save == s) FinishHubIntro(s); },
