@@ -212,6 +212,7 @@ namespace GridGame.App
                 case ItemUsedEvent iu: pendingItemUser = iu.UserId; pendingItemId = iu.ItemId; ShowBanner($"{App.Content.TryItem(iu.ItemId)?.Name} ({iu.ChargesLeft} left)"); return Tween.Wait(Timing.Instant);
                 case PlateHitEvent ph: return PlateHitAnim(ph);
                 case PlateBrokenEvent pbk: return PlateBrokenAnim(pbk);
+                case PlateShatteredEvent pse: return PlateShatteredAnim(pse);
                 case FacingChangedEvent fc: { var fu = State.UnitById(fc.UnitId); if (fu != null && board.Units.TryGetValue(fu.Id, out var fv)) { fv.SetPlate(fc.Facing, fu.PlateHp, fu.PlateMax); App.StartCoroutine(Tween.Pop(fv.Plate, 1.2f, 0.18f)); } return null; }
                 case PickupDroppedEvent pd: return PickupDropAnim(pd);
                 case PickupCollectedEvent pc: return PickupCollectAnim(pc);
