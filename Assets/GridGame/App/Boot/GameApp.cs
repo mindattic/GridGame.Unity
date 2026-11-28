@@ -174,6 +174,7 @@ namespace GridGame.App
             var start = CommandLine.Value("-start");
             if (TestMode.Active) TestMode.Start();
             else if (DemoMode.Active) DemoMode.Start();
+            else if (Dev.ScenarioMode.Active) Dev.ScenarioMode.Start(); // GG-T1801
             else if (!string.IsNullOrEmpty(start) && Automation.StartScreens.TryGet(start, out var startScreen)) Router.ResetTo(startScreen);
             else if (CommandLine.DebugOptionsAllowed && global::Unity.Shared.Core.Headless.IsActive) StartHeadlessSession(); // GG-T566: release needs -enableDebugOptions
             else if (CommandLine.Has("-automation")) Router.ResetTo(new TitleScreen());
@@ -587,7 +588,7 @@ namespace GridGame.App
         private void OpenProfiles()
         {
             var saveRoot = CommandLine.Value("-saveRoot");
-            bool throwaway = DemoMode.Active || TestMode.Active;
+            bool throwaway = DemoMode.Active || TestMode.Active || Dev.ScenarioMode.Active;
             Unity.Shared.Core.ProfileStore store;
             if (!string.IsNullOrEmpty(saveRoot)) store = Unity.Shared.Core.Profiles.UseRoot(System.IO.Path.Combine(saveRoot, Unity.Shared.Core.ProfileStore.FolderName));
             else if (CommandLine.DebugOptionsAllowed && Unity.Shared.Core.Profiles.OverrideRoot() != null) store = Unity.Shared.Core.Profiles.UseDataPath(Application.persistentDataPath);
@@ -613,7 +614,7 @@ namespace GridGame.App
                 catch (Exception e) { Debug.LogError("[Profiles] legacy save migration failed (the old Saves folder is untouched): " + e.Message); }
             }
 
-            var requested = CommandLine.Value("-profile") ?? (throwaway ? ThrowawayProfile : null);
+            var requested = CommandLine.Value("-profile") ?? (Dev.ScenarioMode.Active ? Dev.ScenarioMode.Profile : throwaway ? ThrowawayProfile : null);
             try { Profile = new ProfileSession(store, requested); }
             catch (ArgumentException e)
             {

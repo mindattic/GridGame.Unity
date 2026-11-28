@@ -337,6 +337,21 @@ namespace GridGame.App.Automation
                     app.Router.ResetTo(new HubScreen());
                     return new { ok = true };
                 }
+                case "scenario":
+                {
+                    // GG-T1801: drop straight into a "show me X" moment on a generated mid-game save (slot -1, never
+                    // written). preset=first-boss (tools/scenarios/<name>.json, a path, or a bare target) or spec=<JSON>.
+                    try
+                    {
+                        var def = q["spec"] != null ? Dev.ScenarioDef.Parse(q["spec"]) : Dev.ScenarioLander.Load(q["preset"] ?? q["target"]);
+                        var r = Dev.ScenarioLander.Land(def);
+                        return r.Summary(app.Content);
+                    }
+                    catch (Exception e) when (e is ArgumentException || e is JsonException || e is IOException)
+                    {
+                        return new { error = e.Message };
+                    }
+                }
                 case "devequipall":
                 {
                     // Test-only (GG-T39): a fresh save starts every hero bare-handed (weapons are bought
