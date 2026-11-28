@@ -20,9 +20,9 @@ namespace GridGame.App
     /// arrows and dotted lines ... wait for the user to click that exact area"): the stage dims except the one hero, tile,
     /// slot or button to use, a move's route is a dotted line the drag is held to, and the lesson completes when the player
     /// does exactly that. A lesson whose situation isn't on the board yet (no chain to make, no foe charging) keeps its
-    /// popup text in the Tutorial tab and puts its marks up the moment the situation arrives, or completes the old way
+    /// popup text in the description panel and puts its marks up the moment the situation arrives, or completes the old way
     /// (the player does it, a few actions pass, or Next). Lessons that need particular foes wait for their wave.
-    /// Under automation (no `-coach`) the marks are off and the Tutorial tab teaches alone, as before.
+    /// Under automation (no `-coach`) the marks are off and the description panel teaches alone.
     /// </summary>
     public sealed partial class BattleScreen
     {
@@ -42,11 +42,11 @@ namespace GridGame.App
             public string TextHeroTimeline;
             /// <summary>GG-T815: the popup's lines under HeroTimeline, for a lesson whose <see cref="Short"/> would mislead there.</summary>
             public string ShortHeroTimeline;
-            /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
+            /// <summary>The popup's one or two lines (GG-T539); the description panel keeps the longer <see cref="Text"/>.</summary>
             public string Short;
             /// <summary>The wave (0-based) the lesson needs on the board: the drill's (<see cref="StageLessonDef.Wave"/>).</summary>
             public int Wave;
-            /// <summary>Show the bot's move as a glowing demo while idle (the Tutorial tab mode, without coach marks).</summary>
+            /// <summary>Show the bot's move as a glowing demo while idle (the description panel's mode, without coach marks).</summary>
             public bool DemoMove;
             /// <summary>Done when this returns true for a committed command's events.</summary>
             public Func<BattleScreen, BattleCommand, List<BattleEvent>, bool> Done;
@@ -59,10 +59,10 @@ namespace GridGame.App
             public bool DoneOnInspect;
             /// <summary>GG-T539: the coach marks for this board, or null/empty when its situation isn't here yet.</summary>
             public Func<BattleScreen, List<CoachStep>> Marks;
-            /// <summary>Without marks, the lesson stays (in the Tutorial tab) until done instead of ending on the popup's Next.</summary>
+            /// <summary>Without marks, the lesson stays (in the description panel) until done instead of ending on the popup's Next.</summary>
             public bool Waits;
             /// <summary>GG-T542: the tutorial battle sets this lesson's situation up (<see cref="TutorialSceneCommand"/>) when its
-            /// marks find nothing to point at: a chain to close, a foe charging, a plated foe, an orb for a spell.</summary>
+            /// marks find nothing to point at: a chain to close, a foe charging, a plated foe, a full spell bar.</summary>
             public string Scene;
             /// <summary>Stage the scene as the lesson opens even when marks exist (Taunt: a foe closes on the Cleric).</summary>
             public bool SceneFirst;
@@ -272,6 +272,7 @@ namespace GridGame.App
             hintShown = false; idle = 0f;
             App.Audio.Sfx("ui.select", 0.6f);
             panelUnitId = -1;
+            readSlot = -1;
             SyncPanel();
             FocusLesson();
         }
@@ -326,8 +327,8 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>The Tutorial tab (GG-T449) stays as the lesson's recap: the popup's lesson in full, its example, and
-        /// Next / Skip for a lesson whose situation hasn't come up yet.</summary>
+        /// <summary>The lesson's recap in the description panel (GG-T449, GG-T1827): the popup's lesson in full, its example,
+        /// and Next / Skip for a lesson whose situation hasn't come up yet.</summary>
         private void TutorialCard(VisualElement page)
         {
             var l = CurrentLesson;
@@ -352,15 +353,15 @@ namespace GridGame.App
                 ex.style.whiteSpace = WhiteSpace.Normal;
                 ex.style.color = Palette.Term;
             }
-            var btns = Ui.El("col", row);
+            // Next / Skip side by side at the top, so they never scroll out of the short panel; 24 px apart (GG-T656, POL-C3).
+            var btns = Ui.El("row", row);
             btns.style.flexShrink = 0;
-            // 24 px from the tab hit areas above (window padding 8 + 16) and between the two buttons (GG-T656, POL-C3).
-            Ui.Pad(btns, top: Space.S16);
+            btns.style.alignSelf = Align.FlexStart;
             bool last = TutorialStep == Lessons.Length - 1;
             Button first = null;
             if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
             else if (!LessonWaiting) (first = RowIcon.IconButton("Next", RowKind.Enter, NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
-            if (first != null) Ui.Margin(first, bottom: Space.S24);
+            if (first != null) Ui.Margin(first, right: Space.S24);
             RowIcon.IconButton("Skip", RowKind.Close, FinishTutorial, "btn--small", btns).name = "tutorial-skip";
         }
 
@@ -518,7 +519,7 @@ namespace GridGame.App
             var l = Lessons[step];
             if (step == Lessons.Length - 1) { FinishTutorial(); return; }
             if (how == CoachEnd.Completed && (hadMarks || !l.Waits)) NextLesson();
-            // Aborted, or no marks for a lesson that waits: the popup's words stay in the Tutorial tab and the lesson
+            // Aborted, or no marks for a lesson that waits: the popup's words stay in the description panel and the lesson
             // completes the old way, or puts its marks up when its situation arrives.
             else
             {

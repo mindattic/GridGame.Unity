@@ -651,19 +651,9 @@ namespace GridGame.App
         private void SyncPanel()
         {
             panel.Clear();
-            ApplyDescriptionPage();
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             SyncLore(u);
-            // A running lesson takes the description panel (§9.0) until an aim needs it; GG-T1827 folds it into the panel's content.
-            tutorialPage?.Clear();
-            if (TutorialActive && tutorialPage != null)
-            {
-                TutorialCard(tutorialPage);
-                // Its Next/Skip sit side by side at the top, so the lesson's buttons never scroll out of the short page.
-                var tb = tutorialPage.Q("tutorial-skip")?.parent;
-                if (tb != null) { tb.style.flexDirection = FlexDirection.Row; tb.style.alignSelf = Align.FlexStart; }
-            }
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
@@ -675,6 +665,12 @@ namespace GridGame.App
             if (readSlot >= 0 && State.UnitById(SelectedHeroId) is Unit reader && BattleEngine.SlotAbility(State, reader, readSlot) is AbilityDef read)
             {
                 InspectCard.Ability(panel, read, SlotState(reader, readSlot, read));
+                return;
+            }
+            // A running lesson is the panel's content (§9.0, GG-T1827) until an aim, a held slot or a unit the player reads needs it.
+            if (TutorialActive && panelUnitId < 0)
+            {
+                TutorialCard(panel);
                 return;
             }
             if (u == null) return;
@@ -812,12 +808,12 @@ namespace GridGame.App
         // The description panel (§9.0, GG-T1822): from a gutter under the ability bar to the safe bottom
         // ─────────────────────────────────────────────────────────────────────────
 
-        private ScrollView lorePage, logPage, tutorialPage;
+        private ScrollView lorePage, logPage;
         /// <summary>Every combat line this battle (newest last, capped), so the Log survives a rebuild.</summary>
         private const int LogCap = 200;
         private readonly List<(string text, Color color)> logLines = new List<(string, Color)>();
 
-        /// <summary>The panel holds the unit page and, while lessons run, the tutorial page. The Party · Lore · Log tab strip
+        /// <summary>The panel holds one page: the aimed or read ability, a running lesson, or the unit. The Party · Lore · Log tab strip
         /// and window are gone (owner 2026-11-27): the Log page is built and filled off the layout and shown by the pause
         /// menu's Battle log (GG-T1825); the Lore page waits for the hub (GG-T1826).</summary>
         private void BuildDescriptionPanel(VisualElement root)
@@ -829,12 +825,10 @@ namespace GridGame.App
             var win = Ui.Window(null, host, "window--compact description-panel__window");
             win.name = "description-window";
             panel = InfoPage(win, "description");
-            tutorialPage = InfoPage(win, "tutorial");
             lorePage = InfoPage(null, "lore");
             // The combat log keeps the old feed's name, so automation that looks for "feed" finds it on the pause menu's Battle log.
             logPage = InfoPage(null, "feed");
             foreach (var (text, color) in logLines) AddLogLine(text, color);
-            ApplyDescriptionPage();
         }
 
         private static ScrollView InfoPage(VisualElement win, string name)
@@ -846,15 +840,6 @@ namespace GridGame.App
             sv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
             win?.Add(sv);
             return sv;
-        }
-
-        /// <summary>A running lesson shows in the panel; an aimed ability's card (and Cast / Cancel) takes it over while aiming.</summary>
-        private void ApplyDescriptionPage()
-        {
-            if (panel == null || tutorialPage == null) return;
-            bool lesson = TutorialActive && TargetingSlot < 0;
-            panel.style.display = lesson ? DisplayStyle.None : DisplayStyle.Flex;
-            tutorialPage.style.display = lesson ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         /// <summary>The Lore page: the unit's Prose description and lore (ClassDef.Description / Lore, filled from
