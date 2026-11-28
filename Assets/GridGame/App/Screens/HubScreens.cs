@@ -1418,13 +1418,14 @@ namespace GridGame.App
             all.name = RepairAllButton;
             Ui.SetEnabled(all, due.Any(p => Repair.Cost(C, S, p) <= S.Gold));
             bool any = false;
-            int sound = 0;
+            int sound = 0, worn = 0;
             foreach (var p in Repair.Pieces(C, S))
             {
                 any = true;
                 var piece = p;
                 int cost = Repair.Cost(C, S, p);
                 if (cost <= 0) { sound++; continue; } // GG-T1865: full-durability pieces collapse into one row below
+                worn++;
                 bool bad = cost > 0 && Repair.IsUneconomical(p.Item, p.Durability, p.Repairs, p.Mastery);
                 string name = (p.Mastery > 1f ? "★ " : "") + p.Item.Name;
                 var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
@@ -1436,8 +1437,19 @@ namespace GridGame.App
                 if (cost > 0) RepairPriceNote(list, p);
                 if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);
             }
-            if (sound > 0) Ui.Note($"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)", list);
-            if (!any) Ui.Empty("Nobody has gear that wears out. Equip forged weapons first.", list);
+            string soundText = $"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)";
+            if (worn > 0 && sound > 0) Ui.Note(soundText, list);
+            if (worn > 0) return;
+            // GG-T1883: nothing to mend, so the tab is a compact note that points at the work he can do instead.
+            var state = Ui.EmptyState(list, any ? RowKind.Cleared : RowKind.Craft, any ? soundText : "Nobody has gear that wears out. Equip forged weapons first.", "smith-empty");
+            if (!salvage) return;
+            var next = Ui.Actions(state);
+            if (any)
+            {
+                RowIcon.IconButton("Upgrade", RowKind.Craft, () => { tab = 1; selected = null; Refresh(); }, "btn--small", next);
+                RowIcon.IconButton("Salvage", RowKind.Item, () => { tab = 2; selected = null; Refresh(); }, "btn--small", next);
+            }
+            else RowIcon.IconButton("Forge", RowKind.Craft, () => { tab = 0; selected = null; Refresh(); }, "btn--small", next);
         }
 
         /// <summary>GG-T544: the line under a worn piece's repair row — "Cheaper to wait" while it's above the threshold, then
@@ -1894,7 +1906,12 @@ namespace GridGame.App
         {
             var pulls = S.Summon?.History ?? new List<PullRecord>();
             var list = Ui.ListPanel(body, pulls.Count == 0 ? "Pulls" : $"Last {pulls.Count} pulls", "summon-history");
-            if (pulls.Count == 0) { Ui.Empty("No pulls yet.", list); return; }
+            if (pulls.Count == 0)
+            {
+                var state = Ui.EmptyState(list, RowKind.Summon, "No pulls yet. Each banner pull is kept here, newest first.");
+                RowIcon.IconButton("Summon", RowKind.Summon, () => App.Router.Pop(), "btn--small", Ui.Actions(state)).name = "summon-history-summon";
+                return;
+            }
             for (int i = 0; i < pulls.Count; i++)
             {
                 var p = pulls[i];
