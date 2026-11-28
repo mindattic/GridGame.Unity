@@ -461,6 +461,10 @@ namespace GridGame.App.Automation
                     if (!StartScreens.TryGet(q["screen"], out var screen)) return new { error = "unknown screen" };
                     app.Router.Push(screen);
                     return new { ok = true };
+                case "devbreeds":
+                    // Test-only (GG-T1798): the breed gallery, every masked class in every breed through the real recolour bake.
+                    app.Router.Push(new BreedGalleryScreen());
+                    return new { ok = true };
                 case "battle":
                 {
                     if (app.Save == null) { app.Save = Progression.NewGame(app.Content, "Bot"); app.Slot = 2; }
