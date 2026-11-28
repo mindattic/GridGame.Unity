@@ -30,9 +30,11 @@ namespace GridGame.App
             trayHost.style.alignItems = Align.Center;
             trayHost.style.display = DisplayStyle.None;
             frame.Add(trayHost);
+            BuildVanishedMarker(trayHost);
             restingChip = Ui.Chip("", trayHost, onClick: TapRestingChip, name: "tl-resting");
             restingChip.style.marginLeft = restingChip.style.marginRight = restingChip.style.marginTop = restingChip.style.marginBottom = Space.S0;
             restingChip.style.maxWidth = TrayW;
+            restingChip.style.flexShrink = 1; // beside the GG-T2160 vanished marker it narrows and wraps
             restingLabel = restingChip.Q<Label>();
             restingLabel.style.whiteSpace = WhiteSpace.Normal; // a large type scale wraps to two lines rather than cutting the count
             restingLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -42,9 +44,14 @@ namespace GridGame.App
         {
             if (trayHost == null || n == restingShown) return;
             restingShown = n;
-            trayHost.style.display = n > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            restingChip.style.display = n > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            SyncTrayHost();
             if (n > 0) restingLabel.text = PanelCopy(PanelState.RestingChip, n: n);
         }
+
+        /// <summary>The tray shows while anyone rests or a hero is in the smoke (GG-T2160).</summary>
+        private void SyncTrayHost() =>
+            trayHost.style.display = restingShown > 0 || vanishedKey.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
 
         /// <summary>A tap on the chip: in Examine mode the resting list fills the panel; otherwise it opens as a tap card, as a
         /// tap on any timeline diamond does.</summary>

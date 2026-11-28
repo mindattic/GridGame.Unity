@@ -813,6 +813,7 @@ namespace GridGame.App
                 PlaceIcon(e, XOfU(SlideU(e.Id, at[e.Id])), TrackY, e.Id == nextActorEntry ? NextScale : 1f, 0f, now);
             foreach (var e in tray) PlaceIcon(e, TrayX0 + TrayW / 2f, TrackY, TrayScale, 1f, now);
             SyncRestingChip(tray.Count);
+            SyncVanishedMarker();
             var cluster = new List<TimelineEntry>();
             void Flush()
             {
