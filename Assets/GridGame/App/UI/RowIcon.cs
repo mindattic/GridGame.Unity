@@ -247,7 +247,7 @@ namespace GridGame.App
             float rim = Mathf.Max(1.5f, r * 0.08f);
             FillCircle(p, c, r, Rim);
             FillCircle(p, c, r - rim, Disc);
-            // The glass highlight every Manapunk bulb carries (ManaOrbView), faint, top left.
+            // The glass highlight every Manapunk bulb carries, faint, top left.
             FillCircle(p, c + new Vector2(-0.38f, -0.40f) * r, r * 0.16f, Palette.White.WithA(0.3f));
 
             float u = r * 0.52f; // the mark's half-size

@@ -19,7 +19,7 @@ namespace GridGame.App
 {
     /// <summary>
     /// The battle. Layout follows the bible HUD rows (§9): top bar · timeline + shield · action banner ·
-    /// 6×8 board · ability bar with the mana pool at its right end (GG-T405) · Party · Lore · Log tabs. The simulation (BattleState) is the only truth;
+    /// 6×8 board · ability bar, each spell with its own mana fill bar (§3.1.0) · Party · Lore · Log tabs. The simulation (BattleState) is the only truth;
     /// this screen turns input into commands and plays the resulting events back.
     /// </summary>
     public sealed partial class BattleScreen : GameScreen
@@ -81,16 +81,6 @@ namespace GridGame.App
         private readonly BattleSetup setupOverride;
         private BoardView board;
         private readonly List<VisualElement> slotViews = new List<VisualElement>();
-        /// <summary>The mana orbs row (GG-T673, back from GG-T405's single globe): one orb per bank slot, named "orbs" with
-        /// children "orb0".."orbN" so automation finds it. Filled orbs glow (their bloom behind them); the next orb forming
-        /// shows the mana charge round its rim; an aimed spell marks the orbs it would spend.</summary>
-        private VisualElement pool;
-        private readonly List<ManaOrbView> orbViews = new List<ManaOrbView>();
-        private readonly List<VisualElement> orbBlooms = new List<VisualElement>();
-        /// <summary>How many orbs the pool currently shows (GG-T366). Mid-playback it lags State.Bank, which already
-        /// holds the action's final count: each mint ticks it up as its orb lands and each spend ticks it down, so the
-        /// pool never shows an orb before its fly-in or after it was spent.</summary>
-        private int shownOrbs;
         /// <summary>The Party page of the info tabs (GG-T391): the selected unit, its skills, the ability/confirm card and
         /// the tutorial lesson all draw here (a ScrollView, so Add/Clear reach its content).</summary>
         private VisualElement panel;
@@ -103,17 +93,15 @@ namespace GridGame.App
         /// <summary>Room the drag-timer seconds take at the banner row's right end; the banner keeps the same inset on both
         /// sides so it stays centred and never runs under the timer (GG-T391).</summary>
         private const float TimerReserve = Size.Label + Space.S24;
-        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391, GG-T405): the ability bar (five slots and
-        // the mana pool), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
+        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391, GG-T405): the ability bar (five slots, each
+        // spell with its fill bar), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => BoardBottom + Space.S24; // 24 px from the board's tiles, also targets (GG-T656, POL-C3)
         // GG-T706 (owner 2026-11-23): the ability bar is always the row under the board. GG-T523's side columns beside the
         // board on a 2:3 / 3:4 stage are gone: those shapes are now letterboxed at 9:16 (bible §26.3), so no stage is wide
         // enough for them.
-        /// <summary>The info tabs start a target gap (POL-C3, 24) under the mana orbs row.</summary>
-        private static float InfoTabsTop => OrbRowTop + Size.OrbRow + Space.S24;
-        /// <summary>The mana orbs row (GG-T673) sits a target gap under the ability row; the info tabs start a gap under it.</summary>
-        private static float OrbRowTop => BarTop + Size.Slot + Space.S24;
+        /// <summary>The info tabs start a target gap (POL-C3, 24) under the ability row.</summary>
+        private static float InfoTabsTop => BarTop + Size.Slot + Space.S24;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -190,9 +178,6 @@ namespace GridGame.App
             billboard?.RemoveFromHierarchy();
             billboard = null;
             if (Coach.Active && (Coach.LessonId ?? "").StartsWith("battle-")) Coach.Cancel(); // GG-T539: a lesson leaves with its battle
-            mintTagHost?.RemoveFromHierarchy(); // GG-T405: the globe's source tags live on the Overlay too
-            mintTagHost = null;
-            mintTags.Clear();
             // Build() rebuilds `banner` fresh when the player backs out of "How to play" onto this same
             // instance (see the Build() comment); an in-flight scroll left running would keep animating
             // whatever `banner` now points to using timing measured against the old one (GG-T70).
@@ -209,14 +194,12 @@ namespace GridGame.App
             var initial = new List<BattleEvent>();
             // Build runs again on this same instance when the player backs out of "How to play" (the router
             // re-mounts the screen). Every per-build view cache must start empty, or the HUD keeps writing to
-            // the previous build's detached elements (every slot read "Locked", orbs empty, timeline icons
+            // the previous build's detached elements (every slot read "Locked", timeline icons
             // gone, coin label blank) — and the once-per-battle work (tutorial, opening playback, capture
             // event) must not run a second time (GG-T70).
             bool firstBuild = !built;
             built = true;
             slotViews.Clear();
-            pool = null;
-            orbViews.Clear(); orbBlooms.Clear();
             timelineIconViews.Clear();
             shownCoins = -1;
             if (!firstBuild)
@@ -352,15 +335,10 @@ namespace GridGame.App
             if (boardHost == null) return;
             boardHost.style.left = BoardLeft;
             cutInLayer.style.left = -BoardLeft;
-            // The rows under the board (ability bar + mana pool, info tabs) keep to the centred content column, so on a
+            // The rows under the board (ability bar, info tabs) keep to the centred content column, so on a
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
             LayoutAbilityBar(inset);
-            if (pool != null)
-            {
-                pool.style.left = pool.style.right = inset + Fit.Edge;
-                pool.style.top = OrbRowTop;
-            }
             if (Root?.Q("info-tabs") is VisualElement tabs)
             {
                 tabs.style.left = tabs.style.right = inset + Fit.Edge;
@@ -410,7 +388,7 @@ namespace GridGame.App
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
             // Exactly five slots fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit that
-            // row" - the mana pool no longer shares it, see BuildManaPool); even gutters on the space scale, and the
+            // row"); even gutters on the space scale, and the
             // cells, not the gaps, take a wider stage (POL-C1/C8). Laid out by LayoutAbilityBar.
             bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
@@ -428,7 +406,6 @@ namespace GridGame.App
                 Ui.AbilitySlot(slot);
                 slotViews.Add(slot);
             }
-            BuildManaPool(root);
         }
 
         /// <summary>One cell of the ability row: a window-framed column that takes an even share of the row.</summary>
@@ -441,82 +418,6 @@ namespace GridGame.App
             cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 4;
             cell.style.backgroundImage = new StyleBackground(Art.Window);
             return cell;
-        }
-
-        /// <summary>The mana orbs row (GG-T673, owner 2026-11-22: "return the mana orbs line ... it's easier to interpret orbs
-        /// than it is to do math"), replacing GG-T405's single globe (owner 2026-11-17). One <see cref="ManaOrbView"/> per bank
-        /// slot under the ability row; lit orbs bloom; the next empty orb carries the forming charge round its rim. Mints
-        /// fly into their own slot along a bezier trail, spends leave from the newest orbs (BattleScreen.Playback). Holding
-        /// it explains it (ManaPoolCard).</summary>
-        private void BuildManaPool(VisualElement root)
-        {
-            // GG-T673 (owner 2026-11-22: "return the mana orbs line"): a row of orbs, one per bank slot, under the ability
-            // row. Spells cost whole orbs, so the row reads at a glance: no count to do maths on.
-            pool = Ui.El("row", root);
-            pool.name = "orbs";
-            pool.AddToClassList("mana-orbs");
-            pool.style.position = Position.Absolute;
-            pool.style.height = Size.OrbRow;
-            pool.style.justifyContent = Justify.FlexStart; // left to right, equal gaps (LayoutOrbs)
-            pool.style.alignItems = Align.Center;
-            pool.RegisterCallback<GeometryChangedEvent>(_ => LayoutOrbs());
-            pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
-            InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
-            // GG-T729: no label leads the row (the orbs speak for themselves).
-            int cap = Mathf.Max(1, State?.Bank?.Capacity ?? BattleConfig.ManaBankCapacity);
-            for (int i = 0; i < cap; i++)
-            {
-                var cell = Ui.El("", pool);
-                cell.name = "orb" + i;
-                cell.pickingMode = PickingMode.Ignore;
-                cell.style.width = cell.style.height = Size.OrbRow; // LayoutOrbs fits these to the row
-                cell.style.flexShrink = 0;
-                var bloom = new VisualElement { name = "bloom", pickingMode = PickingMode.Ignore };
-                bloom.style.position = Position.Absolute;
-                bloom.style.backgroundImage = new StyleBackground(Art.Glow);
-                bloom.style.unityBackgroundImageTintColor = Palette.OrbLit;
-                bloom.style.opacity = 0f;
-                cell.Add(bloom);
-                var orb = new ManaOrbView { ReduceMotion = ReduceMotion };
-                orb.style.position = Position.Absolute;
-                orb.style.left = orb.style.top = orb.style.right = orb.style.bottom = Space.S0;
-                cell.Add(orb);
-                orbViews.Add(orb);
-                orbBlooms.Add(bloom);
-            }
-            if (!ReduceMotion) pool.schedule.Execute(BreatheOrbs).Every(33);
-        }
-
-        /// <summary>Owner 2026-11-22: "all mana orbs need to always be sized properly and spaced equally, rendered from left
-        /// to right." Any count from 1 to MaxOrbCapacity: every orb the same size (at most Size.OrbRow, smaller as the count
-        /// grows so the row always fits), the same gap between each, starting at the left edge.</summary>
-        private void LayoutOrbs()
-        {
-            if (pool == null || orbViews.Count == 0) return;
-            float avail = pool.contentRect.width;
-            if (float.IsNaN(avail) || avail <= 0f) return;
-            int n = orbViews.Count;
-            float gap = Size.OrbGap;
-            // GG-T688: big bulbs while you own few (1 to 2 doubles your casting, so each one must read), shrinking only as
-            // the count needs, never below OrbMin.
-            float size = Mathf.Clamp((avail - gap * (n - 1)) / n, Size.OrbMin, Size.OrbRow);
-            for (int i = 0; i < n; i++)
-            {
-                var cell = orbViews[i].parent;
-                if (cell == null) continue;
-                cell.style.width = cell.style.height = size;
-                cell.style.marginRight = i < n - 1 ? gap : Space.S0;
-                var bloom = orbBlooms[i];
-                bloom.style.left = bloom.style.top = bloom.style.right = bloom.style.bottom = -size * Size.OrbBloom / Size.OrbRow;
-            }
-        }
-
-        /// <summary>Lit orbs breathe their bloom softly, in step, so the row reads as live mana (GG-T673).</summary>
-        private void BreatheOrbs()
-        {
-            float k = 0.78f + 0.22f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / Timing.OrbBreathe);
-            for (int i = 0; i < orbBlooms.Count; i++)
-                orbBlooms[i].style.opacity = orbViews[i].Filled ? k : 0.6f * Mathf.Clamp01(orbViews[i].Charge); // GG-T739: the halo of a filling orb brightens with its fill
         }
 
         // ─────────────────────────────────────────────────────────────────────────
@@ -577,7 +478,6 @@ namespace GridGame.App
             board.SyncAmplifier(State.Amplifier);
             board.SyncPickups(State);
             SyncTimeline(null);
-            SyncOrbs();
             SyncBar();
             SyncPanel();
             int wave = Math.Min(State.Wave + 1, State.Stage.Waves.Count);
@@ -660,92 +560,6 @@ namespace GridGame.App
             e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c;
         }
 
-        /// <param name="upTo">Mid-playback (GG-T112): show only this many orbs, so orbs minted in one action tick the pool
-        /// up one by one as each lands instead of all at once; -1 shows the bank as it is. Also used by
-        /// <see cref="OrbsSpentEvent"/> playback (GG-T130) to show the count right after that spend, not the command's
-        /// end-of-action <see cref="BattleState.Bank"/> count, which may already include orbs the same action mints later.</param>
-        private void SyncOrbs(int upTo = -1)
-        {
-            int filled = upTo >= 0 ? Mathf.Min(upTo, State.Bank.Count) : State.Bank.Count;
-            shownOrbs = filled; // GG-T366: the pool shows what has landed so far, not the final count
-            // Mid-playback the charge beats own shownCharge (each ChargeAnim starts from the last one's total); the
-            // end-of-action State.ManaCharge here would break the next charge animation in the same playback.
-            if (!playing) shownCharge = State.ManaCharge;
-            if (pool == null) return;
-            if (!playing) SetChargeBubble(State.ManaCharge / (float)BattleConfig.ManaChargePerOrb);
-            ShowPoolCount(filled);
-            SyncPoolPreview();
-        }
-
-        /// <summary>Holding the mana globe (GG-T405, owner: "it should be obvious what it is and what is filling it up"):
-        /// what the pool is, and every way it fills, as the rules have them (BattleRunner.MintOrb and AddCharge callers).</summary>
-        private bool ManaPoolCard(VisualElement body)
-        {
-            int cap = State.Bank.Capacity;
-            return InspectCard.Explain(body, Art.Orb, "Mana orbs", $"{State.Bank.Count}/{cap} orbs", Palette.ManaBloom,
-                "The party's shared mana. Every spell costs whole orbs from this row; skills and items cost none. It holds " + cap + " orbs; once they're all full, earning stops until a spell spends one.",
-                new[]
-                {
-                    "The next empty orb fills a ring as you fight; a full ring becomes an orb.",
-                    "Pincers fill it by the HP they take (fewer heroes and longer chains fill it faster).",
-                    "Striking a foe with a skill, felling a foe, and every Clutch! add to it.",
-                    "It also refills slowly on its own as the battle clock runs.",
-                    "Critical hits, interrupting a foe's charge, the power amplifier and Mana supporters add to it too.",
-                    "Guard trades the turn time you give up for charge (10 per second, up to 40).",
-                    "A quick move banks the drag timer's spare seconds as orbs at the next foe's turn.",
-                    "Mana pickups on the board, Mana Potions and Ethers, Steal and Mug, and Meditate or Mana Pour give whole orbs.",
-                    "Some gear starts the battle with orbs, an expedition carries orbs over, and some regions' rules grant them.",
-                },
-                "Aiming a spell marks the orbs it will spend; a red rim marks the ones you still lack. The Log tab lists every orb and where it came from.");
-        }
-
-        /// <summary>The pool's numbers: the globe's level and the count on it, and the cap beneath, gold when full.</summary>
-        private void ShowPoolCount(int count)
-        {
-            if (pool == null) return;
-            for (int i = 0; i < orbViews.Count; i++)
-            {
-                bool lit = i < count;
-                orbViews[i].Filled = lit;
-                if (!lit || ReduceMotion) orbBlooms[i].style.opacity = lit ? 1f : 0f;
-            }
-            pool.EnableInClassList("mana-orbs--full", count >= orbViews.Count);
-            ApplyOrbCharge(); // the forming-orb ring moves to the new next empty orb
-        }
-
-        /// <summary>The stage-space centre of orb <paramref name="index"/> (clamped), for trails that fly into it.</summary>
-        private Vector2 OrbCenter(int index)
-        {
-            if (orbViews.Count > 0)
-            {
-                var o = orbViews[Mathf.Clamp(index, 0, orbViews.Count - 1)];
-                if (!float.IsNaN(o.worldBound.x) && o.worldBound.width > 0f) return o.worldBound.center - App.Stage.worldBound.position;
-            }
-            return new Vector2(GameApp.StageWidth / 2f, OrbRowTop + Size.OrbRow / 2f);
-        }
-
-        /// <summary>The pending-cost preview (GG-T405): while a spell is aimed the count dims and a "-N" ghost fades in over
-        /// the pool's corner (red if the bank can't pay it); both fade back when the aim ends.</summary>
-        private void SyncPoolPreview()
-        {
-            if (pool == null) return;
-            int cost = 0;
-            var hero = State.UnitById(SelectedHeroId);
-            if (TargetingSlot >= 0 && hero != null && TargetingSlot < hero.Bar.Count)
-            {
-                var sl = hero.Bar[TargetingSlot];
-                var a = BattleEngine.SlotAbility(State, hero, TargetingSlot);
-                if (a != null && a.Kind == AbilityKind.Spell && !sl.IsItem && !sl.IsWeapon) cost = a.Cost;
-            }
-            // The orbs it would spend (the newest ones) pulse; orbs it still lacks show a red rim, so "can I afford it"
-            // reads from the row itself (GG-T673).
-            for (int i = 0; i < orbViews.Count; i++)
-            {
-                orbViews[i].Preview = cost > 0 && i < shownOrbs && i >= shownOrbs - cost;
-                orbViews[i].Short = cost > shownOrbs && i >= shownOrbs && i < cost;
-            }
-        }
-
         private void SyncBar()
         {
             var hero = State.UnitById(SelectedHeroId);
@@ -813,7 +627,6 @@ namespace GridGame.App
                 v.style.opacity = alpha;
                 v.Q("icon").style.opacity = iconAlpha;
             }
-            SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }
 
         private int panelUnitId = -1;
@@ -859,8 +672,7 @@ namespace GridGame.App
             // What the Bestiary has learned from defeating its class gates the numbers (§25.11, GG-T290).
             int know = Knowledge(u);
             // FF-style plain numbers, no bar (owner 2026-11-21): "HEALTH"/"AETHER" are the same width, so those labels
-            // line up instead of "HP"/"MP". Aether is the party's one shared pool (ManaBank), so it reads the same on
-            // every hero's card.
+            // line up instead of "HP"/"MP". A hero's MANA is how many of its spell meters are full (§3.1.0).
             var hpRow = Ui.El("row", col);
             Ui.Text("HEALTH", "tiny dim", hpRow).style.marginRight = Space.S8;
             Ui.Text(know >= BestiaryKnowledge.Stats ? $"{u.Hp}/{u.MaxHp}" : "???", "small", hpRow);
@@ -868,7 +680,15 @@ namespace GridGame.App
             {
                 var aetherRow = Ui.El("row", col);
                 Ui.Text("MANA", "tiny dim", aetherRow).style.marginRight = Space.S8;
-                Ui.Text($"{State.Bank.Count}/{State.Bank.Capacity}", "small", aetherRow);
+                int spells = 0, full = 0;
+                for (int i = 0; i < u.Bar.Count; i++)
+                {
+                    int need = State.ManaFull(u, i);
+                    if (need <= 0) continue;
+                    spells++;
+                    if (State.ManaIn(u.Id, i) >= need) full++;
+                }
+                Ui.Text(spells == 0 ? "no spells" : $"{full}/{spells} spells full", "small", aetherRow);
             }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297
             else if (know >= BestiaryKnowledge.Speed) Ui.Text($"SPD {u.Effective.Speed:0}  ·  defeat more to learn the rest", "tiny dim", col);
@@ -1178,7 +998,6 @@ namespace GridGame.App
             // Dev only: a charge past one orb is allowed on purpose, so the next charge gain rolls several orbs at
             // once (tools/harness.py orbs, GG-T112).
             if (charge >= 0) State.ManaCharge = Mathf.Clamp(charge, 0, 10 * BattleConfig.ManaChargePerOrb);
-            SyncOrbs();
             SyncBar();
         }
 
@@ -1351,7 +1170,6 @@ namespace GridGame.App
             PendingTarget = null;
             board.ClearMarks();
             ClearTargetGlows();
-            SyncPoolPreview();
             ShowBanner("");
         }
 
@@ -1467,9 +1285,6 @@ namespace GridGame.App
         private int beatsAtPause;
         /// <summary>Beats that started while the menu was up (must stay 0; logged as an error when not).</summary>
         public int BeatsWhilePaused { get; private set; }
-        /// <summary>Bank slot each landed orb flew to, in playback order (last 24) — the automation proof that orbs
-        /// minted together fan into consecutive slots (GG-T112).</summary>
-        public readonly List<int> OrbSlotsFlown = new List<int>();
         /// <summary>Seconds of unpaused battle time; the playback watchdog measures against this, so a long pause
         /// can't make it fire on Resume.</summary>
         private float battleTime;

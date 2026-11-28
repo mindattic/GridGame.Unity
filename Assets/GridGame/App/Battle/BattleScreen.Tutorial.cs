@@ -115,18 +115,18 @@ namespace GridGame.App
                 Example = "Example: lift one of us, then drag off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
-            // GG-T731: what an orb is, before Mana teaches how to earn one (the orbs as GG-T730 draws them).
-            new Lesson { Id = "orbs", Title = "Mana orbs", Patience = 2,
-                Short = "Commander, these glass orbs hold our mana. Mana dust flows in and fills them with glowing light; a full orb breathes, ready to spend on an ability.",
-                Text = "Commander, the row of glass orbs under our abilities is our mana. An empty orb is clear glass. As we earn mana, glowing mana dust flows into the next orb and fills it with light from the bottom up. A full orb glows and gently breathes: it is ready to spend. Abilities cost whole orbs, and casting one drains them back to empty glass.",
-                Example = "Example: watch the next orb fill as our pincers land.",
-                Done = (b, c, e) => e.Exists(x => x is OrbMintedEvent),
+            // GG-T731: what mana is, before Mana teaches how to earn it (each spell's own fill bar, §3.1.0, GG-T1821).
+            new Lesson { Id = "orbs", Title = "Spell mana", Patience = 2,
+                Short = "Commander, each of our spells has its own bar. Mana fills it as we fight; a full bar glows, ready to cast.",
+                Text = "Commander, every spell on our bar has its own mana bar. As we earn mana, every spell's bar fills by the same amount, so a cheap spell fills sooner than a costly one. A full bar glows: that spell is ready to cast, and casting it empties only its own bar.",
+                Example = "Example: watch the spell bars fill as our pincers land.",
+                Done = (b, c, e) => e.Exists(x => x is ManaGainedEvent g && g.Amount > 0),
                 Marks = b => b.OrbMarks() },
             new Lesson { Id = "mana", Title = "Earn mana",
-                Short = "Commander, our pincers fill the mana globe. Every 100 mana makes an orb, and spells spend orbs.",
-                Text = "Commander, our pincers fill the mana bubble at the end of the orb row; at 100 it becomes an orb. Lean pincers earn the most: every extra one of us divides the mana, every chain link multiplies it.",
-                Example = "Example: two of us taking half a foe's HP earn 60 of the 100.",
-                Done = (b, c, e) => e.Exists(x => x is OrbMintedEvent o && o.Reason == "pincer"), Patience = 3,
+                Short = "Commander, our pincers fill every spell's bar with mana.",
+                Text = "Commander, our pincers pour mana into every spell's bar. Lean pincers earn the most: every extra one of us divides the mana, every chain link multiplies it.",
+                Example = "Example: two of us taking half a foe's HP earn 60 mana for every spell.",
+                Done = (b, c, e) => e.Exists(x => x is ManaChargedEvent m && m.Reason == "pincer"), Patience = 3,
                 Marks = b => b.ManaMarks() },
             new Lesson { Id = "chain", Title = "Chain them", DemoMove = true, Waits = true, Scene = "chain",
                 Short = "Commander, one order can set off several pincers at once: a CHAIN. Every link strikes and earns more mana.",
@@ -914,36 +914,27 @@ namespace GridGame.App
             };
         }
 
-        /// <summary>GG-T731: the orb row (empty glass that mana dust fills), then one orb (full, it breathes and is ready).</summary>
-        private List<CoachStep> OrbMarks()
+        /// <summary>A coach step on the commandable hero's first spell bar (§3.1.0: mana fills each spell's own bar,
+        /// GG-T1821), or null when it carries no spell.</summary>
+        private List<CoachStep> SpellBarMarks(Func<AbilityDef, string> caption)
         {
-            if (pool == null) return null;
-            var marks = new List<CoachStep>
-            {
-                new CoachStep { Caption = "Each glass orb holds mana. Empty orbs are clear glass; mana dust flows in and fills them with glowing light.", Element = () => pool, Info = true },
-            };
-            if (pool.Q("orb0") != null)
-                marks.Add(new CoachStep { Caption = "A full orb glows and breathes: it's ready to spend on an ability.", Element = () => pool?.Q("orb0"), Info = true });
-            return marks;
-        }
-
-        private List<CoachStep> ManaMarks()
-        {
-            var marks = new List<CoachStep>
-            {
-                new CoachStep { Caption = "Pincers, strikes, kills and Clutch! moments fill these mana orbs; spells spend them (tap the orbs).", Element = () => pool, Info = true },
-            };
             var hero = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive);
             for (int i = 0; hero != null && i < slotViews.Count; i++)
             {
                 var a = BattleEngine.SlotAbility(State, hero, i);
-                if (a == null || a.Cost <= 0) continue;
+                if (a == null || State.ManaFull(hero, i) <= 0) continue;
                 int k = i;
-                marks.Add(new CoachStep { Caption = $"Each spell fills its own bar with mana: {a.Name} glows when its bar is full and ready to cast (tap the bar).", Element = () => k < slotViews.Count ? slotViews[k].Q("meter") : null, Info = true });
-                break;
+                return new List<CoachStep> { new CoachStep { Caption = caption(a), Element = () => k < slotViews.Count ? slotViews[k].Q("meter") : null, Info = true } };
             }
-            return marks;
+            return null;
         }
+
+        /// <summary>GG-T731: what mana is, shown on a spell's own fill bar.</summary>
+        private List<CoachStep> OrbMarks() =>
+            SpellBarMarks(_ => "Each spell has its own bar. Mana fills it as we fight; a full bar glows: that spell is ready to cast.");
+
+        private List<CoachStep> ManaMarks() =>
+            SpellBarMarks(a => $"Pincers, strikes, kills and Clutch! moments fill every spell's bar: {a.Name} glows when its bar is full and ready to cast (tap the bar).");
 
         /// <summary>A cast mark: tap the hero, its slot, the target (when it has one), then Cast / Use / Go.</summary>
         private List<CoachStep> CastMarks(Unit hero, int slot)

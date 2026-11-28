@@ -207,12 +207,12 @@ def main():
 
     with section('HUD'):
         names = h.call("names", prefix="")
-        for el in ["board", "abilitybar", "orbs", "shield", "menu"]:
+        for el in ["board", "abilitybar", "shield", "menu"]:
             check(f"HUD element {el}", el in names)
         # GG-T384/GG-T391's tabbed bottom panel (Party | Lore | Log) shows one page at a time; the other two are
         # display:none, which collapses their worldBound to nothing, so "names" (filtered on worldBound.width > 0,
         # AutomationServer.cs) only sees "feed" (the Log page, BattleScreen.cs) once that tab is picked -- it was
-        # never meant to be simultaneously visible with the always-on board/abilitybar/orbs/shield/menu. Pick the
+        # never meant to be simultaneously visible with the always-on board/abilitybar/shield/menu. Pick the
         # Log tab to check it, then put Party back (the tutorial expects it).
         h.call("click", name="tab-log"); time.sleep(0.3)
         check("HUD element feed (on the Log tab)", "feed" in h.call("names", prefix=""))
@@ -344,13 +344,8 @@ def main():
         check("Confirm acts, with a confirmation chime", battle_state()["results"]["ActionsTaken"] == acted + 1 and "ui.confirm" in cues, str(battle_state()["results"]["ActionsTaken"]))
         check("every press is voiced (press tick)", "ui.press" in cues)
 
-    with section('Mana pool: the bank count reads at a glance (GG-T405)'):
-        h.call("givemana", n=0)  # forces a pool resync
-        bank = battle_state()["bank"]
-        have, cap = (int(x) for x in bank.split("/"))
-        count = h.call("style", name="orbs-count").get("text")
-        capt = h.call("style", name="orbs-cap").get("text")
-        check("mana pool shows the bank count large and the cap beneath", count == str(have) and capt == f"/{cap}", f"{bank} vs {count} {capt}")
+    with section("No orbs row or mana globe: mana is on each spell's bar (GG-T1821)"):
+        check("no orbs row in the HUD", "orbs" not in h.call("names", prefix=""))
 
     with section('Buff pips (US-155/156)'):
         b = battle_state()

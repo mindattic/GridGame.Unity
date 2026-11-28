@@ -45,7 +45,14 @@ namespace GridGame.App
         private string SlotNote(Unit hero, AbilityDef a)
         {
             if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) return $"{hero.Name} can use it again in {cd} turns.";
-            if (a.Cost > State.Bank.Count) return $"Needs {a.Cost} orbs — you have {State.Bank.Count}.";
+            for (int i = 0; a.Kind == AbilityKind.Spell && i < hero.Bar.Count; i++)
+            {
+                int full = State.ManaFull(hero, i);
+                if (full <= 0 || BattleEngine.SlotAbility(State, hero, i) != a) continue;
+                int have = ShownMana(hero.Id, i);
+                if (have < full) return $"{have} / {full} mana · fills with every gain.";
+                break;
+            }
             return $"Tap to aim with {hero.Name}.";
         }
 

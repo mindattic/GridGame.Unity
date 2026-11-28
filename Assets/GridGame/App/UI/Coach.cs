@@ -27,7 +27,7 @@ namespace GridGame.App
         public Func<bool> Also;
         /// <summary>The step can still be done; when this turns false the lesson's marks stop (never a soft-lock).</summary>
         public Func<bool> Valid;
-        /// <summary>Nothing real under the box: tapping it only moves on (a tour of the timeline, the mana globe).</summary>
+        /// <summary>Nothing real under the box: tapping it only moves on (a tour of the timeline, a spell's mana bar).</summary>
         public bool Info;
         /// <summary>The caption docks at the safe bottom edge (the top, when the box is low) instead of beside the box: a
         /// move's route covers the board, and a caption beside it would hide the heroes it names.</summary>
