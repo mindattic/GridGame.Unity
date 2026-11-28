@@ -2103,7 +2103,20 @@ namespace GridGame.App
             Ui.Field("Horde", $"{Crucible.FirstWaveEnemies}→{Crucible.MaxWaveEnemies} foes, elites from wave {BattleConfig.CrucibleFirstEliteWave + 1}", list);
             Ui.Field("Pay", $"{Ui.Gold(Crucible.WaveGold(0))}, +{BattleConfig.CrucibleWaveGoldPerWave} G a wave", list, "gold");
             var fams = Crucible.Families(C, S);
-            Ui.Field("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met: " + string.Join(", ", fams.Select(f => f[0].Name)), list);
+            Ui.Field("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met", list);
+            if (fams.Count > 0)
+            {
+                var names = Ui.Para(string.Join(", ", fams.Select(f => f[0].Name)), list, "dim");
+                names.style.display = DisplayStyle.None;
+                Button toggle = null;
+                toggle = Ui.Button("Show names", () =>
+                {
+                    bool show = names.style.display == DisplayStyle.None;
+                    names.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+                    toggle.text = show ? "Hide names" : "Show names";
+                }, "btn--small", list);
+                toggle.name = "crucible-foes-toggle";
+            }
             var rec = Ui.El("col", list);
             rec.name = "crucible-record";
             Ui.Section("Record", rec);
@@ -2137,7 +2150,7 @@ namespace GridGame.App
             var foot = Ui.Footer(body, "crucible-footer");
             var costCol = Ui.El("col grow", foot);
             if (!can) Ui.Para(why, costCol, "bad");
-            Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", costCol, "dim");
+            Ui.Caption($"Costs {RestedPool.LaunchCost} Rested: the energy for a run, up to {RestedPool.Max}, +1 every {(int)RestedPool.RegenEvery.TotalMinutes} min", costCol, "dim");
             var enter = RowIcon.IconButton("Enter the Crucible", RowKind.Enter, () => CrucibleLauncher.Launch(false), "btn--primary", foot);
             enter.name = "crucible-enter";
             Ui.SetEnabled(enter, can);
