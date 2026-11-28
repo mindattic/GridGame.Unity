@@ -244,7 +244,7 @@ namespace GridGame.App
                     int n = TargetResolver.Collect(State, a, hero, c).Count;
                     if (n > most) { most = n; best = c; }
                 }
-                if (a.Mode == TargetMode.PickActor)
+                if (TargetResolver.PicksUnit(a))
                 {
                     foreach (var c in valid)
                     {

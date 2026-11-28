@@ -64,6 +64,10 @@ namespace GridGame.App
         /// <summary>The picked anchor awaiting Confirm (owner direction 2026-10-11: select, confirm, act).</summary>
         public Coord? PendingTarget { get; private set; }
         public bool Confirming => PendingTarget.HasValue;
+        /// <summary>GG-T2141: a PickMulti's picks so far, in pick order (the first is <see cref="PendingTarget"/>).</summary>
+        private readonly List<Coord> multiPicks = new List<Coord>();
+        /// <summary>The direction aim's arrows are on the board's line layer.</summary>
+        private bool aimArrows;
         private bool ConfirmActions => App.Settings.ConfirmActions;
         /// <summary>HeroBot plays this battle. Forced on by <c>-autobattle</c> or <c>-demo</c>
         /// (the tour, see GameApp.DemoMode); otherwise toggled from the pause menu or the automation
@@ -279,6 +283,7 @@ namespace GridGame.App
             TargetingSlot = slot;
             board.ClearMarks();
             foreach (var t in targets) board.Mark(t, Palette.Gold, 0.35f);
+            if (a.Mode == TargetMode.PickDirection) DrawAimArrows(hero, a, Palette.Gold);
             SyncBar();
             SyncPanel();
         }
@@ -306,6 +311,8 @@ namespace GridGame.App
             if (TargetingSlot < 0) return;
             TargetingSlot = -1;
             PendingTarget = null;
+            multiPicks.Clear();
+            ClearAimArrows();
             board.ClearMarks();
             ClearTargetGlows();
             ShowBanner("");
@@ -363,8 +370,61 @@ namespace GridGame.App
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null) return;
             App.Audio.Sfx("ui.confirm");
-            var cmd = new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = PendingTarget.Value };
-            Commit(cmd);
+            Commit(PendingCommand(hero));
+        }
+
+        /// <summary>The pending pick as a command: a PickMulti carries every pick so far (GG-T2141).</summary>
+        private UseSlotCommand PendingCommand(Unit hero)
+        {
+            var cmd = new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = PendingTarget ?? hero.Pos };
+            if (multiPicks.Count > 0) cmd.Targets.AddRange(multiPicks);
+            return cmd;
+        }
+
+        /// <summary>GG-T2141: a tap on a legal unit of a PickMulti adds it to the picks (a picked one comes off again), up to
+        /// MaxPicks, with the counter on the banner; Confirm commits them all. With confirmations off the last pick commits.</summary>
+        private void ToggleMultiPick(Unit hero, AbilityDef a, Coord t)
+        {
+            var u = State.UnitAt(t);
+            int at = multiPicks.FindIndex(c => State.UnitAt(c) == u);
+            if (at >= 0) multiPicks.RemoveAt(at);
+            else if (multiPicks.Count < a.MaxPicks) multiPicks.Add(t);
+            else { App.Audio.Sfx("ui.error"); ShowBanner($"Up to {a.MaxPicks}: tap a pick to take it off"); return; }
+            if (multiPicks.Count == 0)
+            {
+                PendingTarget = null;
+                RedrawTargeting();
+                SyncPanel();
+                ShowBanner("");
+                return;
+            }
+            if (multiPicks.Count == a.MaxPicks && (!ConfirmActions || AutoPlay)) { Commit(PendingCommand(hero)); return; }
+            SetPending(multiPicks[0]);
+            ShowBanner($"{multiPicks.Count}/{a.MaxPicks} picked: tap Confirm, or pick more");
+        }
+
+        private void ClearAimArrows()
+        {
+            if (!aimArrows) return;
+            aimArrows = false;
+            board.Lines.ClearLines();
+        }
+
+        /// <summary>GG-T2141: a direction aim's four arrows, filled and outlined Shapes arrows from the caster to each neighbour
+        /// tile it may pick; the pending way in the area colour, the others gold.</summary>
+        private void DrawAimArrows(Unit hero, AbilityDef a, Color picked)
+        {
+            var from = BoardView.CenterOf(hero.Pos, hero.W, hero.H);
+            foreach (var d in Coord.Cardinals)
+            {
+                var tile = TargetResolver.DirectionTile(hero, d);
+                if (!tile.HasValue || !TargetResolver.IsValidPick(State, a, hero, tile.Value)) continue;
+                var to = BoardView.CenterOf(tile.Value);
+                var col = PendingTarget == tile ? picked : Palette.Gold;
+                var start = from + (to - from).normalized * (BoardView.Tile * 0.42f);
+                board.Lines.Arrow(start, to, ShapeStyle.Indicator.Tint(col.WithA(0.95f)).Thick(22f));
+                aimArrows = true;
+            }
         }
 
         private readonly HashSet<int> targetGlows = new HashSet<int>();
@@ -384,15 +444,17 @@ namespace GridGame.App
             var a = hero == null || TargetingSlot < 0 ? null : BattleEngine.SlotAbility(State, hero, TargetingSlot);
             board.ClearMarks();
             ClearTargetGlows();
+            ClearAimArrows();
             if (a == null) return;
             if (a.Mode != TargetMode.Auto)
                 foreach (var vt in BattleEngine.ValidTargets(State, hero.Id, TargetingSlot)) board.Mark(vt, Palette.Gold, 0.25f);
-            if (!PendingTarget.HasValue) return;
-            var at = PendingTarget.Value;
             bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
             var color = a.IsTeleport ? Palette.Mana : harmful ? Palette.Vfx.Harmful : Palette.Vfx.Helpful;
-            var hits = TargetResolver.Collect(State, a, hero, at);
-            if (a.Mode == TargetMode.Auto || a.Shape == TargetShape.Self || a.Shape == TargetShape.AllAllies || a.Shape == TargetShape.AllEnemies)
+            if (a.Mode == TargetMode.PickDirection) DrawAimArrows(hero, a, color);
+            if (!PendingTarget.HasValue) return;
+            var at = PendingTarget.Value;
+            var hits = PendingHits(hero, a);
+            if (a.Mode == TargetMode.Auto || a.Mode == TargetMode.PickMulti || a.Shape == TargetShape.Self || a.Shape == TargetShape.AllAllies || a.Shape == TargetShape.AllEnemies)
                 foreach (var u in hits) foreach (var t in u.Tiles()) board.Mark(t, color, 0.42f);
             else foreach (var t in TargetResolver.Tiles(at, a.Shape, a.Radius, hero.Pos)) board.Mark(t, color, 0.42f); // GG-T933: Wall oriented from the caster
             foreach (var u in hits)

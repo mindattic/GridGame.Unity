@@ -692,7 +692,7 @@ namespace GridGame.App
             col.style.marginBottom = Space.S16;
             if (!confirm)
             {
-                var ask = Ui.Text($"{a.Name}: tap a highlighted {AimNoun(a)}", "small gold", col);
+                var ask = Ui.Text(AimPrompt(a), "small gold", col);
                 ask.name = "aim-prompt";
                 ask.style.whiteSpace = WhiteSpace.Normal;
                 // GG-T1921: Cancel goes back to the move's page in the Abilities sheet.
@@ -703,10 +703,11 @@ namespace GridGame.App
             }
             else
             {
-                var hits = TargetResolver.Collect(State, a, hero, PendingTarget.Value);
+                var hits = PendingHits(hero, a);
                 string who = hits.Count == 0 ? (a.IsTeleport ? "Teleport to the marked tile" : "No one in the area")
                     : hits.Count == 1 ? (hits[0] == hero ? $"On {hero.Name} (self)" : $"On {hits[0].Name}")
                     : $"On {string.Join(", ", hits.Take(3).Select(h => h.Name))}{(hits.Count > 3 ? $" +{hits.Count - 3}" : "")}";
+                if (a.Mode == TargetMode.PickMulti) who += $" ({multiPicks.Count}/{a.MaxPicks})"; // GG-T2141: the pick counter
                 var summary = Ui.Text(who, "small", col);
                 summary.name = "confirm-summary";
                 summary.style.whiteSpace = WhiteSpace.Normal;
@@ -727,10 +728,34 @@ namespace GridGame.App
 
         /// <summary>What the aim prompt asks the player to tap: a foe, an ally, a unit or a tile.</summary>
         private static string AimNoun(AbilityDef a) =>
-            a.Mode != TargetMode.PickActor ? "tile"
+            !TargetResolver.PicksUnit(a) ? "tile"
             : a.Filter == TargetFilter.EnemyOnly ? "foe"
             : a.Filter == TargetFilter.AllyOnly ? "ally"
             : "unit";
+
+        /// <summary>The aim prompt line (GG-T1906), per aim mode (GG-T2141).</summary>
+        private static string AimPrompt(AbilityDef a)
+        {
+            switch (TargetResolver.AimOf(a))
+            {
+                case Aim.Multi: return $"{a.Name}: tap up to {a.MaxPicks} highlighted {(a.Filter == TargetFilter.AllyOnly ? "allies" : AimNoun(a) + "s")}, then Confirm";
+                case Aim.Direction: return $"{a.Name}: tap an arrow to pick a way";
+                default: return $"{a.Name}: tap a highlighted {AimNoun(a)}";
+            }
+        }
+
+        /// <summary>Every unit the pending pick touches: a PickMulti's picked units (GG-T2141), else the area's catch.</summary>
+        private List<Unit> PendingHits(Unit hero, AbilityDef a)
+        {
+            if (a.Mode != TargetMode.PickMulti || multiPicks.Count == 0) return TargetResolver.Collect(State, a, hero, PendingTarget.Value);
+            var hits = new List<Unit>();
+            foreach (var c in multiPicks)
+            {
+                var u = State.UnitAt(c);
+                if (u != null && !hits.Contains(u)) hits.Add(u);
+            }
+            return hits;
+        }
 
         // ─────────────────────────────────────────────────────────────────────────
         // The description panel (§9.0, GG-T1822): from a gutter under the ability bar to the safe bottom

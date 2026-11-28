@@ -197,7 +197,11 @@ namespace GridGame.Core.Content
     /// (<see cref="Rules.TargetResolver.Tiles"/>): a firewall painted in front of the caster.</summary>
     public enum TargetShape { Self, SingleActor, SingleTile, Square, Diamond, Cross, Plus, Row, Column, AllEnemies, AllAllies, Wall }
 
-    public enum TargetMode { Auto, PickActor, PickTile }
+    /// <summary>How the player aims (plan abilities-screen-and-info §3, GG-T2141). PickMulti taps up to
+    /// <see cref="AbilityDef.MaxPicks"/> distinct units, each resolved in pick order; PickDirection taps one of four arrows
+    /// around the caster, whose pick is the caster's neighbour tile that way (<see cref="Rules.TargetResolver.DirectionTile"/>),
+    /// then anchors the shape there like a PickTile.</summary>
+    public enum TargetMode { Auto, PickActor, PickTile, PickMulti, PickDirection }
 
     public enum TargetFilter { Any, EnemyOnly, AllyOnly, EmptyOnly }
 
@@ -287,6 +291,8 @@ namespace GridGame.Core.Content
         /// tile) of the caster; 0 = anywhere. The Assassin's Shadow Swap trades places with a foe within 3; a ranged swap
         /// is a blink, so like a Teleport it scans the party's pincers once it lands.</summary>
         public int MaxRange;
+        /// <summary>GG-T2141: a <see cref="TargetMode.PickMulti"/> ability picks up to this many distinct units (2 or more).</summary>
+        public int MaxPicks;
         /// <summary>Movement (GG-T183): once it resolves, the caster steps up to this many tiles straight away from the
         /// nearest foe (Disengage, Hit and Run).</summary>
         public int StepBack;
