@@ -45,7 +45,10 @@ namespace GridGame.App
         /// <summary>GG-T2143: the top bar hugs its content, never less than 110 px: the title line (the type size, which grows on a
         /// narrow phone, GG-T2114) over the boss gauge (boss waves, GG-T1952), then the turn strip (GG-T1943). The board and the rows
         /// under it move down by what it grows; the description panel, which stretches to the bottom, gives the height.</summary>
-        private static float TopBarHeight => Mathf.Max(110f, Mathf.Ceil(TypeScale.Base * 1.25f + Size.Bar + Space.S8 + Space.S4 + Size.IconS));
+        private static float TopBarHeight => Mathf.Max(110f, Mathf.Ceil(TitleLineHeight + Size.Bar + Space.S8 + Space.S8 + Space.S8 + Size.IconS));
+        /// <summary>GG-T2166: one title line as the text actually lays out (the type size plus its glyph padding, not 1.25x), so the
+        /// boss name, its HP bar and the turn strip each own a band and the board's top edge never lands on the turn label.</summary>
+        private static float TitleLineHeight => TypeScale.Base * 1.6f;
         private static float BannerTop => BoardTop + Space.S8;
         /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
         private const float BannerViewportHeight = Size.Target - Space.S24;
@@ -99,7 +102,7 @@ namespace GridGame.App
             // GG-T1943: under that line, in the same row, the turn strip (BuildTurnStrip), so it costs the board no height.
             var col = Ui.El("col grow", bar);
             col.style.alignItems = Align.Stretch; col.style.justifyContent = Justify.Center;
-            col.style.minWidth = Space.S0;
+            col.style.minWidth = Space.S0; col.style.flexShrink = 0;
             col.style.marginLeft = col.style.marginRight = Space.S16;
             var mid = Ui.El("row", col);
             mid.style.alignItems = Align.Center; mid.style.justifyContent = Justify.Center;
@@ -128,7 +131,7 @@ namespace GridGame.App
             bossName.style.unityTextAlign = TextAnchor.MiddleCenter;
             bossName.style.color = Palette.TeamBoss;
             var gauge = Ui.El("gauge", bossBox);
-            gauge.style.height = Size.Bar + Space.S4; gauge.style.marginTop = Space.S4;
+            gauge.style.height = Size.Bar + Space.S4; gauge.style.marginTop = Space.S4; gauge.style.flexShrink = 0;
             bossHpFill = Ui.El("gauge-fill", gauge);
             bossBarId = -1;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
@@ -161,7 +164,7 @@ namespace GridGame.App
             turnStrip.pickingMode = PickingMode.Ignore;
             turnStrip.style.alignSelf = Align.Center;
             turnStrip.style.height = Size.IconS;
-            turnStrip.style.marginTop = Space.S4;
+            turnStrip.style.marginTop = Space.S8; turnStrip.style.flexShrink = 0;
             turnStrip.style.backgroundColor = Palette.Ink.WithA(0.6f);
             Ui.Pad(turnStrip, Space.S16, Space.S0, Space.S16, Space.S0);
             turnStrip.style.borderTopLeftRadius = turnStrip.style.borderTopRightRadius =
