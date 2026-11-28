@@ -189,7 +189,7 @@ namespace GridGame.App
             bool wanderer = tamed && u.Wanderer; // GG-T342: its own keyline and tag
             foreach (var cls in new[] { "unit-keyline--guest", "unit-keyline--hero", "unit-keyline--boss", "unit-keyline--foe", "unit-keyline--neutral", "unit-keyline--tamed", "unit-keyline--wanderer" })
                 Keyline.RemoveFromClassList(cls);
-            Keyline.AddToClassList(u.IsNeutral ? "unit-keyline--neutral" : wanderer ? "unit-keyline--wanderer" : tamed ? "unit-keyline--tamed" : u.IsGuest ? "unit-keyline--guest" : independent == false || !u.IsHero ? ((u.Def.HasTag("Boss") || u.IsMultiTile) ? "unit-keyline--boss" : "unit-keyline--foe") : "unit-keyline--hero");
+            Keyline.AddToClassList(u.IsNeutral ? "unit-keyline--neutral" : wanderer ? "unit-keyline--wanderer" : tamed ? "unit-keyline--tamed" : u.IsGuest ? "unit-keyline--guest" : independent == false || !u.IsHero ? ((u.IsBossLike || u.IsMultiTile) ? "unit-keyline--boss" : "unit-keyline--foe") : "unit-keyline--hero");
             Frame.Q<Label>("guest-" + u.Id)?.RemoveFromHierarchy();
             if (!u.IsGuest && !u.IsNeutral && !tamed) return;
             var tag = new Label(u.IsNeutral ? "TALK" : wanderer ? "WANDERER" : tamed ? "TAMED" : "GUEST") { name = "guest-" + u.Id, pickingMode = PickingMode.Ignore };
@@ -258,9 +258,13 @@ namespace GridGame.App
             Root.style.scale = new Scale(new Vector2(CardFlip.WidthScale(total, onePixel), 1f));
         }
 
+        /// <summary>The HP fraction the gauge shows now (playback's beat, not the resolved state); the top bar's boss bar mirrors it.</summary>
+        public float HpFraction { get; private set; } = 1f;
+
         public void SetHp(int hp, int max)
         {
             float f = max <= 0 ? 0 : Mathf.Clamp01(hp / (float)max);
+            HpFraction = f;
             HpFill.style.width = Length.Percent(f * 100f);
             HpFill.EnableInClassList("gauge-fill--mid", f <= 0.5f && f > 0.25f);
             HpFill.EnableInClassList("gauge-fill--low", f <= 0.25f);

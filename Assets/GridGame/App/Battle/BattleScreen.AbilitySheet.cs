@@ -68,6 +68,7 @@ namespace GridGame.App
             cell.RegisterCallback<PointerCancelEvent>(_ => hold?.Pause());
             cell.RegisterCallback<ClickEvent>(_ =>
             {
+                ExitExamine();
                 if (abilitiesHeld) { abilitiesHeld = false; return; }
                 OpenAbilities(TargetingSlot);
             });

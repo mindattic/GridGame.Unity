@@ -3,7 +3,7 @@ using GridGame.Core.Content;
 
 namespace GridGame.Core.Battle
 {
-    public enum BattlePhase { PlayerInput, Victory, Defeat, Escaped, Retreated }
+    public enum BattlePhase { PlayerInput, Victory, Defeat, Escaped, Retreated, Withdrawn }
 
     public sealed class Trap
     {
@@ -132,6 +132,9 @@ namespace GridGame.Core.Battle
         /// <summary>GG-T1111 (§2.13.3): hero turns taken — bumped when the active hero's action lands under
         /// <c>TurnRules.HeroesOnTimeline</c> (a winning action included); 0 in every other mode. Display only.</summary>
         public int HeroTurns;
+        /// <summary>GG-T2070: blows that clanged off an unyielding plate's front for 0, toward a stage's
+        /// <see cref="WithdrawDef.AfterPlateClangs"/>.</summary>
+        public int PlateClangs;
         /// <summary>Banked gold paid out mid-battle (a recruitable's PayGold, GG-T132): the meta layer deducts it whatever the outcome.</summary>
         public int CoinsSpent;
         /// <summary>§1.2.8 (GG-T849): the best combo this battle (display and stats only).</summary>
@@ -164,7 +167,7 @@ namespace GridGame.Core.Battle
             return new BattleResults
             {
                 Coins = Coins, Xp = Xp, ActionsTaken = ActionsTaken, TicksElapsed = TicksElapsed, CoinsSpent = CoinsSpent,
-                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd, Rounds = Rounds, HeroTurns = HeroTurns,
+                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd, Rounds = Rounds, HeroTurns = HeroTurns, PlateClangs = PlateClangs,
                 BestComboRank = BestComboRank, BestComboScore = BestComboScore,
                 ComboAttackerPoints = new Dictionary<string, int>(ComboAttackerPoints),
                 ComboSupporterPoints = new Dictionary<string, int>(ComboSupporterPoints),
