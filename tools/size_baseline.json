@@ -23,14 +23,6 @@
    "SkillTreeScreen",
    "StatusScreen"
   ],
-  "Assets/GridGame/App/Screens/HubScreens.cs": [
-   "BestiaryScreen",
-   "BountyScreen",
-   "CrucibleScreen",
-   "SettingsScreen",
-   "SummonHistoryScreen",
-   "SummonScreen"
-  ],
   "Assets/GridGame/App/Screens/MercenaryScreens.cs": [
    "MercenaryRenewalScreen",
    "MercenaryScreen"
