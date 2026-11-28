@@ -1,5 +1,6 @@
 using System.Linq;
 using GridGame.Core.Battle;
+using GridGame.Core.Content;
 using GridGame.Meta;
 using NUnit.Framework;
 using static GridGame.Tests.TestKit;
@@ -38,6 +39,30 @@ namespace GridGame.Tests
             int after = DustEconomy.Have(s);
             SaveMigrations.Migrate(s, c);
             Assert.That(DustEconomy.Have(s), Is.EqualTo(after), "paid once");
+        }
+
+        [Test]
+        public void A_halcyon_find_pays_dust_and_one_wearable_piece_of_gear_a_tier_above_the_ruins_shelf()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "T");
+            var theme = c.Campaign.Themes.First(t => t.OrbFindChance > 0f);
+            var stage = theme.Stages[0];
+            var rep = new BattleReport();
+            int dust = DustEconomy.Have(s);
+            for (int i = 0; i < 200 && !s.OrbFinds.Contains(stage); i++) ManaOrbs.AfterVictory(c, s, rep, stage, null);
+            Assert.That(s.OrbFinds, Does.Contain(stage), "a find turns up within 200 victories");
+            Assert.That(DustEconomy.Have(s) - dust, Is.EqualTo(ManaOrbs.HalcyonFindDust));
+            var gear = rep.Items.Keys.Select(c.TryItem).Single(i => i.Type == ItemType.Equipment);
+            int tier = System.Math.Min(VendorTiers.Count, VendorTiers.RegionTier(c, theme.Id) + ManaOrbs.HalcyonGearTiersAbove);
+            Assert.That(VendorTiers.RarityTier(gear.Rarity), Is.LessThanOrEqualTo(tier));
+            Assert.That(s.Party.Select(s.Hero).Any(h => Equipment.ProficiencyGate(c, h, gear) == null), "someone in the party can wear it");
+            Assert.That(rep.OrbRewards.Single(), Does.Contain(gear.Name), "the Bonus row names it");
+
+            var again = Progression.NewGame(c, "T");
+            again.OrbRolls = 7;
+            var a = ManaOrbs.HalcyonGear(c, again, theme, new GridGame.Core.Rng(42));
+            Assert.That(ManaOrbs.HalcyonGear(c, again, theme, new GridGame.Core.Rng(42)), Is.SameAs(a), "seeded: the same roll picks the same piece");
         }
 
         [Test]
