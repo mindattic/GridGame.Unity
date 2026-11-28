@@ -5,7 +5,16 @@ in [`tools/devices.json`](../../tools/devices.json), the one source for device s
 where every figure came from. The rule it serves is [BIBLE §26.9](../BIBLE.md#269-target-devices-gg-t2025).
 Checked 2026-11-28 (GG-T2025).
 
-**Scope (owner, 2026-11-28):** the Apple and Samsung phones of the last five years: every iPhone 12 to 17 (mini, Plus,
+**Baseline (owner, 2026-11-28, GG-T2116: "ok make that be the baseline", "iphone 15 pro"):** the reference device is
+the **iPhone 15 Pro** (2023, A17 Pro, 1179x2556, 393x852 pt, 59 pt top / 34 pt bottom Dynamic Island insets;
+`reference` in `tools/devices.json`). **In target** (`inTarget: true`): the iPhone 15 Pro and 15 Pro Max and every
+iPhone 16 and 17 model (16, 16 Plus, 16 Pro, 16 Pro Max, 16e, 17, 17 Pro, 17 Pro Max, Air); the Galaxy S23 series and
+newer (S23, S23+, S23 Ultra, S23 FE through the S25 family and S25 Edge); the 2023+ Z Flip5/6 main screen and Z Fold5/6
+cover screen. **Out of target** (kept in the file, `inTarget: false`, marked *out* below): the iPhone 12, 13 and 14
+families, the base iPhone 15 and 15 Plus (A16), the Galaxy S21 and S22 families, and the `pixel9` and `ipad` reference
+shapes. Audit and capture tools default to the in-target set.
+
+**Earlier scope (owner, 2026-11-28, GG-T2025; superseded by the baseline above):** the Apple and Samsung phones of the last five years: every iPhone 12 to 17 (mini, Plus,
 Pro, Pro Max, 16e, Air) and every Galaxy S21 to S25 (base, +, Ultra, FE, S25 Edge), plus the Galaxy Z Flip5/6 main
 screen and Z Fold5/6 cover screen as a *should*. Out by default: the iPhone SE and the Flip cover screen (FlexWindow).
 `pixel9` and `ipad` stay as reference shapes because the tools and older captures already use them.
@@ -30,80 +39,86 @@ Fifteen shapes: thirteen from the owner's matrix plus the two reference shapes. 
 which is what a tool runs when it wants one window per shape. Models in a shape share the panel size (or, for
 `galaxy-20x9` and `galaxy-fold-cover`, the aspect and safe area).
 
-| Shape | Representative | Portrait px | Aspect | Models |
-|---|---|---|---|---|
-| `iphone-mini` | `iphone13mini` | 1080×2340 | 0.462 | iPhone 12 mini, iPhone 13 mini |
-| `iphone-notch-390` | `iphone14` | 1170×2532 | 0.462 | iPhone 12, iPhone 12 Pro, iPhone 13, iPhone 13 Pro, iPhone 14, iPhone 16e |
-| `iphone-notch-428` | `iphone14plus` | 1284×2778 | 0.462 | iPhone 12 Pro Max, iPhone 13 Pro Max, iPhone 14 Plus |
-| `iphone-island-393` | `iphone16` | 1179×2556 | 0.461 | iPhone 14 Pro, iPhone 15, iPhone 15 Pro, iPhone 16 |
-| `iphone-island-430` | `iphone16plus` | 1290×2796 | 0.461 | iPhone 14 Pro Max, iPhone 15 Plus, iPhone 15 Pro Max, iPhone 16 Plus |
-| `iphone-402` | `iphone17pro` | 1206×2622 | 0.460 | iPhone 16 Pro, iPhone 17, iPhone 17 Pro |
-| `iphone-440` | `iphone17promax` | 1320×2868 | 0.460 | iPhone 16 Pro Max, iPhone 17 Pro Max |
-| `iphone-air` | `iphoneair` | 1260×2736 | 0.461 | iPhone Air |
-| `galaxy-20x9` | `galaxys21` | 1080×2400 | 0.450 | Galaxy S21, Galaxy S21+, Galaxy S21 Ultra |
-| `galaxy-fhd` | `galaxys25` | 1080×2340 | 0.462 | Galaxy S22, Galaxy S22+, Galaxy S23, Galaxy S23+, Galaxy S23 FE, Galaxy S24, Galaxy S24 FE, Galaxy S25, Galaxy S25 FE |
-| `galaxy-qhd` | `galaxys25ultra` | 1440×3120 | 0.462 | Galaxy S22 Ultra, Galaxy S23 Ultra, Galaxy S24+, Galaxy S24 Ultra, Galaxy S25+, Galaxy S25 Ultra, Galaxy S25 Edge |
-| `galaxy-flip-main` | `galaxyzflip6` | 1080×2640 | 0.409 | Galaxy Z Flip5 (main), Galaxy Z Flip6 (main) |
-| `galaxy-fold-cover` | `galaxyzfold6cover` | 968×2376 | 0.407 | Galaxy Z Fold5 (cover), Galaxy Z Fold6 (cover) |
-| `pixel-20x9` | `pixel9` | 1080×2424 | 0.446 | Pixel 9 |
-| `ipad` | `ipad` | 1640×2360 | 0.695 | iPad (10th gen) |
+| Shape | Representative | Portrait px | Aspect | In target | Models |
+|---|---|---|---|---|---|
+| `iphone-mini` | `iphone13mini` | 1080×2340 | 0.462 | none | iPhone 12 mini (out), iPhone 13 mini (out) |
+| `iphone-notch-390` | `iphone14` | 1170×2532 | 0.462 | some | iPhone 12 (out), iPhone 12 Pro (out), iPhone 13 (out), iPhone 13 Pro (out), iPhone 14 (out), iPhone 16e |
+| `iphone-notch-428` | `iphone14plus` | 1284×2778 | 0.462 | none | iPhone 12 Pro Max (out), iPhone 13 Pro Max (out), iPhone 14 Plus (out) |
+| `iphone-island-393` | `iphone16` | 1179×2556 | 0.461 | some | iPhone 14 Pro (out), iPhone 15 (out), iPhone 15 Pro, iPhone 16 |
+| `iphone-island-430` | `iphone16plus` | 1290×2796 | 0.461 | some | iPhone 14 Pro Max (out), iPhone 15 Plus (out), iPhone 15 Pro Max, iPhone 16 Plus |
+| `iphone-402` | `iphone17pro` | 1206×2622 | 0.460 | all | iPhone 16 Pro, iPhone 17, iPhone 17 Pro |
+| `iphone-440` | `iphone17promax` | 1320×2868 | 0.460 | all | iPhone 16 Pro Max, iPhone 17 Pro Max |
+| `iphone-air` | `iphoneair` | 1260×2736 | 0.461 | all | iPhone Air |
+| `galaxy-20x9` | `galaxys21` | 1080×2400 | 0.450 | none | Galaxy S21 (out), Galaxy S21+ (out), Galaxy S21 Ultra (out) |
+| `galaxy-fhd` | `galaxys25` | 1080×2340 | 0.462 | some | Galaxy S22 (out), Galaxy S22+ (out), Galaxy S23, Galaxy S23+, Galaxy S23 FE, Galaxy S24, Galaxy S24 FE, Galaxy S25, Galaxy S25 FE |
+| `galaxy-qhd` | `galaxys25ultra` | 1440×3120 | 0.462 | some | Galaxy S22 Ultra (out), Galaxy S23 Ultra, Galaxy S24+, Galaxy S24 Ultra, Galaxy S25+, Galaxy S25 Ultra, Galaxy S25 Edge |
+| `galaxy-flip-main` | `galaxyzflip6` | 1080×2640 | 0.409 | all | Galaxy Z Flip5 (main), Galaxy Z Flip6 (main) |
+| `galaxy-fold-cover` | `galaxyzfold6cover` | 968×2376 | 0.407 | all | Galaxy Z Fold5 (cover), Galaxy Z Fold6 (cover) |
+| `pixel-20x9` | `pixel9` | 1080×2424 | 0.446 | none | Pixel 9 (out) |
+| `ipad` | `ipad` | 1640×2360 | 0.695 | none | iPad (10th gen) (out) |
 
 ## Every device
 
-| Id | Model | Year | Portrait px | Logical | Scale | ppi | Safe px T/B/L/R | Aspect | Hz | SoC (tier) | Shape |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| `iphone12mini` | iPhone 12 mini | 2020 | 1080×2340 | 375×812 pt | 2.88 | 476 | 144/98/0/0 | 0.462 | 60 | A14 (1) | `iphone-mini` |
-| `iphone12` | iPhone 12 | 2020 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A14 (1) | `iphone-notch-390` |
-| `iphone12pro` | iPhone 12 Pro | 2020 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A14 (1) | `iphone-notch-390` |
-| `iphone12promax` | iPhone 12 Pro Max | 2020 | 1284×2778 | 428×926 pt | 3 | 458 | 141/102/0/0 | 0.462 | 60 | A14 (1) | `iphone-notch-428` |
-| `iphone13mini` | iPhone 13 mini | 2021 | 1080×2340 | 375×812 pt | 2.88 | 476 | 144/98/0/0 | 0.462 | 60 | A15 (1) | `iphone-mini` |
-| `iphone13` | iPhone 13 | 2021 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A15 (1) | `iphone-notch-390` |
-| `iphone13pro` | iPhone 13 Pro | 2021 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 120 | A15 (1) | `iphone-notch-390` |
-| `iphone13promax` | iPhone 13 Pro Max | 2021 | 1284×2778 | 428×926 pt | 3 | 458 | 141/102/0/0 | 0.462 | 120 | A15 (1) | `iphone-notch-428` |
-| `iphone14` | iPhone 14 | 2022 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A15 (1) | `iphone-notch-390` |
-| `iphone14plus` | iPhone 14 Plus | 2022 | 1284×2778 | 428×926 pt | 3 | 458 | 141/102/0/0 | 0.462 | 60 | A15 (1) | `iphone-notch-428` |
-| `iphone14pro` | iPhone 14 Pro | 2022 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A16 (2) | `iphone-island-393` |
-| `iphone14promax` | iPhone 14 Pro Max | 2022 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A16 (2) | `iphone-island-430` |
-| `iphone15` | iPhone 15 | 2023 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A16 (2) | `iphone-island-393` |
-| `iphone15plus` | iPhone 15 Plus | 2023 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A16 (2) | `iphone-island-430` |
-| `iphone15pro` | iPhone 15 Pro | 2023 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A17 Pro (2) | `iphone-island-393` |
-| `iphone15promax` | iPhone 15 Pro Max | 2023 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A17 Pro (2) | `iphone-island-430` |
-| `iphone16` | iPhone 16 | 2024 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A18 (2) | `iphone-island-393` |
-| `iphone16plus` | iPhone 16 Plus | 2024 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A18 (2) | `iphone-island-430` |
-| `iphone16pro` | iPhone 16 Pro | 2024 | 1206×2622 | 402×874 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A18 Pro (3) | `iphone-402` |
-| `iphone16promax` | iPhone 16 Pro Max | 2024 | 1320×2868 | 440×956 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A18 Pro (3) | `iphone-440` |
-| `iphone16e` | iPhone 16e | 2025 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A18 (2) | `iphone-notch-390` |
-| `iphone17` | iPhone 17 | 2025 | 1206×2622 | 402×874 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A19 (3) | `iphone-402` |
-| `iphone17pro` | iPhone 17 Pro | 2025 | 1206×2622 | 402×874 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A19 Pro (3) | `iphone-402` |
-| `iphone17promax` | iPhone 17 Pro Max | 2025 | 1320×2868 | 440×956 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A19 Pro (3) | `iphone-440` |
-| `iphoneair` | iPhone Air | 2025 | 1260×2736 | 420×912 pt | 3 | 460 | 204/102/0/0 | 0.461 | 120 | A19 Pro (3) | `iphone-air` |
-| `galaxys21` | Galaxy S21 | 2021 | 1080×2400 | 360×800 dp | 3 | 421 | 96/72/0/0\* | 0.450 | 120 | Snapdragon 888 / Exynos 2100 (1) | `galaxy-20x9` |
-| `galaxys21plus` | Galaxy S21+ | 2021 | 1080×2400 | 384×853 dp | 2.8125 | 394 | 90/68/0/0\* | 0.450 | 120 | Snapdragon 888 / Exynos 2100 (1) | `galaxy-20x9` |
-| `galaxys21ultra` | Galaxy S21 Ultra | 2021 | 1440×3200 (default 1080×2400) | 384×853 dp | 3.75 | 515 | 120/90/0/0\* | 0.450 | 120 | Snapdragon 888 / Exynos 2100 (1) | `galaxy-20x9` |
-| `galaxys22` | Galaxy S22 | 2022 | 1080×2340 | 360×780 dp | 3 | 425 | 96/72/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 1 / Exynos 2200 (1) | `galaxy-fhd` |
-| `galaxys22plus` | Galaxy S22+ | 2022 | 1080×2340 | 384×832 dp | 2.8125 | 393 | 90/68/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 1 / Exynos 2200 (1) | `galaxy-fhd` |
-| `galaxys22ultra` | Galaxy S22 Ultra | 2022 | 1440×3088 (default 1080×2316) | 412×882 dp | 3.5 | 500 | 112/84/0/0\* | 0.466 | 120 | Snapdragon 8 Gen 1 / Exynos 2200 (1) | `galaxy-qhd` |
-| `galaxys23` | Galaxy S23 | 2023 | 1080×2340 | 360×780 dp | 3 | 425 | 96/72/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-fhd` |
-| `galaxys23plus` | Galaxy S23+ | 2023 | 1080×2340 | 384×832 dp | 2.8125 | 393 | 90/68/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-fhd` |
-| `galaxys23ultra` | Galaxy S23 Ultra | 2023 | 1440×3088 (default 1080×2316) | 412×882 dp | 3.5 | 500 | 112/84/0/0\* | 0.466 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-qhd` |
-| `galaxys23fe` | Galaxy S23 FE | 2023 | 1080×2340 | 384×832 dp\* | 2.8125\* | 403 | 90/68/0/0\* | 0.462 | 120 | Exynos 2200 / Snapdragon 8 Gen 1 (1) | `galaxy-fhd` |
-| `galaxys24` | Galaxy S24 | 2024 | 1080×2340 | 360×780 dp | 3 | 416 | 96/72/0/0\* | 0.462 | 120 | Exynos 2400 / Snapdragon 8 Gen 3 (2) | `galaxy-fhd` |
-| `galaxys24plus` | Galaxy S24+ | 2024 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 513 | 112/84/0/0\* | 0.462 | 120 | Exynos 2400 / Snapdragon 8 Gen 3 (2) | `galaxy-qhd` |
-| `galaxys24ultra` | Galaxy S24 Ultra | 2024 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 505 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 3 (2) | `galaxy-qhd` |
-| `galaxys24fe` | Galaxy S24 FE | 2024 | 1080×2340 | 384×832 dp\* | 2.8125\* | 385 | 90/68/0/0\* | 0.462 | 120 | Exynos 2400e (2) | `galaxy-fhd` |
-| `galaxys25` | Galaxy S25 | 2025 | 1080×2340 | 360×780 dp | 3 | 416 | 96/72/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-fhd` |
-| `galaxys25plus` | Galaxy S25+ | 2025 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 513 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-qhd` |
-| `galaxys25ultra` | Galaxy S25 Ultra | 2025 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 498 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-qhd` |
-| `galaxys25edge` | Galaxy S25 Edge | 2025 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 513 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-qhd` |
-| `galaxys25fe` | Galaxy S25 FE | 2025 | 1080×2340 | 384×832 dp\* | 2.8125\* | 385 | 90/68/0/0\* | 0.462 | 120 | Exynos 2400 (2) | `galaxy-fhd` |
-| `galaxyzflip5` | Galaxy Z Flip5 (main) | 2023 | 1080×2640 | 393×960 dp\* | 2.75\* | 425 | 88/66/0/0\* | 0.409 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-flip-main` |
-| `galaxyzflip6` | Galaxy Z Flip6 (main) | 2024 | 1080×2640 | 393×960 dp | 2.75 | 425 | 88/66/0/0\* | 0.409 | 120 | Snapdragon 8 Gen 3 (2) | `galaxy-flip-main` |
-| `galaxyzfold5cover` | Galaxy Z Fold5 (cover) | 2023 | 904×2316 | 301×772 dp\* | 3\* | 402 | 96/72/0/0\* | 0.390 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-fold-cover` |
-| `galaxyzfold6cover` | Galaxy Z Fold6 (cover) | 2024 | 968×2376 | 323×792 dp | 3 | 410 | 96/72/0/0\* | 0.407 | 120 | Snapdragon 8 Gen 3 (2) | `galaxy-fold-cover` |
-| `pixel9` | Pixel 9 | 2024 | 1080×2424 | 412×923 dp | 2.625 | 422 | 110/63/0/0\* | 0.446 | 120 | Tensor G4 (2) | `pixel-20x9` |
-| `ipad` | iPad (10th gen) | 2022 | 1640×2360 | 820×1180 pt | 2 | 264 | 48/40/0/0 | 0.695 | 60 | A14 (1) | `ipad` |
+| Id | Model | Year | Portrait px | Logical | Scale | ppi | Safe px T/B/L/R | Aspect | Hz | SoC (tier) | Shape | In target |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `iphone12mini` | iPhone 12 mini | 2020 | 1080×2340 | 375×812 pt | 2.88 | 476 | 144/98/0/0 | 0.462 | 60 | A14 (1) | `iphone-mini` | out |
+| `iphone12` | iPhone 12 | 2020 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A14 (1) | `iphone-notch-390` | out |
+| `iphone12pro` | iPhone 12 Pro | 2020 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A14 (1) | `iphone-notch-390` | out |
+| `iphone12promax` | iPhone 12 Pro Max | 2020 | 1284×2778 | 428×926 pt | 3 | 458 | 141/102/0/0 | 0.462 | 60 | A14 (1) | `iphone-notch-428` | out |
+| `iphone13mini` | iPhone 13 mini | 2021 | 1080×2340 | 375×812 pt | 2.88 | 476 | 144/98/0/0 | 0.462 | 60 | A15 (1) | `iphone-mini` | out |
+| `iphone13` | iPhone 13 | 2021 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A15 (1) | `iphone-notch-390` | out |
+| `iphone13pro` | iPhone 13 Pro | 2021 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 120 | A15 (1) | `iphone-notch-390` | out |
+| `iphone13promax` | iPhone 13 Pro Max | 2021 | 1284×2778 | 428×926 pt | 3 | 458 | 141/102/0/0 | 0.462 | 120 | A15 (1) | `iphone-notch-428` | out |
+| `iphone14` | iPhone 14 | 2022 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A15 (1) | `iphone-notch-390` | out |
+| `iphone14plus` | iPhone 14 Plus | 2022 | 1284×2778 | 428×926 pt | 3 | 458 | 141/102/0/0 | 0.462 | 60 | A15 (1) | `iphone-notch-428` | out |
+| `iphone14pro` | iPhone 14 Pro | 2022 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A16 (2) | `iphone-island-393` | out |
+| `iphone14promax` | iPhone 14 Pro Max | 2022 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A16 (2) | `iphone-island-430` | out |
+| `iphone15` | iPhone 15 | 2023 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A16 (2) | `iphone-island-393` | out |
+| `iphone15plus` | iPhone 15 Plus | 2023 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A16 (2) | `iphone-island-430` | out |
+| `iphone15pro` | iPhone 15 Pro | 2023 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A17 Pro (2) | `iphone-island-393` | **yes** |
+| `iphone15promax` | iPhone 15 Pro Max | 2023 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 120 | A17 Pro (2) | `iphone-island-430` | **yes** |
+| `iphone16` | iPhone 16 | 2024 | 1179×2556 | 393×852 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A18 (2) | `iphone-island-393` | **yes** |
+| `iphone16plus` | iPhone 16 Plus | 2024 | 1290×2796 | 430×932 pt | 3 | 460 | 177/102/0/0 | 0.461 | 60 | A18 (2) | `iphone-island-430` | **yes** |
+| `iphone16pro` | iPhone 16 Pro | 2024 | 1206×2622 | 402×874 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A18 Pro (3) | `iphone-402` | **yes** |
+| `iphone16promax` | iPhone 16 Pro Max | 2024 | 1320×2868 | 440×956 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A18 Pro (3) | `iphone-440` | **yes** |
+| `iphone16e` | iPhone 16e | 2025 | 1170×2532 | 390×844 pt | 3 | 460 | 141/102/0/0 | 0.462 | 60 | A18 (2) | `iphone-notch-390` | **yes** |
+| `iphone17` | iPhone 17 | 2025 | 1206×2622 | 402×874 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A19 (3) | `iphone-402` | **yes** |
+| `iphone17pro` | iPhone 17 Pro | 2025 | 1206×2622 | 402×874 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A19 Pro (3) | `iphone-402` | **yes** |
+| `iphone17promax` | iPhone 17 Pro Max | 2025 | 1320×2868 | 440×956 pt | 3 | 460 | 186/102/0/0 | 0.460 | 120 | A19 Pro (3) | `iphone-440` | **yes** |
+| `iphoneair` | iPhone Air | 2025 | 1260×2736 | 420×912 pt | 3 | 460 | 204/102/0/0 | 0.461 | 120 | A19 Pro (3) | `iphone-air` | **yes** |
+| `galaxys21` | Galaxy S21 | 2021 | 1080×2400 | 360×800 dp | 3 | 421 | 96/72/0/0\* | 0.450 | 120 | Snapdragon 888 / Exynos 2100 (1) | `galaxy-20x9` | out |
+| `galaxys21plus` | Galaxy S21+ | 2021 | 1080×2400 | 384×853 dp | 2.8125 | 394 | 90/68/0/0\* | 0.450 | 120 | Snapdragon 888 / Exynos 2100 (1) | `galaxy-20x9` | out |
+| `galaxys21ultra` | Galaxy S21 Ultra | 2021 | 1440×3200 (default 1080×2400) | 384×853 dp | 3.75 | 515 | 120/90/0/0\* | 0.450 | 120 | Snapdragon 888 / Exynos 2100 (1) | `galaxy-20x9` | out |
+| `galaxys22` | Galaxy S22 | 2022 | 1080×2340 | 360×780 dp | 3 | 425 | 96/72/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 1 / Exynos 2200 (1) | `galaxy-fhd` | out |
+| `galaxys22plus` | Galaxy S22+ | 2022 | 1080×2340 | 384×832 dp | 2.8125 | 393 | 90/68/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 1 / Exynos 2200 (1) | `galaxy-fhd` | out |
+| `galaxys22ultra` | Galaxy S22 Ultra | 2022 | 1440×3088 (default 1080×2316) | 412×882 dp | 3.5 | 500 | 112/84/0/0\* | 0.466 | 120 | Snapdragon 8 Gen 1 / Exynos 2200 (1) | `galaxy-qhd` | out |
+| `galaxys23` | Galaxy S23 | 2023 | 1080×2340 | 360×780 dp | 3 | 425 | 96/72/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-fhd` | **yes** |
+| `galaxys23plus` | Galaxy S23+ | 2023 | 1080×2340 | 384×832 dp | 2.8125 | 393 | 90/68/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-fhd` | **yes** |
+| `galaxys23ultra` | Galaxy S23 Ultra | 2023 | 1440×3088 (default 1080×2316) | 412×882 dp | 3.5 | 500 | 112/84/0/0\* | 0.466 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-qhd` | **yes** |
+| `galaxys23fe` | Galaxy S23 FE | 2023 | 1080×2340 | 384×832 dp\* | 2.8125\* | 403 | 90/68/0/0\* | 0.462 | 120 | Exynos 2200 / Snapdragon 8 Gen 1 (1) | `galaxy-fhd` | **yes** |
+| `galaxys24` | Galaxy S24 | 2024 | 1080×2340 | 360×780 dp | 3 | 416 | 96/72/0/0\* | 0.462 | 120 | Exynos 2400 / Snapdragon 8 Gen 3 (2) | `galaxy-fhd` | **yes** |
+| `galaxys24plus` | Galaxy S24+ | 2024 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 513 | 112/84/0/0\* | 0.462 | 120 | Exynos 2400 / Snapdragon 8 Gen 3 (2) | `galaxy-qhd` | **yes** |
+| `galaxys24ultra` | Galaxy S24 Ultra | 2024 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 505 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Gen 3 (2) | `galaxy-qhd` | **yes** |
+| `galaxys24fe` | Galaxy S24 FE | 2024 | 1080×2340 | 384×832 dp\* | 2.8125\* | 385 | 90/68/0/0\* | 0.462 | 120 | Exynos 2400e (2) | `galaxy-fhd` | **yes** |
+| `galaxys25` | Galaxy S25 | 2025 | 1080×2340 | 360×780 dp | 3 | 416 | 96/72/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-fhd` | **yes** |
+| `galaxys25plus` | Galaxy S25+ | 2025 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 513 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-qhd` | **yes** |
+| `galaxys25ultra` | Galaxy S25 Ultra | 2025 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 498 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-qhd` | **yes** |
+| `galaxys25edge` | Galaxy S25 Edge | 2025 | 1440×3120 (default 1080×2340) | 412×891 dp | 3.5 | 513 | 112/84/0/0\* | 0.462 | 120 | Snapdragon 8 Elite (3) | `galaxy-qhd` | **yes** |
+| `galaxys25fe` | Galaxy S25 FE | 2025 | 1080×2340 | 384×832 dp\* | 2.8125\* | 385 | 90/68/0/0\* | 0.462 | 120 | Exynos 2400 (2) | `galaxy-fhd` | **yes** |
+| `galaxyzflip5` | Galaxy Z Flip5 (main) | 2023 | 1080×2640 | 393×960 dp\* | 2.75\* | 425 | 88/66/0/0\* | 0.409 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-flip-main` | **yes** |
+| `galaxyzflip6` | Galaxy Z Flip6 (main) | 2024 | 1080×2640 | 393×960 dp | 2.75 | 425 | 88/66/0/0\* | 0.409 | 120 | Snapdragon 8 Gen 3 (2) | `galaxy-flip-main` | **yes** |
+| `galaxyzfold5cover` | Galaxy Z Fold5 (cover) | 2023 | 904×2316 | 301×772 dp\* | 3\* | 402 | 96/72/0/0\* | 0.390 | 120 | Snapdragon 8 Gen 2 (2) | `galaxy-fold-cover` | **yes** |
+| `galaxyzfold6cover` | Galaxy Z Fold6 (cover) | 2024 | 968×2376 | 323×792 dp | 3 | 410 | 96/72/0/0\* | 0.407 | 120 | Snapdragon 8 Gen 3 (2) | `galaxy-fold-cover` | **yes** |
+| `pixel9` | Pixel 9 | 2024 | 1080×2424 | 412×923 dp | 2.625 | 422 | 110/63/0/0\* | 0.446 | 120 | Tensor G4 (2) | `pixel-20x9` | out |
+| `ipad` | iPad (10th gen) | 2022 | 1640×2360 | 820×1180 pt | 2 | 264 | 48/40/0/0 | 0.695 | 60 | A14 (1) | `ipad` | out |
 
 ## What the matrix means for the layout
+
+*Re-checked for the 2023+ baseline (GG-T2116):* the bullets below still list every row; for the in-target set the
+narrowest are the **Z Fold5 cover (301 dp, 904 px, scale 0.77, text about 10.3 dp, estimated width)**, the Fold6 cover
+(323 dp, 11.0 dp) and the base Galaxy S23/S24/S25 and S23 FE class (360 to 384 dp; 12.3 dp on the 360-dp ones); the
+narrowest in-target iPhone is the 16e at 390 pt (13.3 pt). The iPhone minis (375 pt, 12.8 pt) are out of target, so
+the "iPhone mini" figure below no longer sets the floor.
 
 - **Every phone fills the screen.** All of them sit inside 9:23 to 9:16 except the Galaxy Z Fold5 cover, 904×2316 =
   0.3903, a hair under 9:23 (0.3913): it gets a sliver of fog above and below (well under 1% of the height).

@@ -195,10 +195,14 @@ namespace GridGame.Core.Battle
                     case RevivedEvent rv:
                         if (heroes.TryGetValue(rv.UnitId, out var revived)) revived.Revives++;
                         break;
-                    case SpellManaSpentEvent sp: record.ManaSpent += sp.Points; break; // §3.1.0: points a cast emptied (a siphon isn't spending)
-                    case ManaGainedEvent mg when mg.Amount > 0:
-                        record.ManaGained += mg.Amount;
-                        if (mg.Kind == ManaGainKind.Earned) record.ManaCharged += mg.Amount;
+                    case SpellManaSpentEvent sp: record.ManaSpent += sp.Points; break; // §3.1.0: points a cast paid from the pool (a siphon isn't spending)
+                    case ManaGainedEvent mg:
+                        if (mg.Amount > 0)
+                        {
+                            record.ManaGained += mg.Amount;
+                            if (mg.Kind == ManaGainKind.Earned) record.ManaCharged += mg.Amount;
+                        }
+                        record.ManaWasted += mg.Wasted;
                         break;
                     case WeaponShatteredEvent ws:
                         context = "shatter";
@@ -338,12 +342,14 @@ namespace GridGame.Core.Battle
         public int DamageTaken;
         public Dictionary<string, AbilityTally> ByAbility = new Dictionary<string, AbilityTally>();
         public PincerTally Pincers = new PincerTally();
-        /// <summary>Mana points casts emptied from their own meters (§3.1.0).</summary>
+        /// <summary>Mana points casts paid from the party pool (§3.1.0).</summary>
         public int ManaSpent;
-        /// <summary>Earned mana points to every meter, after damping.</summary>
+        /// <summary>Earned mana points that landed in the pool, after damping.</summary>
         public int ManaCharged;
-        /// <summary>Every mana gain to every meter (earned and whole grants), in points.</summary>
+        /// <summary>Every mana point that landed in the pool (earned and whole grants).</summary>
         public int ManaGained;
+        /// <summary>Mana points of gains lost past the pool's capacity.</summary>
+        public int ManaWasted;
         public List<WeaponShatter> WeaponShatters = new List<WeaponShatter>();
         public Dictionary<string, int> ItemsUsed = new Dictionary<string, int>();
     }
