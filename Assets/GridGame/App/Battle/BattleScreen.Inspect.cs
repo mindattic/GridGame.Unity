@@ -59,7 +59,7 @@ namespace GridGame.App
             if (full > 0)
             {
                 int have = ShownMana(hero.Id, slot);
-                parts.Add(have >= full ? $"charged: {full} / {full} mana" : $"charging: {have} / {full} mana, fills with every gain");
+                parts.Add(have >= full ? $"{full} / {full} mana · ready" : $"{have} / {full} mana · fills with every gain");
             }
             var status = BattleEngine.GetSlotStatus(State, hero.Id, slot);
             if (status == SlotStatus.Ready) { if (TargetingSlot != slot) parts.Add($"tap to aim with {hero.Name}"); }
@@ -146,15 +146,16 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// GG-T450: a quick tap on a unit (no drag, no hold card, released on its own tile) opens its card after whatever
-        /// the tap already did (a hero is selected, a foe fills the actor panel). The card stays until the next press
+        /// GG-T450: a quick tap on a foe (no drag, no hold card, released on its own tile) opens its card after whatever
+        /// the tap already did. A hero's tap only selects it into the description panel (GG-T1905, BIBLE 9.0: no card over
+        /// the board); its sheet is the long-press. The card stays until the next press
         /// anywhere, and that press still acts — picking the hero up to drag it closes the card and drags as before.
         /// A recruitable is left out: its tap talks to it.
         /// </summary>
         private void TapUnitCard(int unitId, Vector2 local)
         {
             var u = State.UnitById(unitId);
-            if (u == null || !u.Alive || u.IsNeutral || !CanCommand() || TargetingSlot >= 0) return;
+            if (u == null || !u.Alive || u.IsNeutral || u.IsHero || !CanCommand() || TargetingSlot >= 0) return;
             if (board.TileAt(local) != u.Pos || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) return;
             InspectCard.Tap(v.Root, body => UnitSheet(body, u));
         }
@@ -192,12 +193,17 @@ namespace GridGame.App
                 if (t.KillChance > 0f) parts.Add(t.KillChance >= 1f ? "KO" : $"KO {Mathf.RoundToInt(t.KillChance * 100)}%");
                 foreach (var kv in t.StatusChance)
                     parts.Add($"{App.Content.TryBuff(kv.Key)?.Name ?? kv.Key}{(kv.Value < 1f ? $" {Mathf.RoundToInt(kv.Value * 100)}%" : "")}");
-                var l = Ui.Text($"{u.Name}: {string.Join(" · ", parts)}", "t-caption", parent);
+                // Each value stays whole on its line: a damage range or a status name never breaks (GG-T1903).
+                var l = Ui.Text($"{u.Name}: {string.Join(" · ", parts.Select(x => $"<nobr>{x}</nobr>"))}", "t-caption", parent);
                 l.name = "confirm-outcome";
                 l.style.whiteSpace = WhiteSpace.Normal;
             }
             if (p.ManaMax > 0)
-                Ui.Text($"Mana +{Range(p.ManaMin, p.ManaMax)} to every spell{(p.FillsMax > 0 ? $" · fills {Range(p.FillsMin, p.FillsMax)}" : "")}", "t-caption", parent).style.color = Palette.Mana;
+            {
+                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr> to every spell{(p.FillsMax > 0 ? $" · fills <nobr>{Range(p.FillsMin, p.FillsMax)}</nobr>" : "")}", "t-caption", parent);
+                m.style.color = Palette.Mana;
+                m.style.whiteSpace = WhiteSpace.Normal;
+            }
         }
 
         /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step.</summary>

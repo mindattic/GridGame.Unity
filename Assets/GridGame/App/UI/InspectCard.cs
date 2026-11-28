@@ -235,9 +235,11 @@ namespace GridGame.App
             return col;
         }
 
-        /// <summary>An ability, skill or battle item: kind, cost, cooldown, reach, numbers and its description. An ability
-        /// that takes its caster's element (GG-T1134) reads in <paramref name="wearer"/>'s element when one is given.</summary>
-        public static bool Ability(VisualElement body, AbilityDef a, string note = null, ClassDef wearer = null)
+        /// <summary>An ability, skill or battle item, in the five answers' order (§9.0): what it is (name, kind, its mana meter in
+        /// points or <paramref name="state"/>, the slot's live line), what it does (its numbers and effects), how it works (its
+        /// trigger and description), how it targets and who it targets. An ability that takes its caster's element (GG-T1134)
+        /// reads in <paramref name="wearer"/>'s element when one is given.</summary>
+        public static bool Ability(VisualElement body, AbilityDef a, string note = null, ClassDef wearer = null, string state = null)
         {
             if (a == null) return false;
             a = a.ForCaster(wearer);
@@ -248,54 +250,63 @@ namespace GridGame.App
                 : a.Kind == AbilityKind.Skill ? (a.CooldownTurns > 0 ? $"Skill · recharges in {a.CooldownTurns} turns" : "Skill · free")
                 : a.CastTime > 0 ? FormattableString.Invariant($"Spell · charges {a.CastTime:0.#}s on the timeline") : "Spell · instant";
             var head = Header(body, itemTex ?? Art.AbilityIcon(a), a.Name, kind, Palette.Gold);
-            if (a.Cost > 0)
-            {
-                var cost = Ui.El("row", head);
-                cost.style.alignItems = Align.Center;
-                cost.style.marginTop = Space.S8;
-                Ui.CostPips(a.Cost, cost, 32);
-                Line(cost, $"  {a.Cost} mana", "t-caption", Palette.Mana);
-            }
+            // Mana in points (§3.1.0): the live meter when the slot gives one, else how many points fill it.
+            string meter = !string.IsNullOrEmpty(state) ? state
+                : a.Cost > 0 && a.Kind == AbilityKind.Spell ? $"{a.Cost * BattleConfig.ManaPointsPerOrb} mana to fill its meter" : null;
+            if (meter != null) { var m = Line(head, meter, "t-caption", a.Kind == AbilityKind.Spell ? Palette.Mana : Palette.Gold); m.name = "ability-state"; }
 
-            var facts = new List<string>();
-            // A Passive/Reactive reads as its trigger, generated from the data (GG-T296, §4.1).
-            if (a.Trigger != null) facts.Add(GridGame.Core.Rules.TriggerText.Describe(GameApp.I?.Content, a));
-            else
-            {
-                facts.Add("How it targets: " + GridGame.Core.Rules.TargetText.How(a));
-                facts.Add("Who it targets: " + GridGame.Core.Rules.TargetText.Who(a));
-            }
-            if (a.BaseDamage > 0) facts.Add($"<color=#{ColorUtility.ToHtmlStringRGB(Palette.ElementText(a.DamageType))}>{a.BaseDamage} {a.DamageType} damage</color> (before stats)");
-            if (a.BaseHeal > 0) facts.Add(a.Revives ? $"Revives a fallen ally with {a.BaseHeal} HP" : $"Heals {a.BaseHeal} (before stats)");
+            var does = new List<string>();
+            if (a.BaseDamage > 0) does.Add($"<color=#{ColorUtility.ToHtmlStringRGB(Palette.ElementText(a.DamageType))}>{a.BaseDamage} {a.DamageType} damage</color> (before stats)");
+            if (a.BaseHeal > 0) does.Add(a.Revives ? $"Revives a fallen ally with {a.BaseHeal} HP" : $"Heals {a.BaseHeal} (before stats)");
             if (!string.IsNullOrEmpty(a.ApplyBuff) && GameApp.I?.Content?.TryBuff(a.ApplyBuff) is BuffDef bd)
-                facts.Add($"{(a.ApplyBuffChance < 1f ? $"{Mathf.RoundToInt(a.ApplyBuffChance * 100)}% to apply" : "Applies")} {TermOf(bd.Name)}: {Ui.BuffEffect(bd)}");
-            if (a.Knockback > 0) facts.Add($"Knocks back {a.Knockback} tiles");
-            if (a.Pull > 0) facts.Add($"Pulls {a.Pull} tiles toward the caster");
-            if (a.SwapsPlaces) facts.Add("Swaps places with the target");
-            if (a.StepBack > 0) facts.Add($"Caster steps back {a.StepBack}");
+                does.Add($"{(a.ApplyBuffChance < 1f ? $"{Mathf.RoundToInt(a.ApplyBuffChance * 100)}% to apply" : "Applies")} {TermOf(bd.Name)}: {Ui.BuffEffect(bd)}");
+            if (a.Knockback > 0) does.Add($"Knocks back {a.Knockback} tiles");
+            if (a.Pull > 0) does.Add($"Pulls {a.Pull} tiles toward the caster");
+            if (a.SwapsPlaces) does.Add("Swaps places with the target");
+            if (a.StepBack > 0) does.Add($"Caster steps back {a.StepBack}");
             if (a.HastenU > 0)
             {
                 int pts = Math.Max(1, (int)Math.Round(a.HastenU / BattleConfig.HastenUPerTempo));
                 int turns = a.TempoTurns > 0 ? a.TempoTurns : BattleConfig.DefaultTempoTurns;
-                facts.Add($"On an ally: Tempo +{pts} for {turns} turns (every foe's icon slows; stacks). On a foe: hastens its icon");
+                does.Add($"On an ally: Tempo +{pts} for {turns} turns (every foe's icon slows; stacks). On a foe: hastens its icon");
             }
-            if (a.Pushback > 0) facts.Add(FormattableString.Invariant($"Pushback {a.Pushback:0.##}s: the foe acts later"));
-            if (a.RemovesDebuffs) facts.Add("Cleanses debuffs");
-            if (a.Vaults) facts.Add("Leaps over a unit beside the user to the free tile beyond, crossing what lies under it"); // GG-T868
-            if (a.RedirectsDebuffs) facts.Add("Moves an adjacent ally's debuffs onto a foe beside the user"); // GG-T887
-            if (a.Afterimage > 0) facts.Add($"Dashes up to {a.Afterimage} tiles in a line; the afterimage left behind closes pincers this action and draws foes' attacks until the user's next turn"); // GG-T867
-            if (a.StealsBoon) facts.Add("Steals one boon from an adjacent foe, with the time it has left"); // GG-T866
-            if (a.GrantsOrbs > 0) facts.Add($"Fills every spell's mana bar by {a.GrantsOrbs * 100}");
-            var factBox = Ui.El("col", body);
-            factBox.style.marginTop = Space.S16;
-            foreach (var f in facts) GlossaryText.Create("• " + f, "t-caption", factBox, false);
-            if (!string.IsNullOrEmpty(a.Description))
+            if (a.Pushback > 0) does.Add(FormattableString.Invariant($"Pushback {a.Pushback:0.##}s: the foe acts later"));
+            if (a.RemovesDebuffs) does.Add("Cleanses debuffs");
+            if (a.Vaults) does.Add("Leaps over a unit beside the user to the free tile beyond, crossing what lies under it"); // GG-T868
+            if (a.RedirectsDebuffs) does.Add("Moves an adjacent ally's debuffs onto a foe beside the user"); // GG-T887
+            if (a.Afterimage > 0) does.Add($"Dashes up to {a.Afterimage} tiles in a line; the afterimage left behind closes pincers this action and draws foes' attacks until the user's next turn"); // GG-T867
+            if (a.StealsBoon) does.Add("Steals one boon from an adjacent foe, with the time it has left"); // GG-T866
+            if (a.GrantsOrbs > 0) does.Add($"Fills every spell's mana meter by {a.GrantsOrbs * BattleConfig.ManaPointsPerOrb}");
+            Bullets(body, does);
+
+            // A Passive/Reactive works by its trigger, generated from the data (GG-T296, §4.1). A description that only restates
+            // the numbers above ("18 Fire dmg + burning") adds nothing and is left out.
+            if (a.Trigger != null) Bullets(body, new List<string> { GridGame.Core.Rules.TriggerText.Describe(GameApp.I?.Content, a) });
+            if (!string.IsNullOrEmpty(a.Description) && !StatSummary.IsMatch(a.Description))
             {
                 var d = GlossaryText.Create(a.Description, "t-body", body, false);
                 d.style.marginTop = Space.S16;
             }
+
+            if (a.Trigger == null)
+                Bullets(body, new List<string>
+                {
+                    "How it targets: " + GridGame.Core.Rules.TargetText.How(a),
+                    "Who it targets: " + GridGame.Core.Rules.TargetText.Who(a),
+                });
             if (!string.IsNullOrEmpty(note)) { var n = Line(body, note, "t-caption", Palette.TextDim); n.style.marginTop = Space.S8; }
             return true;
+        }
+
+        /// <summary>A content description that is only a stat tag, "18 Fire dmg + burning": the card's own lines already say it.</summary>
+        private static readonly Regex StatSummary = new Regex(@"^\d+ \w+ dmg( \+ [\w ]+)?\.?$", RegexOptions.IgnoreCase);
+
+        private static void Bullets(VisualElement body, List<string> lines)
+        {
+            if (lines.Count == 0) return;
+            var box = Ui.El("col", body);
+            box.style.marginTop = Space.S16;
+            foreach (var f in lines) GlossaryText.Create("• " + f, "t-caption", box, false);
         }
 
         /// <summary>A region rule's queued event (GG-T359): the rule's name and description and when/where it lands.</summary>

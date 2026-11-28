@@ -20,7 +20,7 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        // ── Geometry (design px). The frame spans the stage; the slot sits on the left gutter, GUARD on the right. ──
+        // ── Geometry (design px). The frame spans the stage; the slot sits on the left gutter, the tray at the right end. ──
         private const float TimelineY = 201f; // top bar (8 + 110) + a gutter + half the frame (GG-T1894)
         private const float TimelineFrameHeight = 150f;
         /// <summary>The track line's y inside the timeline frame; every icon centres on it.</summary>
@@ -63,14 +63,14 @@ namespace GridGame.App
         private static float TrackX1 => TrayX0 - Space.S16 - IconSpan / 2f;
 
         // ── The recovery tray (GG-T319): after acting, a turn icon spends its recovery OFF the bar, here, between the
-        // track's right end and GUARD. Its diamonds sit in a diamond lattice (left = back on the bar soonest), shrunk
+        // track's right end and the stage edge. Its diamonds sit in a diamond lattice (left = back on the bar soonest), shrunk
         // and dimmed, each traced by a countdown ring; when one runs out the icon slides onto the bar at its entry. ──
         private const float TrayScale = 0.58f;
         /// <summary>The lattice step: two ringed tray diamonds a step apart along a diagonal sit edge to edge.</summary>
         private const float TrayCell = 66f;
         private static float TrayW => 2f * TrayCell;
-        /// <summary>Right edge of the tray: a gutter short of GUARD.</summary>
-        private static float TrayX1 => GameApp.StageWidth - Fit.Edge - Size.Target - Space.S16;
+        /// <summary>Right edge of the tray: the stage's edge gutter (GUARD lives on the ability bar, GG-T1904).</summary>
+        private static float TrayX1 => GameApp.StageWidth - Fit.Edge;
         private static float TrayX0 => TrayX1 - TrayW;
         private static float TraySocketSide => TrayW / Sqrt2 + Space.S8;
         private static float XOfU(float u) => TrackX0 + Mathf.Clamp01(u) * (TrackX1 - TrackX0);
@@ -164,12 +164,6 @@ namespace GridGame.App
 
             BuildSlot(frame);
 
-            var shield = Ui.Button("GUARD", () => { if (CanCommand()) Commit(new ShieldCommand()); }, "btn--icon", root);
-            shield.name = "shield";
-            guardButton = shield;
-            shield.style.position = Position.Absolute;
-            shield.style.right = Fit.Edge; shield.style.top = TimelineY - Size.Target / 2f; shield.style.width = shield.style.height = Size.Target;
-            shield.style.fontSize = TypeScale.Base;
             LayoutTimelineFrame();
         }
 
@@ -178,7 +172,6 @@ namespace GridGame.App
         private Label gapLabel;
         /// <summary>GG-T1091 (§2.13.2): "Round 3 · 2 of 4 moved", above the track's left end, only when rounds are kept.</summary>
         private Label roundLabel;
-        private Button guardButton;
         private static readonly Color GapRoomy = new Color(0.35f, 0.85f, 0.45f), GapTight = new Color(1f, 0.72f, 0.2f), GapNone = new Color(1f, 0.3f, 0.25f);
 
         private void BuildGapLane(VisualElement frame)

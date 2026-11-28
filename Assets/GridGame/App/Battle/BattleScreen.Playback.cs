@@ -444,12 +444,13 @@ namespace GridGame.App
             if (!ReduceMotion) yield return Tween.Wait(Timing.Quick);
             tallying = true;
             string label = p.Team == Team.Hero ? (chainCount > 1 ? $"CHAIN ×{chainCount}!" : "PINCER!") : "Enemy pincer!";
-            Billboard($"{a.Name} & {b.Name} — {(chainCount > 1 ? $"Chain ×{chainCount}" : "Pincer")}", null, p.Team == Team.Hero ? new Color(1f, 0.9f, 0.5f) : new Color(1f, 0.55f, 0.5f));
+            // The first link's cut-in is the announcement (§9.0, GG-T1913): the overlay line and board callout say it again, so they show only when no cut-in plays.
+            bool cutInPlays = CutInsEnabled && !ReduceMotion && chainCount == 1;
+            Feed($"{(p.Team == Team.Hero ? "" : "Enemy ")}{(chainCount > 1 ? $"Chain ×{chainCount}" : "Pincer")}: {a.Name} & {b.Name}", p.Team == Team.Hero ? Palette.Gold : new Color(1f, 0.55f, 0.5f));
             var supporters = p.Supporters.Select(State.UnitById).Where(x => x != null).ToList();
             if (supporters.Count > 0) Billboard("Support: " + string.Join(", ", supporters.Select(x => x.Name)), null, new Color(0.6f, 0.85f, 1f));
-            ShowBanner(label);
             var mid = (BoardView.CenterOf(aAt.At) + BoardView.CenterOf(bAt.At)) / 2f;
-            Text.Show(mid, CombatTextKind.Combo, label, Mathf.Clamp01(chainCount / 4f), color);
+            if (!cutInPlays) ShowBanner(label);
             if (p.BondTier > 0) // §25.20 (GG-T1308): bonded attackers hit harder
             {
                 Text.Show(mid + new Vector2(0f, 44f), CombatTextKind.Callout, $"Bond {p.BondTier}", 0f, new Color(1f, 0.6f, 0.8f));
@@ -1626,8 +1627,8 @@ namespace GridGame.App
         }
 
         /// <summary>Where a mint or a charge came from, in Overlay (stage) coordinates, from the real event (GG-T405): Guard
-        /// from the GUARD button, a time-banked orb from the drag timer, battle-start gear and carried orbs from the top
-        /// bar, and everything else from its source unit's tile (the pincer's attacker, the robbed foe, the hero on the
+        /// from the GUARD cell (the bottom row's right end), a time-banked orb from the drag timer, battle-start gear and
+        /// carried orbs from the top bar, and everything else from its source unit's tile (the pincer's attacker, the robbed foe, the hero on the
         /// pickup, the rule's unit, the caster).</summary>
         private Vector2 MintFrom(string reason, int sourceId)
         {

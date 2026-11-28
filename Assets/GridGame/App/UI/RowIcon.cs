@@ -122,6 +122,9 @@ namespace GridGame.App
         NoteOff,
         /// <summary>Settings (GG-T1886): a window struck through.</summary>
         WindowOff,
+        /// <summary>The hamburger, the menu button top-left of every screen that has one (GG-T1910, BIBLE 9.0 row 1): three
+        /// big filled, outlined bars across the whole icon, no disc. <see cref="Menu"/> stays the in-list menu-row emblem.</summary>
+        Hamburger,
     }
 
     /// <summary>
@@ -197,6 +200,20 @@ namespace GridGame.App
             b.style.right = b.style.bottom = Length.Percent(-8f);
             icon.style.overflow = Overflow.Visible;
             icon.Add(b);
+            return b;
+        }
+
+        /// <summary>The hamburger's share of its button (GG-T1910): the glyph spans this much of the 132 px target.</summary>
+        public const float HamburgerFrac = 0.6f;
+
+        /// <summary>The icon-only hamburger menu button (GG-T1910): the <see cref="RowKind.Hamburger"/> glyph at
+        /// <see cref="HamburgerFrac"/> of the target, named <c>menu</c>.</summary>
+        public static Button HamburgerButton(Action onClick, VisualElement parent)
+        {
+            var b = IconButton("", RowKind.Hamburger, onClick, "btn--small btn--icon", parent);
+            b.name = "menu";
+            var icon = b.Q(className: Class);
+            icon.style.width = icon.style.height = Size.Target * HamburgerFrac;
             return b;
         }
 
@@ -297,6 +314,15 @@ namespace GridGame.App
                 float body = r * 0.55f;
                 Shapes.Arrow(p, c - new Vector2(dir * h, 0f), c + new Vector2(dir * h, 0f),
                     new ShapeStyle { Width = body, Outline = Mathf.Max(1.5f, r * 0.12f), HeadLength = r * 1.0f, HeadWidth = r * 1.8f, Fill = Mark, Line = Rim });
+                return;
+            }
+            if (Kind == RowKind.Hamburger)
+            {
+                // GG-T1910: the hamburger is three thick white bars across the whole icon, each rimmed dark, so it reads at a glance.
+                float bw = r * 0.34f, half = r * 0.92f - bw * 0.5f, gap = r * 0.62f;
+                var bar = new ShapeStyle { Width = bw, Outline = Mathf.Max(1.5f, r * 0.08f), Fill = Mark, Line = Rim };
+                for (int k = -1; k <= 1; k++)
+                    Shapes.Bar(p, c + new Vector2(-half, k * gap), c + new Vector2(half, k * gap), bar);
                 return;
             }
             float rim = Mathf.Max(1.5f, r * 0.08f);

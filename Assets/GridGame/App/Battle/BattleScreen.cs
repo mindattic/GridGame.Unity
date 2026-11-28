@@ -18,8 +18,8 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>
-    /// The battle. Layout follows the bible HUD rows (§9.0): top bar (hamburger · stage and wave · gold) · timeline + GUARD ·
-    /// 6×8 board · icon-only ability bar · description panel to the safe bottom. The simulation (BattleState) is the only truth;
+    /// The battle. Layout follows the bible HUD rows (§9.0): top bar (hamburger · stage and wave · gold) · timeline ·
+    /// 6×8 board · icon-only ability bar with GUARD at its right end · description panel to the safe bottom. The simulation (BattleState) is the only truth;
     /// this screen turns input into commands and plays the resulting events back.
     /// </summary>
     public sealed partial class BattleScreen : GameScreen
@@ -227,6 +227,7 @@ namespace GridGame.App
                 outcomeTags.Clear();
                 darkHidden.Clear();
                 awayOnSettings = false; // playback, held at its next beat while Settings was up, carries on
+                if (pauseVeil != null) pauseVeil.style.display = DisplayStyle.Flex; // back from the pause menu's Settings (GG-T1909)
             }
             if (firstBuild)
             {
@@ -308,7 +309,7 @@ namespace GridGame.App
             var bar = Ui.El("row", root);
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = TopBarTop; bar.style.height = TopBarHeight;
-            RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
+            RowIcon.HamburgerButton(OpenMenu, bar); // GG-T754: icon-only pause
             // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
             // shrinks to the floor, then scrolls (GG-T1143), the wave never does.
             var mid = Ui.El("row grow", bar);
@@ -374,7 +375,7 @@ namespace GridGame.App
 
         public override void OnShown() { GameApp.StageResized -= OnStageResized; GameApp.StageResized += OnStageResized; }
 
-        /// <summary>The ability row (named "abilitybar"), one row of five cells under the board.</summary>
+        /// <summary>The ability row (named "abilitybar") under the board: five skill cells, then GUARD.</summary>
         private VisualElement abilityBar;
 
         /// <summary>Lays the ability cells out as one row under the board, inside the HUD column.</summary>
@@ -405,8 +406,8 @@ namespace GridGame.App
             var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
-            // Exactly five slots fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit that
-            // row"); even gutters on the space scale, and the
+            // Five skill slots and GUARD fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit
+            // that row"; GG-T1904 adds GUARD as the sixth); even gutters on the space scale, and the
             // cells, not the gaps, take a wider stage (POL-C1/C8). Laid out by LayoutAbilityBar.
             bar.style.top = BarTop; bar.style.height = BarHeight; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
@@ -423,6 +424,48 @@ namespace GridGame.App
                 Ui.AbilitySlot(slot);
                 slotViews.Add(slot);
             }
+            BuildGuardCell(bar);
+        }
+
+        /// <summary>The GUARD cell for <see cref="SyncGuardCall"/>'s gold call and Guard's mana motes (<see cref="MintFrom"/>).</summary>
+        private VisualElement guardButton;
+        /// <summary>The GUARD cell's resting edge: pewter on the dark window, apart from the skills' plain frames.</summary>
+        private static readonly Color GuardEdge = Palette.PewterLight;
+
+        /// <summary>GG-T1904 (owner 2026-11-28, §9.0): GUARD at the right end of the bottom action row, in thumb reach, built
+        /// apart from the slot cells so they can be swapped out (GG-T1914). Its Protection shield fills the cell; the GUARD
+        /// caption shows only while it fits whole.</summary>
+        private void BuildGuardCell(VisualElement bar)
+        {
+            var cell = guardButton = HudCell(bar);
+            cell.name = "shield";
+            cell.AddToClassList("guard");
+            cell.style.backgroundImage = new StyleBackground(Art.WindowDark);
+            cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = GuardEdge;
+            Ui.Pressable(cell);
+            cell.RegisterCallback<ClickEvent>(_ => { if (CanCommand()) Commit(new ShieldCommand()); });
+            var icon = Ui.El(null, cell); icon.name = "icon";
+            icon.pickingMode = PickingMode.Ignore;
+            icon.style.position = Position.Absolute;
+            icon.style.left = icon.style.top = icon.style.right = Space.S16;
+            icon.style.backgroundImage = new StyleBackground(Art.StatusIcon("protection"));
+            icon.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+            var caption = Ui.Text("GUARD", "tiny shadow", cell);
+            caption.name = "guard-label";
+            caption.pickingMode = PickingMode.Ignore;
+            caption.style.position = Position.Absolute;
+            caption.style.left = caption.style.right = Space.S0;
+            caption.style.bottom = Space.S8;
+            caption.style.unityTextAlign = TextAnchor.LowerCenter;
+            caption.style.whiteSpace = WhiteSpace.NoWrap;
+            Fonts.UseHeavy(caption);
+            cell.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                var need = caption.MeasureTextSize(caption.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                bool fits = need.x <= cell.contentRect.width - 2 * Space.S8 && need.y <= cell.contentRect.height / 3f;
+                caption.style.display = fits ? DisplayStyle.Flex : DisplayStyle.None;
+                icon.style.bottom = fits ? Space.S8 + need.y : Space.S16;
+            });
         }
 
         /// <summary>One cell of the ability row: a window-framed column that takes an even share of the row.</summary>
@@ -665,7 +708,7 @@ namespace GridGame.App
             if (panelUnitId >= 0 || readSlotHero != SelectedHeroId) readSlot = -1;
             if (readSlot >= 0 && State.UnitById(SelectedHeroId) is Unit reader && BattleEngine.SlotAbility(State, reader, readSlot) is AbilityDef read)
             {
-                InspectCard.Ability(panel, read, SlotState(reader, readSlot, read));
+                InspectCard.Ability(panel, read, state: SlotState(reader, readSlot, read));
                 return;
             }
             // A running lesson is the panel's content (§9.0, GG-T1827) until an aim, a held slot or a unit the player reads needs it.
@@ -762,25 +805,23 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// The aimed ability in the description panel (§9.0, GG-T1823). While aiming: "Name: choose a target"; once a target
-        /// is picked, the confirm card (on whom, the outcome preview, Cast / Cancel) takes the top. Under either, the full
-        /// card: what it is, its cost, how and who it targets, its numbers and description, and the slot's live state.
+        /// The aimed ability in the description panel (§9.0, GG-T1823). While aiming: one prompt line ("Fireball: tap a
+        /// highlighted foe", GG-T1906); once a target is picked, the confirm card takes the top: on whom and the outcome preview
+        /// across the panel's full width, then Cancel and Cast on their own row under it (GG-T1903). Under either, the full card.
         /// </summary>
         private void AbilityInfo(Unit hero, int slot, AbilityDef a)
         {
             bool confirm = PendingTarget.HasValue && TargetingSlot >= 0;
-            var row = Ui.El("row", panel);
-            row.name = "aim-card";
-            row.style.alignItems = Align.FlexStart;
-            row.style.marginBottom = Space.S16;
-            var col = Ui.El("col grow", row);
-            col.style.flexShrink = 1;
+            var col = Ui.El("col", panel);
+            col.name = "aim-card";
+            col.style.marginBottom = Space.S16;
             if (!confirm)
             {
-                var ask = Ui.Text($"{a.Name}: choose a target", "small gold", col);
+                var ask = Ui.Text($"{a.Name}: tap a highlighted {AimNoun(a)}", "small gold", col);
                 ask.name = "aim-prompt";
                 ask.style.whiteSpace = WhiteSpace.Normal;
-                Ui.Text("Tap a highlighted tile · tap the slot again to cancel", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
+                // The cancel gesture is a lesson, not a fact about the ability: only while the lessons run.
+                if (TutorialActive) Ui.Text("Tap the slot again to cancel", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
             }
             else
             {
@@ -792,18 +833,26 @@ namespace GridGame.App
                 summary.name = "confirm-summary";
                 summary.style.whiteSpace = WhiteSpace.Normal;
                 OutcomeLines(col, a);
-                // Cast / Cancel side by side at the top of the card (GG-T391), so the two never scroll out of view.
-                var btns = Ui.El("row", row);
-                btns.style.flexShrink = 0;
-                btns.style.marginLeft = Space.S16;
+                // Cancel left, Cast right (L7), on their own row under the outcome so it keeps the full width.
+                var btns = Ui.El("row", col);
+                btns.name = "confirm-buttons";
+                btns.style.justifyContent = Justify.SpaceBetween;
+                btns.style.marginTop = Space.S8;
+                var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
+                cancel.name = "confirm-cancel";
                 string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
                 var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
                 ok.name = "confirm-action";
-                var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
-                cancel.name = "confirm-cancel";
             }
-            InspectCard.Ability(panel, a, SlotState(hero, slot, a));
+            InspectCard.Ability(panel, a, state: SlotState(hero, slot, a));
         }
+
+        /// <summary>What the aim prompt asks the player to tap: a foe, an ally, a unit or a tile.</summary>
+        private static string AimNoun(AbilityDef a) =>
+            a.Mode != TargetMode.PickActor ? "tile"
+            : a.Filter == TargetFilter.EnemyOnly ? "foe"
+            : a.Filter == TargetFilter.AllyOnly ? "ally"
+            : "unit";
 
         // ─────────────────────────────────────────────────────────────────────────
         // The description panel (§9.0, GG-T1822): from a gutter under the ability bar to the safe bottom
@@ -870,7 +919,13 @@ namespace GridGame.App
                 line.style.alignItems = Align.Center;
                 var nm = Ui.Text(sl.IsWeapon ? App.Content.TryItem(sl.WeaponId)?.Name ?? a.Name : sl.IsItem ? App.Content.TryItem(sl.ItemId)?.Name ?? a.Name : a.Name, "small", line);
                 nm.style.flexShrink = 1;
-                if (a.Kind != AbilityKind.Skill && a.Cost > 0) Ui.CostPips(a.Cost, line, Size.Pip).style.marginLeft = Space.S8;
+                if (a.Kind != AbilityKind.Skill && a.Cost > 0)
+                {
+                    var mana = Ui.Text($"{a.Cost * BattleConfig.ManaPointsPerOrb} mana", "small", line);
+                    mana.style.color = Palette.OnWindow(Palette.Mana);
+                    mana.style.marginLeft = Space.S8;
+                    mana.style.flexShrink = 0;
+                }
                 int cd = hero.Cooldowns.TryGetValue(a.Id, out var c) ? c : 0;
                 string when = sl.IsItem ? $"Item · {sl.Charges}/{sl.MaxCharges} left"
                     : a.Kind == AbilityKind.Skill ? (cd > 0 ? $"Skill · ready in {cd} turns" : a.CooldownTurns > 0 ? $"Skill · recharge {a.CooldownTurns} turns" : "Skill")
@@ -885,7 +940,7 @@ namespace GridGame.App
                 }
                 var ab = a;
                 int idx = i;
-                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotState(hero, idx, ab)));
+                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, state: SlotState(hero, idx, ab)));
             }
         }
 
@@ -1263,6 +1318,7 @@ namespace GridGame.App
             Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter); // GG-T751 (§26.7)
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
             Ui.MenuRow("Battle log", logLines.Count > 0 ? Ui.Count(logLines.Count) : "", () => ShowBattleLog(veil, w), w).KindIcon(RowKind.Menu);
+            Ui.MenuRow("Settings", "", () => { veil.style.display = DisplayStyle.None; awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Settings); // GG-T1909
             Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
@@ -1297,7 +1353,6 @@ namespace GridGame.App
             }, w);
             back.KindIcon(RowKind.Back);
             back.name = "battle-log-back";
-            Ui.Select(back);
             ScrollLogToEnd();
         }
 
@@ -1418,7 +1473,7 @@ namespace GridGame.App
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
             {
                 dragTimeLeft -= dt;
-                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}s";
+                timerLabel.text = gapLabel != null && gapLabel.style.display == DisplayStyle.Flex ? "" : $"{Mathf.Max(0, dragTimeLeft):0.0}s"; // GG-T1912: the gap caption already shows the seconds
                 if (dragTimeLeft <= 0f && !CoachRail && !coachCancelStep) CommitDrag(); // a coached drag is never forced (GG-T539)
             }
             else if (timerLabel != null) timerLabel.text = "";
