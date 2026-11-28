@@ -333,7 +333,7 @@ namespace GridGame.App
 
         private void RestoreFromCloud()
         {
-            App.Toast("Checking the cloud…");
+            App.Toast("Checking the cloud");
             App.Cloud.RestoreEmptySlots(App, restored =>
             {
                 App.Toast(restored == 0 ? "No cloud saves for the empty slots" : restored == 1 ? "Restored 1 save from the cloud" : $"Restored {restored} saves from the cloud");
@@ -1005,7 +1005,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = TileName(d);
             tile.EnableInClassList("kit-tile--locked", !d.Open);
-            var icon = d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
+            var icon = d.Id == CampMenu.Shop ? tile.KindIcon(RowKind.Shop) : d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
             if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
             else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
@@ -1026,7 +1026,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = (open ? "camp-" : "locked-") + label.ToLowerInvariant();
             tile.EnableInClassList("kit-tile--locked", !open);
-            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Station : RowKind.Codex);
+            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex);
             if (!open) RowIcon.Badge(icon, RowKind.Locked);
             else if (CampMenu.GroupBadge(dests, group)) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(label, "kit-tile-label", tile));
@@ -1049,6 +1049,7 @@ namespace GridGame.App
                 case CampMenu.Bestiary: return RowKind.Bestiary;
                 case CampMenu.Codex: return RowKind.Codex;
                 case CampMenu.Settings: return RowKind.Settings;
+                case CampMenu.Summon: return RowKind.Summon;
                 default: return RowKind.Station;
             }
         }
@@ -1178,7 +1179,7 @@ namespace GridGame.App
                 RowIcon.Badge(row.KindIcon(RowKind.Place, theme.Id), cleared == theme.Stages.Count ? RowKind.Cleared : RowKind.New);
                 if (cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
             }
-            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead…", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
+            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
         }
 
         /// <summary>Step two: one region's stages, each Cleared or New (a cleared one can be fought again as a hunt). Any
