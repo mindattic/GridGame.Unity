@@ -1,6 +1,6 @@
 {
  "device": "iphone15pro",
- "captured": "2026-11-28T06:47:08",
+ "captured": "2026-11-28T07:42:47",
  "screens": {
   "title": {
    "screen": "title",
@@ -29736,9 +29736,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#212539",
-       "ratio": 12.19,
-       "worstStop": 12.19,
+       "bg": "#21253a",
+       "ratio": 12.17,
+       "worstStop": 12.17,
        "need": 4.5,
        "pass": true
       }
@@ -30023,11 +30023,11 @@
       }
      },
      {
-      "text": "Prize Fighter",
+      "text": "Myrmidon",
       "rect": [
        186.0,
        1203.0,
-       275.0,
+       205.0,
        66.0
       ],
       "size": {
@@ -30046,11 +30046,11 @@
       }
      },
      {
-      "text": "STRIKER",
+      "text": "TANK",
       "rect": [
-       480.0,
+       411.0,
        1205.0,
-       190.0,
+       126.0,
        62.0
       ],
       "size": {
@@ -30060,16 +30060,16 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#ffa840",
-       "bg": "#151217",
-       "ratio": 9.71,
-       "worstStop": 9.71,
+       "fg": "#f25c4c",
+       "bg": "#0c0c16",
+       "ratio": 5.94,
+       "worstStop": 5.94,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "Greedy \u00b7 from 165 G",
+      "text": "Fair \u00b7 from 180 G",
       "rect": [
        186.0,
        1275.0,
@@ -30092,11 +30092,11 @@
       }
      },
      {
-      "text": "Raider",
+      "text": "Ritualist",
       "rect": [
        186.0,
        1633.0,
-       138.0,
+       186.0,
        66.0
       ],
       "size": {
@@ -30115,79 +30115,10 @@
       }
      },
      {
-      "text": "STRIKER",
-      "rect": [
-       343.0,
-       1635.0,
-       190.0,
-       62.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.4,
-       "mm": 2.2
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffa840",
-       "bg": "#121016",
-       "ratio": 9.85,
-       "worstStop": 9.85,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Easygoing \u00b7 from 150 G",
-      "rect": [
-       186.0,
-       1705.0,
-       916.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.4,
-       "mm": 2.2
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#212031",
-       "ratio": 6.49,
-       "worstStop": 6.49,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Ritualist",
-      "rect": [
-       186.0,
-       2063.0,
-       186.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "pt": 13.4,
-       "mm": 2.2
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffffff",
-       "bg": "#1e1d2b",
-       "ratio": 16.59,
-       "worstStop": 16.59,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
       "text": "MAGE",
       "rect": [
        391.0,
-       2065.0,
+       1635.0,
        134.0,
        62.0
       ],
@@ -30208,6 +30139,75 @@
      },
      {
       "text": "Fair \u00b7 from 195 G",
+      "rect": [
+       186.0,
+       1705.0,
+       916.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.4,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#212030",
+       "ratio": 6.5,
+       "worstStop": 6.5,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Prize Fighter",
+      "rect": [
+       186.0,
+       2063.0,
+       277.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.4,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffffff",
+       "bg": "#1e1d2b",
+       "ratio": 16.59,
+       "worstStop": 16.59,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "STRIKER",
+      "rect": [
+       482.0,
+       2065.0,
+       190.0,
+       62.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.4,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffa840",
+       "bg": "#151217",
+       "ratio": 9.71,
+       "worstStop": 9.71,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Greedy \u00b7 from 165 G",
       "rect": [
        186.0,
        2135.0,
@@ -30616,9 +30616,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#30285c",
-       "ratio": 10.69,
-       "worstStop": 10.69,
+       "bg": "#2d2656",
+       "ratio": 11.11,
+       "worstStop": 11.11,
        "need": 4.5,
        "pass": true
       }
@@ -30639,9 +30639,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#3d3662",
-       "ratio": 8.94,
-       "worstStop": 8.94,
+       "bg": "#3e3562",
+       "ratio": 8.95,
+       "worstStop": 8.95,
        "need": 4.5,
        "pass": true
       }
@@ -41337,7 +41337,7 @@
     "total": 15
    },
    "text": {
-    "count": 24,
+    "count": 25,
     "captionFloor": {
      "px": 30,
      "pt": 10.1,
@@ -41354,7 +41354,7 @@
      "mm": 2.2
     },
     "underCaptionFloor": 0,
-    "contrastSamples": 24,
+    "contrastSamples": 25,
     "contrastFails": 1,
     "minContrast": 1.19,
     "items": [
@@ -41546,7 +41546,7 @@
       "text": "Any of 51 heroes may answer, each as lik\u2026",
       "rect": [
        50.0,
-       887.0,
+       883.0,
        1067.0,
        126.0
       ],
@@ -41569,7 +41569,7 @@
       "text": "Always open",
       "rect": [
        50.0,
-       1019.0,
+       1015.0,
        1067.0,
        66.0
       ],
@@ -41592,7 +41592,7 @@
       "text": "Each of these 51 heroes: 1 in 51 (2%)",
       "rect": [
        62.0,
-       1296.0,
+       1286.0,
        788.0,
        66.0
       ],
@@ -41604,9 +41604,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#211f32",
-       "ratio": 16.07,
-       "worstStop": 16.07,
+       "bg": "#211f33",
+       "ratio": 16.05,
+       "worstStop": 16.05,
        "need": 4.5,
        "pass": true
       }
@@ -41615,7 +41615,7 @@
       "text": "Rates",
       "rect": [
        949.0,
-       1296.0,
+       1286.0,
        120.0,
        66.0
       ],
@@ -41638,7 +41638,7 @@
       "text": "History",
       "rect": [
        155.0,
-       1451.0,
+       1441.0,
        157.0,
        66.0
       ],
@@ -41658,11 +41658,11 @@
       }
      },
      {
-      "text": "Mana Shards: 0 \u00b7 Summon Tickets: 10",
+      "text": "Mana Shards: 0",
       "rect": [
-       120.0,
-       1730.0,
-       986.0,
+       124.0,
+       1726.0,
+       310.0,
        66.0
       ],
       "size": {
@@ -41672,10 +41672,33 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#ffffff",
-       "bg": "#1c1b2b",
-       "ratio": 16.92,
-       "worstStop": 16.92,
+       "fg": "#ffd959",
+       "bg": "#0a0c1a",
+       "ratio": 14.18,
+       "worstStop": 14.18,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Summon Tickets: 10",
+      "rect": [
+       521.0,
+       1726.0,
+       405.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "pt": 13.4,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#0a0b1a",
+       "ratio": 15.73,
+       "worstStop": 15.73,
        "need": 4.5,
        "pass": true
       }
@@ -41935,15 +41958,15 @@
    "polish": {
     "counts": {
      "POL-A2": {
-      "checkedCount": 24,
+      "checkedCount": 25,
       "failed": 0
      },
      "POL-A3": {
-      "checkedCount": 24,
+      "checkedCount": 25,
       "failed": 0
      },
      "POL-C5": {
-      "checkedCount": 46,
+      "checkedCount": 49,
       "failed": 0
      },
      "POL-A5": {
