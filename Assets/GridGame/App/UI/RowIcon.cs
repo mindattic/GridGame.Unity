@@ -248,6 +248,15 @@ namespace GridGame.App
             if (r < 3f || float.IsNaN(r)) return;
             var c = rect.center;
             var p = ctx.painter2D;
+            if (Kind == RowKind.Back || Kind == RowKind.Enter || Kind == RowKind.Stage)
+            {
+                // GG-T1892: a direction is one big filled, outlined arrow across the whole icon, not a glyph in a disc.
+                float h = r * 0.9f, dir = Kind == RowKind.Back ? -1f : 1f;
+                float body = r * 0.55f;
+                Shapes.Arrow(p, c - new Vector2(dir * h, 0f), c + new Vector2(dir * h, 0f),
+                    new ShapeStyle { Width = body, Outline = Mathf.Max(1.5f, r * 0.12f), HeadLength = r * 1.0f, HeadWidth = r * 1.8f, Fill = Mark, Line = Rim });
+                return;
+            }
             float rim = Mathf.Max(1.5f, r * 0.08f);
             FillCircle(p, c, r, Rim);
             FillCircle(p, c, r - rim, Disc);

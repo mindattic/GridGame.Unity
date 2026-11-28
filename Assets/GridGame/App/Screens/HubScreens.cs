@@ -658,10 +658,10 @@ namespace GridGame.App
             support.name = "abilities-support";
             Ui.Para("Pick a slot, then choose what goes in it — or move it along the bar.", barW, "dim");
             var tools = Ui.Actions(barW);
-            var left = RowIcon.IconButton("Move", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
+            var left = RowIcon.IconButton("Move left", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
             left.name = "bar-move-left";
             Ui.SetEnabled(left, slot > 0 && slot < unlocked);
-            var right = RowIcon.IconButton("Move", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
+            var right = RowIcon.IconButton("Move right", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
