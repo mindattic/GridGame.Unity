@@ -33,14 +33,8 @@ namespace GridGame.App
             bool workshop = CampUnlocks.SmithWorkshopOpen(S);
             if (tab < 0) tab = workshop && (CampTips.Pending(S, Id) == null || !Repair.Pieces(C, S).Any()) ? 0 : RepairTab;
             if (!workshop) tab = RepairTab;
-            var bar = Ui.Tabs(new[] { "Forge", "Upgrade", "Salvage", "Repair" }, tab, i =>
-            {
-                if (!workshop && i != RepairTab) { App.Toast(CampUnlocks.SmithWorkshopHint(App.Content)); App.Audio.Sfx("ui.error"); return; }
-                tab = i; selected = null; Refresh();
-            }, body);
-            if (!workshop)
-                for (int i = 0; i < bar.childCount; i++)
-                    if (i != RepairTab) { bar[i].style.opacity = 0.4f; bar[i].AddToClassList("tab--locked"); }
+            Ui.Tabs(new[] { "Forge", "Upgrade", "Salvage", "Repair" }, tab, i => { tab = i; selected = null; Refresh(); }, body,
+                i => !workshop && i != RepairTab, _ => App.Toast(CampUnlocks.SmithWorkshopHint(App.Content)));
             var list = Ui.ListPanel(body);
             var detail = Ui.DetailPanel(body);
             // GG-T177 (§25.0.6): until the first forge is made, the Forge opens on the starter weapon its tip walks.
@@ -103,7 +97,7 @@ namespace GridGame.App
                     bool locked = tierLocked || facilityLocked;
                     string nameOverride = resultCounts[r.Result] > 1 ? $"{result.Name} — {InputSummary(c, r)}" : null;
                     string lockLabel = tierLocked ? StationProgress.TierName(r.Tier) : Facilities.NeededName(c, r);
-                    row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
+                    row = ItemUi.Row(result, locked ? lockLabel : Ui.Gold(r.Gold), () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
                     if (locked) RowIcon.Prefix(row.Q<Label>("value"), "chrome-locked");
                     if (can) ReadyChip(row, verb);
@@ -115,7 +109,7 @@ namespace GridGame.App
                     var missingItem = c.TryItem(missing.Item);
                     row = Ui.MenuRow("???", $"Missing {missingItem?.Name ?? missing.Item}", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list);
                     row.KindIcon(RowKind.Item); // GG-T717: an undiscovered result shows the Item emblem
-                    row.style.opacity = 0.75f;
+                    row.style.opacity = Dim.Row;
                 }
                 row.AddToClassList("menu-row--compact");
                 if (sel == r)
@@ -135,16 +129,10 @@ namespace GridGame.App
             else Ui.Empty("Pick a recipe to see what it needs.", detail);
         }
 
-        /// <summary>The "Brew" / "Craft" / "Enchant" pill at the end of a recipe row the player can make right now (GG-T2021):
-        /// the bright Good green on the badge's near-black fill, well over 4.5:1 (GG-T1863).</summary>
-        internal static void ReadyChip(VisualElement row, string verb)
-        {
-            var chip = Ui.Text(verb, "role-badge", row);
-            chip.name = "recipe-chip";
-            chip.style.fontSize = TypeScale.Base;
-            chip.style.color = Palette.Good;
-            chip.style.borderTopColor = chip.style.borderBottomColor = chip.style.borderLeftColor = chip.style.borderRightColor = Palette.Good;
-        }
+        /// <summary>The "Brew" / "Craft" / "Enchant" chip at the end of a recipe row the player can make right now (GG-T2021):
+        /// the kit chip with the Ready icon, its label and rim in the bright Good green, well over 4.5:1 (GG-T1863).</summary>
+        internal static void ReadyChip(VisualElement row, string verb) =>
+            Ui.Chip(verb, row, RowKind.Cleared, tone: "good", name: "recipe-chip").AddToClassList("kit-chip--good");
 
         /// <summary>GG-T538 (§25.0.10): the next tier, shown locked at the foot of the list. Up to
         /// <see cref="VendorTiers.PreviewRows"/> recipes from the next rank (a locked "Journeyman") and from the next progress tier

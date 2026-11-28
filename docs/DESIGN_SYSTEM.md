@@ -133,7 +133,7 @@ Every tappable goes through `Ui.Pressable`, which sinks it and plays the `ui.pre
 | Tabs | `Ui.Tabs(names, active, onPick, parent, locked)` | `.tab`, `.tab--active` | no | the window below sits flush; the active tab has a 4-px mana top |
 | Stepper | `Ui.Stepper(parent, value, onMinus, onPlus, …)` | `.btn--small` | no | minus, value, plus; each button a full target |
 | Segmented control | `Ui.Segmented(options, selected, onPick, parent)` | `.kit-segmented`, `.kit-segment`, `--selected` | no (a pick is not an action) | equal small buttons sharing the row; the selected one pressed in; each named `seg-<label>` |
-| Chip | `Ui.Chip(text, parent, icon, onClick, selected)`, `Ui.SetSelected` | `.kit-chip`, `--tap`, `--selected` | no | a pill with an inline 32 icon; a full target when tappable, pressed in when selected |
+| Chip | `Ui.Chip(text, parent, icon, onClick, selected)`, `Ui.SetSelected` | `.kit-chip`, `--tap`, `--selected`, `--good` (a station's ready chip on a recipe row, GG-T2087) | no | a pill with an inline 32 icon; a full target when tappable, pressed in when selected |
 | Badge | `Ui.Badge(text, parent, classes)` | `.kit-badge`, `.kit-navtab-badge` | n/a | a count or word on a pill; takes no taps |
 | Progress bar | `Ui.ProgressBar(frac, parent, label)`, `Ui.SetProgress` | `.kit-progress` | n/a | the gauge across the width, an optional count at its right |
 | Field | `Ui.Field(label, value, parent)` | `.kit-field` | n/a | read-only: dim label, body value |

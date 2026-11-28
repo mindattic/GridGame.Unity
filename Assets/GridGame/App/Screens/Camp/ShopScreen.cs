@@ -75,7 +75,7 @@ namespace GridGame.App
                 // line "250 G · own 15" was wide enough, beside the −/0/+ counter, to squeeze names onto three hyphenated
                 // lines ("Bram- blehide Grips") and clip its own count; stacked, the value column is only as wide as the price.
                 int own = S.Count(item.Id);
-                var row = ItemUi.Row(item, $"{price} G", () => ItemUi.Detail(detail, item, C), list);
+                var row = ItemUi.Row(item, Ui.Gold(price), () => ItemUi.Detail(detail, item, C), list);
                 if (own > 0)
                 {
                     var v = row.Q<Label>("value");
@@ -86,7 +86,7 @@ namespace GridGame.App
                     stack.style.justifyContent = Justify.Center;
                     row.Insert(row.IndexOf(v), stack);
                     stack.Add(v);
-                    var ownLabel = Ui.Text($"own {own}", "small dim", stack);
+                    var ownLabel = Ui.Caption($"own {own}", stack, "dim");
                     ownLabel.name = "shop-own";
                     ownLabel.style.whiteSpace = WhiteSpace.NoWrap;
                 }
@@ -131,7 +131,7 @@ namespace GridGame.App
             foreach (var o in offers)
             {
                 var offer = o;
-                var row = ItemUi.Row(offer.Item, $"{offer.Price} G", () => { bargainSelected = offer.Item.Id; Refresh(); }, list);
+                var row = ItemUi.Row(offer.Item, Ui.Gold(offer.Price), () => { bargainSelected = offer.Item.Id; Refresh(); }, list);
                 if (bargainSelected == offer.Item.Id) Ui.Select(row);
             }
             var sel = offers.FirstOrDefault(o => o.Item.Id == bargainSelected);
