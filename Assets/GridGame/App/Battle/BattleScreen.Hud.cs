@@ -57,6 +57,9 @@ namespace GridGame.App
         private Label waveLabel, coinLabel, timerLabel;
         private VisualElement bossBox, bossHpFill;
         private Label stageName, bossName;
+        /// <summary>GG-T1951: the stage name and the goal take turns on the stage-name line, this long each.</summary>
+        private const int StageLineSwapMs = 4000;
+        private bool stageLineShowsGoal;
         private int bossBarId = -1;
         private float bossBarFraction = -1f;
 
@@ -87,6 +90,10 @@ namespace GridGame.App
             mid.style.minWidth = Space.S0;
             stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
             stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            // GG-T1951 (§9.0): the goal ("Defeat every foe", or what ends a scripted fight) takes turns with the stage name on
+            // the same line, so it costs the bar no third line. A plain swap, nothing slides.
+            stageLineShowsGoal = false;
+            stageName.schedule.Execute(SwapStageLine).Every(StageLineSwapMs).StartingIn(StageLineSwapMs);
             var sep = Ui.Text("·", "small shadow", mid);
             sep.style.flexShrink = 0; sep.style.marginLeft = sep.style.marginRight = Space.S8;
             // Full-colour, not .dim: the LivingBackdrop's drifting shards pass behind the top bar, and dim grey "1/5"
@@ -111,6 +118,15 @@ namespace GridGame.App
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
             BuildTurnStrip(col);
+        }
+
+        private string GoalText => InCrucible ? "Last as many waves as you can" : State.Stage.GoalText();
+
+        private void SwapStageLine()
+        {
+            if (State == null) return;
+            stageLineShowsGoal = !stageLineShowsGoal && !ended;
+            stageName.text = stageLineShowsGoal ? GoalText : State.Stage.Name;
         }
 
         /// <summary>The turn strip (GG-T1943, UX review §1.4 #2): whose turn it is and the heroes who can still act.</summary>

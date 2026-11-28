@@ -83,6 +83,19 @@ namespace GridGame.Core.Content
         /// <summary>GG-T2070: a scripted withdrawal (the prologue's first Tithe Collector fight): once due, the battle ends as
         /// <c>BattlePhase.Withdrawn</c>, neither won nor lost. Null = an ordinary battle.</summary>
         public WithdrawDef Withdraw;
+
+        /// <summary>GG-T1951 (§9.0): what ends this fight, in the Commander's words, for the top bar and the first wave's
+        /// billboard. A scripted withdrawal names its own triggers; every other stage is won by clearing its waves.</summary>
+        public string GoalText()
+        {
+            var w = Withdraw;
+            if (w == null) return "Defeat every foe";
+            if (w.AfterPlateClangs > 0 && w.AfterTurns > 0) return $"Test the plate: {Blows(w.AfterPlateClangs)} or {Turns(w.AfterTurns)}";
+            return w.AfterPlateClangs > 0 ? $"Test the plate: {Blows(w.AfterPlateClangs)}" : $"Hold out {Turns(w.AfterTurns)}";
+        }
+
+        private static string Blows(int n) => n == 1 ? "1 blow" : $"{n} blows";
+        private static string Turns(int n) => n == 1 ? "1 turn" : $"{n} turns";
     }
 
     /// <summary>GG-T2070: when a stage's scripted withdrawal comes, and the line the party says to the Commander as it falls
