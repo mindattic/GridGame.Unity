@@ -29,6 +29,8 @@ namespace GridGame.Core.Battle
         public List<string> EquippedItemIds = new List<string>();
         /// <summary>Ability bar entries: ability id, or "item:id". Null/empty = empty slot.</summary>
         public List<string> Bar = new List<string>();
+        /// <summary>GG-T1917: the hero's saved Abilities sheet arrangement (<c>HeroSave.Actions</c>); null = the default tree.</summary>
+        public GridGame.Core.Rules.ActionLayout Layout;
         /// <summary>Item id → owned count, used to size bar item stacks.</summary>
         public Dictionary<string, int> ItemCounts = new Dictionary<string, int>();
         public Coord? Start;

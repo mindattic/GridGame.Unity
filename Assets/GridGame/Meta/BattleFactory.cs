@@ -27,6 +27,7 @@ namespace GridGame.Meta
             }
             foreach (var id in h.Jewelry.Values) if (id != null) spec.EquippedItemIds.Add(id);
             spec.Bar = new List<string>(h.Bar);
+            spec.Layout = h.Actions; // GG-T1917: the hero's own Abilities sheet tree
             // GG-T296: learned passives/reactives (skill-tree grants like Last Bastion's Counter Attack) fight with the hero.
             // GG-T301: only the ones switched on, up to the hero's passive slots (PassiveLoadout); class-kit ones are innate.
             spec.Passives.AddRange(PassiveLoadout.Active(c, h));

@@ -97,6 +97,9 @@ namespace GridGame.Core.Battle
         public Dictionary<string, int> TriggerCooldowns = new Dictionary<string, int>();
         public List<AbilitySlot> Bar = new List<AbilitySlot>();
         public int UnlockedSlots = 2;
+        /// <summary>GG-T1917: the hero's own arrangement of its Abilities sheet (<see cref="GridGame.Core.Rules.ActionTree.For"/>),
+        /// or null for the default tree. Never mutated in battle, so Clone()'s shallow copy may share it.</summary>
+        public GridGame.Core.Rules.ActionLayout Layout;
 
         // Equipment (heroes)
         public string WeaponId;

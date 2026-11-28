@@ -94,6 +94,7 @@ namespace GridGame.Core.Battle
             u.LevelStats = Formulas.StatsAtLevel(def, u.Level);
             if (spec.StatBonus != null) u.LevelStats = u.LevelStats + spec.StatBonus; // level-up stat picks (GG-T591)
             u.TrustTier = spec.TrustTier; // GG-T1581
+            u.Layout = spec.Layout; // GG-T1917
             u.WeaponMastery = spec.WeaponMastery;
             var masteryById = new Dictionary<string, float>();
             if (spec.WeaponId != null) masteryById[spec.WeaponId] = spec.WeaponMastery;

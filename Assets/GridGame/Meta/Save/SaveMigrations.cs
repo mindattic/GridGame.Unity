@@ -369,6 +369,15 @@ namespace GridGame.Meta
             // GG-T2127: the Commander's look and pronouns. An older save keeps the female look and is they/them (the
             // field defaults); any version, a value the enums don't know (a hand-edited or future save) reads as those.
             if (s.Version < 30) s.Version = 30;
+            // GG-T1917: each hero's Abilities sheet arrangement. An older save's heroes get an empty one (the default tree);
+            // any version, a hand-edited one is tidied.
+            if (s.Version < 31) s.Version = 31;
+            foreach (var h in s.Roster)
+            {
+                if (h == null) continue;
+                h.Actions ??= new ActionLayout();
+                h.Actions.Sanitize();
+            }
             if (s.CommanderLook != HeroVariant.Female && s.CommanderLook != HeroVariant.Male) s.CommanderLook = HeroVariant.Female;
             if (!Enum.IsDefined(typeof(CommanderPronouns), s.CommanderPronouns)) s.CommanderPronouns = CommanderPronouns.TheyThem;
             s.Trust ??= new Dictionary<string, int>();
