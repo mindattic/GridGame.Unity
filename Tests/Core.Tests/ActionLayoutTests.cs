@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core.Content;
 using GridGame.Core.Rules;
 using GridGame.Meta;
 using Newtonsoft.Json.Linq;
@@ -132,6 +133,25 @@ namespace GridGame.Tests
             Assert.That(back.Folders.Select(f => f.Name), Is.EqualTo(new[] { "Ninjutsu", new string('x', ActionLayout.MaxName) }));
             Assert.That(back.Folders[0].Moves, Is.EqualTo(new[] { "slash" }));
             Assert.That(back.Folders[1].Moves, Is.Empty);
+        }
+
+        [Test]
+        public void A_saved_bar_out_of_battle_gives_the_battle_tabs_names_and_keys()
+        {
+            var db = TestKit.Real;
+            var skill = db.Abilities.Values.First(a => a.Kind == AbilityKind.Skill);
+            var spell = db.Abilities.Values.First(a => a.Kind == AbilityKind.Spell);
+            var item = db.Items.Values.First(i => i.Type == ItemType.Consumable && !i.OutOfBattleOnly && i.OnUseAbility == null && i.BaseHealing > 0);
+            var bar = new List<string> { spell.Id, null, "item:" + item.Id, skill.Id, spell.Id };
+            var moves = ActionTree.MovesOf(db, null, bar, 4);
+            Assert.That(moves.Select(m => (m.Tab, m.Node.Slot, m.Node.Key)), Is.EqualTo(new[]
+            {
+                (1, 0, spell.Id), (2, 2, "item:" + item.Id), (0, 3, skill.Id),
+            }), "empty and locked slots are left out");
+            Assert.That(moves[1].Node.Name, Is.EqualTo(item.Name));
+            Assert.That(moves[2].Category, Is.EqualTo(skill.DamageType.ToString()));
+            Assert.That(ActionTree.Key(ActionTree.Slot("weapon:sword")), Is.EqualTo("weapon:sword"));
+            Assert.That(ActionTree.Key(ActionTree.Slot("item:potion:3")), Is.EqualTo("item:potion"));
         }
     }
 }

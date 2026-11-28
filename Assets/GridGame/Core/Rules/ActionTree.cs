@@ -49,11 +49,41 @@ namespace GridGame.Core.Rules
                 var sl = hero.Bar[i];
                 if (sl.IsEmpty) continue;
                 var a = BattleEngine.SlotAbility(s, hero, i);
-                if (a == null) continue;
-                int tab = sl.IsItem ? 2 : sl.IsWeapon || a.Kind == AbilityKind.Skill ? 0 : 1;
-                moves.Add(new ActionMove { Tab = tab, Category = a.DamageType.ToString(), Node = new ActionNode { Name = MoveName(s, hero, i, a), Slot = i, Key = Key(sl) } });
+                if (a != null) moves.Add(Move(s.Content, sl, i, a));
             }
             return Arrange(moves, hero.Layout);
+        }
+
+        /// <summary>The moves of a saved bar out of battle (GG-T2159, the Heroes > Abilities tree editor): the same tabs,
+        /// categories, names and keys <see cref="For"/> gives in battle, from the bar entries and the content alone.</summary>
+        public static List<ActionMove> MovesOf(ContentDb c, ClassDef caster, IReadOnlyList<string> bar, int unlocked)
+        {
+            var moves = new List<ActionMove>();
+            for (int i = 0; bar != null && i < bar.Count && i < unlocked; i++)
+            {
+                var sl = Slot(bar[i]);
+                if (sl.IsEmpty) continue;
+                var a = sl.IsItem || sl.IsWeapon ? BattleRunner.AbilityForSlot(c, sl) : c.TryAbility(sl.AbilityId)?.ForCaster(caster);
+                if (a != null) moves.Add(Move(c, sl, i, a));
+            }
+            return moves;
+        }
+
+        /// <summary>A saved bar entry as a slot (no charges): an ability id, "item:id[:n]" or "weapon:id".</summary>
+        public static AbilitySlot Slot(string entry)
+        {
+            if (string.IsNullOrEmpty(entry)) return new AbilitySlot();
+            if (entry.StartsWith("item:", System.StringComparison.Ordinal)) return new AbilitySlot { ItemId = entry.Split(':')[1] };
+            if (entry.StartsWith("weapon:", System.StringComparison.Ordinal)) return new AbilitySlot { WeaponId = entry.Substring(7) };
+            return new AbilitySlot { AbilityId = entry };
+        }
+
+        /// <summary>One filled slot's move: items are Consumables, skills and weapon swaps Abilities, the rest Spells; its
+        /// default category is the ability's damage type.</summary>
+        private static ActionMove Move(ContentDb c, AbilitySlot sl, int slot, AbilityDef a)
+        {
+            int tab = sl.IsItem ? 2 : sl.IsWeapon || a.Kind == AbilityKind.Skill ? 0 : 1;
+            return new ActionMove { Tab = tab, Category = a.DamageType.ToString(), Node = new ActionNode { Name = MoveName(c, sl, a), Slot = slot, Key = Key(sl) } };
         }
 
         /// <summary>The slot's bar entry, the same string a hero's saved bar holds: an ability id, "item:id" or "weapon:id".</summary>
@@ -126,11 +156,12 @@ namespace GridGame.Core.Rules
         }
 
         /// <summary>The move's full name: the item's or weapon's own name, else the ability's.</summary>
-        public static string MoveName(BattleState s, Unit hero, int slot, AbilityDef a)
+        public static string MoveName(BattleState s, Unit hero, int slot, AbilityDef a) => MoveName(s.Content, hero.Bar[slot], a);
+
+        public static string MoveName(ContentDb c, AbilitySlot sl, AbilityDef a)
         {
-            var sl = hero.Bar[slot];
-            if (sl.IsItem) return s.Content.TryItem(sl.ItemId)?.Name ?? a.Name;
-            if (sl.IsWeapon) return s.Content.TryItem(sl.WeaponId)?.Name ?? a.Name;
+            if (sl.IsItem) return c.TryItem(sl.ItemId)?.Name ?? a.Name;
+            if (sl.IsWeapon) return c.TryItem(sl.WeaponId)?.Name ?? a.Name;
             return a.Name;
         }
 
