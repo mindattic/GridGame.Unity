@@ -355,8 +355,8 @@ namespace GridGame.App
             switch (above)
             {
                 case StageSelectScreen _: case StageConfirmScreen _: return CampMenu.Campaign;
-                case HeroScreen _: return CampMenu.Heroes; // Status, Abilities, Party
-                case SummonScreen _: case MercenaryScreen _: return CampMenu.Summon;
+                case HeroScreen _: case ItemsScreen _: case RespecScreen _: return CampMenu.Heroes; // Status, Abilities, Party; the bag and the respec are the hero's own gear and talents
+                case SummonScreen _: case SummonHistoryScreen _: case MercenaryScreen _: return CampMenu.Summon;
                 case ShopHubScreen _: case ShopScreen _: case DiamondStoreScreen _: return CampMenu.Shop;
                 default: return NavBadges.Home;
             }
