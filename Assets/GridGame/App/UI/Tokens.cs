@@ -382,9 +382,9 @@ namespace GridGame.App
         public const float PadY = Space.S16, PadX = Space.S24;
         /// <summary>A menu row's height: one tap target (POL-C2).</summary>
         public const float Row = Size.Target;
-        /// <summary>Where a row's label starts inside it (row padding 8 + cursor 56 + 8): a row's note and a section header
-        /// line up with it.</summary>
-        public const float Indent = Space.S8 + Size.IconM + Space.S8;
+        /// <summary>Where a row's label starts inside it (row padding 8, then on PC the cursor 56 + 8): a row's note and a
+        /// section header line up with it. Without a cursor there is no gutter for one (GG-T1923).</summary>
+        public static float Indent => Ui.ShowsCursor ? Space.S8 + Size.IconM + Space.S8 : Space.S8;
         /// <summary>A list card's portrait (quests, mercenaries, summons, bounties, caravan, party).</summary>
         public const float Thumb = Size.Thumb;
         /// <summary>A compact card's portrait (the Camp party window, the Heroes roster strip).</summary>
