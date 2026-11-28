@@ -689,38 +689,48 @@ namespace GridGame.Core.Battle
     /// foe's siphon takes points away.</summary>
     public enum ManaGainKind { Grant, Earned, Siphon }
 
-    /// <summary>One spell meter's change in a <see cref="ManaGainedEvent"/> (§3.1.0).</summary>
+    /// <summary>How one spell slot's affordability moved in a <see cref="ManaGainedEvent"/>: the pool capped at the slot's
+    /// price, before and after.</summary>
+    [System.Obsolete("Per-spell meters are gone (§3.1.0): read ManaGainedEvent.Before/After/Capacity.")]
     public sealed class ManaMeterDelta
     {
         public int UnitId; public int Slot; public int Delta; public int After; public int Full;
         public override string ToString() => $"{UnitId}#{Slot} {Delta:+0;-0} -> {After}/{Full}";
     }
 
-    /// <summary>A mana gain (after damping) or siphon reached the spell meters (§3.1.0): every meter it changed, with the
-    /// points each moved; the view derives each slot's fill from <see cref="ManaMeterDelta.After"/>.</summary>
+    /// <summary>A mana gain (after damping) or siphon reached the party pool (§3.1.0). <see cref="Amount"/> is the points
+    /// that landed (negative for a siphon), <see cref="Wasted"/> the points of a gain lost past capacity.</summary>
     public sealed class ManaGainedEvent : BattleEvent
     {
         public int SourceId = -1; public int Amount; public string Reason;
         public ManaGainKind Kind;
+        /// <summary>The pool before and after, and its capacity.</summary>
+        public int Before, After, Capacity;
+        /// <summary>Points of a gain that didn't fit under <see cref="Capacity"/>.</summary>
+        public int Wasted;
         /// <summary>A <see cref="ManaGainKind.Grant"/>'s whole orbs, or the orbs a <see cref="ManaGainKind.Siphon"/> took.
-        /// A grant that found every meter full still reports them, with <see cref="Amount"/> 0 and no meters.</summary>
+        /// A grant that found the pool full still reports them, with <see cref="Amount"/> 0 and all of it wasted.</summary>
         public int Orbs;
         /// <summary>An earned pincer gain's hero count and chain link (the Billboard shows the arithmetic).</summary>
         public int Participants; public int Chain;
+#pragma warning disable CS0618
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): read Before/After/Capacity.")]
         public List<ManaMeterDelta> Meters = new List<ManaMeterDelta>();
-        /// <summary>The meters this gain filled (each also gets a <see cref="SpellReadyEvent"/>).</summary>
+        /// <summary>The spells this gain made affordable (each also gets a <see cref="SpellReadyEvent"/>).</summary>
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SpellReadyEvent.")]
         public List<ManaMeterDelta> Readied = new List<ManaMeterDelta>();
-        public override string ToString() => $"ManaGained {Amount:+0;-0} ({Reason}) x{Meters.Count}";
+#pragma warning restore CS0618
+        public override string ToString() => $"ManaGained {Amount:+0;-0} ({Reason}) {Before}->{After}/{Capacity}" + (Wasted > 0 ? $" wasted {Wasted}" : "");
     }
 
-    /// <summary>A spell's meter became full: it can be cast (§3.1.0).</summary>
+    /// <summary>A spell became affordable: the pool now holds at least its price (§3.1.0).</summary>
     public sealed class SpellReadyEvent : BattleEvent
     {
         public int UnitId; public int Slot; public string AbilityId;
         public override string ToString() => $"SpellReady {UnitId}#{Slot} {AbilityId}";
     }
 
-    /// <summary>A cast emptied its spell's own meter (§3.1.0); no other meter moves.</summary>
+    /// <summary>A cast paid its price from the party pool at cast start (§3.1.0).</summary>
     public sealed class SpellManaSpentEvent : BattleEvent
     {
         public int UnitId; public int Slot; public string AbilityId; public int Points;

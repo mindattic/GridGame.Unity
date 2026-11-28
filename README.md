@@ -112,6 +112,7 @@ python ../GridGame.Studio/tools/import_art.py       # regenerate art and audio f
 python ../GridGame.Studio/tools/make_icons.py       # regenerate the pixel-art icons
 python tools/check_assets.py     # verify every referenced asset exists
 python tools/check_glyphs.py     # verify every UI glyph exists in the bundled fonts
+python tools/check_kit_icons.py # verify no hero kit has two abilities with the same icon
 ```
 
 ## Player flags
