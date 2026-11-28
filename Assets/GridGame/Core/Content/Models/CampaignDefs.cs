@@ -100,6 +100,9 @@ namespace GridGame.Core.Content
         /// <summary>GG-T1374: the tutorial drill stages, in play order. Never in a theme, so campaign order,
         /// HighestClearedStage, CampUnlocks, chapter crawls and the Codex do not see them.</summary>
         public List<string> Tutorial = new List<string>();
+        /// <summary>GG-T2075: the prologue battles a new game plays in place of <see cref="Tutorial"/> (drills like it, never in a
+        /// theme); the Tutorial drills stay in Play a drill. Empty = a new game plays the Tutorial drills.</summary>
+        public List<string> Prologue = new List<string>();
         /// <summary>GG-T231: the crawl that starts a new campaign (GG-T1363: the Opening, paged; was the Prologue), and
         /// the one after the final boss.</summary>
         public CrawlDef Opening;
