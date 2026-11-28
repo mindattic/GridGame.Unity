@@ -50,9 +50,10 @@ namespace GridGame.App
             var head = Ui.Panel(body, null, false, "hex-head");
             var top = Ui.El("row", head);
             top.style.alignItems = Align.Center;
-            var points = Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", top, h.SkillPoints > 0 ? "gold" : "dim");
+            var pointsLine = RowIcon.Line("cur-skill-points", top);
+            pointsLine.style.flexGrow = 1; pointsLine.style.flexShrink = 1; pointsLine.style.minWidth = 0;
+            var points = Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", pointsLine, h.SkillPoints > 0 ? "gold" : "dim");
             points.name = "hex-points";
-            points.style.flexGrow = 1; points.style.flexShrink = 1; points.style.minWidth = 0;
             // GG-T2085: the Inn's Respec opens from here, off the hub's mode banner, while the caravan is camped.
             if (CampMenu.Build(C, S, App.Settings).Any(d => d.Id == CampMenu.Respec))
             {
@@ -62,7 +63,7 @@ namespace GridGame.App
             }
             var have = StatLine(board.StatTotals(owned));
             int bought = SkillHexProgress.Refundable(C, h).Count;
-            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(have.Length > 0 ? " · " + have : "")} · earn 1 a level", head, "dim");
+            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(string.IsNullOrEmpty(have) ? "" : " · " + have)} · earn 1 a level", head, "dim");
 
             var frame = Ui.Panel(body, null, true, "hex-board");
             var host = SkillHexView.Host(board, zoom, out var view);
@@ -165,7 +166,8 @@ namespace GridGame.App
             {
                 var term = C.TryTerm(kv.Key);
                 string val = $"{(kv.Value >= 0 ? "+" : "")}{kv.Value}";
-                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", w);
+                var id = HeroIcons.Stat(kv.Key);
+                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", id != null ? RowIcon.Line(id, w) : w);
                 t.name = "hex-stat-line";
             }
         }
