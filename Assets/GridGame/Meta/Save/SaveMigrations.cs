@@ -161,6 +161,7 @@ namespace GridGame.Meta
             s.Flags ??= new HashSet<string>();
             s.SeenDialogues ??= new HashSet<string>();
             s.SeenCampTips ??= new HashSet<string>();
+            s.SeenGear ??= new HashSet<string>();
             s.Rested ??= new RestedSave();
             s.Jobs ??= new List<PaywallJob>();
             foreach (var h in s.Roster) while (h.Bar.Count < 5) h.Bar.Add(null);
