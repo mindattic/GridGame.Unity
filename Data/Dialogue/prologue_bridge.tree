@@ -1,0 +1,14 @@
+dialogue prologue_bridge
+title: The Toll Bridge
+trigger: Prologue Bridge
+backdrop: greenvalley
+speaker collector captain name='Tithe Collector' portrait=captain
+speaker knight knight
+speaker barbarian barbarian
+
+node toll collector
+  Moorfolk with lit orbs. The Captain will pay well for those. Hand them over, and the strange one with you.
+  -> answer
+
+node answer barbarian
+  Come and take them.

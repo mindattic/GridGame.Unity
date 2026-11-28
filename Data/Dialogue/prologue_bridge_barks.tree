@@ -1,0 +1,17 @@
+dialogue prologue_bridge_barks
+title: Every blow clangs
+trigger: Prologue Bridge
+speaker collector captain name='Tithe Collector' portrait=captain
+speaker barbarian barbarian
+speaker knight knight
+
+node clang barbarian
+  It just rings. My axe bounces off that plate.
+  -> laugh
+
+node laugh collector
+  Choir steel, Moorfolk. You could hit it till spring.
+  -> back
+
+node back knight
+  We can't break that today. Fall back to the ford. Everyone, now.

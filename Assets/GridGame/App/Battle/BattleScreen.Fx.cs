@@ -531,6 +531,7 @@ namespace GridGame.App
             partyManaBar.Capacity = BattleConfig.PartyManaCapacity;
             partyManaBar.Points = ShownPool;
             partyManaBar.Ready = AnySpellAffordable();
+            partyManaBar.Price = TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit h ? State.SpellPrice(h, TargetingSlot) : 0;
         }
 
         /// <summary>Where mana motes land, in Overlay (stage) coordinates: the party bar where the gain leaves its fill.</summary>

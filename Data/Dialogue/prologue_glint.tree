@@ -1,0 +1,22 @@
+dialogue prologue_glint
+title: The Glint
+trigger: Prologue Glint
+backdrop: greenvalley
+speaker commander $commander
+speaker redmage redmage
+speaker knight knight
+
+node tome redmage
+  Bolt. A lightning spell, and an old one. The Collector had no idea what he was sitting on.
+  -> glint
+
+node glint commander
+  On a bare hilltop by the road, something catches the light. It glints at you, and only at you.
+  -> nothing
+
+node nothing knight
+  There's nothing there. Grass and a rock.
+  -> them
+
+node them redmage
+  There is for them. Look at the orbs. Take us up there.

@@ -131,11 +131,44 @@ namespace GridGame.App.Automation
                     return new { frame = Dev.DeviceFrame.Report() };
                 }
                 case "resize":
-                    Screen.SetResolution((int)F(q["w"], 585), (int)F(q["h"], 1266), FullScreenMode.Windowed);
-                    return new { ok = true };
+                {
+                    // GG-T2028: switch the window to another phone shape without a restart (Fold cover to main and back).
+                    // w=&h= window px; top=&bottom= safe insets in those px, or quoted at a device's height with ref=
+                    // (top=96&bottom=72&ref=2316 is the Fold5 cover's); clear=1 goes back to the device's own insets, and
+                    // no insets keeps the ones in force. Replies once the stage has re-fit and the screen re-laid out.
+                    int w = (int)F(q["w"], 585), h = (int)F(q["h"], 1266);
+                    if (q["clear"] == "1") app.FakeSafeArea(-1f, -1f);
+                    else if (q["top"] != null || q["bottom"] != null)
+                    {
+                        float scale = q["ref"] != null ? h / Mathf.Max(1f, F(q["ref"], h)) : 1f;
+                        app.FakeSafeArea(F(q["top"]) * scale, F(q["bottom"]) * scale);
+                    }
+                    Screen.SetResolution(w, h, FullScreenMode.Windowed);
+                    StartCoroutine(Resized(w, h, GameApp.Relayouts, reply, app));
+                    return Pending;
+                }
                 case "quit": Application.Quit(); return new { ok = true };
             }
             return Unrouted;
+        }
+
+        /// <summary>GG-T2028: waits (up to 3 s) for the window to reach w×h and the stage fit to re-lay out, then a frame for
+        /// the rebuilt screen's layout, and reports the shape the app now has.</summary>
+        private IEnumerator Resized(int w, int h, int relayoutsBefore, Action<object> reply, GameApp app)
+        {
+            float start = Time.unscaledTime;
+            while (Time.unscaledTime - start < 3f && !(Screen.width == w && Screen.height == h && GameApp.Relayouts > relayoutsBefore))
+                yield return null;
+            yield return null;
+            yield return null;
+            reply(new
+            {
+                ok = Screen.width == w && Screen.height == h, relaid = GameApp.Relayouts > relayoutsBefore, relayouts = GameApp.Relayouts,
+                screen = new[] { Screen.width, Screen.height }, design = new[] { GameApp.StageWidth, GameApp.StageHeight },
+                safeTop = GameApp.SafeTop, safeBottom = GameApp.SafeBottom,
+                framed = app.Document.rootVisualElement.Q("stage-frame")?.ClassListContains("hidden") == false,
+                current = app.Router.Current?.Id,
+            });
         }
     }
 }
