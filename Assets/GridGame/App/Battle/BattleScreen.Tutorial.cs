@@ -135,8 +135,8 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.ChainIndex >= 1),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Count(p => p.A.IsHero) >= 2), "Drag the {0} along the dotted line: the drop closes two pincers at once.") },
             new Lesson { Id = "support", Title = "Bring support", Waits = true, Patience = 4, Scene = "support",
-                Short = "Commander, whoever of us touches an attacker joins the pincer as a supporter, linked in blue, adds a support action and earns a share on the combo meter.",
-                Text = "Commander, any of us linked to a pincer's attacker by an unbroken line of allies joins in as a supporter: the blue links in the drag preview. Each adds a support action — the Healer mends, a Striker adds a blow — and its own points on the combo meter at the board's top right, in mana blue.",
+                Short = "Commander, whoever of us touches an attacker joins the pincer as a supporter, linked in blue, adds a support action and earns a share of the combo.",
+                Text = "Commander, any of us linked to a pincer's attacker by an unbroken line of allies joins in as a supporter: the blue links in the drag preview. Each adds a support action — the Healer mends, a Striker adds a blow — and its own share of the combo, counted on the results screen.",
                 Example = "Example: pincer with a third one of us standing next to an attacker.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.Supporters.Count > 0),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero && p.SupportersA.Count + p.SupportersB.Count > 0)), "Drag the {0} along the dotted line: the third hero joins in as a supporter.") },
@@ -558,12 +558,12 @@ namespace GridGame.App
             }
             if (comboLanded >= ComboRank.B)
             {
-                // GG-T853: the first B-or-better combo opens the Combo lesson on the meter that showed it.
+                // GG-T853: the first B-or-better combo opens the Combo lesson.
                 var rank = comboLanded;
                 comboLanded = ComboRank.None;
                 if (Coach.Pending(s, "battle-combo"))
                 {
-                    RunSystem("battle-combo", "Combo", $"A {rank} combo! Every pincer, chain link, supporter action, follow-up, status and kill in one turn builds the meter. New heroes and new tricks climb highest, up to SSS.", ComboMarks(rank));
+                    RunSystem("battle-combo", "Combo", $"A {rank} combo! Every pincer, chain link, supporter action, follow-up, status and kill in one turn builds the combo. New heroes and new tricks climb highest, up to SSS.", ComboMarks(rank));
                     return;
                 }
             }
@@ -694,53 +694,24 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>GG-T853: one mark on the combo meter, held up at the rank that landed while the lesson points at it, then
-        /// let go to fade as a closing summary does (unless a combo is still running).</summary>
+        /// <summary>GG-T853: one mark on the hero with the largest share of the combo that landed (GG-T1828: the meter left
+        /// the board), else on any hero still standing.</summary>
         private List<CoachStep> ComboMarks(ComboRank rank)
         {
-            EnsureComboMeter();
-            if (comboFrame == null) return null;
+            var u = State?.UnitById(comboTopUnit);
+            if (u == null || !u.Alive || board == null || !board.Units.ContainsKey(u.Id))
+                u = State?.Units.FirstOrDefault(x => x.IsCommandable && x.Alive && board != null && board.Units.ContainsKey(x.Id));
+            if (u == null) return null;
+            int id = u.Id;
             return new List<CoachStep>
             {
                 new CoachStep
                 {
-                    Caption = "The combo meter ranks your turn, D up to SSS. Supporters earn their own share, in blue; the bar drains between hits (tap it).",
-                    Element = () => comboFrame, Info = true,
-                    Valid = () => comboFrame != null && comboFrame.panel != null,
-                    Enter = () => HoldComboMeter(rank), Exit = ReleaseComboMeter,
+                    Caption = $"That {rank} combo ranked your turn, D up to SSS. Supporters earn their own share; your best combo and each hero's points show on the results screen.",
+                    Element = () => board != null && board.Units.TryGetValue(id, out var v) ? v.Root : null, Info = true,
+                    Valid = () => board != null && board.Units.ContainsKey(id),
                 },
             };
-        }
-
-        private void HoldComboMeter(ComboRank rank)
-        {
-            if (comboRoot == null || comboRoot.panel == null) return;
-            comboClosing = false; // a closing summary's fade stops while the lesson points at the meter
-            comboRoot.style.opacity = 1f;
-            if (comboShownRank == ComboRank.None)
-            {
-                comboShownRank = rank;
-                App.StartCoroutine(ComboRankSlam(rank, false));
-            }
-            comboFrame.MarkDirtyRepaint();
-        }
-
-        private void ReleaseComboMeter()
-        {
-            if (comboRoot == null || comboRoot.panel == null || State?.Combo?.Active == true) return;
-            comboClosing = true;
-            App.StartCoroutine(ComboLessonFade());
-        }
-
-        private IEnumerator ComboLessonFade()
-        {
-            float from = comboRoot.style.opacity.value;
-            yield return Tween.Run(Timing.Standard, k => { if (comboClosing && comboRoot != null) comboRoot.style.opacity = from * (1f - k); });
-            if (!comboClosing || comboRoot == null) yield break; // a new combo started meanwhile
-            comboChips.Clear();
-            comboShownRank = ComboRank.None;
-            comboRankLabel.text = comboWordLabel.text = comboScoreLabel.text = "";
-            comboFrame.MarkDirtyRepaint();
         }
 
         /// <summary>A hero with a ready item (a potion) on its bar while someone in the party is hurt.</summary>

@@ -357,7 +357,7 @@ namespace GridGame.App
         }
 
         /// <summary>GG-T852 (§1.2.8): the battle's best combo (rank and score) and its top supporter (the hero with the most
-        /// combo points earned supporting), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
+        /// combo points earned supporting) and each hero's combo points (GG-T1828), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
         private void ComboRows(ContentDb c, VisualElement list)
         {
             if (report.BestComboRank == GridGame.Core.Battle.ComboRank.None) return;
@@ -365,9 +365,22 @@ namespace GridGame.App
             best.name = "results-best-combo";
             best.KindIcon(RowKind.Hero);
             best.Q<Label>("value")?.AddToClassList(report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good");
-            if (report.TopSupporter == null || report.TopSupporterPoints <= 0) return;
-            string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
-            Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list).WithKindIcon(RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+            if (report.TopSupporter != null && report.TopSupporterPoints > 0)
+            {
+                string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
+                Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list).WithKindIcon(RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+            }
+            // GG-T1828: each hero's combo points, attacking and supporting, most first.
+            var heroes = report.ComboAttackerPoints.Keys.Union(report.ComboSupporterPoints.Keys)
+                .Select(id => (id, atk: report.ComboAttackerPoints.TryGetValue(id, out int a) ? a : 0, sup: report.ComboSupporterPoints.TryGetValue(id, out int s) ? s : 0))
+                .Where(h => h.atk + h.sup > 0)
+                .OrderByDescending(h => h.atk + h.sup).ThenBy(h => h.id, System.StringComparer.Ordinal);
+            foreach (var (id, atk, sup) in heroes)
+            {
+                string name = c.TryClass(id)?.Name ?? id;
+                string split = atk > 0 && sup > 0 ? $"{atk} atk · {sup} sup" : sup > 0 ? $"{sup} sup" : $"{atk} atk";
+                Ui.MenuRow($"{name} combo", $"{atk + sup} pts · {split}", null, list).WithKindIcon(RowKind.Hero, id).name = "results-combo-hero";
+            }
         }
 
         /// <summary>GG-T1556 (§22.8): each hero who leveled up this battle, with <see cref="NextAbility.Line"/> and a Learn button
