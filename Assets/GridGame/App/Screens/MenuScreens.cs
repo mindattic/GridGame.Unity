@@ -122,6 +122,7 @@ namespace GridGame.App
             Stage(conduit);
             var tag = Ui.Text("Slide. Flank. Strike.", "h2 shadow dim", col);
             Ui.Margin(tag, top: Space.S16, bottom: Fit.H(4f));
+            Scrim(tag); // GG-T1887
             Stage(tag);
 
             int recent = App.Saves.MostRecent();
@@ -158,6 +159,15 @@ namespace GridGame.App
             var ver = Ui.Text($"v{Application.version}", "tiny dim corner-tag", root); // GG-T1794: POL-C9 skips corner tags
             ver.style.position = Position.Absolute;
             ver.style.right = Space.S32; ver.style.bottom = Space.S24;
+            Scrim(ver);
+        }
+
+        /// <summary>GG-T1887 (X4, X7): a soft dark plate behind text over the backdrop art keeps it at 4.5:1.</summary>
+        private static void Scrim(Label l)
+        {
+            l.style.backgroundColor = Palette.Ink.WithA(0.6f);
+            Ui.Pad(l, Space.S16, Space.S4, Space.S16, Space.S4);
+            l.style.borderTopLeftRadius = l.style.borderTopRightRadius = l.style.borderBottomLeftRadius = l.style.borderBottomRightRadius = Space.S8;
         }
 
         /// <summary>The Continue card (§11.2): the Commander, the stage Continue leads to, play time, when it was last
