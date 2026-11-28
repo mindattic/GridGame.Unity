@@ -31,3 +31,16 @@ D:\Projects\MindAttic\GridGame2026 is the frozen design reference — read it, n
 - `App/Automation/AutomationServer.cs` — dev-build HTTP control (tap/drag/screenshot/state/layout)
 - `tools/` — test, build, harness, asset and glyph checks (the art/audio/content authoring scripts and the thumbnail
   framer live in the sibling GridGame.Studio repo, GG-T579)
+
+## Showing the owner something
+The owner never plays to a point. Turn their words ("show me the first boss", "the Summon screen") into a scenario:
+pick a preset or write a spec (every field optional; fill each gap yourself), then run
+`python tools/scenario.py <preset|target> [--spec file.json] --device iphone17pro [--replace] [--build]`.
+It launches a detached player on a throwaway "Scenario" profile at that device's size and safe area, leaves the window
+open and adds a screenshot to a preview set. Say in one line what was set up. One game instance at a time (--replace).
+- Presets (`tools/scenarios/*.json`): `overworld`, `first-boss`, `final-boss`, `camp-midgame`, `summon`, `caravan`,
+  `skill-hex`, and per region `<theme>-start` / `<theme>-boss` (greenvalley, lanternroad, desert, swamp, cave, still,
+  cityruins, cathedral, bloom, greenvalley2, cityruins2, swamp2, desert2, cave2, morrowsshadow).
+- Spec fields (`Assets/GridGame/App/Dev/Scenario.cs`): `target` (first-boss, boss:N, boss:<class>, final-boss,
+  stage:<id>, region:<theme>, screen:<id>, overworld), `party`, `level`, `progress`, `gear`, `caravan`, `gold`, `food`,
+  `onTheRoad`, `carriedOrbs`, `allFeatures`, `settings`, `fullStage`, `realLaunch`.
