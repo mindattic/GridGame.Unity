@@ -546,6 +546,8 @@ namespace GridGame.App
             scrim.style.backgroundColor = Palette.Ink.WithA(0f);
             // Order matters: highlights and lines draw OVER the units so targets and pincer previews read clearly.
             TileLayer = Layer("tiles");
+            // GG-T1950: the grid over the tile art, a light core on a dark keyline so it holds 3:1 on every theme's art.
+            GridLayer = Layer("grid");
             // Under the units: the streak trails behind the moving token (GG-T219).
             Trail = new TrailLayer { name = "trail" };
             Trail.style.position = Position.Absolute;
@@ -586,6 +588,26 @@ namespace GridGame.App
                     MarkLayer.Add(m);
                     marks[x, y] = m;
                 }
+            for (int x = 0; x <= BattleConfig.Cols; x++) GridLine(x * Tile, 0f, true);
+            for (int y = 0; y <= BattleConfig.Rows; y++) GridLine(0f, y * Tile, false);
+        }
+
+        public readonly VisualElement GridLayer;
+
+        /// <summary>GG-T1950: one grid line through (<paramref name="x"/>, <paramref name="y"/>) across the whole board.</summary>
+        private void GridLine(float x, float y, bool vertical)
+        {
+            foreach (var (width, color) in new[] { (Size.Hairline + 2 * Size.Underline, Palette.Ink), (Size.Hairline, Palette.Vfx.GridLine) })
+            {
+                var l = new VisualElement { pickingMode = PickingMode.Ignore };
+                l.style.position = Position.Absolute;
+                l.style.backgroundColor = color;
+                l.style.left = vertical ? x - width / 2f : x;
+                l.style.top = vertical ? y : y - width / 2f;
+                l.style.width = vertical ? width : Tile * BattleConfig.Cols;
+                l.style.height = vertical ? Tile * BattleConfig.Rows : width;
+                GridLayer.Add(l);
+            }
         }
 
         private readonly VisualElement scrim;
