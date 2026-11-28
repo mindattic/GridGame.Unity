@@ -60,7 +60,7 @@ namespace GridGame.Core.Battle
         public int Seed = 1;
         public int UnlockedSlots = 2;
         /// <summary>GG-T673: how many mana orbs this battle's row holds (the party's owned Mana Orbs, GG-T677 sets it from
-        /// the save). 0 = <see cref="ManaBank.DefaultCapacity"/>; clamped to 1..<see cref="BattleConfig.MaxOrbCapacity"/>.</summary>
+        /// the save). Unused by play since GG-T1811.</summary>
         public int OrbCapacity;
         /// <summary>Enemy levels are floored to this (campaign difficulty curve, §22.3).</summary>
         public int RecommendedLevel = 1;
@@ -306,18 +306,9 @@ namespace GridGame.Core.Battle
         /// <summary>Free for a new board item to appear (a pickup drop, the Power Amplifier): walkable, nobody standing
         /// there, no trap, and no other item (§1.1.3, GG-T129). Every item placement goes through this one check.</summary>
         public bool FreeForItem(Coord c) => Walkable(c) && UnitAt(c) == null && TrapAt(c) == null && ItemFree(c);
-        private ManaBank bank;
-        /// <summary>The temporary orb-count view of <see cref="SpellMana"/> (see <see cref="ManaBank"/>, GG-T1829 deletes it).</summary>
-        public ManaBank Bank
-        {
-            get => bank ?? (bank = new ManaBank().Bind(this));
-            set => bank = value?.Bind(this);
-        }
         /// <summary>Per-spell mana meters (§3.1.0, GG-LAW-6): hero unit id → points per bar slot, 0..Cost x
         /// <see cref="BattleConfig.ManaPointsPerOrb"/>. Only Spell slots carry a meter; a missing entry reads 0.</summary>
         public Dictionary<int, int[]> SpellMana = new Dictionary<int, int[]>();
-        /// <summary>Progress toward the next orb, 0..ManaChargePerOrb-1 (§3.1.9).</summary>
-        public int ManaCharge;
         public int Wave;
         /// <summary>Delayed mid-wave spawns (§14.8) queued by <c>SpawnWave</c>, resolved as the clock reaches their trigger tick.</summary>
         public List<PendingSpawn> PendingSpawns = new List<PendingSpawn>();
@@ -502,7 +493,6 @@ namespace GridGame.Core.Battle
             s.PendingSpawns = new List<PendingSpawn>(PendingSpawns.Count);
             foreach (var p in PendingSpawns) s.PendingSpawns.Add(p.Clone());
             s.Bounties = Bounties.ConvertAll(b => b.Clone());
-            s.Bank = Bank.Clone();
             s.SpellMana = new Dictionary<int, int[]>(SpellMana.Count);
             foreach (var kv in SpellMana) s.SpellMana[kv.Key] = (int[])kv.Value.Clone();
             s.Results = Results.Clone();

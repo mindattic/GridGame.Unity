@@ -53,7 +53,6 @@ namespace GridGame.App
             if (i.BaseHealing > 0) parts.Add($"Heals {i.BaseHealing}");
             if (i.Durability > 0) parts.Add($"Durability {i.Durability}");
             if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs} orbs at battle start");
-            if (i.BankCapacityBonus > 0) parts.Add($"+{i.BankCapacityBonus} orb slots");
             if (i.PincerDamageBonus > 0) parts.Add(FormattableString.Invariant($"Pincer +{i.PincerDamageBonus:0%}"));
             if (i.EvasionBonus > 0) parts.Add($"Evasion +{i.EvasionBonus:0}"); // GG-T297
             if (i.RegenPerTurn > 0) parts.Add($"Regen {i.RegenPerTurn}/turn");

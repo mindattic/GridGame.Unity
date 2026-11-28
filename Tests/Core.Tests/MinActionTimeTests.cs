@@ -125,7 +125,6 @@ namespace GridGame.Tests
             var w = Wolves(s);
             In(s, w[0], 5);
             In(s, w[1], 8); // 0.3 s behind the first
-            s.ManaCharge = 0;
             Assert.That(BattleEngine.TooLittleTime(s), Is.True);
 
             // The forced Guard still shields everyone and banks the sliver of time it gave up.
