@@ -181,21 +181,26 @@
 .pip, .text-ink, .depth-none { -unity-text-outline-width: 0; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
 .text-ink { color: var(--color-ink); }
 
-/* ── Menu rows (cursor hand) ─────────────────────────────────────────────── */
+/* ── Menu rows (cursor hand on PC only) ──────────────────────────────────── */
 .menu-row {
     flex-direction: row;
     align-items: center;
     min-height: var(--size-target);
     padding: var(--space-8) var(--space-16) var(--space-8) var(--space-8);
     border-radius: 10px;
+    border-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
     margin: var(--space-12) 0;
 }
 .menu-row:hover { background-color: rgba(255, 255, 255, 0.06); }
-.menu-row--selected { background-color: rgba(140, 170, 255, 0.20); }
+/* GG-T1923: the selected row is pressed in, not lit: a darker inset well (white text gains contrast), a bright 3-px frame
+   (non-text contrast over 3:1 on every window, so it never reads by colour alone) and a small sink. A tap on it confirms. */
+.menu-row--selected { background-color: rgba(0, 0, 0, 0.38); border-color: var(--color-frame); border-top-color: rgba(0, 0, 0, 0.7); translate: 0 3px; scale: 0.985 0.985; }
 /* GG-T495: a locked row greys its name, value and icon, not the whole row, so the hint under it ("Joins when gear
    wears below 60%") stays readable dim text (4.9:1) instead of dim at 42% opacity (1.8:1). GG-T1864: 0.6, not 0.45, so a grey label that still informs (the shop's "More stock after ..." row) clears 4.5:1, not 3.76. */
 .menu-row--disabled .menu-label, .menu-row--disabled .menu-value, .menu-row--disabled .menu-icon,
 .menu-row--disabled .marquee { opacity: 0.6; }
+.no-cursor .menu-cursor { display: none; }
 .menu-cursor { width: 56px; height: 56px; margin-right: var(--space-8); opacity: 0; background-size: contain; flex-shrink: 0; }
 .menu-row--selected > .menu-cursor { opacity: 1; }
 .menu-label { flex-grow: 1; font-size: var(--type-base); flex-shrink: 1; min-width: 0; white-space: normal; }
@@ -386,6 +391,7 @@
 .kit-section { font-size: var(--type-base); color: var(--color-gold); margin: var(--space-16) 0 var(--space-4) 0; }
 .kit-section--first { margin-top: 0; }
 .kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
+.no-cursor .kit-note { margin-left: var(--space-8); } /* GG-T1923: no cursor gutter on touch */
 /* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
 .diamond-amount-box { align-self: stretch; -unity-text-align: middle-center; margin: var(--space-8) var(--space-12); padding: var(--space-8) var(--space-12); min-height: var(--size-target); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
 /* Shared count stepper (GG-T1880): boxed value at least a column wide, growing with Text size (GG-T495). */
@@ -425,6 +431,7 @@
 /* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
 .kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) 0 0 0; padding: 0 var(--space-12); } /* row padding + each button's 12-px margin: edge = gap = 24 from the text column (GG-T662) */
 .kit-actions.kit-note { margin-left: var(--kit-note-actions); padding-left: 0; }
+.no-cursor .kit-actions.kit-note { margin-left: 0; }
 /* GG-T654: a ListPanel's content is at least its viewport tall (Ui.FillViewport sets it) and its rows share the spare
    height, each at most two targets tall. Descendant, not child: Unity's ScrollView wraps the viewport in a
    content-and-vertical-scroll container, so a `> viewport` selector never matched. Cards don't grow: a portrait card
@@ -524,7 +531,6 @@
 }
 .theme-chrono .window--plain { background-color: rgba(58, 58, 62, 0.95); }
 .theme-chrono .menu-row:hover { background-color: rgba(255, 255, 255, 0.07); }
-.theme-chrono .menu-row--selected { background-color: rgba(255, 255, 255, 0.16); }
 .theme-chrono .menu-row.is-pressed { background-color: rgba(255, 255, 255, 0.26); }
 .theme-chrono .card { background-color: rgba(255, 255, 255, 0.06); }
 .theme-chrono .card--selected { background-color: rgba(255, 255, 255, 0.16); }
@@ -590,7 +596,6 @@
 }
 .theme-granite .window--plain { background-color: rgba(64, 70, 74, 0.95); }
 .theme-granite .menu-row:hover { background-color: rgba(219, 240, 255, 0.07); }
-.theme-granite .menu-row--selected { background-color: rgba(219, 240, 255, 0.16); }
 .theme-granite .menu-row.is-pressed { background-color: rgba(219, 240, 255, 0.26); }
 .theme-granite .card { background-color: rgba(219, 240, 255, 0.06); }
 .theme-granite .card--selected { background-color: rgba(219, 240, 255, 0.16); }
@@ -651,7 +656,6 @@
 .theme-slate .window-title { color: rgb(255, 255, 255); }
 .theme-slate .window-sub { color: rgb(208, 214, 232); }
 .theme-slate .dim { color: rgb(178, 186, 212); }
-.theme-slate .menu-row--selected { background-color: rgba(255, 255, 255, 0.16); }
 .theme-slate .menu-row.is-pressed { background-color: rgba(255, 255, 255, 0.26); }
 .theme-slate .card--selected { background-color: rgba(255, 255, 255, 0.16); }
 
@@ -725,7 +729,6 @@
 
 .theme-dark .menu-row { border-radius: 6px; }
 .theme-dark .menu-row:hover { background-color: rgba(255, 255, 255, 0.04); }
-.theme-dark .menu-row--selected { background-color: rgba(90, 143, 217, 0.14); }
 .theme-dark .menu-row.is-pressed { background-color: rgba(90, 143, 217, 0.26); }
 
 /* Buttons keep a thin dark lip so the shared press feel still has something to sink onto. */
@@ -801,7 +804,6 @@
 
 .theme-manapunk .menu-row { border-radius: 6px; }
 .theme-manapunk .menu-row:hover { background-color: rgba(164, 163, 188, 0.06); }
-.theme-manapunk .menu-row--selected { background-color: rgba(117, 144, 200, 0.16); }
 .theme-manapunk .menu-row.is-pressed { background-color: rgba(117, 144, 200, 0.28); }
 
 /* Buttons: a capsule with a fine pewter rim on a dark lip; the primary holds contained mana. */
