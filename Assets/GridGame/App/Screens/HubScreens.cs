@@ -494,8 +494,9 @@ namespace GridGame.App
             // GG-T452: the eleven slots used to be three stacked windows; with the stat compare under them they pushed the
             // bag below the stage on a phone, so nothing could be equipped. They now share one scrolling window, which
             // splits the leftover height with the bag (both grow), and scrolls the picked slot into view.
-            // GG-T454: both are kit list panels, which split the leftover height evenly.
-            Ui.ListPanel(body, null, out var slotList, "equip-slots");
+            // GG-T1873: slots, the stat compare and the bag are one scroll region filling the leftover height, no nested scroll windows.
+            var slotWin = Ui.Panel(body, null, true, "equip-slots");
+            var slotList = Ui.List(slotWin);
             VisualElement pickedRow = null;
             void SlotGroup(string title, IEnumerable<EquipmentSlot> slots)
             {
@@ -520,7 +521,7 @@ namespace GridGame.App
             SlotGroup("Jewelry", Equipment.JewelrySlots);
             if (pickedRow != null) slotList.schedule.Execute(() => slotList.ScrollTo(pickedRow)).ExecuteLater(30);
 
-            var cmp = Ui.Panel(body, null, false, "equip-compare");
+            var cmp = Ui.Panel(slotList.contentContainer, null, false, "equip-compare");
             var curId = Equipment.Equipped(h, slot);
             var thenId = previewId ?? curId;
             var (now, then) = Equipment.Compare(C, h, slot, thenId);
@@ -556,8 +557,8 @@ namespace GridGame.App
                 }
             }
 
-            // GG-T452: splits the leftover height evenly with the slot list above (both kit list panels).
-            var list = Ui.ListPanel(body, $"{ItemUi.SlotName(slot)} — your bag", "equip-bag");
+            var list = slotList.contentContainer;
+            Ui.Section($"{ItemUi.SlotName(slot)} — your bag", list).name = "equip-bag";
             if (Equipment.Equipped(h, slot) != null)
                 Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot), cue: "ui.equip"), list).KindIcon(RowKind.Close);
             // GG-T52: the bag listing is shape-only (Equipment.Candidates with no hero) so a piece the hero
@@ -673,7 +674,7 @@ namespace GridGame.App
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
             Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
-            var list = Ui.ListPanel(body);
+            var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
             if (tab == PassivesTab) { Passives(h, list); return; }
             if (tab == LockedTab) { Locked(h, list); return; }
             if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list).KindIcon(RowKind.Close);
@@ -1549,9 +1550,9 @@ namespace GridGame.App
             piece = piece != null ? pieces.FirstOrDefault(p => p.Hero == piece.Hero && p.Slot == piece.Slot) : null;
             piece ??= pieces.FirstOrDefault();
 
-            // GG-T454: worn armor and enchants are two kit list panels sharing the height, over the detail pane; with no
-            // armor worn, the first is just its empty line and the enchants take the room.
-            var plist = pieces.Count > 0 ? Ui.ListPanel(body, "Worn armor", "enchant-pieces") : Ui.Panel(body, "Worn armor", false, "enchant-pieces");
+            // GG-T1873: worn armor and enchants share one scroll region filling the height over the detail pane.
+            var plist = Ui.List(Ui.Panel(body, fill: true, name: "enchant-list")).contentContainer;
+            Ui.Section("Worn armor", plist).name = "enchant-pieces";
             if (pieces.Count == 0)
                 Ui.Empty("Nobody wears armor yet. Forge a piece at the Blacksmith, then bring it here.", plist);
             foreach (var t in pieces)
@@ -1564,7 +1565,8 @@ namespace GridGame.App
                 if (piece != null && piece.Hero == t.Hero && piece.Slot == t.Slot) Ui.Select(row);
             }
 
-            var elist = Ui.ListPanel(body, "Enchants", "enchant-list");
+            var elist = plist;
+            Ui.Section("Enchants", elist);
             foreach (var e in ArmorEnchanting.All(C))
             {
                 var ench = e;
