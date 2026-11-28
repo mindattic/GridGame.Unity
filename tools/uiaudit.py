@@ -9,7 +9,10 @@ the scenario-only spots (battle, boss, overworld, camp on the road, skill hex, s
 drawn over the UI (tools/scenario.py, GG-T2119), so the captures show what the hardware hides. Per screen it writes
 docs/design/ui-audit/captures/<device>/<screen>.png and an entry in that folder's facts.json: tap targets and text sizes
 in pt/dp and mm (design px through the stage scale and the device's ppi), text contrast sampled from the screenshot,
-safe-area intrusions and the whole polish measure. Refuses to start while any other GridGame player is running.
+safe-area intrusions and the whole polish measure. A screen whose main scroll view runs past the viewport (GG-T2147)
+is paged one viewport at a time through the `scroll` endpoint: <screen>-p2.png, -p3.png and so on, each measured on its
+own (so GG-T2155's clipped/covered text is judged per page), and page count = ceil(content / viewport), capped by
+--max-pages. Refuses to start while any other GridGame player is running.
 Devices come from tools/devices.json (tools/devices.py): a device or shape id, "shapes" (one in-target device per shape)
 or "all" (every in-target device).
 """
@@ -47,6 +50,9 @@ SCENARIO_SCREENS = [
 LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub", "skill-hex": "talents"}
 # Screens that move or animate on their own get longer to settle.
 SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon", "levelup"}
+# Screens known to scroll past the viewport, shown as multi-page in --dry-run. Every screen is paged at capture time if its
+# scroll view overflows; this list only tells the dry run where to expect it.
+TALL = {"components", "settings", "codex"}
 
 MIN_TARGET, MIN_GAP, CAPTION_FLOOR = 132.0, 24.0, 30.0  # design px, AutomationServer.Polish.cs
 
@@ -216,7 +222,11 @@ def near_uniform(png):
     return max(ImageStat.Stat(img).stddev[0], 0.0) < 3.0
 
 
-def capture(device, name, method, facts):
+def page_name(name, page):
+    return name if page == 1 else f"{name}-p{page}"
+
+
+def capture_one(device, name, method, facts):
     run = f"uiaudit-{device}-{name}"
     for attempt in range(4):
         settled(name)
@@ -237,6 +247,37 @@ def capture(device, name, method, facts):
           f"{len(f['safeArea']['intrusions'])} in unsafe area", flush=True)
 
 
+SCROLL_SETTLE = 0.6  # seconds after a scroll before the shot: one layout pass plus the scroller's fade
+
+
+def capture(device, name, method, facts, max_pages):
+    """GG-T2147: the top frame, then one capture per further viewport of the screen's main scroll view."""
+    capture_one(device, name, method, facts)
+    r = harness.call("scroll", page=1)
+    pages = min(int(r.get("pages", 1)) if isinstance(r, dict) else 1, max_pages)
+    facts[name]["page"], facts[name]["pages"] = 1, pages
+    for p in range(2, pages + 1):
+        pn = page_name(name, p)
+        r = harness.call("scroll", page=p)
+        time.sleep(SCROLL_SETTLE)
+        capture_one(device, pn, method, facts)
+        facts[pn].update({"of": name, "page": p, "pages": pages, "scrollOffset": r.get("offset")})
+    if pages > 1:
+        harness.call("scroll", page=1)
+    drop_stale_pages(device, name, pages, facts)
+
+
+def drop_stale_pages(device, name, pages, facts):
+    """Pages past this run's count (the content got shorter) would read as current; drop their facts and pngs."""
+    for key in [k for k in facts if re.fullmatch(re.escape(name) + r"-p(\d+)", k) and int(k.rsplit("-p", 1)[1]) > pages]:
+        del facts[key]
+    folder = os.path.join(OUT, device)
+    for f in os.listdir(folder):
+        m = re.fullmatch(re.escape(name) + r"-p(\d+)\.png", f)
+        if m and int(m.group(1)) > pages:
+            os.remove(os.path.join(folder, f))
+
+
 def stop(proc):
     try:
         harness.call("quit", timeout=3)
@@ -249,7 +290,7 @@ def stop(proc):
     time.sleep(1)
 
 
-def audit_device(device, items, settle):
+def audit_device(device, items, settle, max_pages):
     facts_path = os.path.join(OUT, device, "facts.json")
     facts = {}
     if os.path.exists(facts_path):
@@ -281,7 +322,7 @@ def audit_device(device, items, settle):
                     print(f"  {name}: {r['error']}", flush=True)
                     continue
                 time.sleep(settle * (2 if name in SLOW else 1))
-                capture(device, name, method, facts)
+                capture(device, name, method, facts, max_pages)
                 want = LANDS_ON.get(name)
                 if want and facts[name].get("landedOn") != want:
                     print(f"  {name}: landed on {facts[name].get('landedOn')}, expected {want}", flush=True)
@@ -308,6 +349,7 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="list what would be captured, launch nothing")
     ap.add_argument("--settle", type=float, default=1.5, help="seconds to wait after each screen opens")
     ap.add_argument("--build", action="store_true", help="rebuild the Windows dev player if it is stale")
+    ap.add_argument("--max-pages", type=int, default=8, help="most viewport pages captured per scrolling screen")
     a = ap.parse_args()
     try:
         targets = devices.resolve(a.device)
@@ -323,6 +365,8 @@ def main():
             print(f"{d} ({w}x{h}, safe {top}/{bottom}, frame {cut}, window {'x'.join(map(str, scenario.window_size(d)))}): {len(items)} screens")
             for name, method, arg in items:
                 print(f"  {name:16} {method:8} {arg:20} -> {os.path.relpath(os.path.join(OUT, d, name + '.png'), ROOT)}")
+                if name in TALL:
+                    print(f"  {'':16} {'scroll':8} {'':20} -> {name}-p2.png .. -p<N>.png, N = content / viewport, at most {a.max_pages}")
         return
 
     others = harness._other_players()
@@ -331,7 +375,7 @@ def main():
                  + "); one game instance at a time, and this tool never closes someone else's. Try again once it is closed.")
     scenario.ensure_build(a.build)
     for d in targets:
-        audit_device(d, items, a.settle)
+        audit_device(d, items, a.settle, a.max_pages)
 
 
 if __name__ == "__main__":

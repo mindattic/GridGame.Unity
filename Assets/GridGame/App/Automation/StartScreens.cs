@@ -11,6 +11,7 @@ namespace GridGame.App.Automation
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
             "alchemist", "enchantress", "talk", "summon", "caravan", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
             "profiles", "newprofile", "createprofile", "splash", "diamonds", "mercenaries", "summon-history", "quests", "about", "components", "drill-picker",
+            "codex",
         };
 
         public static bool TryGet(string id, out GameScreen screen)
@@ -52,6 +53,7 @@ namespace GridGame.App.Automation
                 case "quests": screen = new QuestScreen(); break;
                 case "crucible": screen = new CrucibleScreen(); break;
                 case "bestiary": screen = new BestiaryScreen(); break;
+                case "codex": screen = new CodexScreen(); break; // GG-T2147: Camp > Codex, a tall scrolling page for uiaudit
                 case "settings": screen = new SettingsScreen(); break;
                 case "credits": screen = new CreditsScreen(); break;
                 case "about": screen = new AboutScreen(); break; // GG-T1330
