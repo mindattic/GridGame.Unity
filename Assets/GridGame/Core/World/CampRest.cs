@@ -14,8 +14,8 @@ namespace GridGame.Core.World
         /// <summary>Fraction of max HP Well Rested adds in every battle.</summary>
         public float WellRestedHpBonus = 0.10f;
 
-        /// <summary>Extra starting mana orbs Well Rested gives in every battle.</summary>
-        public int WellRestedExtraOrbs = 1;
+        /// <summary>Points Well Rested grants the party mana pool before wave 1 of every battle (§3.1.0).</summary>
+        public int WellRestedMana = 100;
 
         /// <summary>Name of the period whose start is the morning a night's sleep runs to.</summary>
         public string MorningPeriod = "Day";

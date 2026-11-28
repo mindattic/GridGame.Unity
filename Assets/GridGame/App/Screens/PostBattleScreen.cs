@@ -80,10 +80,10 @@ namespace GridGame.App
             {
                 Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold"); // GG-T749: the coin emblem
                 // GG-T623: a slow, repeatable trickle, same row style as Gold — the Aetherist refines it once joined.
-                // GG-T676, GG-T1811: full spell meters settle into Dust; the row says how much of it came from them.
+                // GG-T676, GG-T1927: the mana left in the pool settles into Dust; the row says how much of it came from there.
                 if (report.DustEarned > 0)
                     Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
-                        ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "spell" : "spells")})"
+                        ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from unspent mana)"
                         : $"+{report.DustEarned:N0}", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(DustEconomy.DustId)).name = "results-dust";
                 TicketsRow(list);
                 // GG-T1811: what a milestone or a Halcyon find paid in place of the retired Mana Orb.
@@ -108,7 +108,7 @@ namespace GridGame.App
                 if (report.CampaignComplete) Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list).WithKindIcon(RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
                 if (TravelRules.OnTheRoad(App.Save)) // GG-T1786: travel (§28) replaces the expedition rows
                 {
-                    var tr = Ui.MenuRow("On the road", report.CarriedOrbs == 0 ? "no mana carries over" : $"{report.CarriedOrbs * 100} mana carries over", null, list);
+                    var tr = Ui.MenuRow("On the road", report.CarriedMana == 0 ? "no mana carries over" : $"{report.CarriedMana} mana carries over", null, list);
                     tr.name = "travel-orbs";
                     tr.KindIcon(RowKind.Stage);
                     if (report.MedicHealed > 0)

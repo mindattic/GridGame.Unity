@@ -68,8 +68,9 @@ namespace GridGame.Core.Battle
         public int Difficulty = DifficultyTable.Neutral;
         /// <summary>The turn mode (§2.13, GG-T767): who on the party may act, and when. Default <see cref="TurnMode.PartyWindow"/>.</summary>
         public TurnMode TurnMode = TurnMode.PartyWindow;
-        /// <summary>Orbs carried over from the previous battle of an expedition (§22.5).</summary>
-        public int StartOrbs;
+        /// <summary>Points granted to the party mana pool before wave 1 (§3.1.0): mana carried on the road, Mana Casks and
+        /// Well Rested; past <see cref="BattleConfig.PartyManaCapacity"/> they are lost.</summary>
+        public int StartMana;
         /// <summary>Guest classes that must not appear (already recruited, or — only with permadeath on — lost).</summary>
         public HashSet<string> ExcludedGuests = new HashSet<string>();
         /// <summary>Permadeath for this battle — set only from the meta layer's single rule (<c>Permadeath.Enabled</c>,

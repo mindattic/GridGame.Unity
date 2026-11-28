@@ -106,7 +106,7 @@ namespace GridGame.Tests
             var clock = At(21);
             Assert.That(CampRest.Sleep(state, clock, config), Is.False);
             Assert.That(new CampRestConfig().WellRestedHpBonus, Is.EqualTo(0.10f));
-            Assert.That(new CampRestConfig().WellRestedExtraOrbs, Is.EqualTo(1));
+            Assert.That(new CampRestConfig().WellRestedMana, Is.EqualTo(100));
         }
     }
 }

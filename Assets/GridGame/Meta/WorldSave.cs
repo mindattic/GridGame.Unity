@@ -17,9 +17,12 @@ namespace GridGame.Meta
         public double Distance;
         /// <summary>At camp, off the road (<see cref="TravelRules.OnTheRoad"/>). GG-T1790: a new game starts at camp.</summary>
         public bool Camped = true;
-        /// <summary>GG-T1785: full spell meters after the last battle won on the road (§3.1.0); they start the next battle, as
-        /// 100 points to every meter each, while the caravan stays on the road (<see cref="TravelRules.StartOrbs"/>). 0 at camp.</summary>
-        public int CarriedOrbs;
+        /// <summary>GG-T1785, GG-T1927: the party mana pool's points after the last battle won on the road (§3.1.0); they start
+        /// the next battle while the caravan stays on the road (<see cref="TravelRules.StartMana"/>). 0 at camp.</summary>
+        public int CarriedMana;
+        /// <summary>Legacy (save v28 and older): carried whole orbs. Save v29 turns them into <see cref="CarriedMana"/> at
+        /// <see cref="GridGame.Core.Battle.BattleConfig.ManaPointsPerOrb"/> points each and clears this, so it is never written.</summary>
+        public int? CarriedOrbs;
         /// <summary><see cref="GridGame.Core.World.WorldClock.Minutes"/>.</summary>
         public long ClockMinutes;
         public DangerSave Danger = new DangerSave();

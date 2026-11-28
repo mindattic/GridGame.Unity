@@ -32,35 +32,35 @@ namespace GridGame.Tests
             Assert.That(TravelRules.OnTheRoad(s), Is.False);
             TravelRules.SetOut(s);
             Assert.That(TravelRules.OnTheRoad(s), Is.True);
-            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(0));
+            Assert.That(TravelRules.StartMana(s), Is.EqualTo(0));
         }
 
         [Test]
-        public void A_win_on_the_road_carries_orbs_and_wounds_into_the_next_battle()
+        public void A_win_on_the_road_carries_mana_and_wounds_into_the_next_battle()
         {
             var s = Camped();
             TravelRules.SetOut(s);
             var h = Wound(s, 5);
-            int carried = TravelRules.AfterBattle(Real, s, victory: true, orbsLeft: 3, out _);
-            Assert.That(carried, Is.EqualTo(3));
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(3));
-            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(3));
+            int carried = TravelRules.AfterBattle(Real, s, victory: true, manaLeft: 340, out _);
+            Assert.That(carried, Is.EqualTo(340));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(340));
+            Assert.That(TravelRules.StartMana(s), Is.EqualTo(340));
             Assert.That(TravelRules.OnTheRoad(s), Is.True);
             Assert.That(h.Hp, Is.EqualTo(5), "no Medic Wagon: the wound stays");
         }
 
         [Test]
-        public void Carried_orbs_arrive_as_points_in_every_spell_meter()
+        public void Carried_mana_arrives_as_points_in_the_party_pool()
         {
-            // §3.1.0: N carried orbs are a whole grant of N x 100 points to every meter, undamped, capped at each full.
-            const int carried = 1;
-            var setup = new BattleSetup { Stage = Stage(("tank", 2, 2)), Seed = 7, UnlockedSlots = 5, StartOrbs = carried };
+            // §3.1.0: carried mana is a whole grant of its points to the party pool, undamped.
+            const int points = BattleConfig.ManaPointsPerOrb;
+            var setup = new BattleSetup { Stage = Stage(("tank", 2, 2)), Seed = 7, UnlockedSlots = 5, StartMana = points };
             setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(2, 3), Bar = { "fireball", "heal" } });
             setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(5, 7), Bar = { "heal" } });
             var b = BattleEngine.Create(Mini(), setup, new List<BattleEvent>());
             var k = Hero(b, "knight");
             var c = Hero(b, "cleric");
-            int points = carried * BattleConfig.ManaPointsPerOrb;
+            Assert.That(b.PartyMana, Is.EqualTo(points));
             Assert.That(b.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(points, b.ManaFull(k, 0))));
             Assert.That(b.ManaIn(k.Id, 1), Is.EqualTo(System.Math.Min(points, b.ManaFull(k, 1))));
             Assert.That(b.ManaIn(c.Id, 0), Is.EqualTo(System.Math.Min(points, b.ManaFull(c, 0))));
@@ -69,25 +69,25 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_defeat_on_the_road_falls_back_to_camp_with_no_orbs()
+        public void A_defeat_on_the_road_falls_back_to_camp_with_no_mana()
         {
             var s = Camped();
             TravelRules.SetOut(s);
-            TravelRules.AfterBattle(Real, s, true, 4, out _);
-            int carried = TravelRules.AfterBattle(Real, s, victory: false, orbsLeft: 2, out _);
+            TravelRules.AfterBattle(Real, s, true, 400, out _);
+            int carried = TravelRules.AfterBattle(Real, s, victory: false, manaLeft: 200, out _);
             Assert.That(carried, Is.EqualTo(0));
             Assert.That(s.World.Camped, Is.True);
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
-            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(0));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(0));
+            Assert.That(TravelRules.StartMana(s), Is.EqualTo(0));
         }
 
         [Test]
         public void A_battle_at_camp_changes_nothing()
         {
             var s = Camped();
-            Assert.That(TravelRules.AfterBattle(Real, s, true, 3, out _), Is.EqualTo(0));
+            Assert.That(TravelRules.AfterBattle(Real, s, true, 300, out _), Is.EqualTo(0));
             Assert.That(s.World.Camped, Is.True);
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(0));
         }
 
         [Test]

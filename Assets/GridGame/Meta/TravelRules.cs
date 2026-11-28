@@ -5,8 +5,8 @@ using GridGame.Core.World;
 namespace GridGame.Meta
 {
     /// <summary>GG-T1785 (BIBLE §28, GG-T1705): travel replaces expeditions. The caravan is on the road whenever it is not
-    /// camped (<see cref="WorldSave.Camped"/>); launching a battle from camp sets out. A win on the road carries the bank's
-    /// orbs into the next battle and wounds stay; a loss falls back to camp with no orbs. Camp rest (<see cref="CampRestService"/>)
+    /// camped (<see cref="WorldSave.Camped"/>); launching a battle from camp sets out. A win on the road carries the party
+    /// mana pool's points into the next battle and wounds stay; a loss falls back to camp with no mana. Camp rest (<see cref="CampRestService"/>)
     /// heals the whole roster for free, and the Medic Wagon (<see cref="MedicWagon"/>) patches wounds after each win on the road.
     /// Wired in GG-T1790: BattleFactory.Build/Commit, the Inn (camp rest) and the launcher; GG-T1786 retired the Expeditions
     /// shim and moved the App (Adventure list, results, Camp's Rest row, respec and Crucible gates) onto these.
@@ -23,7 +23,7 @@ namespace GridGame.Meta
         {
             if (s?.World == null || !s.World.Camped) return;
             s.World.Camped = false;
-            s.World.CarriedOrbs = 0;
+            s.World.CarriedMana = 0;
         }
 
         /// <summary>Makes camp: off the road, nothing carried.</summary>
@@ -31,18 +31,18 @@ namespace GridGame.Meta
         {
             if (s?.World == null) return;
             s.World.Camped = true;
-            s.World.CarriedOrbs = 0;
+            s.World.CarriedMana = 0;
         }
 
-        /// <summary>Orbs the next battle starts with: the full spell meters the last win on the road ended with (each arrives
-        /// as 100 points to every meter, §3.1.0); none at camp.</summary>
-        public static int StartOrbs(SaveData s) => OnTheRoad(s) ? Math.Max(0, s.World.CarriedOrbs) : 0;
+        /// <summary>Points of mana the next battle starts with: the party pool the last win on the road ended with (§3.1.0);
+        /// none at camp.</summary>
+        public static int StartMana(SaveData s) => OnTheRoad(s) ? Math.Max(0, s.World.CarriedMana) : 0;
 
-        /// <summary>After a battle fought on the road (wounds are already written by the commit): a win carries the bank's
-        /// <paramref name="orbsLeft"/> on and the Medic Wagon patches the party; any other ending falls back to camp with no
-        /// orbs. Returns the orbs now carried (0 at camp) and, through <paramref name="medicHealed"/>, the HP the wagon gave.
-        /// Does nothing at camp.</summary>
-        public static int AfterBattle(ContentDb c, SaveData s, bool victory, int orbsLeft, out int medicHealed)
+        /// <summary>After a battle fought on the road (wounds are already written by the commit): a win carries the pool's
+        /// <paramref name="manaLeft"/> points on and the Medic Wagon patches the party; any other ending falls back to camp
+        /// with no mana. Returns the points now carried (0 at camp) and, through <paramref name="medicHealed"/>, the HP the
+        /// wagon gave. Does nothing at camp.</summary>
+        public static int AfterBattle(ContentDb c, SaveData s, bool victory, int manaLeft, out int medicHealed)
         {
             medicHealed = 0;
             if (!OnTheRoad(s)) return 0;
@@ -51,9 +51,9 @@ namespace GridGame.Meta
                 MakeCamp(s);
                 return 0;
             }
-            s.World.CarriedOrbs = Math.Max(0, orbsLeft);
+            s.World.CarriedMana = Math.Max(0, manaLeft);
             medicHealed = MedicWagon.Patch(c, s);
-            return s.World.CarriedOrbs;
+            return s.World.CarriedMana;
         }
     }
 
@@ -98,13 +98,13 @@ namespace GridGame.Meta
             public bool WellRested;
         }
 
-        /// <summary>Whole orbs Well Rested adds to a battle's opening grant (§3.1.0, GG-T1811): N x 100 points to every spell
-        /// meter while the party is Well Rested (<see cref="CampRestConfig.WellRestedExtraOrbs"/>), else 0.</summary>
-        public static int WellRestedOrbs(SaveData s, WorldTimeConfig time = null, CampRestConfig config = null)
+        /// <summary>Points Well Rested adds to a battle's opening grant to the party mana pool (§3.1.0) while the party is
+        /// Well Rested (<see cref="CampRestConfig.WellRestedMana"/>), else 0.</summary>
+        public static int WellRestedMana(SaveData s, WorldTimeConfig time = null, CampRestConfig config = null)
         {
             if (s?.World == null) return 0;
             bool rested = CampRest.IsWellRested(WorldSaveAdapter.Night(s.World), WorldSaveAdapter.Clock(s.World, time));
-            return rested ? Math.Max(0, (config ?? new CampRestConfig()).WellRestedExtraOrbs) : 0;
+            return rested ? Math.Max(0, (config ?? new CampRestConfig()).WellRestedMana) : 0;
         }
 
         public static Result Rest(SaveData s, out Outcome outcome, WorldTimeConfig time = null, CampRestConfig config = null)

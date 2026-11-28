@@ -320,10 +320,12 @@ namespace GridGame.Meta
         public int DustEarned;
         /// <summary>Summon Tickets this battle earned (a first clear, a chapter's end, every fifth win; GG-T1607); 0 for none.</summary>
         public int TicketsEarned;
-        /// <summary>GG-T1811 (§3.1.0): full spell meters when the battle ended (GG-T676 converts them at the end of a won stage).</summary>
-        public int OrbsLeft;
-        /// <summary>GG-T676: the Mana Dust <see cref="OrbsLeft"/> settled back into at the end of a won stage (already counted
-        /// in <see cref="DustEarned"/>); 0 when the orbs carried on along the road or the stage was lost.</summary>
+        /// <summary>GG-T1927 (§3.1.0): the party mana pool's points when the battle ended (GG-T676 settles them at the end of
+        /// a won stage).</summary>
+        public int ManaLeft;
+        /// <summary>GG-T676: the Mana Dust <see cref="ManaLeft"/> settled back into at the end of a won stage
+        /// (<see cref="DustEconomy.SettleMana"/>, already counted in <see cref="DustEarned"/>); 0 when the mana carried on
+        /// along the road or the stage was lost.</summary>
         public int OrbDust;
         /// <summary>GG-T1811: what the former Mana Orb sources paid this victory, one line each (milestone Shards, a Halcyon
         /// find's Dust; <see cref="ManaOrbs.AfterVictory"/>).</summary>
@@ -335,8 +337,9 @@ namespace GridGame.Meta
         public string Milestone;
         public string MilestoneItem;
         // Travel (§28, GG-T1786: replaces the expedition fields)
-        /// <summary>GG-T1790: orbs carried into the next battle on the road (<see cref="TravelRules.AfterBattle"/>); 0 at camp.</summary>
-        public int CarriedOrbs;
+        /// <summary>GG-T1790, GG-T1927: mana points carried into the next battle on the road (<see cref="TravelRules.AfterBattle"/>);
+        /// 0 at camp.</summary>
+        public int CarriedMana;
         /// <summary>GG-T1790: HP the Medic Wagon patched up after this win on the road (<see cref="MedicWagon"/>).</summary>
         public int MedicHealed;
         // Guests (§25.11)
@@ -625,8 +628,9 @@ namespace GridGame.Meta
                 RecommendedLevel = crucible ? 1 : Progression.StageRecommendedLevel(c, s, stage),
                 NewGamePlus = crucible ? 0 : s.NewGamePlus,
                 Difficulty = difficulty <= DifficultyTable.Neutral ? DifficultyTable.Neutral : DifficultyTable.Clamp(difficulty),
-                // §3.1.0 (GG-T1811): whole orbs granted at battle start, N x 100 points to every spell meter.
-                StartOrbs = (crucible || drill ? 0 : TravelRules.StartOrbs(s) + CampRestService.WellRestedOrbs(s)) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
+                // §3.1.0 (GG-T1927): points granted to the party mana pool before wave 1: mana carried on the road, Well
+                // Rested and the Mana Casks.
+                StartMana = (crucible || drill ? 0 : TravelRules.StartMana(s) + CampRestService.WellRestedMana(s)) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
                 TurnMode = TurnModeSetting.Resolve(s, profileTurnMode), // §2.13 (GG-T773): the save's lock, else the profile's
             };
             foreach (var h in s.Roster) setup.ExcludedGuests.Add(h.ClassId);
@@ -675,7 +679,7 @@ namespace GridGame.Meta
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,
                 Difficulty = battle.Difficulty,
-                OrbsLeft = battle.ReadySpellCount,
+                ManaLeft = battle.PartyMana,
                 BestComboRank = r.BestComboRank,
                 BestComboScore = r.BestComboScore,
                 ComboAttackerPoints = new Dictionary<string, int>(r.ComboAttackerPoints),
@@ -797,14 +801,15 @@ namespace GridGame.Meta
             rep.Wanderer = battle.Wanderer;
             rep.WandererOffer = Wanderers.OfferFrom(s, battle);
             rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
-            // GG-T1790 (§28): on the road a win carries its full spell meters on and the Medic Wagon patches wounds; a loss camps.
-            rep.CarriedOrbs = TravelRules.AfterBattle(c, s, rep.Victory, rep.OrbsLeft, out rep.MedicHealed);
-            // GG-T676, GG-T1811 (§3.1.0): each full spell meter at the end of a won stage settles into Mana Dust. Meters travel
-            // carries to its next battle arrive there as N x 100 points to every meter; a lost stage's mana simply
-            // discharges (no Dust, like every other reward of a loss).
-            if (rep.Victory && rep.CarriedOrbs == 0 && rep.OrbsLeft > 0)
+            // GG-T1790 (§28): on the road a win carries the party mana pool's points on and the Medic Wagon patches wounds; a
+            // loss camps.
+            rep.CarriedMana = TravelRules.AfterBattle(c, s, rep.Victory, rep.ManaLeft, out rep.MedicHealed);
+            // GG-T676, GG-T1927 (§3.1.0): the points left at the end of a won stage settle into Mana Dust, floor(points / 100)
+            // x DustPerOrbLeft. Points travel carries to its next battle settle at the battle that finally keeps them; a lost
+            // stage's mana simply discharges (no Dust, like every other reward of a loss).
+            if (rep.Victory && rep.CarriedMana == 0) rep.OrbDust = DustEconomy.SettleMana(rep.ManaLeft);
+            if (rep.OrbDust > 0)
             {
-                rep.OrbDust = DustEconomy.SettleOrbs(rep.OrbsLeft);
                 s.AddItem(DustEconomy.DustId, rep.OrbDust);
                 rep.DustEarned += rep.OrbDust;
             }

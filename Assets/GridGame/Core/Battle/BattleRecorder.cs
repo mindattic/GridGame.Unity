@@ -68,7 +68,7 @@ namespace GridGame.Core.Battle
                 ["newGamePlus"] = setup?.NewGamePlus ?? 0,
                 ["difficulty"] = setup?.Difficulty ?? 0, // the dial (GG-T309); 0 = unscaled
                 [CommandCodec.TurnModeKey] = CommandCodec.EncodeTurnMode(s.TurnMode), // §2.13 (GG-T767): a replay reproduces it
-                ["startMana"] = (setup?.StartOrbs ?? 0) * BattleConfig.ManaPointsPerOrb,
+                ["startMana"] = setup?.StartMana ?? 0,
                 ["party"] = new JArray(s.Units.Where(u => u.IsHero).Select(u => new JObject
                 {
                     ["id"] = u.Id, ["class"] = u.Def.Id, ["role"] = u.Def.Role, ["level"] = u.Level, ["maxHp"] = u.MaxHp,

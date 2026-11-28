@@ -48,7 +48,7 @@ namespace GridGame.App.Dev
             gold = Save.Gold,
             food = Save.World.Food,
             onTheRoad = TravelRules.OnTheRoad(Save),
-            carriedOrbs = Save.World.CarriedOrbs,
+            carriedMana = Save.World.CarriedMana,
         };
     }
 
@@ -224,7 +224,7 @@ namespace GridGame.App.Dev
             if (def.OnTheRoad ?? true)
             {
                 TravelRules.SetOut(s);
-                s.World.CarriedOrbs = Math.Max(0, def.CarriedOrbs ?? 0);
+                s.World.CarriedMana = Math.Max(0, def.CarriedOrbs ?? 0) * BattleConfig.ManaPointsPerOrb;
             }
             else TravelRules.MakeCamp(s);
             return result;
