@@ -474,5 +474,99 @@ namespace GridGame.App
             v.RemoveFromHierarchy();
             board.PickupViews.Remove(e.PickupEntryId);
         }
+
+        // ── GG-T1820 (§3.1.0): the spell bars. The state is already the end of the action, so playback keeps each meter as
+        //    far as its beats have filled it; idle, the bars read the state. ──
+        private readonly Dictionary<(int, int), int> shownMana = new Dictionary<(int, int), int>();
+
+        private int ShownMana(int heroId, int slot) =>
+            playing && shownMana.TryGetValue((heroId, slot), out var p) ? Mathf.Max(0, p) : State.ManaIn(heroId, slot);
+
+        /// <summary>Every meter this action moves starts where the action found it: the final meter less its gains, plus
+        /// its spends.</summary>
+        private void BeginMeterPlayback(List<BattleEvent> events)
+        {
+            shownMana.Clear();
+            void Rewind(int unit, int slot, int by) =>
+                shownMana[(unit, slot)] = (shownMana.TryGetValue((unit, slot), out var p) ? p : State.ManaIn(unit, slot)) + by;
+            foreach (var ev in events)
+            {
+                if (ev is ManaGainedEvent g) foreach (var d in g.Meters) Rewind(d.UnitId, d.Slot, -d.Delta);
+                else if (ev is SpellManaSpentEvent sp) Rewind(sp.UnitId, sp.Slot, sp.Points);
+            }
+        }
+
+        /// <summary>A spell slot's centre in Overlay (stage) coordinates, where its mana motes land.</summary>
+        private Vector2 SlotCenter(int slot)
+        {
+            var b = slot >= 0 && slot < slotViews.Count ? slotViews[slot].worldBound : new Rect(float.NaN, 0, 0, 0);
+            return float.IsNaN(b.x) || b.width <= 0f ? PoolCenter() : b.center - App.Stage.worldBound.position;
+        }
+
+        /// <summary>A gain reaches the meters: a mote flies from its real source (MintFrom) to each of the shown hero's spell
+        /// bars it moved (Guard's starts gold, its turn time poured into mana), and each bar eases up as it lands with a
+        /// short "+N%" over it; a siphon drains them with "-N%". Time regen has no source on the board, and Reduce Motion
+        /// skips the flight: the bars just fill.</summary>
+        private IEnumerator ManaGainAnim(ManaGainedEvent g)
+        {
+            var mine = new List<ManaMeterDelta>();
+            foreach (var d in g.Meters)
+            {
+                if (d.UnitId == SelectedHeroId && d.Slot < slotViews.Count) mine.Add(d);
+                else shownMana[(d.UnitId, d.Slot)] = d.After;
+            }
+            if (mine.Count == 0) yield break;
+            if (g.Amount > 0 && g.Reason != "regen" && !ReduceMotion)
+            {
+                var from = MintFrom(g.Reason, g.SourceId);
+                bool guard = g.Reason == "guard";
+                float seconds = guard ? Timing.Emphasis : Timing.Standard + Timing.Quick;
+                foreach (var d in mine)
+                    App.StartCoroutine(MoteFlight(from, seconds, false, guard ? Palette.Gold : (Color?)null, 0.7f, SlotCenter(d.Slot)));
+                yield return Tween.Wait(seconds);
+            }
+            foreach (var d in mine)
+            {
+                shownMana[(d.UnitId, d.Slot)] = d.After;
+                if (d.Full > 0) App.StartCoroutine(MeterGainLine(slotViews[d.Slot], d.Delta * 100 / d.Full));
+            }
+            if (g.Amount > 0) App.Audio.Sfx("battle.orb", 0.35f, 1f + Random.Range(-0.05f, 0.1f));
+            SyncBar();
+        }
+
+        /// <summary>The short "+N%" over a spell bar: it rises a little and fades (it holds still under Reduce Motion).</summary>
+        private IEnumerator MeterGainLine(VisualElement slot, int pct)
+        {
+            var l = slot.Q<Label>("gain");
+            if (l == null || pct == 0) yield break;
+            int token = (l.userData is int t ? t : 0) + 1;
+            l.userData = token;
+            l.text = pct > 0 ? $"+{pct}%" : $"{pct}%";
+            l.style.color = pct > 0 ? Palette.Mana : Palette.Bad;
+            yield return Tween.Run(Timing.Dramatic, k =>
+            {
+                if (!(l.userData is int now) || now != token) return;
+                l.style.opacity = k < 0.7f ? 1f : (1f - k) / 0.3f;
+                l.style.translate = new Translate(0, ReduceMotion ? 0f : -Space.S16 * k);
+            });
+            if (l.userData is int end && end == token) l.style.opacity = 0f;
+        }
+
+        /// <summary>A spell's meter filled: its slot pops with a bright tick (the bar itself glows from here on).</summary>
+        private IEnumerator SpellReadyAnim(SpellReadyEvent sr)
+        {
+            if (sr.UnitId != SelectedHeroId || sr.Slot < 0 || sr.Slot >= slotViews.Count) yield break;
+            var v = slotViews[sr.Slot];
+            App.Audio.Sfx("battle.pickup", 0.45f, 1.5f);
+            yield return Tween.Pop(v, 1.12f, Timing.Quick);
+            v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
+        }
+
+        /// <summary>A cast empties its own spell's meter; only that bar drops.</summary>
+        private void SpellManaSpent(SpellManaSpentEvent sp)
+        {
+            shownMana[(sp.UnitId, sp.Slot)] = Mathf.Max(0, ShownMana(sp.UnitId, sp.Slot) - sp.Points);
+            if (sp.UnitId == SelectedHeroId) SyncBar();
+        }
     }
 }

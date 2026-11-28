@@ -897,9 +897,18 @@ namespace GridGame.App
         /// a clockwise <see cref="CooldownSweep"/> with the turns left in its centre; an item shows its stack count as a
         /// corner badge; a Silenced slot the silenced pip; Locked/Empty a short state word. No ability name is ever drawn
         /// here (the description panel has it), so nothing in the bar is cut or ellipsized. Fill it with
-        /// <see cref="SetAbilitySlot"/>; the spell cost row stays as <c>"cost"</c>.</summary>
+        /// <see cref="SetAbilitySlot"/>. GG-T1820 (§3.1.0): a spell slot also carries its own <see cref="ManaMeter"/> along
+        /// the bottom (<c>"meter"</c>), a soft glow behind the icon while that meter is full (<c>"ready"</c>) and a short
+        /// "+N%" gain line over the bar (<c>"gain"</c>).</summary>
         public static void AbilitySlot(VisualElement slot)
         {
+            var glow = El(null, slot); glow.name = "ready";
+            glow.pickingMode = PickingMode.Ignore;
+            glow.style.position = Position.Absolute;
+            glow.style.left = glow.style.top = glow.style.right = glow.style.bottom = Space.S0;
+            glow.style.backgroundImage = new StyleBackground(Art.Glow);
+            glow.style.unityBackgroundImageTintColor = Palette.Mana;
+            glow.style.display = DisplayStyle.None;
             var icon = El(null, slot); icon.name = "icon";
             icon.pickingMode = PickingMode.Ignore;
             icon.style.position = Position.Absolute;
@@ -929,13 +938,19 @@ namespace GridGame.App
             silenced.name = "silenced";
             silenced.style.position = Position.Absolute;
             silenced.style.left = silenced.style.top = Space.S8;
-            var cost = El("row", slot); cost.name = "cost";
-            cost.pickingMode = PickingMode.Ignore;
-            cost.style.position = Position.Absolute;
-            cost.style.left = cost.style.right = Space.S0;
-            cost.style.bottom = Space.S8;
-            cost.style.height = Size.Pip;
-            cost.style.justifyContent = Justify.Center;
+            var meter = new ManaMeter { name = "meter", Glow = glow };
+            meter.style.position = Position.Absolute;
+            meter.style.left = meter.style.right = Space.S16;
+            meter.style.bottom = Space.S8;
+            meter.style.height = Size.Gauge;
+            meter.style.display = DisplayStyle.None;
+            slot.Add(meter);
+            var gain = Overlay(Text("", "tiny", slot), "gain");
+            gain.style.top = StyleKeyword.Auto;
+            gain.style.bottom = Space.S8 + Size.Gauge;
+            gain.style.unityTextAlign = TextAnchor.LowerCenter;
+            gain.style.color = Palette.Mana;
+            gain.style.opacity = 0f;
         }
 
         /// <summary>A centred label over the whole slot, outlined so it reads over any icon.</summary>
@@ -953,10 +968,15 @@ namespace GridGame.App
 
         /// <summary>Fill an <see cref="AbilitySlot"/> face. <paramref name="cooldown"/>: the share of the recharge still to
         /// go (0 = ready, no sweep) with <paramref name="turnsLeft"/> in its centre; <paramref name="count"/>: an item's
-        /// stack (−1 = not an item, no badge); <paramref name="state"/>: a short state word ("Locked", "—") or empty.</summary>
+        /// stack (−1 = not an item, no badge); <paramref name="state"/>: a short state word ("Locked", "—") or empty;
+        /// <paramref name="mana"/>: a spell's meter fill 0..1 (−1 = no meter), glowing when <paramref name="ready"/>.</summary>
         public static void SetAbilitySlot(VisualElement slot, Texture2D icon, float cooldown = 0f, int turnsLeft = 0, int count = -1,
-            string state = "", bool silenced = false)
+            string state = "", bool silenced = false, float mana = -1f, bool ready = false)
         {
+            var meter = slot.Q<ManaMeter>("meter");
+            meter.style.display = mana >= 0f ? DisplayStyle.Flex : DisplayStyle.None;
+            if (mana >= 0f) meter.Fraction = mana;
+            meter.Ready = mana >= 0f && ready;
             slot.Q("icon").style.backgroundImage = icon != null ? new StyleBackground(icon) : new StyleBackground(StyleKeyword.None);
             slot.Q<CooldownSweep>("sweep").Fraction = cooldown;
             slot.Q<Label>("turns").text = cooldown > 0f && turnsLeft > 0 ? turnsLeft.ToString() : "";
@@ -966,6 +986,87 @@ namespace GridGame.App
             badge.style.display = count >= 0 ? DisplayStyle.Flex : DisplayStyle.None;
             slot.Q("silenced").style.display = silenced ? DisplayStyle.Flex : DisplayStyle.None;
         }
+    }
+
+    /// <summary>GG-T1820 (BIBLE §3.1.0, §9.0): a spell slot's own mana meter, a bar that fills left to right as its spell's
+    /// meter charges. A gain eases the fill up; a full meter brightens it and pulses the slot's <see cref="Glow"/>. Under
+    /// Reduce Motion the fill jumps and the glow holds still. It never carries the spell's name.</summary>
+    public sealed class ManaMeter : VisualElement
+    {
+        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Color.white, 0.45f);
+        private readonly VisualElement fill;
+        private float target, shown, clock;
+        private bool ready;
+
+        /// <summary>The slot's ready glow: shown and pulsed while the meter is full.</summary>
+        public VisualElement Glow;
+
+        /// <summary>0..1: how full the spell's meter is.</summary>
+        public float Fraction
+        {
+            get => target;
+            set
+            {
+                value = Mathf.Clamp01(value);
+                if (Mathf.Approximately(value, target)) return;
+                // A spend empties it at once; only a gain is animated.
+                if (value < target || (GameApp.I?.Settings?.ReduceMotion ?? false)) shown = value;
+                target = value;
+                Apply();
+            }
+        }
+
+        public bool Ready
+        {
+            get => ready;
+            set
+            {
+                if (ready == value) return;
+                ready = value;
+                clock = 0f;
+                if (Glow != null) { Glow.style.display = value ? DisplayStyle.Flex : DisplayStyle.None; Glow.style.opacity = 0.8f; }
+                fill.style.backgroundColor = value ? Full : Charging;
+            }
+        }
+
+        public ManaMeter()
+        {
+            pickingMode = PickingMode.Ignore;
+            float r = Size.Gauge / 2f;
+            style.backgroundColor = Palette.Ink.WithA(0.75f);
+            style.borderTopLeftRadius = style.borderTopRightRadius = style.borderBottomLeftRadius = style.borderBottomRightRadius = r;
+            style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth = style.borderRightWidth = Size.Underline;
+            style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Palette.Ink;
+            style.overflow = Overflow.Hidden;
+            fill = new VisualElement { pickingMode = PickingMode.Ignore };
+            fill.style.position = Position.Absolute;
+            fill.style.left = fill.style.top = fill.style.bottom = 0;
+            fill.style.backgroundColor = Charging;
+            fill.style.borderTopRightRadius = fill.style.borderBottomRightRadius = r;
+            Add(fill);
+            Apply();
+            schedule.Execute(Tick).Every(16);
+        }
+
+        private void Tick()
+        {
+            bool calm = GameApp.I?.Settings?.ReduceMotion ?? false;
+            if (ready && Glow != null && !calm)
+            {
+                clock += Tween.Dt;
+                Glow.style.opacity = 0.6f + 0.4f * Mathf.Sin(clock * 4f);
+            }
+            if (Mathf.Approximately(shown, target)) return;
+            if (calm) shown = target;
+            else
+            {
+                shown += (target - shown) * Mathf.Min(1f, Tween.Dt * 8f);
+                if (Mathf.Abs(target - shown) < 0.002f) shown = target;
+            }
+            Apply();
+        }
+
+        private void Apply() => fill.style.width = Length.Percent(100f * shown);
     }
 
     /// <summary>GG-T1819: a WoW-style cooldown sweep: a dark wedge over its box, starting at 12 o'clock and covering the
