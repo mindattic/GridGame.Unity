@@ -914,13 +914,10 @@ namespace GridGame.App
         /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through.</summary>
         public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused;
 
-        /// <summary>Dev/automation helper: add orbs to the bank (cheat — development builds only call this).</summary>
-        public void DevGiveMana(int n, int charge = -1)
+        /// <summary>Dev/automation helper: add orbs to every spell meter (cheat — development builds only call this).</summary>
+        public void DevGiveMana(int n)
         {
-            State.Bank.Add(n);
-            // Dev only: a charge past one orb is allowed on purpose, so the next charge gain rolls several orbs at
-            // once (tools/harness.py orbs, GG-T112).
-            if (charge >= 0) State.ManaCharge = Mathf.Clamp(charge, 0, 10 * BattleConfig.ManaChargePerOrb);
+            BattleEngine.GainMana(State, n * BattleConfig.ManaPointsPerOrb, "dev");
             SyncBar();
         }
 

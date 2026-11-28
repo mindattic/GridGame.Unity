@@ -24748,7 +24748,7 @@
       "Humanoid",
       "Sentient"
     ],
-    "Card": "Charges [Mana Siphon] on your casters, and when it lands an orb leaves your bank: spend your orbs first, or [Interrupt] it.",
+    "Card": "Charges [Mana Siphon] on your casters, and when it lands every spell's mana bar loses 100: cast what you can first, or [Interrupt] it.",
     "Portrait": "bulwark-siphoner",
     "ArtSource": "heavytrooper03",
     "Thumbnail": {

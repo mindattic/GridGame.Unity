@@ -158,7 +158,6 @@ namespace GridGame.Core.Battle
 
         // ── Shield (§2.5) ───────────────────────────────────────────────────────────
         public const string ShieldBuffId = "protection";
-        public const int MaxBankCapacityBonus = 4;
         /// <summary>New Game+: enemy levels rise by this per cycle; coin rewards scale by NgPlusCoinBonus per cycle.</summary>
         public const int NgPlusLevelStep = 10;
         public const float NgPlusCoinBonus = 0.5f;
@@ -257,8 +256,6 @@ namespace GridGame.Core.Battle
         /// <summary>Mana points per orb of spell cost (§3.1.0, GG-T1807): a spell's meter is full at Cost x this, and a
         /// whole-orb grant adds this much per orb to every meter.</summary>
         public const int ManaPointsPerOrb = 100;
-        /// <summary>Orbs the party's shared bank holds before minting overflows (GG-LAW-6); also the most a spell may cost.</summary>
-        public const int ManaBankCapacity = 12;
         /// <summary>Charge for a pincer that takes away a whole enemy's worth of HP (scaled by the share removed).
         /// GG-T247: 120 → 105 (the bar sat full on 17% of a skilled player's turns and ~half of all mana faded at the cap).</summary>
         public const float PincerChargePerHp = 105f;
@@ -279,9 +276,6 @@ namespace GridGame.Core.Battle
         //    actions"; "you accumulate mana orbs by striking enemies, killing enemies, doing 'clutch' things") ─────────
         /// <summary>The most orbs a spell may cost: "just enough to show as orbs on the icon itself" (the slot's pips).</summary>
         public const int MaxSpellOrbCost = 4;
-        /// <summary>The most orbs a battle's row can hold (owned Mana Orbs are a progression item, GG-T677; the bank's
-        /// capacity comes from BattleSetup.OrbCapacity, defaulting to <see cref="ManaBankCapacity"/>).</summary>
-        public const int MaxOrbCapacity = 20;
         // ── Owned Mana Orbs: retired as progression (GG-T1811, owner answer on GG-T1805) ─────────
         /// <summary>The orb every save owned from the start while orbs were progression; the GG-T1811 migration pays only for
         /// owned orbs beyond it.</summary>

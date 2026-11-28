@@ -42,11 +42,6 @@ namespace GridGame.Core.Battle
                 if (spec.Domesticated) Domesticate(hero); // a domesticated monster fights on its own AI (GG-T303)
                 i++;
             }
-            // GG-T673: the battle's orb capacity comes from the setup (owned Mana Orbs, GG-T677), defaulting to the old fixed
-            // bank; bank gear adds its bonus on top; never above MaxOrbCapacity.
-            int baseOrbs = setup.OrbCapacity > 0 ? setup.OrbCapacity : ManaBank.DefaultCapacity;
-            int orbCap = System.Math.Max(1, System.Math.Min(BattleConfig.MaxOrbCapacity, baseOrbs + System.Math.Min(BattleConfig.MaxBankCapacityBonus, pendingBankBonus)));
-            if (orbCap != S.Bank.Capacity) S.Bank = new ManaBank(orbCap);
             ApplyBattleStartOrbs();
             var prot = C.TryBuff(BattleConfig.ShieldBuffId);
             if (prot != null)
@@ -110,7 +105,6 @@ namespace GridGame.Core.Battle
                 float mastery = masteryById.TryGetValue(itemId, out var m) ? m : 1f;
                 u.GearStats = u.GearStats + item.Stats * mastery;
                 pendingStartOrbs += Math.Max(0, item.BattleStartManaOrbs);
-                pendingBankBonus += Math.Max(0, item.BankCapacityBonus);
                 u.PincerDamageBonus += item.PincerDamageBonus;
                 u.GearEvasion += item.EvasionBonus;
                 u.RegenPerTurn += item.RegenPerTurn;
@@ -249,7 +243,6 @@ namespace GridGame.Core.Battle
 
         private int pendingStartOrbs;
         private int carriedOrbs;
-        private int pendingBankBonus;
         private readonly List<int> startProtected = new List<int>();
 
         /// <summary>Gear with BattleStartManaOrbs (Mage/Wizard Robe) seeds orbs, capped by the bank (§24.8).</summary>
