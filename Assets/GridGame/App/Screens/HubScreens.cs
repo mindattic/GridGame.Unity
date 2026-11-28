@@ -140,7 +140,8 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             Ui.Tabs(Tabs, tab, i => { tab = i; selected = null; Refresh(); }, body);
-            var list = Ui.ListPanel(body);
+            // Rows keep their own height at the top of the panel, the spare height left below them (GG-T1882).
+            var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
             var items = S.Inventory.Where(kv => kv.Value > 0).Select(kv => (item: C.TryItem(kv.Key), n: kv.Value)).Where(x => x.item != null)
                 .Where(x => tab == 0 || (tab == 1 && (x.item.Type == ItemType.Consumable || x.item.Type == ItemType.Tome || x.item.Type == ItemType.Chest)) || (tab == 2 && x.item.Type == ItemType.Equipment) || (tab == 3 && x.item.Type == ItemType.CraftingMaterial))
                 .OrderBy(x => x.item.Type).ThenByDescending(x => x.item.Rarity).ThenBy(x => x.item.Name).ToList();
@@ -437,11 +438,17 @@ namespace GridGame.App
         }
 
         /// <summary>The Party tab's cohesion grid: the party down the side and across the top, each cell the pair's cohesion
-        /// tier (gold from the Duo tier). Nothing for a party of fewer than two heroes with cohesion.</summary>
+        /// tier (gold from the Duo tier). Nothing for a party of fewer than two heroes with cohesion; one line while every
+        /// pair is still at tier 0 (GG-T1891: a grid of zeros took a third of the page).</summary>
         public static void CohesionGrid(ContentDb c, SaveData s, VisualElement body)
         {
             var ids = s?.Party?.Where(id => Bonds.HasCohesion(s, id)).ToList();
             if (ids == null || ids.Count < 2) return;
+            if (!ids.Any(a => ids.Any(b => a != b && Bonds.CohesionTier(s, a, b) > 0)))
+            {
+                Ui.Caption($"Party cohesion: every pair at tier 0 of {BondsConfig.MaxTier}", Ui.Panel(body, null, false, "party-cohesion"), "dim");
+                return;
+            }
             var panel = Ui.Panel(body, "Party cohesion", false, "party-cohesion");
             VisualElement Cell(VisualElement row)
             {
@@ -901,7 +908,6 @@ namespace GridGame.App
 
         public override void BuildBody(VisualElement body)
         {
-            PartyBoards.Build(C, S, body); // GG-T1044: each party hero's board and bar side by side
             BondsUi.CohesionGrid(C, S, body); // GG-T1299
             var list = Ui.ListPanel(body, $"Active party {S.Party.Count}/{Progression.MaxPartySize} — tap to swap", "party-list");
             foreach (var h in S.Roster.OrderByDescending(x => S.Party.Contains(x.ClassId)).ThenBy(x => x.ClassId))
@@ -917,6 +923,7 @@ namespace GridGame.App
                 MercenaryCamp.Tag(S, h.ClassId, nameRow);
                 Ui.Caption($"Lv {u.Level}   HP {u.MaxHp}   {(active ? "<color=#78EC96>Active</color>" : "Reserve")}", col);
                 GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
+                PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
                 card.AddToClassList("card-tap");
                 Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.select");
             }

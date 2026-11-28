@@ -15,7 +15,8 @@ namespace GridGame.App
         {
             var col = Ui.El("fill col", root);
             Ui.Header("About", () => App.Router.Back(), col, out _);
-            var list = Ui.ListPanel(Ui.PageBody(col), null, "about-list");
+            // GG-T1884: a plain window, not a filling list, so the six lines stack at their own height instead of spreading.
+            var list = Ui.Panel(Ui.PageBody(col), null, false, "about-list");
             Ui.Section(GameApp.Title, list).name = "about-title";
             Ui.Para(Legal.Studio, list).name = "about-studio";
             Ui.Para("Version " + Legal.VersionLine(), list).name = "about-version";
@@ -23,13 +24,13 @@ namespace GridGame.App
             Ui.Section("Legal", list);
             var privacy = Ui.MenuRow("Privacy policy", "Open", () => Legal.Open(Legal.PrivacyPolicyUrl), list);
             privacy.name = "about-privacy";
-            privacy.KindIcon(RowKind.Settings);
+            privacy.KindIcon(RowKind.Document);
             var terms = Ui.MenuRow("Terms of service", "Open", () => Legal.Open(Legal.TermsUrl), list);
             terms.name = "about-terms";
-            terms.KindIcon(RowKind.Settings);
-            var notices = Ui.MenuRow("Third-party notices", "", () => App.Router.Push(new ThirdPartyNoticesScreen()), list);
+            terms.KindIcon(RowKind.Document);
+            var notices = Ui.MenuRow("Third-party notices", "Open", () => App.Router.Push(new ThirdPartyNoticesScreen()), list);
             notices.name = "about-notices";
-            notices.KindIcon(RowKind.Settings);
+            notices.KindIcon(RowKind.Document);
         }
     }
 
