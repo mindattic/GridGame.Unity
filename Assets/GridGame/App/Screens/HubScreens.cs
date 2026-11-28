@@ -140,7 +140,8 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             Ui.Tabs(Tabs, tab, i => { tab = i; selected = null; Refresh(); }, body);
-            var list = Ui.ListPanel(body);
+            // Rows keep their own height at the top of the panel, the spare height left below them (GG-T1882).
+            var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
             var items = S.Inventory.Where(kv => kv.Value > 0).Select(kv => (item: C.TryItem(kv.Key), n: kv.Value)).Where(x => x.item != null)
                 .Where(x => tab == 0 || (tab == 1 && (x.item.Type == ItemType.Consumable || x.item.Type == ItemType.Tome || x.item.Type == ItemType.Chest)) || (tab == 2 && x.item.Type == ItemType.Equipment) || (tab == 3 && x.item.Type == ItemType.CraftingMaterial))
                 .OrderBy(x => x.item.Type).ThenByDescending(x => x.item.Rarity).ThenBy(x => x.item.Name).ToList();
