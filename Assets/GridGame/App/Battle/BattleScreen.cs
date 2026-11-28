@@ -818,8 +818,8 @@ namespace GridGame.App
         private readonly List<(string text, Color color)> logLines = new List<(string, Color)>();
 
         /// <summary>The panel holds the unit page and, while lessons run, the tutorial page. The Party · Lore · Log tab strip
-        /// and window are gone (owner 2026-11-27): the Lore and Log pages are still built and filled but sit off the layout
-        /// until their new homes take them (GG-T1825 the pause menu's Battle log, GG-T1826 the hub).</summary>
+        /// and window are gone (owner 2026-11-27): the Log page is built and filled off the layout and shown by the pause
+        /// menu's Battle log (GG-T1825); the Lore page waits for the hub (GG-T1826).</summary>
         private void BuildDescriptionPanel(VisualElement root)
         {
             var host = Ui.El("col description-panel", root);
@@ -831,7 +831,7 @@ namespace GridGame.App
             panel = InfoPage(win, "description");
             tutorialPage = InfoPage(win, "tutorial");
             lorePage = InfoPage(null, "lore");
-            // The combat log keeps the old feed's name, so automation that looks for "feed" finds it once it is mounted again.
+            // The combat log keeps the old feed's name, so automation that looks for "feed" finds it on the pause menu's Battle log.
             logPage = InfoPage(null, "feed");
             foreach (var (text, color) in logLines) AddLogLine(text, color);
             ApplyDescriptionPage();
@@ -1323,6 +1323,7 @@ namespace GridGame.App
             closePause = Close;
             Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter); // GG-T751 (§26.7)
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
+            Ui.MenuRow("Battle log", logLines.Count > 0 ? Ui.Count(logLines.Count) : "", () => ShowBattleLog(veil, w), w).KindIcon(RowKind.Menu);
             Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
@@ -1332,6 +1333,33 @@ namespace GridGame.App
                 Ui.MenuRow("Retreat", $"(keep {retreatPct}%)", () => { Close();
                     Confirm.Show($"Retreat from battle? You'll keep {retreatPct}% of this fight's gold and loot — safer than risking a wipe.", "Retreat", Retreat); }, w).KindIcon(RowKind.Back);
             Ui.Select(w[1]);
+        }
+
+        /// <summary>The pause menu's Battle log page (GG-T1825): the combat log (<see cref="logPage"/>, still named "feed")
+        /// mounted in its own window over the veil, newest line at the bottom; Back returns to the menu.</summary>
+        private void ShowBattleLog(VisualElement veil, VisualElement menu)
+        {
+            if (logPage == null) return;
+            menu.style.display = DisplayStyle.None;
+            var w = Ui.Window("Battle log", veil);
+            w.name = "battle-log";
+            w.style.width = Length.Percent(86);
+            w.style.height = Length.Percent(70);
+            logPage.style.flexGrow = 1;
+            logPage.style.flexShrink = 1;
+            logPage.style.display = DisplayStyle.Flex;
+            w.Add(logPage);
+            if (logLines.Count == 0) Ui.Text("Nothing has happened yet this battle.", "small dim", w);
+            var back = Ui.MenuRow("Back", "", () =>
+            {
+                logPage.RemoveFromHierarchy();
+                w.RemoveFromHierarchy();
+                menu.style.display = DisplayStyle.Flex;
+            }, w);
+            back.KindIcon(RowKind.Back);
+            back.name = "battle-log-back";
+            Ui.Select(back);
+            ScrollLogToEnd();
         }
 
         // ── Battle records (§22.6): every battle is saved as JSON for balance analysis and future ML ──
