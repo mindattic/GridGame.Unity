@@ -54,6 +54,8 @@ namespace GridGame.App
         New,
         /// <summary>Settings and options: the gear emblem.</summary>
         Settings,
+        /// <summary>A document to read (a legal page, the notices): a sheet with a folded corner and lines of text.</summary>
+        Document,
         /// <summary>Save (a slot, save now): the save-disk emblem.</summary>
         Save,
         /// <summary>Quit / title / leave the game: the power emblem.</summary>
@@ -361,6 +363,14 @@ namespace GridGame.App
                     }
                     FillCircle(p, c, u * 0.62f, Mark);
                     FillCircle(p, c, u * 0.25f, Disc);
+                    break;
+                case RowKind.Document: // a sheet, its top-right corner folded down, three lines of text
+                    Poly(p, P(-0.65f, -0.9f), P(0.25f, -0.9f), P(0.65f, -0.5f), P(0.65f, 0.9f), P(-0.65f, 0.9f));
+                    Rect(p, P(0.25f, -0.9f), P(0.32f, -0.5f), Disc);
+                    Rect(p, P(0.25f, -0.57f), P(0.65f, -0.5f), Disc);
+                    Rect(p, P(-0.4f, -0.2f), P(0.4f, -0.1f), Disc);
+                    Rect(p, P(-0.4f, 0.15f), P(0.4f, 0.25f), Disc);
+                    Rect(p, P(-0.4f, 0.5f), P(0.15f, 0.6f), Disc);
                     break;
                 case RowKind.Save: // a save disk: a square with a label and a shutter
                     Rect(p, P(-0.8f, -0.8f), P(0.8f, 0.8f));
