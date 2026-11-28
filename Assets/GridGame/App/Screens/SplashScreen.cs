@@ -37,7 +37,7 @@ namespace GridGame.App
                 logo.style.height = Fit.C(70f) * tex.height / Mathf.Max(1f, tex.width);
             }
             else Ui.Display("MINDATTIC LLC", logo);
-            Ui.Text(Copyright, "tiny dim splash-copy", col);
+            Ui.Caption(Copyright, col, "dim splash-copy");
             col.style.opacity = Opacity();
         }
 
