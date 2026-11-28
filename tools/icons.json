@@ -204,6 +204,21 @@
    "#d0c6f2",
    "#5d64a3",
    "#2d346c"
+  ],
+  "manapunk": [
+   "#aca5d3",
+   "#7590c8",
+   "#41386f"
+  ],
+  "pewter": [
+   "#8c909c",
+   "#60646f",
+   "#34363f"
+  ],
+  "wine": [
+   "#e8a0bc",
+   "#963659",
+   "#3e1022"
   ]
  },
  "status": {
@@ -1780,6 +1795,10 @@
   "warden_anchorstance": [
    "lorc/anchor",
    "iron"
+  ],
+  "druidbrawler_rootbreaker": [
+   "lorc/root-tip",
+   "earth"
   ]
  },
  "item": {
@@ -2790,6 +2809,14 @@
   "cons_disarm_kit": [
    "lorc/cog",
    "bronze"
+  ],
+  "mat_summon_ticket": [
+   "delapouite/ticket",
+   "sun"
+  ],
+  "mat_ticket_fragment": [
+   "delapouite/ticket",
+   "sand"
   ]
  },
  "ui": {
@@ -2808,6 +2835,742 @@
   "pk_might": [
    "lorc/rune-stone",
    "gold"
+  ],
+  "nav_home": [
+   "delapouite/house",
+   "manapunk"
+  ],
+  "nav_campaign": [
+   "lorc/crossed-swords",
+   "manapunk"
+  ],
+  "nav_heroes": [
+   "lorc/visored-helm",
+   "manapunk"
+  ],
+  "nav_summon": [
+   "lorc/magic-portal",
+   "manapunk"
+  ],
+  "nav_shop": [
+   "delapouite/shop",
+   "manapunk"
+  ],
+  "hub_continue": [
+   "delapouite/level-end-flag",
+   "manapunk"
+  ],
+  "hub_stage_select": [
+   "lorc/compass",
+   "manapunk"
+  ],
+  "hub_new_game_plus": [
+   "lorc/cycle",
+   "arcane"
+  ],
+  "hub_crucible": [
+   "lorc/holy-grail",
+   "fire"
+  ],
+  "hub_heroes": [
+   "lorc/visored-helm",
+   "steel"
+  ],
+  "hub_summon": [
+   "lorc/magic-portal",
+   "arcane"
+  ],
+  "hub_shop": [
+   "delapouite/shop",
+   "gold"
+  ],
+  "hub_craft": [
+   "lorc/anvil",
+   "iron"
+  ],
+  "hub_journal": [
+   "lorc/open-book",
+   "leather"
+  ],
+  "hub_settings": [
+   "lorc/cog",
+   "manapunk"
+  ],
+  "hub_items": [
+   "lorc/swap-bag",
+   "leather"
+  ],
+  "hub_inn": [
+   "delapouite/bed",
+   "cloth"
+  ],
+  "hub_respec": [
+   "delapouite/anticlockwise-rotation",
+   "teal"
+  ],
+  "hub_mercenaries": [
+   "lorc/swords-emblem",
+   "crimson"
+  ],
+  "hub_diamond_store": [
+   "lorc/diamond-hard",
+   "mana"
+  ],
+  "hub_talk": [
+   "lorc/conversation",
+   "manapunk"
+  ],
+  "hub_quests": [
+   "lorc/scroll-unfurled",
+   "sand"
+  ],
+  "hub_bounties": [
+   "lorc/skull-crossed-bones",
+   "bone"
+  ],
+  "hub_bestiary": [
+   "lorc/wolf-head",
+   "earth"
+  ],
+  "hub_codex": [
+   "delapouite/notebook",
+   "arcane"
+  ],
+  "hub_quit_to_title": [
+   "delapouite/exit-door",
+   "wine"
+  ],
+  "cur_gold": [
+   "delapouite/two-coins",
+   "gold"
+  ],
+  "cur_shards": [
+   "lorc/diamond-hard",
+   "mana"
+  ],
+  "cur_summon_tickets": [
+   "delapouite/ticket",
+   "sun"
+  ],
+  "cur_food": [
+   "lorc/meat",
+   "rust"
+  ],
+  "cur_waystone_dust": [
+   "lorc/powder",
+   "ghost"
+  ],
+  "cur_xp": [
+   "delapouite/progression",
+   "jade"
+  ],
+  "cur_skill_points": [
+   "delapouite/skills",
+   "holy"
+  ],
+  "cur_masterwork": [
+   "delapouite/round-star",
+   "gold"
+  ],
+  "stat_strength": [
+   "lorc/muscle-up",
+   "crimson"
+  ],
+  "stat_vitality": [
+   "delapouite/heart-beats",
+   "heal"
+  ],
+  "stat_agility": [
+   "lorc/run",
+   "jade"
+  ],
+  "stat_speed": [
+   "lorc/wingfoot",
+   "teal"
+  ],
+  "stat_intelligence": [
+   "lorc/brain",
+   "arcane"
+  ],
+  "stat_wisdom": [
+   "lorc/third-eye",
+   "moon"
+  ],
+  "stat_luck": [
+   "lorc/clover",
+   "green"
+  ],
+  "stat_hp": [
+   "lorc/heart-organ",
+   "crimson"
+  ],
+  "stat_mana": [
+   "lorc/crystal-growth",
+   "water"
+  ],
+  "stat_level": [
+   "delapouite/upgrade",
+   "gold"
+  ],
+  "stat_move": [
+   "lorc/footprint",
+   "earth"
+  ],
+  "elem_physical": [
+   "lorc/fist",
+   "iron"
+  ],
+  "elem_fire": [
+   "lorc/small-fire",
+   "fire"
+  ],
+  "elem_ice": [
+   "lorc/frozen-orb",
+   "ice"
+  ],
+  "elem_lightning": [
+   "lorc/lightning-helix",
+   "spark"
+  ],
+  "elem_poison": [
+   "lorc/poison-gas",
+   "poison"
+  ],
+  "elem_holy": [
+   "lorc/holy-symbol",
+   "holy"
+  ],
+  "elem_dark": [
+   "lorc/evil-moon",
+   "shadow"
+  ],
+  "elem_arcane": [
+   "lorc/star-swirl",
+   "arcane"
+  ],
+  "dmg_slash": [
+   "lorc/sword-wound",
+   "steel"
+  ],
+  "dmg_pierce": [
+   "lorc/arrowhead",
+   "steel"
+  ],
+  "dmg_blunt": [
+   "lorc/hammer-drop",
+   "iron"
+  ],
+  "dmg_slam": [
+   "lorc/earth-crack",
+   "earth"
+  ],
+  "dmg_claw": [
+   "lorc/claw-slashes",
+   "bone"
+  ],
+  "dmg_bite": [
+   "lorc/carnivore-mouth",
+   "bone"
+  ],
+  "dmg_sting": [
+   "lorc/scorpion-tail",
+   "poison"
+  ],
+  "dmg_lash": [
+   "delapouite/lasso",
+   "leather"
+  ],
+  "dmg_projectile": [
+   "lorc/arrow-flights",
+   "wood"
+  ],
+  "dmg_magic": [
+   "lorc/magic-palm",
+   "arcane"
+  ],
+  "rarity_junk": [
+   "lorc/gems",
+   "ash"
+  ],
+  "rarity_common": [
+   "lorc/gems",
+   "gray"
+  ],
+  "rarity_uncommon": [
+   "lorc/gems",
+   "green"
+  ],
+  "rarity_rare": [
+   "lorc/gems",
+   "water"
+  ],
+  "rarity_epic": [
+   "lorc/gems",
+   "arcane"
+  ],
+  "rarity_legendary": [
+   "lorc/gems",
+   "gold"
+  ],
+  "itemcat_weapon": [
+   "lorc/sword-slice",
+   "steel"
+  ],
+  "itemcat_armor": [
+   "lorc/mailed-fist",
+   "iron"
+  ],
+  "itemcat_accessory": [
+   "lorc/gem-pendant",
+   "gold"
+  ],
+  "itemcat_consumable": [
+   "lorc/standing-potion",
+   "crimson"
+  ],
+  "itemcat_material": [
+   "lorc/crystal-cluster",
+   "teal"
+  ],
+  "itemcat_recipe": [
+   "delapouite/wax-tablet",
+   "sand"
+  ],
+  "itemcat_enchanted": [
+   "lorc/magic-swirl",
+   "arcane"
+  ],
+  "station_blacksmith": [
+   "lorc/anvil-impact",
+   "iron"
+  ],
+  "station_alchemist": [
+   "lorc/round-bottom-flask",
+   "poison"
+  ],
+  "station_enchantress": [
+   "lorc/magic-swirl",
+   "arcane"
+  ],
+  "station_aetherist": [
+   "lorc/crystal-bars",
+   "mana"
+  ],
+  "station_caravan": [
+   "delapouite/caravan",
+   "wood"
+  ],
+  "map_quest": [
+   "lorc/scroll-unfurled",
+   "sand"
+  ],
+  "map_bounty": [
+   "lorc/skull-crossed-bones",
+   "bone"
+  ],
+  "map_settlement": [
+   "delapouite/village",
+   "wood"
+  ],
+  "map_camp": [
+   "lorc/campfire",
+   "fire"
+  ],
+  "map_waystone": [
+   "delapouite/obelisk",
+   "ghost"
+  ],
+  "map_roadsign": [
+   "delapouite/direction-signs",
+   "wood"
+  ],
+  "map_danger": [
+   "lorc/hazard-sign",
+   "crimson"
+  ],
+  "map_stage": [
+   "lorc/crossed-sabres",
+   "steel"
+  ],
+  "map_bridge": [
+   "delapouite/stone-bridge",
+   "iron"
+  ],
+  "map_pass": [
+   "delapouite/mountain-road",
+   "earth"
+  ],
+  "map_ruin": [
+   "delapouite/castle-ruins",
+   "ash"
+  ],
+  "map_forage_spot": [
+   "delapouite/herbs-bundle",
+   "moss"
+  ],
+  "battle_abilities": [
+   "lorc/sword-spin",
+   "manapunk"
+  ],
+  "battle_info": [
+   "delapouite/info",
+   "manapunk"
+  ],
+  "battle_guard": [
+   "lorc/checked-shield",
+   "green"
+  ],
+  "battle_perform": [
+   "lorc/sword-clash",
+   "steel"
+  ],
+  "battle_cast": [
+   "lorc/fairy-wand",
+   "arcane"
+  ],
+  "battle_use": [
+   "lorc/standing-potion",
+   "crimson"
+  ],
+  "battle_weapon_swap": [
+   "lorc/back-forth",
+   "steel"
+  ],
+  "battle_turn_start": [
+   "lorc/hourglass",
+   "manapunk"
+  ],
+  "battle_acted": [
+   "delapouite/check-mark",
+   "pewter"
+  ],
+  "battle_heal": [
+   "zeromancer/heart-plus",
+   "heal"
+  ],
+  "battle_defeated": [
+   "lorc/tombstone",
+   "pewter"
+  ],
+  "battle_support": [
+   "delapouite/shaking-hands",
+   "teal"
+  ],
+  "battle_countdown": [
+   "delapouite/alarm-clock",
+   "crimson"
+  ],
+  "battle_region_target_cell": [
+   "lorc/target-arrows",
+   "gold"
+  ],
+  "chrome_hamburger": [
+   "delapouite/hamburger-menu",
+   "manapunk"
+  ],
+  "chrome_menu": [
+   "delapouite/stack",
+   "manapunk"
+  ],
+  "chrome_back": [
+   "delapouite/plain-arrow",
+   "manapunk",
+   "rot:90"
+  ],
+  "chrome_enter": [
+   "delapouite/plain-arrow",
+   "manapunk",
+   "rot:270"
+  ],
+  "chrome_home": [
+   "delapouite/house",
+   "manapunk"
+  ],
+  "chrome_close": [
+   "lorc/cross-mark",
+   "manapunk"
+  ],
+  "chrome_confirm": [
+   "delapouite/check-mark",
+   "manapunk"
+  ],
+  "chrome_locked": [
+   "lorc/padlock",
+   "pewter"
+  ],
+  "chrome_cleared": [
+   "delapouite/check-mark",
+   "jade"
+  ],
+  "chrome_new": [
+   "delapouite/sparkles",
+   "gold"
+  ],
+  "chrome_save": [
+   "delapouite/save",
+   "manapunk"
+  ],
+  "chrome_document": [
+   "lorc/papers",
+   "cloth"
+  ],
+  "chrome_place": [
+   "delapouite/position-marker",
+   "manapunk"
+  ],
+  "chrome_stage": [
+   "lorc/crossed-sabres",
+   "steel"
+  ],
+  "chrome_item": [
+   "lorc/swap-bag",
+   "leather"
+  ],
+  "chrome_ability": [
+   "lorc/spark-spirit",
+   "arcane"
+  ],
+  "chrome_status": [
+   "lorc/aura",
+   "teal"
+  ],
+  "chrome_hero": [
+   "delapouite/person",
+   "manapunk"
+  ],
+  "chrome_station": [
+   "delapouite/castle",
+   "manapunk"
+  ],
+  "chrome_lore": [
+   "lorc/quill-ink",
+   "sand"
+  ],
+  "chrome_faction": [
+   "lorc/flying-flag",
+   "crimson"
+  ],
+  "set_battle_speed": [
+   "delapouite/fast-forward-button",
+   "manapunk"
+  ],
+  "set_drag_timer": [
+   "delapouite/alarm-clock",
+   "manapunk"
+  ],
+  "set_pincer_close_ups": [
+   "delapouite/crosshair",
+   "manapunk"
+  ],
+  "set_quality": [
+   "lorc/gems",
+   "manapunk"
+  ],
+  "set_frame_rate_cap": [
+   "delapouite/speedometer",
+   "manapunk"
+  ],
+  "set_effects": [
+   "delapouite/sparkles",
+   "manapunk"
+  ],
+  "set_vsync": [
+   "delapouite/clockwise-rotation",
+   "manapunk"
+  ],
+  "set_screen_shake": [
+   "delapouite/vibrating-smartphone",
+   "manapunk"
+  ],
+  "set_window_mode": [
+   "delapouite/tv",
+   "manapunk"
+  ],
+  "set_resolution": [
+   "delapouite/expand",
+   "manapunk"
+  ],
+  "set_thumb_margin": [
+   "delapouite/thumb-up",
+   "manapunk"
+  ],
+  "set_ui_scale": [
+   "delapouite/resize",
+   "manapunk"
+  ],
+  "set_master_volume": [
+   "delapouite/speaker",
+   "manapunk"
+  ],
+  "set_music_volume": [
+   "delapouite/musical-score",
+   "manapunk"
+  ],
+  "set_sound_volume": [
+   "delapouite/sound-on",
+   "manapunk"
+  ],
+  "set_mute_music": [
+   "delapouite/musical-score",
+   "pewter",
+   "strike"
+  ],
+  "set_mute_sound": [
+   "delapouite/speaker-off",
+   "pewter"
+  ],
+  "set_mute_when_unfocused": [
+   "delapouite/tv",
+   "pewter",
+   "strike"
+  ],
+  "set_text_size": [
+   "lorc/magnifying-glass",
+   "manapunk"
+  ],
+  "set_font": [
+   "delapouite/scroll-quill",
+   "manapunk"
+  ],
+  "set_text_wrapping": [
+   "lorc/quill-ink",
+   "manapunk"
+  ],
+  "set_colorblind_palette": [
+   "lorc/semi-closed-eye",
+   "manapunk"
+  ],
+  "set_reduce_motion": [
+   "lorc/sundial",
+   "manapunk"
+  ],
+  "set_about": [
+   "lorc/papers",
+   "manapunk"
+  ],
+  "set_developer_rows": [
+   "lorc/cog",
+   "pewter"
+  ],
+  "cell_cracked": [
+   "lorc/earth-crack",
+   "earth"
+  ],
+  "cell_crumbling": [
+   "lorc/earth-crack",
+   "rust"
+  ],
+  "cell_hole": [
+   "delapouite/mountain-cave",
+   "ash"
+  ],
+  "cell_cavein": [
+   "delapouite/stone-pile",
+   "earth"
+  ],
+  "cell_slime": [
+   "lorc/vile-fluid",
+   "green"
+  ],
+  "cell_slime_glob": [
+   "lorc/vile-fluid",
+   "moss"
+  ],
+  "cell_choir_rune": [
+   "lorc/rune-stone",
+   "holy"
+  ],
+  "cell_burrow_mark": [
+   "lorc/footprint",
+   "earth"
+  ],
+  "cell_burrow_ambush": [
+   "lorc/hazard-sign",
+   "crimson"
+  ],
+  "cell_substitution_log": [
+   "delapouite/barrier",
+   "wood"
+  ],
+  "cell_fire": [
+   "lorc/small-fire",
+   "fire"
+  ],
+  "cell_firewall": [
+   "lorc/wildfires",
+   "fire"
+  ],
+  "cell_oil": [
+   "lorc/drop",
+   "ash"
+  ],
+  "cell_ice": [
+   "lorc/snowflake-1",
+   "ice"
+  ],
+  "cell_mine": [
+   "lorc/circle-sparks",
+   "iron"
+  ],
+  "cell_armedmine": [
+   "lorc/circle-sparks",
+   "crimson"
+  ],
+  "cell_mineblast": [
+   "lorc/thunder-struck",
+   "fire"
+  ],
+  "cell_timebomb": [
+   "delapouite/alarm-clock",
+   "crimson"
+  ],
+  "cell_barricade": [
+   "delapouite/barrier",
+   "iron"
+  ],
+  "cell_rubble": [
+   "delapouite/stone-pile",
+   "ash"
+  ],
+  "cell_machinist_barricade": [
+   "delapouite/barrier",
+   "steel"
+  ],
+  "cell_shard_crystal": [
+   "lorc/crystal-cluster",
+   "teal"
+  ],
+  "cell_shard_strike": [
+   "lorc/lightning-tear",
+   "spark"
+  ],
+  "cell_anchor_post": [
+   "lorc/anchor",
+   "iron"
+  ],
+  "cell_floodwater": [
+   "lorc/drop",
+   "water"
+  ],
+  "cell_brazier_light": [
+   "lorc/fire-bowl",
+   "sun"
+  ],
+  "cell_holy_light": [
+   "lorc/sunbeams",
+   "holy"
+  ],
+  "cell_flare_light": [
+   "lorc/sun-radiations",
+   "sun"
+  ],
+  "cell_smoke": [
+   "lorc/tornado",
+   "ash"
+  ],
+  "cell_sleep": [
+   "delapouite/night-sleep",
+   "sleep"
   ]
  },
  "weapon_palette": {
