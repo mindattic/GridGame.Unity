@@ -146,7 +146,7 @@ namespace GridGame.App
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
             var st = App.Settings;
             // GG-T454: one scrolling list (the rows, then How to play), so the last rows are never cut off a short phone.
-            // GG-T1223: grouped into Gameplay, Graphics, Display, Sound, Accessibility and Data sections.
+            // GG-T1223: grouped into sections; GG-T1968 orders them Accessibility, Gameplay, Sound, Graphics, Display, Experimental, Data.
             var w = Ui.ListPanel(body, null, "settings-list");
             // GG-T750 (§26.7): every setting row leads with its own kind icon (GG-T1886), the save rows with the Save disk.
             VisualElement Row(RowKind kind, string label, string value, Action set, string name = null)
@@ -179,13 +179,43 @@ namespace GridGame.App
             bool mobile = Application.isMobilePlatform;
             bool desktop = !mobile && Application.platform != RuntimePlatform.WebGLPlayer;
 
+            Section("Accessibility");
+            // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
+            Row(RowKind.Text, "Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
+            Toggle(RowKind.Eye, "Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
+            Toggle(RowKind.Pause, "Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
+            Toggle(RowKind.Timer, "Untimed turns", st.UntimedTurns, v => st.UntimedTurns = v, "settings-untimed-turns"); // GG-T1978 (§2.0.1)
+            // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
+            // then draws with the default theme, font and word wrap).
+            if (Features.LookPresets)
+            {
+                // GG-T407: every window theme (presets, the player's own, and the editor for gradient, texture and frame).
+                // GG-T1968: the theme editor is a developer tool, so only dev builds and the editor list it.
+                if (Application.isEditor || Debug.isDebugBuild)
+                {
+                    var windows = Ui.MenuRow("Windows", Art.ThemeName, () => App.Router.Push(new WindowEditorScreen()), w);
+                    windows.name = "settings-windows";
+                    windows.KindIcon(RowKind.Window);
+                }
+                Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Type);
+                // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
+                Row(RowKind.Lore, "Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
+            }
+
             Section("Gameplay");
-            TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
             Cycle(RowKind.Speed, "Battle speed", st.BattleSpeed, new[] { 0.5f, 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
             Toggle(RowKind.Timer, "Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
             Toggle(RowKind.Confirm, "Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
             Toggle(RowKind.Focus, "Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
+
+            Section("Sound");
+            Cycle(RowKind.Speaker, "Master volume", st.MasterVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MasterVolume = v, "settings-master-volume");
+            Cycle(RowKind.Note, "Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
+            Cycle(RowKind.Wave, "Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
+            Toggle(RowKind.NoteOff, "Mute music", st.MuteMusic, v => st.MuteMusic = v);
+            Toggle(RowKind.SpeakerOff, "Mute sound", st.MuteSfx, v => st.MuteSfx = v);
+            Toggle(RowKind.WindowOff, "Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
 
             // GG-T1221: quality (-1 = the project's own), frame-rate cap, vsync, shake and effects amount.
             Section("Graphics");
@@ -222,32 +252,9 @@ namespace GridGame.App
                     m => m == 0 ? "OFF" : $"{m} px", v => st.ThumbMargin = v, "settings-thumb-margin");
             CycleInt(RowKind.Scale, "UI scale", GameSettings.ClampUiScale(st.UiScale), new[] { 80, 90, 100 }, s => $"{s}%", v => st.UiScale = v, "settings-ui-scale");
 
-            Section("Sound");
-            Cycle(RowKind.Speaker, "Master volume", st.MasterVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MasterVolume = v, "settings-master-volume");
-            Cycle(RowKind.Note, "Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
-            Cycle(RowKind.Wave, "Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
-            Toggle(RowKind.NoteOff, "Mute music", st.MuteMusic, v => st.MuteMusic = v);
-            Toggle(RowKind.SpeakerOff, "Mute sound", st.MuteSfx, v => st.MuteSfx = v);
-            Toggle(RowKind.WindowOff, "Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
-
-            Section("Accessibility");
-            // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
-            Row(RowKind.Text, "Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
-            Toggle(RowKind.Eye, "Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
-            Toggle(RowKind.Pause, "Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
-            Toggle(RowKind.Timer, "Untimed turns", st.UntimedTurns, v => st.UntimedTurns = v, "settings-untimed-turns"); // GG-T1978 (§2.0.1)
-            // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
-            // then draws with the default theme, font and word wrap).
-            if (Features.LookPresets)
-            {
-                // GG-T407: every window theme (presets, the player's own, and the editor for gradient, texture and frame).
-                var windows = Ui.MenuRow("Windows", Art.ThemeName, () => App.Router.Push(new WindowEditorScreen()), w);
-                windows.name = "settings-windows";
-                windows.KindIcon(RowKind.Window);
-                Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Type);
-                // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
-                Row(RowKind.Lore, "Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
-            }
+            // GG-T1968 (UX review): Turn mode stays an experiment until GG-T821 picks a mode; still reachable from the title (GG-T1216).
+            Section("Experimental");
+            TurnModeControl(st, w); // GG-T774 (§2.13)
 
             Section("Data");
             // GG-T607 (§15.2): move a slot to another device as a copyable code, no cloud account needed.
