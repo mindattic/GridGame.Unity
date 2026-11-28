@@ -76,7 +76,7 @@ namespace GridGame.Meta
                 var paid = DiamondExchange.Pay(s, Price, out split);
                 if (!paid.Ok) return paid;
             }
-            Gacha.Record(s, Gacha.Standard(c), Pool(c, s), pick, ticket ? TicketText.Of(1) : DiamondExchange.Label(Price), now);
+            Gacha.Record(s, Gacha.Standard(c), pick, ticket ? TicketText.Of(1) : DiamondExchange.Label(Price), now);
             job = new PaywallJob { Kind = PaywallKind.Summon, Arg = pick, StartedUtc = now, Seconds = Paywall.Duration(PaywallKind.Summon, s), Diamonds = ticket ? 0 : Price, Tickets = ticket ? 1 : 0, Paid = split.gold };
             s.Jobs.Add(job);
             return Result.Success();

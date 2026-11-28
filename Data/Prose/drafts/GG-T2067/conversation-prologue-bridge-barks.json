@@ -1,0 +1,42 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-bridge-barks",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_bridge_barks",
+  "about": [
+    "class-barbarian",
+    "class-captain",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "Every blow clangs",
+    "start": "clang",
+    "nodes": [
+      {
+        "id": "clang",
+        "speaker": "class-barbarian",
+        "line": "It just rings. My axe bounces off that plate.",
+        "next": "laugh"
+      },
+      {
+        "id": "laugh",
+        "speaker": "class-captain",
+        "line": "Choir steel, Moorfolk. You could hit it till spring.",
+        "next": "back"
+      },
+      {
+        "id": "back",
+        "speaker": "class-knight",
+        "line": "We can't break that today. Fall back to the ford. Everyone, now."
+      }
+    ]
+  },
+  "speakers": [
+    "class-barbarian",
+    "class-captain",
+    "class-knight"
+  ]
+}

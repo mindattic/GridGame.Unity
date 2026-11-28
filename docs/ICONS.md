@@ -289,7 +289,7 @@ Role: button 48 in headers, inline 32 as badges, row 64 as row icons. Where: Row
 
 ### Settings rows
 
-Role: row 64. Where: SettingsScreen (HubScreens.cs).
+Role: row 64. Where: SettingsScreen (Settings/SettingsScreen.cs).
 
 | Concept | Code id | Today | Source (game-icons.net) | Palette |
 |---|---|---|---|---|
@@ -419,9 +419,9 @@ Every `RowKind` that draws a code emblem today, and the inventory row whose icon
 
 | Glyph | Used for | Where (Assets/GridGame/App, Meta) | Becomes |
 |---|---|---|---|
-| ★ U+2605 | Masterwork prefix; defeat feed line | HubScreens.cs 416, 514; EquipTab.cs 40; StatusTab.cs 95; ItemsScreen.cs 76; LuckyCraftUi.cs 48, 101; BattleScreen.Playback.cs 921 | currency/Masterwork; battle/Defeated |
-| ✦ U+2726 | enchant / armor passive; support feed line; other item | HubScreens.cs 642; EquipTab.cs 40, 74; StatusTab.cs 99; ItemsScreen.cs 41; BattleScreen.Playback.cs 693 | itemcat/Enchanted; battle/Support |
-| 🔒 U+1F512 | locked tier or station label | HubScreens.cs 244, 302, 306, 326, 387, 392, 655, 678 | chrome/Locked |
+| ★ U+2605 | Masterwork prefix; defeat feed line | Camp/BlacksmithScreen.cs 291, 389; EquipTab.cs 40; StatusTab.cs 95; ItemsScreen.cs 76; LuckyCraftUi.cs 48, 101; BattleScreen.Playback.cs 921 | currency/Masterwork; battle/Defeated |
+| ✦ U+2726 | enchant / armor passive; support feed line; other item | Camp/EnchantressScreen.cs 76; EquipTab.cs 40, 74; StatusTab.cs 99; ItemsScreen.cs 41; BattleScreen.Playback.cs 693 | itemcat/Enchanted; battle/Support |
+| 🔒 U+1F512 | locked tier or station label | Camp/BlacksmithScreen.cs 105, 177, 181, 201, 262, 267; Camp/EnchantressScreen.cs 185, 213 | chrome/Locked |
 | ☠ U+2620 | bounty mark | BattleScreen.Bounty.cs 15, 22; BoardView.cs 844; StageSelectScreen.cs 78, 122; BountySkull.cs 25; CampMenu.cs 120 | map/Bounty |
 | ⭾ U+2B7E | weapon swap | BattleScreen.Playback.cs 259; AbilitiesTab.cs 315 | battle/Weapon swap |
 | ✚ U+271A | heal feed line; consumable | BattleScreen.Playback.cs 907; ItemsScreen.cs 38 | battle/Heal; itemcat/Consumable |

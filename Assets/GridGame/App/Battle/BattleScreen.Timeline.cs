@@ -126,7 +126,7 @@ namespace GridGame.App
             timelineBar.style.position = Position.Absolute;
             timelineBar.style.top = TrackY - Size.Track / 2f; timelineBar.style.height = Size.Track;
             timelineBar.style.backgroundColor = Palette.Text.WithA(0.85f);
-            timelineBar.style.borderTopLeftRadius = timelineBar.style.borderTopRightRadius = timelineBar.style.borderBottomLeftRadius = timelineBar.style.borderBottomRightRadius = 3;
+            timelineBar.style.borderTopLeftRadius = timelineBar.style.borderTopRightRadius = timelineBar.style.borderBottomLeftRadius = timelineBar.style.borderBottomRightRadius = Radius.R3;
 
             // A small diamond every second, a bigger one every five (no Zone, no "ACT": the left end is acting).
             int n = Mathf.Max(1, Mathf.RoundToInt(BattleConfig.BarSeconds));
@@ -140,7 +140,7 @@ namespace GridGame.App
                 d.style.top = TrackY - side / 2f;
                 d.style.rotate = new Rotate(45f);
                 d.style.backgroundColor = major ? Palette.Text : Palette.TextDim;
-                SetBorder(d, 2f, 2f, Palette.Ink);
+                SetBorder(d, Radius.R2, 2f, Palette.Ink);
                 frame.Add(d);
                 delimiters.Add((d, side, s));
             }
@@ -154,7 +154,7 @@ namespace GridGame.App
             traySocket.style.top = TrackY - TraySocketSide / 2f;
             traySocket.style.rotate = new Rotate(45f);
             traySocket.style.backgroundColor = Palette.Ink.WithA(0.45f);
-            SetBorder(traySocket, 8f, 2f, Palette.TextDim.WithA(0.45f));
+            SetBorder(traySocket, Radius.R8, 2f, Palette.TextDim.WithA(0.45f));
             frame.Add(traySocket);
 
             timelineIcons = Ui.El("", frame);
@@ -182,7 +182,7 @@ namespace GridGame.App
             gapLane = new VisualElement { name = "tl-gap", pickingMode = PickingMode.Ignore };
             gapLane.style.position = Position.Absolute;
             gapLane.style.top = TrackY - Size.Gauge / 2f; gapLane.style.height = Size.Gauge;
-            gapLane.style.borderTopLeftRadius = gapLane.style.borderTopRightRadius = gapLane.style.borderBottomLeftRadius = gapLane.style.borderBottomRightRadius = 7;
+            gapLane.style.borderTopLeftRadius = gapLane.style.borderTopRightRadius = gapLane.style.borderBottomLeftRadius = gapLane.style.borderBottomRightRadius = Radius.R7;
             gapLane.style.display = DisplayStyle.None;
             frame.Add(gapLane); // above the track, under the icons
             gapLabel = Ui.Text("", "tiny shadow", frame);
@@ -269,12 +269,12 @@ namespace GridGame.App
             slotHalo = Halo(timelineSlot, SlotSpan);
             var socket = DiamondPart(timelineSlot, "tl-socket", SlotSide + 12f, SlotSpan);
             socket.style.backgroundColor = Palette.Ink.WithA(0.7f);
-            SetBorder(socket, 8f, 3f, Palette.Gold.WithA(0.9f));
+            SetBorder(socket, Radius.R8, 3f, Palette.Gold.WithA(0.9f));
             SelectionRing(timelineSlot, SlotSide + 26f, SlotSpan);
             slotFrame = DiamondPart(timelineSlot, "tl-frame", SlotSide, SlotSpan);
             slotFrame.style.backgroundColor = Palette.Ink;
             slotFrame.style.overflow = Overflow.Hidden;
-            SetBorder(slotFrame, 8f, SlotBorder, Palette.TeamFoe);
+            SetBorder(slotFrame, Radius.R8, SlotBorder, Palette.TeamFoe);
             slotFrame.style.display = DisplayStyle.None;
             slotTime = Ui.Text("", "tiny shadow", timelineSlot);
             slotTime.name = "tl-slot-time";
@@ -296,7 +296,7 @@ namespace GridGame.App
         private static void SelectionRing(VisualElement host, float side, float span)
         {
             var ring = DiamondPart(host, "tl-sel", side, span);
-            SetBorder(ring, 6f, 4f, Palette.White);
+            SetBorder(ring, Radius.R6, 4f, Palette.White);
             ring.style.display = DisplayStyle.None;
         }
 
@@ -305,7 +305,7 @@ namespace GridGame.App
         {
             bool picked = tapArrowFrom == host;
             ring.style.display = picked || selected ? DisplayStyle.Flex : DisplayStyle.None;
-            SetBorder(ring, 6f, 4f, picked ? Palette.Gold : Palette.White);
+            SetBorder(ring, Radius.R6, 4f, picked ? Palette.Gold : Palette.White);
         }
 
         /// <summary>The unit the panel shows: an inspected foe (or ally) if any, else the selected hero.</summary>
@@ -403,7 +403,7 @@ namespace GridGame.App
             {
                 pickingMode = PickingMode.Ignore;
                 style.position = Position.Absolute;
-                style.left = style.top = style.right = style.bottom = 0f;
+                style.left = style.top = style.right = style.bottom = Space.S0;
                 generateVisualContent += Paint;
             }
 
@@ -558,7 +558,7 @@ namespace GridGame.App
             var frame = DiamondPart(icon, "tl-frame", IconSide, IconSpan);
             frame.style.backgroundColor = Palette.Ink; // opaque, so the track never shows through
             frame.style.overflow = Overflow.Hidden;
-            SetBorder(frame, 5f, IconBorder, EntryColor(e));
+            SetBorder(frame, Radius.R5, IconBorder, EntryColor(e));
             SetDiamondArt(frame, IconSide, IconBorder, e);
             // GG-T1071: the diamond's back face, shown only while a pushback spin has it facing away (CardFlip).
             var back = new VisualElement { name = "tl-back", pickingMode = PickingMode.Ignore };
@@ -685,7 +685,7 @@ namespace GridGame.App
                 bool isNext = e.Id == nextActorEntry;
                 var c = EntryColor(e);
                 var frame = icon.Q("tl-frame");
-                if (frame != null) SetBorder(frame, 5f, isNext ? IconBorder + 1f : IconBorder, isNext ? Palette.Gold : c);
+                if (frame != null) SetBorder(frame, Radius.R5, isNext ? IconBorder + 1f : IconBorder, isNext ? Palette.Gold : c);
                 icon.EnableInClassList("tl-next", isNext); // its scale is LayoutIcons' (the tray shrinks it)
                 float k = Halted(e) || inTray.Contains(e.Id) ? 0f : Mathf.Clamp01(1f - at[e.Id] * BattleConfig.BarSeconds / ApproachSeconds);
                 approach[e.Id] = (c, k);
@@ -744,7 +744,7 @@ namespace GridGame.App
                 }
             }
             if (e == null) { slotTime.text = ""; return; }
-            SetBorder(slotFrame, 8f, SlotBorder, EntryColor(e));
+            SetBorder(slotFrame, Radius.R8, SlotBorder, EntryColor(e));
             float secs = at.TryGetValue(e.Id, out var u) ? u * BattleConfig.BarSeconds : 0f;
             bool now = e.Id == actingEntry || e.Id == activeHero;
             slotTime.text = now || secs < 0.05f ? "NOW" : $"{secs:0.0}s";

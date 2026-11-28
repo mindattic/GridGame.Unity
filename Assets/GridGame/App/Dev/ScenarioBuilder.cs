@@ -199,7 +199,7 @@ namespace GridGame.App.Dev
             Onboarding.Finish(s);
             if (def.AllFeatures) CampNpcs.JoinAll(s);
 
-            for (int i = 0; i < cleared; i++) s.ClearedStages.Add(stages[i].Id);
+            for (int i = 0; i < cleared; i++) { s.ClearedStages.Add(stages[i].Id); BestiaryRegions.RecordStage(s, stages[i]); }
             s.HighestClearedStage = cleared - 1;
 
             var result = new ScenarioResult { Save = s, Target = target };
@@ -220,6 +220,9 @@ namespace GridGame.App.Dev
             s.Gold = ScenarioDef.Int(def.Gold) ?? Progression.StartingGold + GoldPerClear * cleared;
             if (!ScenarioDef.IsWord(def.Gear, "none")) EquipBest(c, s, result);
             EquipConsumables(c, s, def.Consumables);
+            if (def.Bag != null)
+                foreach (var kv in def.Bag)
+                    s.AddItem((c.TryItem(kv.Key) ?? throw new ArgumentException($"bag: unknown item '{kv.Key}'")).Id, Math.Max(1, kv.Value));
             FillCaravan(c, s, def.Caravan, cleared, stages.Count);
 
             if (def.Food is int food) s.World.Food = Math.Max(0, food);

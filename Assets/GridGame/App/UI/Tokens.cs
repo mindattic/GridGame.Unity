@@ -324,19 +324,21 @@ namespace GridGame.App
         }
     }
 
-    /// <summary>8-px spacing scale (POL-C1); S4 is the half step for hairline insets inside small widgets.</summary>
+    /// <summary>8-px spacing scale (POL-C1); S2 and S4 are the half steps for hairline insets inside small widgets.</summary>
     public static class Space
     {
-        public const float S0 = 0, S4 = 4, S8 = 8, S16 = 16, S24 = 24, S32 = 32, S48 = 48, S64 = 64, S96 = 96;
+        public const float S0 = 0, S2 = 2, S4 = 4, S8 = 8, S16 = 16, S24 = 24, S32 = 32, S48 = 48, S64 = 64, S96 = 96;
         /// <summary>Half of the 24-px gap between tap targets (POL-C3): each neighbour's margin, so two add up to S24
         /// (USS <c>--space-12</c>).</summary>
         public const float TargetHalfGap = 12;
     }
 
-    /// <summary>Corner radii in design px (USS <c>--radius-N</c>, the same steps).</summary>
+    /// <summary>Corner radii in design px (USS <c>--radius-N</c>, the same steps). <see cref="Pill"/> rounds any box into a
+    /// capsule or circle.</summary>
     public static class Radius
     {
-        public const float R3 = 3, R6 = 6, R8 = 8, R10 = 10, R12 = 12, R14 = 14, R16 = 16, R17 = 17, R18 = 18, R22 = 22;
+        public const float R2 = 2, R3 = 3, R4 = 4, R5 = 5, R6 = 6, R7 = 7, R8 = 8, R10 = 10, R12 = 12, R14 = 14, R16 = 16, R17 = 17,
+            R18 = 18, R20 = 20, R22 = 22, R26 = 26, R28 = 28, Pill = 999;
     }
 
     /// <summary>Named element sizes in design px (POL-C1). Design px already scale uniformly to every resolution
@@ -345,6 +347,10 @@ namespace GridGame.App
     {
         // Lines, bars and pips
         public const float Underline = 2, Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
+        // How far a board tile's glow ring sits outside the tile.
+        public const float GlowRing = 5;
+        // A toast's height above the stage bottom, and how much higher each one already showing pushes the next.
+        public const float ToastLift = 260, ToastStack = 170;
         // Icons and pictures
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
@@ -360,6 +366,8 @@ namespace GridGame.App
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
         /// <summary>A multi-line paste box (a save transfer code).</summary>
         public const float CodeBox = 360;
+        /// <summary>A skill hex's corner label (the talent id beside each corner).</summary>
+        public const float HexLabelW = 100, HexLabelH = 42;
     }
 
     /// <summary>

@@ -153,11 +153,16 @@ namespace GridGame.App
             return new StoryCrawlScreen(p, next);
         }
 
+        /// <summary>The Founding scene, opened (GG-T2127) by the Commander's look and pronouns pick; runs that don't stop
+        /// to ask (<see cref="VariantPicker.Asks"/>) keep the defaults.</summary>
         private static GameScreen Founding(Func<GameScreen> next)
         {
             var app = GameApp.I;
             var founding = DialogueRunner.PendingFounding(app.Content, app.Save);
-            return founding == null ? next() : Play(founding, next, OpeningBackdrop(app.Content.Campaign.Opening));
+            if (founding == null) return next();
+            string backdrop = OpeningBackdrop(app.Content.Campaign.Opening);
+            GameScreen Scene() => Play(founding, next, backdrop);
+            return VariantPicker.Asks ? new CommanderLookScreen(Scene, backdrop) : Scene();
         }
 
         /// <summary>GG-T1958: the first tutorial drill (campaign.json Tutorial, GG-T1374), before the crawl, when its stage
@@ -180,8 +185,12 @@ namespace GridGame.App
             return next();
         }
 
-        private static StageDef TutorialStage(ContentDb c, int n) =>
-            n < c.Campaign.Tutorial.Count ? c.TryStage(c.Campaign.Tutorial[n]) : null;
+        /// <summary>GG-T2075: a new game's drill <paramref name="n"/>: campaign.json's Prologue battles, else its Tutorial drills.</summary>
+        private static StageDef TutorialStage(ContentDb c, int n)
+        {
+            var order = Drills.NewGameOrder(c);
+            return n < order.Count ? c.TryStage(order[n]) : null;
+        }
 
         /// <summary>Tutorial drill <paramref name="n"/>, its checkpoint written as it starts. A drill always starts from
         /// the top (a battle is never saved mid-fight, BIBLE 26.8).</summary>

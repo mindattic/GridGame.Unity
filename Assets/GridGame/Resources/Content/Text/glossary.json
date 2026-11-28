@@ -2069,13 +2069,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:dd8cc727d5408b3ae08df0e2755d34a2ede9789a436f550378e07a2f8d63f579",
+      "hash": "sha256:1cf016f9f297f0b28f36c5db029ca90d0c11075edb6b2a3a909e8d7da5a022ae",
       "about": [],
       "speakers": [],
       "payload": {
-        "term": "Skill Board",
+        "term": "Talents",
         "definition": "Each hero's hexagon of nodes, bought with the skill point earned every level. Passive nodes add stats; ability nodes teach the ability.",
         "aliases": [
+          "Skill Board",
           "Skill Boards"
         ]
       }

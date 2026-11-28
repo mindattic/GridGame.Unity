@@ -216,7 +216,7 @@ namespace GridGame.App
             plate.style.paddingLeft = plate.style.paddingRight = Space.S32;
             plate.style.justifyContent = Justify.Center;
             plate.style.alignItems = Align.Center;
-            SetRadius(plate, 22);
+            SetRadius(plate, Radius.R22);
             SetBorder(plate, 4);
             plate.style.opacity = 0f;
             s.GlowFar = Glow(plate, 22, 0.18f);
@@ -234,7 +234,7 @@ namespace GridGame.App
             var g = new VisualElement { pickingMode = PickingMode.Ignore };
             g.style.position = Position.Absolute;
             g.style.left = g.style.right = g.style.top = g.style.bottom = -spread;
-            SetRadius(g, 22 + spread);
+            SetRadius(g, Radius.R22 + spread);
             g.style.opacity = 0f;
             g.userData = alpha;
             plate.Add(g);
@@ -497,7 +497,7 @@ namespace GridGame.App
             row.style.paddingLeft = row.style.paddingRight = Space.S24;
             row.style.paddingTop = row.style.paddingBottom = Space.S16;
             row.style.backgroundColor = Palette.Ink.WithA(0.72f);
-            SetRadius(row, 28);
+            SetRadius(row, Radius.R28);
             var name = Ui.Text("Standing", "small", row);
             name.style.marginRight = Space.S16;
             witsPips = new VisualElement[w.Max];
@@ -506,7 +506,7 @@ namespace GridGame.App
                 var pip = new VisualElement { pickingMode = PickingMode.Ignore, name = "dlg-wits-pip-" + (i + 1) };
                 pip.style.width = pip.style.height = Size.IconS;
                 pip.style.marginLeft = pip.style.marginRight = Space.S4;
-                SetRadius(pip, 20);
+                SetRadius(pip, Radius.R20);
                 SetBorder(pip, i + 1 == w.Threshold ? 5 : 3);
                 var edge = i + 1 == w.Threshold ? Palette.Gold : Palette.TextDim;
                 pip.style.borderTopColor = pip.style.borderBottomColor = pip.style.borderLeftColor = pip.style.borderRightColor = edge;
@@ -568,7 +568,7 @@ namespace GridGame.App
             chip.style.paddingLeft = chip.style.paddingRight = Space.S24;
             chip.style.paddingTop = chip.style.paddingBottom = Space.S8;
             chip.style.backgroundColor = Palette.Ink.WithA(0.85f);
-            SetRadius(chip, 28);
+            SetRadius(chip, Radius.R28);
             SetBorder(chip, b.TierUp ? 4 : 2);
             var edge = b.TierUp ? Palette.Gold : Palette.TextDim;
             chip.style.borderTopColor = chip.style.borderBottomColor = chip.style.borderLeftColor = chip.style.borderRightColor = edge;

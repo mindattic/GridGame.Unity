@@ -81,7 +81,7 @@ namespace GridGame.App
             window.style.rotate = new Rotate(tilt);
             window.style.borderTopWidth = window.style.borderBottomWidth = window.style.borderLeftWidth = window.style.borderRightWidth = 6;
             window.style.borderTopColor = window.style.borderBottomColor = window.style.borderLeftColor = window.style.borderRightColor = Palette.White.WithA(0.95f);
-            window.style.borderTopLeftRadius = window.style.borderTopRightRadius = window.style.borderBottomLeftRadius = window.style.borderBottomRightRadius = 18;
+            window.style.borderTopLeftRadius = window.style.borderTopRightRadius = window.style.borderBottomLeftRadius = window.style.borderBottomRightRadius = Radius.R18;
             window.style.backgroundColor = new Color(c.r * 0.25f, c.g * 0.25f, c.b * 0.35f, 0.85f);
             portrait = new VisualElement { pickingMode = PickingMode.Ignore };
             portrait.style.position = Position.Absolute;

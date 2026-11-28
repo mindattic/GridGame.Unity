@@ -19,7 +19,7 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             var list = Ui.ListPanel(body, "Heroes", "respec-list");
-            Ui.Para("Rest a night and forget your training: every skill point a hero spent on the skill board comes back. " +
+            Ui.Para("Rest a night and forget your training: every skill point a hero spent on Talents comes back. " +
                 $"Costs {Ui.Gold(SkillHexProgress.RespecBaseGold)} + {Ui.Gold(SkillHexProgress.RespecGoldPerLevel)} per level. " +
                 "The Start path, the starting kit and abilities bought at Learn are kept.", list, "dim");
             string closed = SkillHexProgress.RespecClosed(S);
@@ -46,7 +46,7 @@ namespace GridGame.App
                 {
                     if (!ok) { GameApp.I?.Audio?.Sfx("ui.error"); return; }
                     Ask(C, hero,
-                        $"Pay {Ui.Gold(cost)} to give back {name}'s {nodes} board node{(nodes == 1 ? "" : "s")} and refund {refund} skill point{(refund == 1 ? "" : "s")}?",
+                        $"Pay {Ui.Gold(cost)} to give back {name}'s {nodes} Talents node{(nodes == 1 ? "" : "s")} and refund {refund} skill point{(refund == 1 ? "" : "s")}?",
                         r => Done(r), () => SkillHexProgress.Respec(C, S, hero), () => SkillHexProgress.Respec(C, S, hero, true));
                 }, "ui.select");
             }

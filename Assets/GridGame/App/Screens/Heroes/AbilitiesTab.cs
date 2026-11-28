@@ -20,7 +20,7 @@ namespace GridGame.App
         /// <summary>The Board sub-tab's index (after Known, Items, Passives, Locked): the skill hexagon (GG-T1056),
         /// in place of the old Talents skill trees; its id stays "talents".</summary>
         public const int TalentsSub = 4;
-        private static readonly string[] SubTabs = { "Known", "Items", "Passives", "Locked", "Board" };
+        private static readonly string[] SubTabs = { "Known", "Items", "Passives", "Locked", "Talents" };
 
         public AbilitiesTab(int subTab = -1, (int Q, int R)? boardNode = null) { tab = subTab; talents.Select(boardNode); }
         public override void OnHeroChanged() => talents.OnHeroChanged();
@@ -69,7 +69,7 @@ namespace GridGame.App
                 // Every bar slot shares the row with even gutters, however many slots or however wide the stage (POL-C8).
                 cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.minHeight = Size.Cell; // GG-T1145: min, not fixed: a long name wraps to 3 lines and grows the cell instead of spilling onto the Supporter line
                 Ui.Margin(cell, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
-                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 14;
+                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = Radius.R14;
                 cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = i == slot ? 6 : 3;
                 var bc = i == slot ? Palette.Gold : Palette.Text.WithA(0.7f);
                 cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = bc;
@@ -157,7 +157,7 @@ namespace GridGame.App
                 foreach (var tome in C.Items.Values.Where(i => i.Type == ItemType.Tome && string.Equals(i.TeachesAbility, a.Id, StringComparison.OrdinalIgnoreCase)))
                     sources.Add($"{tome.Name}: {string.Join(", ", TomeFoundAt(tome.Id).DefaultIfEmpty("not found anywhere yet"))}");
                 var boardPt = SkillHexProgress.Board(C)?.FindAbility(a.Id);
-                if (boardPt != null) sources.Add($"Skill board - {SkillHexProgress.Board(C).Price(boardPt.Value)} SP");
+                if (boardPt != null) sources.Add($"Talents - {SkillHexProgress.Board(C).Price(boardPt.Value)} SP");
                 if (sources.Count == 0) sources.Add("Not taught anywhere yet");
                 result.Add(new LockedSkill { Ability = a, Kit = kit, Sources = sources });
             }
@@ -194,7 +194,7 @@ namespace GridGame.App
         private void Locked(HeroSave h, VisualElement list)
         {
             var locked = LockedSkills(h);
-            Ui.Para("A hero starts with two moves. The rest are bought from the trainer (Learn) or the skill board, or discovered as Tomes.", list, "dim");
+            Ui.Para("A hero starts with two moves. The rest are bought from the trainer (Learn) or in Talents, or discovered as Tomes.", list, "dim");
             if (locked.Count == 0) Ui.Empty("Nothing left to learn.", list);
             foreach (var l in locked)
             {
@@ -279,7 +279,7 @@ namespace GridGame.App
             Ui.Heading($"{plan.Skill.Name} — {KindLabel(plan.Skill)}", head, "grow");
             GlossaryText.Create(plan.Skill.Description ?? "", "kit-text dim", card);
             string hero = C.TryClass(plan.Hero.ClassId)?.Name ?? plan.Hero.ClassId;
-            Ui.Para($"First lesson free — the {hero} takes this skill board node at no skill point cost, and it goes onto the battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
+            Ui.Para($"First lesson free — the {hero} takes this Talents node at no skill point cost, and it goes onto the battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
             var btn = RowIcon.IconButton("Learn", RowKind.Confirm, () => LearnDone(Training.Teach(C, S), plan.Hero, plan.Skill.Id), "btn--primary", Ui.Actions(card));
             btn.name = CampTips.CraftButton;
         }

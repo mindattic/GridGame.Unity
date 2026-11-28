@@ -247,7 +247,7 @@ playtime. One game instance at a time (`--replace`).
 
 ## 4. Gaps in GridGame's current settings vs the guides
 
-Current Settings (HubScreens.cs, 2026-11-27): Gameplay (battle speed ×1–3, drag timer, confirm before acting, pincer
+Current Settings (Settings/SettingsScreen.cs, 2026-11-27): Gameplay (battle speed ×1–3, drag timer, confirm before acting, pincer
 close-ups, turn mode), Graphics (quality, frame cap, VSync, screen shake, effects), Display (window mode, resolution,
 thumb margin on mobile, UI scale 80–100%), Sound (master, music, SFX, both mutes, mute when unfocused), Accessibility
 (text size 100/115/130, colorblind, reduce motion, windows theme, font, text wrapping), How to play (replay tutorials,

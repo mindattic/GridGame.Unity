@@ -118,6 +118,7 @@ namespace GridGame.App
             else if (tip.Target == CampTips.CraftButton) steps.Add(Tap(CampTips.CraftButton, $"Tap {verb}."));
             else if (tip.Station == "blacksmith") steps.Add(Tap(tip.Target, "Tap the worn piece to mend it."));
             else if (tip.Station == "summon") steps.Add(Tap(tip.Target, "Tap Draw."));
+            else if (tip.Station == CampTips.AutoEquipTipStation) steps.Add(Tap(tip.Target, "Tap Auto-equip best, then tap again to confirm."));
             else if (tip.Station == "enchantress") steps.Add(Tap(tip.Target, "Tap a piece of worn armor."));
             else steps.Add(Tap(tip.Target, "Tap here."));
             return steps;
