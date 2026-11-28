@@ -340,6 +340,7 @@ namespace GridGame.App
             bannerViewport.style.left = bannerViewport.style.right = Fit.Edge; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
             timerLabel = Ui.Text("", "h2 shadow warn", root);
             timerLabel.name = "drag-timer";
+            Ui.Scrim(timerLabel); // GG-T1898
             timerLabel.pickingMode = PickingMode.Ignore;
             timerLabel.style.position = Position.Absolute;
             timerLabel.style.left = Fit.Edge + SlotSpan + Space.S8;
