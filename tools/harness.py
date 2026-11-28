@@ -2799,13 +2799,14 @@ def storyarc(run="storyarc", capture=True):
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1)):
         call("devgive", item=item, count=n)
     _goto("mercenaries"); time.sleep(0.8); shot("12-mercenaries")
-    # GG-T2020: a row opens the hire sheet; a length row there hires (a mouse tap runs it at once).
+    # GG-T2020: a row opens the hire sheet; GG-T2090: a length segment there picks the term, then Hire hires (a mouse tap runs it at once).
     for offer in sorted(call("names", prefix="merc-offer-")):
         call("scrollto", name=offer); time.sleep(0.4)  # the first by name may sit below the list's fold (GG-T401)
         call("click", name=offer); time.sleep(0.6)
         hire = sorted(call("names", prefix="merc-hire-"))
         if hire:
-            call("click", name=hire[0]); time.sleep(1.0)
+            call("click", name=hire[0]); time.sleep(0.4)
+            call("click", name="merc-hire"); time.sleep(1.0)
             break
         call("click", name="merc-sheet-close"); time.sleep(0.5)
     ok["mercenary_hired"] = len(save().get("mercs") or []) == 1
