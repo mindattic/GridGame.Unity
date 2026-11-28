@@ -335,6 +335,10 @@
 .kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: rgba(107, 199, 255, 0.14); }
 .kit-tile--locked { opacity: 0.4; }
+/* GG-T1972: the Equip tab's slot grid, four thumbnails a row; names wrap, never cut off */
+.equip-tile { flex-basis: 21%; height: auto; min-height: 160px; padding: var(--space-8) var(--space-4); justify-content: flex-start; }
+.equip-tile > .kit-tile-label, .equip-tile > .kit-tile-value { white-space: normal; }
+.equip-tile--selected { border-color: var(--color-mana); background-color: rgba(0, 0, 0, 0.38); translate: 0 3px; scale: 0.985 0.985; }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .tabs { flex-direction: row; margin: var(--space-8) var(--space-8) 0 var(--space-8); padding: 0 var(--space-12); flex-shrink: 0; } /* edge = tab margin 12 + 12 = gap 24 (POL-C8) */
