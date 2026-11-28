@@ -205,11 +205,11 @@ namespace GridGame.App
         }
 
         /// <summary>A locked entry's icon: its art blacked out (the Bestiary's unseen silhouette), or the padlock where it
-        /// has only an emblem.</summary>
+        /// has only its kind's set icon.</summary>
         private void LockedKindIcon(VisualElement row, string kind, string id)
         {
             var icon = EntryKindIcon(row, kind, id);
-            if (icon is KindEmblem) { row.KindIcon(RowKind.Locked); return; }
+            if (RowIcon.IsSetIcon(icon)) { row.KindIcon(RowKind.Locked); return; }
             icon.style.unityBackgroundImageTintColor = Shadow;
             icon.Query<VisualElement>().ForEach(e => e.style.unityBackgroundImageTintColor = Shadow);
         }

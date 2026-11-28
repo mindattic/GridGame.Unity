@@ -143,8 +143,8 @@ namespace GridGame.App
         /// <summary>The Enter arrow at the right end of an enterable stage row (GG-T715), after its value.</summary>
         private static void EnterMark(VisualElement row)
         {
-            var go = new KindEmblem(RowKind.Enter) { name = "enter-mark" };
-            go.AddToClassList(RowIcon.Class);
+            var go = RowIcon.SetIcon(RowIcon.IconId(RowKind.Enter), RowIcon.Class);
+            go.name = "enter-mark";
             go.style.width = go.style.height = Size.IconS;
             go.style.flexShrink = 0f;
             go.AddToClassList("enter-mark");

@@ -2990,6 +2990,9 @@ def navcheck(run="navcheck"):
     _wait_screen("title")
     call("goto", screen="hub"); time.sleep(0.9)
     checks = {}
+    # GG-T1963: the hub root shows the nav too; Heroes, Summon and Shop left the tiles, their old names ride the nav tabs.
+    checks["the hub root shows the nav"] = bool(call("names", prefix="nav-home"))
+    checks["camp-heroes rides the Heroes tab"] = bool(call("names", prefix="camp-heroes"))
 
     def stack():
         return call("state")["stack"]  # top first, so [-1] is the hub

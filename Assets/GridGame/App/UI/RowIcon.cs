@@ -8,7 +8,7 @@ namespace GridGame.App
     /// <summary>
     /// What a tappable thing is (GG-T712/GG-T714, owner 2026-11-23: "every item or place or selectable must be prefixed with
     /// a icon so the user knows what they are pressing"). Each kind has one icon (BIBLE §26.7, the kind table): its real art
-    /// where art exists, else a code-drawn Manapunk emblem (<see cref="KindEmblem"/>).
+    /// where art exists, else its icon from the menu set (<see cref="RowIcon.IconId"/>, docs/ICONS.md, GG-T2051).
     /// </summary>
     public enum RowKind
     {
@@ -132,7 +132,7 @@ namespace GridGame.App
     /// <c>row.KindIcon(RowKind.Item, Art.ItemIcon(id))</c> (or <c>RowIcon.KindIcon(row, kind, tex)</c>, or the id form
     /// <c>row.KindIcon(RowKind.Place, themeId)</c> that finds the art itself) puts a <c>menu-icon</c> right after the row's
     /// <c>menu-cursor</c> (first child when it has none), replacing an icon already there. With no art for the kind it
-    /// draws that kind's emblem, so a row is never bare text.
+    /// shows that kind's icon from the menu set (<see cref="IconId"/>), so a row is never bare text.
     /// <para>Size: the kit's <c>.menu-icon</c> (64 design px, <see cref="Size.Icon"/>, 16 px before the label), fixed:
     /// it never shrinks, and the label's shrink-to-fit (GG-T711, <see cref="TextFit"/>) fits the width left over.</para>
     /// </summary>
@@ -142,7 +142,7 @@ namespace GridGame.App
         public const string Class = "kind-icon";
 
         /// <summary>Lead <paramref name="row"/> with <paramref name="kind"/>'s icon: <paramref name="tex"/> when given, else
-        /// the kind's fixed art (the bounty skull) or its emblem. Returns the icon.</summary>
+        /// the kind's icon from the menu set. Returns the icon.</summary>
         public static VisualElement KindIcon(this VisualElement row, RowKind kind, Texture2D tex = null)
         {
             VisualElement icon;
@@ -157,7 +157,7 @@ namespace GridGame.App
 
         /// <summary>Lead <paramref name="row"/> with <paramref name="kind"/>'s icon found from <paramref name="id"/>: an item
         /// or ability id, a status id, a theme id for a place or stage, a class or portrait id for a hero, NPC or keeper.
-        /// Anything without art falls back to the kind's emblem.</summary>
+        /// Anything without art falls back to the kind's set icon.</summary>
         public static VisualElement KindIcon(this VisualElement row, RowKind kind, string id)
         {
             if (IsActor(kind) && !string.IsNullOrEmpty(id) && Art.HasPortrait(id))
@@ -174,14 +174,14 @@ namespace GridGame.App
         /// header's back button, GG-T738): the icon centred, no label. A <see cref="RowKind.Confirm"/> button runs an action,
         /// so it is select-then-confirm (<see cref="Ui.ConfirmTap"/>, GG-T1942) unless <paramref name="confirmTap"/> says
         /// otherwise: false for one that opens its own confirm or answers a dialog.</summary>
-        public static Button IconButton(string text, RowKind kind, Action onClick, string classes = null, VisualElement parent = null, bool? confirmTap = null)
+        public static Button IconButton(string text, RowKind kind, Action onClick, string classes = null, VisualElement parent = null, bool? confirmTap = null, Texture2D tex = null)
         {
             var b = Ui.Button("", onClick, classes, parent, confirmTap ?? kind == RowKind.Confirm);
             b.style.flexDirection = FlexDirection.Row;
             b.style.alignItems = Align.Center;
             b.style.justifyContent = Justify.Center;
-            var icon = b.KindIcon(kind);
-            icon.style.width = icon.style.height = Size.IconS;
+            var icon = b.KindIcon(kind, tex);
+            icon.style.width = icon.style.height = Size.IconButton;
             if (string.IsNullOrEmpty(text)) { icon.style.marginRight = Space.S0; return b; }
             icon.style.marginRight = Space.S8;
             var label = Ui.Text(text, null, b);
@@ -195,8 +195,7 @@ namespace GridGame.App
         public static VisualElement Badge(VisualElement icon, RowKind badge)
         {
             icon.Q(className: BadgeClass)?.RemoveFromHierarchy();
-            var b = new KindEmblem(badge);
-            b.AddToClassList(BadgeClass);
+            var b = SetIcon(IconId(badge), BadgeClass);
             b.style.position = Position.Absolute;
             b.style.width = b.style.height = Length.Percent(BadgeFrac * 100f);
             b.style.right = b.style.bottom = Length.Percent(-8f);
@@ -222,7 +221,7 @@ namespace GridGame.App
         /// <summary>Takes the corner badge off a kind icon (an entry read, GG-T925); nothing when it has none.</summary>
         public static void ClearBadge(VisualElement icon) => icon?.Q(className: BadgeClass)?.RemoveFromHierarchy();
 
-        /// <summary>The art <paramref name="kind"/> shows for <paramref name="id"/>, or null (the emblem then).</summary>
+        /// <summary>The art <paramref name="kind"/> shows for <paramref name="id"/>, or null (the set icon then).</summary>
         public static Texture2D ArtFor(RowKind kind, string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
@@ -246,18 +245,90 @@ namespace GridGame.App
         /// falling back to the portrait through its Thumbnail framing.</summary>
         private static void ActorThumb(VisualElement host, string actorId) => Ui.PortraitThumb(host, actorId);
 
+        /// <summary>Class a kind icon carries when it shows the kind's set icon rather than the thing's own art.</summary>
+        public const string SetClass = "kind-icon--set";
+
+        /// <summary>True when <paramref name="icon"/> is a kind's set icon, not the thing's own art.</summary>
+        public static bool IsSetIcon(VisualElement icon) => icon != null && icon.ClassListContains(SetClass);
+
+        /// <summary>The menu-set icon id (<see cref="Art.UiIcon"/>, docs/ICONS.md "KindEmblem kinds to migrate") of
+        /// <paramref name="kind"/>.</summary>
+        public static string IconId(RowKind kind)
+        {
+            switch (kind)
+            {
+                case RowKind.Place: return "chrome-place";
+                case RowKind.Stage: return "chrome-stage";
+                case RowKind.Enter: return "chrome-enter";
+                case RowKind.Item: return "chrome-item";
+                case RowKind.Ability: return "chrome-ability";
+                case RowKind.Status: return "chrome-status";
+                case RowKind.Hero: case RowKind.Npc: case RowKind.Keeper: return "chrome-hero";
+                case RowKind.Bounty: return "hub-bounties";
+                case RowKind.Quest: return "hub-quests";
+                case RowKind.Shop: return "hub-shop";
+                case RowKind.Station: return "chrome-station";
+                case RowKind.Back: return "chrome-back";
+                case RowKind.Close: return "chrome-close";
+                case RowKind.Confirm: return "chrome-confirm";
+                case RowKind.Locked: return "chrome-locked";
+                case RowKind.Cleared: return "chrome-cleared";
+                case RowKind.New: return "chrome-new";
+                case RowKind.Settings: return "hub-settings";
+                case RowKind.Document: return "chrome-document";
+                case RowKind.Save: return "chrome-save";
+                case RowKind.Quit: return "hub-quit-to-title";
+                case RowKind.Talk: return "hub-talk";
+                case RowKind.Bestiary: return "hub-bestiary";
+                case RowKind.NewGamePlus: return "hub-new-game-plus";
+                case RowKind.Crucible: return "hub-crucible";
+                case RowKind.Diamond: return "hub-diamond-store";
+                case RowKind.Codex: return "hub-codex";
+                case RowKind.Lore: return "chrome-lore";
+                case RowKind.Faction: return "chrome-faction";
+                case RowKind.Home: return "chrome-home";
+                case RowKind.Summon: return "hub-summon";
+                case RowKind.Craft: return "hub-craft";
+                case RowKind.Speed: return "set-battle-speed";
+                case RowKind.Timer: return "set-drag-timer";
+                case RowKind.Focus: return "set-pincer-close-ups";
+                case RowKind.Gauge: return "set-frame-rate-cap";
+                case RowKind.Shake: return "set-screen-shake";
+                case RowKind.Sync: return "set-vsync";
+                case RowKind.Window: return "set-window-mode";
+                case RowKind.Frame: return "set-resolution";
+                case RowKind.Hand: return "set-thumb-margin";
+                case RowKind.Scale: return "set-ui-scale";
+                case RowKind.Text: return "set-text-size";
+                case RowKind.Type: return "set-font";
+                case RowKind.Eye: return "set-colorblind-palette";
+                case RowKind.Pause: return "set-reduce-motion";
+                case RowKind.Speaker: return "set-master-volume";
+                case RowKind.Note: return "set-music-volume";
+                case RowKind.Wave: return "set-sound-volume";
+                case RowKind.SpeakerOff: return "set-mute-sound";
+                case RowKind.NoteOff: return "set-mute-music";
+                case RowKind.WindowOff: return "set-mute-when-unfocused";
+                case RowKind.Hamburger: return "chrome-hamburger";
+                default: return "chrome-menu";
+            }
+        }
+
+        /// <summary>A bare icon element showing set icon <paramref name="id"/> (<see cref="Art.UiIcon"/>), sized by its
+        /// classes or the caller.</summary>
+        public static VisualElement SetIcon(string id, string classes = "menu-icon")
+        {
+            var e = Ui.El(classes);
+            e.pickingMode = PickingMode.Ignore;
+            e.style.backgroundImage = new StyleBackground(Art.UiIcon(id));
+            e.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+            return e;
+        }
+
         private static VisualElement Fallback(RowKind kind)
         {
-            if (kind == RowKind.Bounty)
-            {
-                var host = Ui.El("menu-icon");
-                host.style.alignItems = Align.Center;
-                host.style.justifyContent = Justify.Center;
-                BountySkull.Make(Size.Icon, host);
-                return host;
-            }
-            var e = new KindEmblem(kind);
-            e.AddToClassList("menu-icon");
+            var e = SetIcon(IconId(kind));
+            e.AddToClassList(SetClass);
             return e;
         }
 
@@ -278,466 +349,6 @@ namespace GridGame.App
             if (old != null) { at = row.IndexOf(old); old.RemoveFromHierarchy(); }
             row.Insert(Mathf.Min(at, row.childCount), icon);
             return icon;
-        }
-    }
-
-    /// <summary>
-    /// A kind's code-drawn Manapunk emblem (BIBLE §11.5, §26.7): a Manalith-blue (#7590C8) disc with a pewter rim and a pale
-    /// mark for the kind, drawn with Painter2D like the mana orbs, so it is crisp at any size and needs no font glyph
-    /// (GG-LAW-11). Stands in wherever a kind has no art.
-    /// </summary>
-    public sealed class KindEmblem : VisualElement
-    {
-        /// <summary>The disc: Manalith blue #7590C8 (§11.5, the lit mana orb's colour).</summary>
-        public static readonly Color Disc = Palette.OrbLit;
-        public static readonly Color Rim = Palette.PewterDark;
-        public static readonly Color Mark = Palette.Scene.RowMark;
-
-        public RowKind Kind { get; }
-
-        public KindEmblem(RowKind kind)
-        {
-            Kind = kind;
-            pickingMode = PickingMode.Ignore;
-            generateVisualContent += Draw;
-        }
-
-        private void Draw(MeshGenerationContext ctx)
-        {
-            var rect = contentRect;
-            float r = Mathf.Min(rect.width, rect.height) / 2f;
-            if (r < 3f || float.IsNaN(r)) return;
-            var c = rect.center;
-            var p = ctx.painter2D;
-            if (Kind == RowKind.Back || Kind == RowKind.Enter || Kind == RowKind.Stage)
-            {
-                // GG-T1892: a direction is one big filled, outlined arrow across the whole icon, not a glyph in a disc.
-                float h = r * 0.9f, dir = Kind == RowKind.Back ? -1f : 1f;
-                float body = r * 0.55f;
-                Shapes.Arrow(p, c - new Vector2(dir * h, 0f), c + new Vector2(dir * h, 0f),
-                    new ShapeStyle { Width = body, Outline = Mathf.Max(1.5f, r * 0.12f), HeadLength = r * 1.0f, HeadWidth = r * 1.8f, Fill = Mark, Line = Rim });
-                return;
-            }
-            if (Kind == RowKind.Hamburger)
-            {
-                // GG-T1910: the hamburger is three thick white bars across the whole icon, each rimmed dark, so it reads at a glance.
-                float bw = r * 0.34f, half = r * 0.92f - bw * 0.5f, gap = r * 0.62f;
-                var bar = new ShapeStyle { Width = bw, Outline = Mathf.Max(1.5f, r * 0.08f), Fill = Mark, Line = Rim };
-                for (int k = -1; k <= 1; k++)
-                    Shapes.Bar(p, c + new Vector2(-half, k * gap), c + new Vector2(half, k * gap), bar);
-                return;
-            }
-            float rim = Mathf.Max(1.5f, r * 0.08f);
-            FillCircle(p, c, r, Rim);
-            FillCircle(p, c, r - rim, Disc);
-            // The glass highlight every Manapunk bulb carries, faint, top left.
-            FillCircle(p, c + new Vector2(-0.38f, -0.40f) * r, r * 0.16f, Palette.White.WithA(0.3f));
-
-            float u = r * 0.52f; // the mark's half-size
-            Vector2 P(float x, float y) => c + new Vector2(x, y) * u;
-            float w = Mathf.Max(2f, r * 0.15f); // stroke width
-            p.lineCap = LineCap.Round;
-            p.lineJoin = LineJoin.Round;
-            p.strokeColor = Mark;
-            p.fillColor = Mark;
-            p.lineWidth = w;
-
-            switch (Kind)
-            {
-                case RowKind.Place: // map pin: a round head tapering to a point, with a hole
-                    p.BeginPath();
-                    p.Arc(P(0f, -0.25f), u * 0.62f, Angle.Degrees(150f), Angle.Degrees(390f));
-                    p.LineTo(P(0f, 1f));
-                    p.ClosePath();
-                    p.Fill();
-                    FillCircle(p, P(0f, -0.25f), u * 0.26f, Disc);
-                    break;
-                case RowKind.Stage:
-                case RowKind.Enter: // the Enter arrow, pointing right
-                    Shapes.Arrow(p, P(-0.8f, 0f), P(0.95f, 0f), ArrowStyle(w, u));
-                    break;
-                case RowKind.Back: // arrow pointing left
-                    Shapes.Arrow(p, P(0.8f, 0f), P(-0.95f, 0f), ArrowStyle(w, u));
-                    break;
-                case RowKind.Close:
-                    Line(p, P(-0.6f, -0.6f), P(0.6f, 0.6f));
-                    Line(p, P(0.6f, -0.6f), P(-0.6f, 0.6f));
-                    break;
-                case RowKind.Confirm:
-                case RowKind.Cleared: // check
-                    p.lineWidth = w * 1.2f;
-                    p.BeginPath();
-                    p.MoveTo(P(-0.7f, 0.05f));
-                    p.LineTo(P(-0.2f, 0.55f));
-                    p.LineTo(P(0.75f, -0.55f));
-                    p.Stroke();
-                    break;
-                case RowKind.Locked: // padlock: shackle over a body with a keyhole
-                    p.BeginPath();
-                    p.Arc(P(0f, -0.2f), u * 0.42f, Angle.Degrees(180f), Angle.Degrees(360f));
-                    p.Stroke();
-                    Line(p, P(-0.42f, -0.2f), P(-0.42f, 0.05f));
-                    Line(p, P(0.42f, -0.2f), P(0.42f, 0.05f));
-                    Rect(p, P(-0.7f, 0f), P(0.7f, 0.9f));
-                    FillCircle(p, P(0f, 0.38f), u * 0.14f, Disc);
-                    break;
-                case RowKind.New: // four-point sparkle
-                    Poly(p, P(0f, -1f), P(0.22f, -0.22f), P(1f, 0f), P(0.22f, 0.22f), P(0f, 1f), P(-0.22f, 0.22f), P(-1f, 0f), P(-0.22f, -0.22f));
-                    break;
-                case RowKind.Ability: // a bolt
-                    Poly(p, P(0.25f, -1f), P(-0.55f, 0.15f), P(-0.05f, 0.15f), P(-0.3f, 1f), P(0.55f, -0.2f), P(0.05f, -0.2f));
-                    break;
-                case RowKind.Item: // a tied pouch
-                    FillCircle(p, P(0f, 0.3f), u * 0.62f, Mark);
-                    Poly(p, P(-0.3f, -0.35f), P(0.3f, -0.35f), P(0.12f, -0.12f), P(-0.12f, -0.12f));
-                    Poly(p, P(-0.45f, -0.8f), P(0.45f, -0.8f), P(0.25f, -0.4f), P(-0.25f, -0.4f));
-                    break;
-                case RowKind.Status: // an aura: a ring around a core
-                    p.BeginPath();
-                    p.Arc(c, u * 0.85f, Angle.Degrees(0f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Stroke();
-                    FillCircle(p, c, u * 0.38f, Mark);
-                    break;
-                case RowKind.Hero:
-                case RowKind.Npc:
-                case RowKind.Keeper: // a bust: head over shoulders
-                    FillCircle(p, P(0f, -0.4f), u * 0.42f, Mark);
-                    p.BeginPath();
-                    p.Arc(P(0f, 0.95f), u * 0.85f, Angle.Degrees(180f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Fill();
-                    break;
-                case RowKind.Bounty: // only drawn when asked for directly (the skull art is the bounty's icon)
-                    FillCircle(p, P(0f, -0.15f), u * 0.62f, Mark);
-                    Rect(p, P(-0.35f, 0.3f), P(0.35f, 0.8f));
-                    FillCircle(p, P(-0.25f, -0.15f), u * 0.17f, Disc);
-                    FillCircle(p, P(0.25f, -0.15f), u * 0.17f, Disc);
-                    break;
-                case RowKind.Quest: // exclamation mark
-                    p.lineWidth = w * 1.3f;
-                    Line(p, P(0f, -0.85f), P(0f, 0.3f));
-                    FillCircle(p, P(0f, 0.78f), w * 0.75f, Mark);
-                    break;
-                case RowKind.Shop: // a coin: ring with a stamped bar
-                    p.BeginPath();
-                    p.Arc(c, u * 0.82f, Angle.Degrees(0f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Stroke();
-                    Line(p, P(0f, -0.4f), P(0f, 0.4f));
-                    break;
-                case RowKind.Station: // a roof over a door: the Camp station marker
-                    Poly(p, P(0f, -0.95f), P(0.95f, -0.1f), P(-0.95f, -0.1f));
-                    Rect(p, P(-0.65f, -0.1f), P(0.65f, 0.85f));
-                    Rect(p, P(-0.18f, 0.3f), P(0.18f, 0.85f), Disc);
-                    break;
-                case RowKind.Settings: // a gear: eight teeth round a ring
-                    for (int k = 0; k < 8; k++)
-                    {
-                        float a = k * Mathf.PI / 4f;
-                        var d = new Vector2(Mathf.Cos(a), Mathf.Sin(a));
-                        Line(p, c + d * u * 0.55f, c + d * u * 0.95f);
-                    }
-                    FillCircle(p, c, u * 0.62f, Mark);
-                    FillCircle(p, c, u * 0.25f, Disc);
-                    break;
-                case RowKind.Document: // a sheet, its top-right corner folded down, three lines of text
-                    Poly(p, P(-0.65f, -0.9f), P(0.25f, -0.9f), P(0.65f, -0.5f), P(0.65f, 0.9f), P(-0.65f, 0.9f));
-                    Rect(p, P(0.25f, -0.9f), P(0.32f, -0.5f), Disc);
-                    Rect(p, P(0.25f, -0.57f), P(0.65f, -0.5f), Disc);
-                    Rect(p, P(-0.4f, -0.2f), P(0.4f, -0.1f), Disc);
-                    Rect(p, P(-0.4f, 0.15f), P(0.4f, 0.25f), Disc);
-                    Rect(p, P(-0.4f, 0.5f), P(0.15f, 0.6f), Disc);
-                    break;
-                case RowKind.Save: // a save disk: a square with a label and a shutter
-                    Rect(p, P(-0.8f, -0.8f), P(0.8f, 0.8f));
-                    Rect(p, P(-0.42f, -0.8f), P(0.42f, -0.3f), Disc);
-                    Rect(p, P(-0.5f, 0.15f), P(0.5f, 0.8f), Disc);
-                    break;
-                case RowKind.Home: // a house in outline: a pitched roof with a chimney over walls and a door
-                    p.BeginPath();
-                    p.MoveTo(P(-0.95f, -0.05f));
-                    p.LineTo(P(0f, -0.9f));
-                    p.LineTo(P(0.95f, -0.05f));
-                    p.Stroke();
-                    Line(p, P(0.5f, -0.45f), P(0.5f, -0.8f));
-                    p.BeginPath();
-                    p.MoveTo(P(-0.65f, -0.25f));
-                    p.LineTo(P(-0.65f, 0.85f));
-                    p.LineTo(P(0.65f, 0.85f));
-                    p.LineTo(P(0.65f, -0.25f));
-                    p.Stroke();
-                    Rect(p, P(-0.2f, 0.25f), P(0.2f, 0.85f));
-                    break;
-                case RowKind.Quit: // power: an open ring with a bar through the gap
-                    p.BeginPath();
-                    p.Arc(c, u * 0.78f, Angle.Degrees(-55f), Angle.Degrees(235f));
-                    p.Stroke();
-                    Line(p, P(0f, -1f), P(0f, -0.15f));
-                    break;
-                case RowKind.Talk: // a speech bubble with a tail
-                    p.BeginPath();
-                    p.Arc(P(0f, -0.15f), u * 0.8f, Angle.Degrees(0f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Fill();
-                    Poly(p, P(-0.5f, 0.35f), P(-0.1f, 0.55f), P(-0.75f, 0.95f));
-                    break;
-                case RowKind.Bestiary: // an open book
-                    Poly(p, P(-0.95f, -0.65f), P(-0.06f, -0.45f), P(-0.06f, 0.8f), P(-0.95f, 0.6f));
-                    Poly(p, P(0.95f, -0.65f), P(0.06f, -0.45f), P(0.06f, 0.8f), P(0.95f, 0.6f));
-                    break;
-                case RowKind.NewGamePlus: // a loop: a ring almost closed, its arrowhead at the gap
-                    {
-                        // GG-T1833: the loop is one filled, outlined arrow along the arc, its head at the gap.
-                        var loop = new List<Vector2>();
-                        for (int k = 0; k <= 28; k++)
-                        {
-                            float a = Mathf.Lerp(220f, -60f, k / 28f) * Mathf.Deg2Rad;
-                            loop.Add(c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * u * 0.72f);
-                        }
-                        Shapes.PathArrow(p, loop, ArrowStyle(w, u));
-                    }
-                    break;
-                case RowKind.Crucible: // a chalice: a bowl on a stem and foot
-                    p.BeginPath();
-                    p.MoveTo(P(-0.8f, -0.8f));
-                    p.LineTo(P(0.8f, -0.8f));
-                    p.Arc(P(0f, -0.8f), u * 0.8f, Angle.Degrees(0f), Angle.Degrees(180f));
-                    p.ClosePath();
-                    p.Fill();
-                    Line(p, P(0f, 0f), P(0f, 0.7f));
-                    Line(p, P(-0.5f, 0.8f), P(0.5f, 0.8f));
-                    break;
-                case RowKind.Diamond: // a cut gem
-                    Poly(p, P(-0.9f, -0.3f), P(-0.45f, -0.8f), P(0.45f, -0.8f), P(0.9f, -0.3f), P(0f, 0.95f));
-                    break;
-                case RowKind.Codex: // a closed tome: the cover, its spine, a bookmark ribbon hanging out the top
-                    Rect(p, P(-0.65f, -0.85f), P(0.7f, 0.85f));
-                    Rect(p, P(-0.45f, -0.85f), P(-0.35f, 0.85f), Disc);
-                    Rect(p, P(0.15f, -1f), P(0.4f, -0.85f));
-                    p.fillColor = Disc;
-                    Poly(p, P(0.15f, -0.85f), P(0.4f, -0.85f), P(0.4f, -0.2f), P(0.275f, -0.35f), P(0.15f, -0.2f));
-                    p.fillColor = Mark;
-                    break;
-                case RowKind.Lore: // a scroll: a sheet between two rolls, lines of text on it
-                    Rect(p, P(-0.6f, -0.7f), P(0.6f, 0.7f));
-                    p.lineWidth = w * 1.6f;
-                    Line(p, P(-0.85f, -0.75f), P(0.85f, -0.75f));
-                    Line(p, P(-0.85f, 0.75f), P(0.85f, 0.75f));
-                    p.lineWidth = w;
-                    Rect(p, P(-0.4f, -0.35f), P(0.4f, -0.25f), Disc);
-                    Rect(p, P(-0.4f, -0.05f), P(0.4f, 0.05f), Disc);
-                    Rect(p, P(-0.4f, 0.25f), P(0.15f, 0.35f), Disc);
-                    break;
-                case RowKind.Faction: // a banner on a pole, its fly cut into a swallowtail
-                    Line(p, P(-0.7f, -0.95f), P(-0.7f, 0.95f));
-                    Poly(p, P(-0.7f, -0.85f), P(0.85f, -0.85f), P(0.45f, -0.35f), P(0.85f, 0.15f), P(-0.7f, 0.15f));
-                    break;
-                case RowKind.Summon: // a summoning circle: a ring round a five-point star
-                    p.BeginPath();
-                    p.Arc(c, u * 0.95f, Angle.Degrees(0f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Stroke();
-                    for (int k = 0; k < 5; k++)
-                    {
-                        float a0 = (k * 144f - 90f) * Mathf.Deg2Rad, a1 = ((k + 1) * 144f - 90f) * Mathf.Deg2Rad;
-                        Line(p, P(Mathf.Cos(a0) * 0.75f, Mathf.Sin(a0) * 0.75f), P(Mathf.Cos(a1) * 0.75f, Mathf.Sin(a1) * 0.75f));
-                    }
-                    break;
-                case RowKind.Craft: // an anvil: a flat face with a horn, a narrow waist, a wide foot
-                    Poly(p, P(-0.95f, -0.6f), P(0.95f, -0.6f), P(0.95f, -0.3f), P(0.35f, -0.15f), P(0.35f, 0.3f), P(0.7f, 0.3f), P(0.7f, 0.85f), P(-0.7f, 0.85f), P(-0.7f, 0.3f), P(-0.35f, 0.3f), P(-0.35f, -0.15f), P(-0.95f, -0.3f));
-                    break;
-                case RowKind.Speed: // two chevrons pointing right
-                    Poly(p, P(-0.9f, -0.7f), P(0f, 0f), P(-0.9f, 0.7f));
-                    Poly(p, P(0f, -0.7f), P(0.9f, 0f), P(0f, 0.7f));
-                    break;
-                case RowKind.Timer: // a clock: a ring, two hands
-                    p.BeginPath();
-                    p.Arc(c, u * 0.85f, Angle.Degrees(0f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Stroke();
-                    Line(p, c, P(0f, -0.5f));
-                    Line(p, c, P(0.4f, 0.2f));
-                    break;
-                case RowKind.Focus: // a crosshair: a ring with four ticks
-                    p.BeginPath();
-                    p.Arc(c, u * 0.5f, Angle.Degrees(0f), Angle.Degrees(360f));
-                    p.ClosePath();
-                    p.Stroke();
-                    Line(p, P(0f, -1f), P(0f, -0.3f));
-                    Line(p, P(0f, 0.3f), P(0f, 1f));
-                    Line(p, P(-1f, 0f), P(-0.3f, 0f));
-                    Line(p, P(0.3f, 0f), P(1f, 0f));
-                    break;
-                case RowKind.Gauge: // a dial: a half ring with a needle
-                    p.BeginPath();
-                    p.Arc(P(0f, 0.5f), u * 0.95f, Angle.Degrees(180f), Angle.Degrees(360f));
-                    p.Stroke();
-                    Line(p, P(0f, 0.5f), P(0.5f, -0.1f));
-                    Line(p, P(-0.95f, 0.5f), P(0.95f, 0.5f));
-                    break;
-                case RowKind.Shake: // a zigzag
-                    p.BeginPath();
-                    p.MoveTo(P(-0.95f, 0f));
-                    p.LineTo(P(-0.55f, -0.6f));
-                    p.LineTo(P(-0.15f, 0.6f));
-                    p.LineTo(P(0.25f, -0.6f));
-                    p.LineTo(P(0.6f, 0.6f));
-                    p.LineTo(P(0.95f, 0f));
-                    p.Stroke();
-                    break;
-                case RowKind.Sync: // two arrows, one each way
-                    Shapes.Arrow(p, P(-0.9f, -0.45f), P(0.9f, -0.45f), ArrowStyle(w * 0.7f, u * 0.7f));
-                    Shapes.Arrow(p, P(0.9f, 0.45f), P(-0.9f, 0.45f), ArrowStyle(w * 0.7f, u * 0.7f));
-                    break;
-                case RowKind.Window:
-                case RowKind.WindowOff: // a window: a frame with a filled title bar
-                    DrawWindow(p, P);
-                    if (Kind == RowKind.WindowOff) Strike(p, P);
-                    break;
-                case RowKind.Frame: // a screen: four corner brackets
-                    foreach (var (sx, sy) in new[] { (-1f, -1f), (1f, -1f), (1f, 1f), (-1f, 1f) })
-                    {
-                        Line(p, P(sx * 0.9f, sy * 0.9f), P(sx * 0.9f, sy * 0.3f));
-                        Line(p, P(sx * 0.9f, sy * 0.9f), P(sx * 0.3f, sy * 0.9f));
-                    }
-                    break;
-                case RowKind.Hand: // a thumb pad inside a margin box
-                    p.BeginPath();
-                    p.MoveTo(P(-0.9f, -0.9f));
-                    p.LineTo(P(0.9f, -0.9f));
-                    p.LineTo(P(0.9f, 0.9f));
-                    p.LineTo(P(-0.9f, 0.9f));
-                    p.ClosePath();
-                    p.Stroke();
-                    FillCircle(p, P(0f, 0.3f), u * 0.4f, Mark);
-                    break;
-                case RowKind.Scale: // a small square growing into a large one
-                    Rect(p, P(-0.9f, 0.1f), P(-0.1f, 0.9f));
-                    p.BeginPath();
-                    p.MoveTo(P(-0.5f, -0.1f));
-                    p.LineTo(P(-0.5f, -0.9f));
-                    p.LineTo(P(0.9f, -0.9f));
-                    p.LineTo(P(0.9f, 0.5f));
-                    p.LineTo(P(0.1f, 0.5f));
-                    p.Stroke();
-                    break;
-                case RowKind.Text: // a capital A
-                    p.BeginPath();
-                    p.MoveTo(P(-0.8f, 0.9f));
-                    p.LineTo(P(0f, -0.9f));
-                    p.LineTo(P(0.8f, 0.9f));
-                    p.Stroke();
-                    Line(p, P(-0.4f, 0.25f), P(0.4f, 0.25f));
-                    break;
-                case RowKind.Type: // a capital T
-                    Line(p, P(-0.8f, -0.8f), P(0.8f, -0.8f));
-                    Line(p, P(0f, -0.8f), P(0f, 0.9f));
-                    break;
-                case RowKind.Eye: // an eye: a lens outline round a pupil
-                    p.BeginPath();
-                    p.MoveTo(P(-0.95f, 0f));
-                    p.BezierCurveTo(P(-0.5f, -0.8f), P(0.5f, -0.8f), P(0.95f, 0f));
-                    p.BezierCurveTo(P(0.5f, 0.8f), P(-0.5f, 0.8f), P(-0.95f, 0f));
-                    p.Stroke();
-                    FillCircle(p, c, u * 0.3f, Mark);
-                    break;
-                case RowKind.Pause: // two bars
-                    Rect(p, P(-0.6f, -0.7f), P(-0.15f, 0.7f));
-                    Rect(p, P(0.15f, -0.7f), P(0.6f, 0.7f));
-                    break;
-                case RowKind.Speaker:
-                case RowKind.SpeakerOff: // a speaker cone with a sound arc
-                    DrawSpeaker(p, P);
-                    p.BeginPath();
-                    p.Arc(P(0.1f, 0f), u * 0.75f, Angle.Degrees(-40f), Angle.Degrees(40f));
-                    p.Stroke();
-                    if (Kind == RowKind.SpeakerOff) Strike(p, P);
-                    break;
-                case RowKind.Wave: // sound waves: three arcs
-                    for (int k = 1; k <= 3; k++)
-                    {
-                        p.BeginPath();
-                        p.Arc(P(-0.8f, 0f), u * 0.55f * k, Angle.Degrees(-45f), Angle.Degrees(45f));
-                        p.Stroke();
-                    }
-                    break;
-                case RowKind.Note:
-                case RowKind.NoteOff: // a music note: a head, a stem, a flag
-                    FillCircle(p, P(-0.35f, 0.65f), u * 0.35f, Mark);
-                    Line(p, P(-0.02f, 0.6f), P(-0.02f, -0.8f));
-                    Line(p, P(-0.02f, -0.8f), P(0.7f, -0.45f));
-                    if (Kind == RowKind.NoteOff) Strike(p, P);
-                    break;
-                default: // Menu: three bars
-                    Line(p, P(-0.7f, -0.55f), P(0.7f, -0.55f));
-                    Line(p, P(-0.7f, 0f), P(0.7f, 0f));
-                    Line(p, P(-0.7f, 0.55f), P(0.7f, 0.55f));
-                    break;
-            }
-        }
-
-        private static void DrawWindow(Painter2D p, Func<float, float, Vector2> P)
-        {
-            Rect(p, P(-0.9f, -0.75f), P(0.9f, -0.35f));
-            p.BeginPath();
-            p.MoveTo(P(-0.9f, -0.35f));
-            p.LineTo(P(-0.9f, 0.8f));
-            p.LineTo(P(0.9f, 0.8f));
-            p.LineTo(P(0.9f, -0.35f));
-            p.Stroke();
-        }
-
-        private static void DrawSpeaker(Painter2D p, Func<float, float, Vector2> P)
-        {
-            Rect(p, P(-0.9f, -0.3f), P(-0.5f, 0.3f));
-            Poly(p, P(-0.5f, -0.3f), P(0f, -0.8f), P(0f, 0.8f), P(-0.5f, 0.3f));
-        }
-
-        private static void Strike(Painter2D p, Func<float, float, Vector2> P) => Line(p, P(-0.9f, -0.9f), P(0.9f, 0.9f));
-
-        private static void FillCircle(Painter2D p, Vector2 c, float radius, Color col)
-        {
-            p.fillColor = col;
-            p.BeginPath();
-            p.Arc(c, radius, Angle.Degrees(0f), Angle.Degrees(360f));
-            p.ClosePath();
-            p.Fill();
-            p.fillColor = Mark;
-        }
-
-        /// <summary>GG-T1833: an emblem's arrow is a filled body in the mark colour with a dark rim outline, sized to the glyph.</summary>
-        private static ShapeStyle ArrowStyle(float w, float u) => new ShapeStyle
-        { Width = w, Outline = Mathf.Max(1f, w * 0.3f), HeadLength = u * 0.7f, HeadWidth = u * 1.2f, Fill = Mark, Line = Rim };
-
-        private static void Line(Painter2D p, Vector2 a, Vector2 b)
-        {
-            p.BeginPath();
-            p.MoveTo(a);
-            p.LineTo(b);
-            p.Stroke();
-        }
-
-        private static void Poly(Painter2D p, params Vector2[] pts)
-        {
-            p.BeginPath();
-            p.MoveTo(pts[0]);
-            for (int i = 1; i < pts.Length; i++) p.LineTo(pts[i]);
-            p.ClosePath();
-            p.Fill();
-        }
-
-        private static void Rect(Painter2D p, Vector2 min, Vector2 max, Color? col = null)
-        {
-            p.fillColor = col ?? Mark;
-            p.BeginPath();
-            p.MoveTo(min);
-            p.LineTo(new Vector2(max.x, min.y));
-            p.LineTo(max);
-            p.LineTo(new Vector2(min.x, max.y));
-            p.ClosePath();
-            p.Fill();
-            p.fillColor = Mark;
         }
     }
 }

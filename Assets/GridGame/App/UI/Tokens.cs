@@ -399,7 +399,6 @@ namespace GridGame.App
             /// <summary>Manalith blue #7590C8.</summary>
             public static readonly Color FogMana = new Color(0.46f, 0.56f, 0.78f, 0.42f);
             public static readonly Color FogGlint = new Color(0.66f, 0.77f, 0.94f, 0.16f);
-            public static readonly Color RowMark = new Color(0.97f, 0.97f, 1f);
             public static readonly Color ShapeInk = new Color(0f, 0f, 0.05f, 0.9f);
         }
 
@@ -585,7 +584,9 @@ namespace GridGame.App
         public const float GlowRing = 5;
         // A toast's height above the stage bottom, and how much higher each one already showing pushes the next.
         public const float ToastLift = 260, ToastStack = 170;
-        // Icons and pictures
+        // Icons and pictures. The menu icon set's roles (docs/ICONS.md): IconInline in text and chips, IconButton in
+        // header and dialog buttons, Icon leading a row or tile, IconNav on the bottom nav tabs.
+        public const float IconInline = 32, IconButton = 48, IconNav = 72;
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
             ArtW = 420, ArtH = 620;
