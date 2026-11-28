@@ -1848,3 +1848,27 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   skill description panel below. Announcements overlay the board's top edge; Log → hamburger menu page, Party → hero
   long-press sheet, Lore → hub, Combo → brief callout plus results, lessons and advice → the panel.
 - *Why:* owner (quoted above): too much on one screen; every row has one job and the panel explains the ability.
+
+## 2026-11-28 — One shared party mana pool replaces the per-spell meters; bottom row [Abilities][Info][GUARD] (owner, GG-T1915, GG-T1924)
+
+- **Owner, 2026-11-28 (GG-T1915):** *"button 1 would be Abilities (Skill/Spells/Consumables), Button 2 would be the
+  guard button which would increase defense and send additional mana to your mana bar which is a thin bar that fills
+  and allow you to perform spells and abilities (that aren't on cooldown)"*. Clarified by the owner: the mana bar is
+  **one thin bar for the whole party**, not per spell and not per hero. The owner then approved the bottom row
+  **[Abilities][Info][GUARD]** (Info = Examine) with the thin bar full width just above the three buttons.
+- **Was ([GG-LAW-6](BIBLE.md#GG-LAW-6), [§3.1.0](BIBLE.md#310-the-party-mana-pool-gg-t1915-owner-2026-11-28) history):**
+  per-spell mana meters (GG-T1807): every Spell slot had its own meter, full at cost x 100; every gain filled every
+  meter; casting emptied only that meter; each slot drew its own fill bar in a row of five icon-only slots plus GUARD.
+- **Now ([§3.1.0](BIBLE.md#310-the-party-mana-pool-gg-t1915-owner-2026-11-28), [§2.5](BIBLE.md#25-auto-skip--shield),
+  [§9.0](BIBLE.md#90-battle-hud-rows-gg-t1808-owner-2026-11-27)):** one integer party pool in points; a spell's price
+  is cost x 100, spent at cast start with no refund on interrupt; capacity `PartyManaCapacity` 1000, fixed per battle;
+  earned gains damped by pool fullness, earning stops at full; whole grants N x 100 points undamped, overflow lost and
+  reported; siphons take N x 100, floor 0; Echo pays the copied price from the pool (foes, skills and 0-cost copies
+  free); Guard unchanged, its gain going into the bar; skills keep cooldowns and consumables stacks; a won stage settles
+  floor(pool / 100) x `DustPerOrbLeft` Dust and an expedition carries the pool's points; recorder schema 7 /
+  `rulesVersion` 3, older records legacy. GG-LAW-6 is back to a shared, visible, capped pool. Mana Orbs stay retired
+  (GG-T1811).
+- **Pending owner (the planner's defaults):** capacity 1000, fullness damping kept, Guard unchanged, stage-end Dust
+  floor(pool / 100), carried mana as points, and the grant translation N x 100.
+- *Why:* owner (quoted above): abilities don't have to fit in a square box, Guard and the Abilities button sit under the
+  thumb, and one thin bar is read at a glance.

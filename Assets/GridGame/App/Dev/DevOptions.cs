@@ -7,11 +7,12 @@ namespace GridGame.App.Dev
     /// GG-T1938: the in-app Developer gate, separate from <see cref="CommandLine.DebugOptionsAllowed"/> (launch flags) so the
     /// owner can turn cheats on in a release build on a phone. Tapping the version line seven times (Settings or About,
     /// Android-style) unlocks Settings &gt; Developer; its Cheats switch then adds the pause menu's cheat rows and a DEV
-    /// badge in the corner. Both live in this device's PlayerPrefs, never in a save, and both start off.
+    /// badge in the corner. Both live in this device's PlayerPrefs, never in a save, and both start off. Owner-walkthrough
+    /// tools such as the feedback Note button (GG-T1939) show while <see cref="Enabled"/>.
     /// </summary>
     public static class DevOptions
     {
-        private const string UnlockedKey = "gridgame.dev.unlocked";
+        private const string UnlockedKey = "dev.options";
         private const string CheatsKey = "gridgame.dev.cheats";
         public const int TapsToUnlock = 7;
         /// <summary>A pause longer than this between taps starts the count again.</summary>
@@ -24,6 +25,8 @@ namespace GridGame.App.Dev
         private static VisualElement stage, badge;
 
         public static bool Unlocked => PlayerPrefs.GetInt(UnlockedKey, 0) == 1;
+        /// <summary>Developer options are on (unlocked); GG-T1939's name for <see cref="Unlocked"/>.</summary>
+        public static bool Enabled => Unlocked;
         public static bool Cheats => Unlocked && PlayerPrefs.GetInt(CheatsKey, 0) == 1;
         /// <summary>The pause menu's battle speed for this run (0 = follow Settings); never saved.</summary>
         public static float CheatSpeed;

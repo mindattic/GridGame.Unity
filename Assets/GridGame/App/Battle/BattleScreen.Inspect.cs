@@ -200,7 +200,7 @@ namespace GridGame.App
             }
             if (p.ManaMax > 0)
             {
-                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr> to every spell{(p.FillsMax > 0 ? $" · fills <nobr>{Range(p.FillsMin, p.FillsMax)}</nobr>" : "")}", "t-caption", parent);
+                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr>{(p.FillsMax > 0 ? $" · fills <nobr>{Range(p.FillsMin, p.FillsMax)}</nobr>" : "")}", "t-caption", parent);
                 m.style.color = Palette.Mana;
                 m.style.whiteSpace = WhiteSpace.Normal;
             }

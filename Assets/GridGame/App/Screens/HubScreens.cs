@@ -52,12 +52,12 @@ namespace GridGame.App
             if (i.BaseDamage > 0) parts.Add($"ATK +{i.BaseDamage}");
             if (i.BaseHealing > 0) parts.Add($"Heals {i.BaseHealing}");
             if (i.Durability > 0) parts.Add($"Durability {i.Durability}");
-            if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs * 100} mana to every spell at battle start");
+            if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs * 100} mana at battle start");
             if (i.PincerDamageBonus > 0) parts.Add(FormattableString.Invariant($"Pincer +{i.PincerDamageBonus:0%}"));
             if (i.EvasionBonus > 0) parts.Add($"Evasion +{i.EvasionBonus:0}"); // GG-T297
             if (i.RegenPerTurn > 0) parts.Add($"Regen {i.RegenPerTurn}/turn");
             if (i.StartsProtected) parts.Add("Starts battles Protected");
-            if (i.GrantsOrbs > 0) parts.Add($"+{i.GrantsOrbs * 100} mana to every spell");
+            if (i.GrantsOrbs > 0) parts.Add($"+{i.GrantsOrbs * 100} mana");
             if (i.Revives) parts.Add("Revives a fallen ally");
             if (i.Escape) parts.Add("Escape from battle");
             if (i.CuresAll) parts.Add("Cures all ailments");
