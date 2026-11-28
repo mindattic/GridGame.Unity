@@ -730,7 +730,7 @@ namespace GridGame.App
             // What the Bestiary has learned from defeating its class gates the numbers (§25.11, GG-T290).
             int know = Knowledge(u);
             // FF-style plain numbers, no bar (owner 2026-11-21): "HEALTH"/"AETHER" are the same width, so those labels
-            // line up instead of "HP"/"MP". A hero's MANA is how many of its spell meters are full (§3.1.0).
+            // line up instead of "HP"/"MP". A hero's MANA is the party bar and how many of its spells it can pay (§3.1.0).
             var hpRow = Ui.El("row", col);
             Ui.Text("HEALTH", "tiny dim", hpRow).style.marginRight = Space.S8;
             Ui.Text(know >= BestiaryKnowledge.Stats ? $"{u.Hp}/{u.MaxHp}" : "???", "small", hpRow);
@@ -738,15 +738,14 @@ namespace GridGame.App
             {
                 var aetherRow = Ui.El("row", col);
                 Ui.Text("MANA", "tiny dim", aetherRow).style.marginRight = Space.S8;
-                int spells = 0, full = 0;
+                int spells = 0, payable = 0;
                 for (int i = 0; i < u.Bar.Count; i++)
                 {
-                    int need = State.ManaFull(u, i);
-                    if (need <= 0) continue;
+                    if (State.SpellPrice(u, i) <= 0) continue;
                     spells++;
-                    if (State.ManaIn(u.Id, i) >= need) full++;
+                    if (State.SpellReady(u, i)) payable++;
                 }
-                Ui.Text(spells == 0 ? "no spells" : $"{full}/{spells} spells full", "small", aetherRow);
+                Ui.Text($"{State.PartyMana}/{BattleConfig.PartyManaCapacity}{(spells == 0 ? "" : $" · {payable}/{spells} spells ready")}", "small", aetherRow);
             }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297
             else if (know >= BestiaryKnowledge.Speed) Ui.Text($"SPD {u.Effective.Speed:0}  ·  defeat more to learn the rest", "tiny dim", col);

@@ -55,11 +55,11 @@ namespace GridGame.App
             var sl = slot >= 0 && slot < hero.Bar.Count ? hero.Bar[slot] : null;
             if (sl != null && sl.IsItem) parts.Add($"{sl.Charges} / {sl.MaxCharges} left");
             if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) parts.Add($"recharging: ready in {cd} turn{(cd == 1 ? "" : "s")}");
-            int full = State.ManaFull(hero, slot);
-            if (full > 0)
+            int price = State.SpellPrice(hero, slot);
+            if (price > 0)
             {
-                int have = ShownMana(hero.Id, slot);
-                parts.Add(have >= full ? $"{full} / {full} mana · ready" : $"{have} / {full} mana · fills with every gain");
+                int pool = ShownPool;
+                parts.Add(pool >= price ? $"costs {price} mana · bar {pool}" : $"costs {price} mana · bar {pool} · {price - pool} short");
             }
             var status = BattleEngine.GetSlotStatus(State, hero.Id, slot);
             if (status == SlotStatus.Ready) { if (TargetingSlot != slot) parts.Add($"tap to aim with {hero.Name}"); }
@@ -134,10 +134,10 @@ namespace GridGame.App
                 icon.style.backgroundImage = new StyleBackground(tex ?? Art.AbilityIcon(a) ?? Art.Orb);
                 string name = sl.IsWeapon ? App.Content.TryItem(sl.WeaponId)?.Name ?? a.Name : sl.IsItem ? App.Content.TryItem(sl.ItemId)?.Name ?? a.Name : a.Name;
                 int cd = u.Cooldowns.TryGetValue(a.Id, out var c) ? c : 0;
-                int full = a.Kind == AbilityKind.Spell ? State.ManaFull(u, i) : 0;
+                int price = a.Kind == AbilityKind.Spell ? State.SpellPrice(u, i) : 0;
                 string when = sl.IsItem ? $"item · {sl.Charges}/{sl.MaxCharges} left"
                     : a.Kind == AbilityKind.Skill ? (cd > 0 ? $"skill · ready in {cd} turns" : "skill · ready")
-                    : full > 0 ? $"spell · {ShownMana(u.Id, i)}/{full} mana" : "spell";
+                    : price > 0 ? $"spell · costs {price} mana · bar {ShownPool}" : "spell";
                 var t = Ui.Text($"{name} — {when}", "t-caption", row);
                 t.style.flexShrink = 1;
                 t.style.whiteSpace = WhiteSpace.Normal;
@@ -200,7 +200,7 @@ namespace GridGame.App
             }
             if (p.ManaMax > 0)
             {
-                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr>{(p.FillsMax > 0 ? $" · fills <nobr>{Range(p.FillsMin, p.FillsMax)}</nobr>" : "")}", "t-caption", parent);
+                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr>{(p.FillsMax > 0 ? $" · <nobr>{Range(p.FillsMin, p.FillsMax)} spell{(p.FillsMax == 1 ? "" : "s")} affordable</nobr>" : "")}", "t-caption", parent);
                 m.style.color = Palette.Mana;
                 m.style.whiteSpace = WhiteSpace.Normal;
             }
