@@ -34,6 +34,7 @@ namespace GridGame.App.Dev
                 if (shown is not HubScreen) return;
                 app.Router.Changed -= OnShown;
                 if (t.Kind == ScenarioKind.Screen && Automation.StartScreens.TryGet(t.Screen, out var screen)) app.Router.Push(screen);
+                else if (t.Kind == ScenarioKind.Battle && t.Drill) app.Router.Push(new BattleScreen(t.StageId));
                 else if (t.Kind == ScenarioKind.Battle && def.RealLaunch) StageLauncher.Launch(t.StageId, false);
                 else if (t.Kind == ScenarioKind.Battle) app.Router.Push(new BattleScreen(Synthesize(app.Content, app.Save, t, def.FullStage)));
             }
