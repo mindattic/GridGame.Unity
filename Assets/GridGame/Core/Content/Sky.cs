@@ -24,6 +24,10 @@ namespace GridGame.Core.Content
         /// <summary>GG-T670: the Aetherain, the occasional fall of aether dust from that wake.</summary>
         public AetherainDef Aetherain = new AetherainDef();
         public ParallaxDef Parallax = new ParallaxDef();
+        /// <summary>GG-T1950: opacity 0-1 of the dark backing behind the battle board in every region, so the grid lines
+        /// and the tokens read over the art (UX review X6: about 35%). A region's own <see cref="SkyRegionDef.BoardScrim"/>
+        /// only ever darkens it further.</summary>
+        public float BoardScrim;
         /// <summary>The Manalith per campaign theme id (it grows as the campaign goes on; Morrow's Shadow is the
         /// largest). A theme with no entry uses its base theme's (cityruins2 → cityruins), then <see cref="Manalith"/>.</summary>
         public Dictionary<string, SkyRegionDef> Regions = new Dictionary<string, SkyRegionDef>(StringComparer.OrdinalIgnoreCase);
@@ -111,6 +115,7 @@ namespace GridGame.Core.Content
             if (s.Shards != null && (s.Shards.MinSize <= 0 || s.Shards.MaxSize < s.Shards.MinSize))
                 p.Add("sky: Shards MinSize must be > 0 and MaxSize >= MinSize");
             if (s.Debris != null) s.Debris.Validate(s, "sky: Debris", p);
+            if (s.BoardScrim < 0f || s.BoardScrim > 0.8f) p.Add($"sky: BoardScrim {s.BoardScrim} must be in [0, 0.8]");
             if (!string.IsNullOrEmpty(s.Moon?.Model) && s.Moon.Model != "procedural")
                 p.Add($"sky: Moon Model '{s.Moon.Model}' must be 'procedural' (or left out for the flat image)");
             if (s.Parallax != null)
@@ -180,8 +185,8 @@ namespace GridGame.Core.Content
         public float Y;
         public float Rotation;
         /// <summary>GG-T665: opacity 0-1 of a dark backing behind the battle board in this region, so the grid and danger
-        /// tiles read where a large Manalith sits behind the board. 0 (the default) keeps the board see-through
-        /// (owner direction 2026-10-11: the stage background reads clearly through the board).</summary>
+        /// tiles read where a large Manalith sits behind the board. Below <see cref="SkyDef.BoardScrim"/> (the default 0)
+        /// the sky-wide backing applies.</summary>
         public float BoardScrim;
         /// <summary>GG-T670: this region's own wake, used as written (no size scaling); null = the default scaled by Size.</summary>
         public DebrisDef Debris;

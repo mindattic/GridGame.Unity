@@ -112,7 +112,7 @@
     --color-btn-danger-lip: rgb(96, 18, 26);
     --color-btn-danger-hover: rgb(178, 40, 52);
     --color-btn-danger-pressed: rgb(110, 20, 28);
-    --color-badge: rgba(4, 6, 20, 0.75); /* a role badge's dark plate */
+    --color-badge: rgba(4, 6, 20, 0.92); /* a role badge's dark plate */
     --color-chrome: rgba(4, 8, 30, 0.85); /* the header and bottom nav */
     --color-label: rgb(170, 184, 255); /* an inactive tab, nav tab or tile label */
     --color-alert: rgb(214, 48, 64); /* a nav tab's count badge */
@@ -340,6 +340,8 @@
 .card.tap--selected { background-color: var(--color-well); border-width: 3px; border-color: var(--color-frame); border-top-color: var(--color-well-edge); padding: var(--space-16-framed); translate: 0 3px; scale: 0.985 0.985; }
 .btn.tap--selected { border-bottom-width: 4px; border-top-color: var(--color-well-edge); translate: 0 8px; }
 .btn--small.tap--selected { border-bottom-width: 3px; translate: 0 6px; }
+/* GG-T2084: a tappable thumbnail tile (Character select) selected by a first tap; three classes so it outranks a theme's .thumb frame. */
+.card-tap.thumb.tap--selected { border-width: 3px; border-color: var(--color-frame); border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
 /* The Main Menu's mana conduit under the wordmark (GG-T1350): a lit line with a pale core. */
 .title-conduit { height: 6px; margin-top: var(--space-8); border-radius: var(--radius-3); background-color: var(--color-mana); border-top-width: 2px; border-top-color: var(--color-mana-core); }
 .splash-copy { margin-top: var(--space-32); }
@@ -552,6 +554,9 @@
 .kit-chip--tap { min-height: var(--size-target); margin: var(--space-12); padding: 0 var(--space-24); }
 .kit-chip--tap.is-pressed { scale: 0.95 0.95; translate: 0 6px; background-color: var(--color-press); }
 .kit-chip--selected { background-color: var(--color-well); border-width: 3px; border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
+/* GG-T2087: a station's ready chip at the end of a recipe row, centred on the row, its rim in the label's Good green. */
+.menu-row > .kit-chip { align-self: center; flex-shrink: 0; }
+.kit-chip--good { border-color: var(--color-good); }
 .kit-segmented { flex-direction: row; flex-wrap: nowrap; align-items: stretch; padding: 0 var(--space-12); }
 .kit-segment { flex-grow: 1; flex-shrink: 1; flex-basis: 0; padding: 0 var(--space-16); white-space: normal; }
 .kit-segment--selected { border-bottom-width: 3px; border-top-color: var(--color-well-edge); translate: 0 6px; background-color: var(--color-btn-pressed); }
@@ -645,7 +650,7 @@
 .theme-chrono .card { background-color: rgba(255, 255, 255, 0.06); }
 .theme-chrono .card--selected { background-color: rgba(255, 255, 255, 0.16); }
 .theme-chrono .thumb { background-color: rgb(52, 52, 56); }
-.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.8); }
+.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.92); }
 
 .theme-chrono .header {
     background-color: rgba(40, 40, 44, 0.94);
@@ -710,7 +715,7 @@
 .theme-granite .card { background-color: rgba(219, 240, 255, 0.06); }
 .theme-granite .card--selected { background-color: rgba(219, 240, 255, 0.16); }
 .theme-granite .thumb { background-color: rgb(58, 64, 68); }
-.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.8); }
+.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.92); }
 
 .theme-granite .header {
     background-color: rgba(47, 52, 55, 0.94);

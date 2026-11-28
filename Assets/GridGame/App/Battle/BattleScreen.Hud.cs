@@ -117,6 +117,7 @@ namespace GridGame.App
             bossBarId = -1;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+            coinLabel.style.backgroundColor = Palette.Shade; coinLabel.style.borderTopLeftRadius = coinLabel.style.borderTopRightRadius = coinLabel.style.borderBottomLeftRadius = coinLabel.style.borderBottomRightRadius = Space.S8; // GG-T2149: pale backdrop shards pass behind the top bar
             BuildTurnStrip(col);
         }
 

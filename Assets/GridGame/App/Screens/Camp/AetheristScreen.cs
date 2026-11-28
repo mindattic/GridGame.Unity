@@ -32,14 +32,15 @@ namespace GridGame.App
             refineAmount = Math.Max(1, refineAmount);
 
             var bal = Ui.Panel(body, null, false, "aetherist-balance");
-            Ui.Field(DustEconomy.DustName, dust.ToString("N0"), bal, null, "aetherist-dust-count");
-            Ui.Field(ShardText.Plural, ShardText.ShortOf(shards), bal, null, "aetherist-shard-count");
+            var wallet = Ui.Actions(bal);
+            wallet.name = "aetherist-wallet";
+            Ui.Chip($"{DustEconomy.DustName}: {Ui.Count(dust)}", wallet, RowKind.Station, name: "aetherist-dust-count");
+            Ui.Chip($"{ShardText.ShortPlural}: {Ui.Count(shards)}", wallet, RowKind.Diamond, tone: "gold", name: "aetherist-shard-count");
             var greet = ShopBark(C, "aetherist/greet");
             if (greet != null) Ui.Para(greet, bal, "dim");
 
             var buy = Ui.Panel(body, "Buy Dust with gold", false, "aetherist-buy-panel");
             var pick = Ui.Actions(buy);
-            pick.style.alignItems = Align.Center;
             var buyCount = Ui.Stepper(pick, buyAmount.ToString("N0"), () => { buyAmount = Math.Max(1, buyAmount - 1); Refresh(); }, () => { buyAmount += 1; Refresh(); }, out var buyMinus, out var buyPlus, "gold");
             buyMinus.name = "aetherist-buy-minus";
             buyCount.name = "aetherist-buy-amount";
@@ -55,7 +56,6 @@ namespace GridGame.App
 
             var refine = Ui.Panel(body, "Refine into " + ShardText.Plural, false, "aetherist-refine-panel");
             var rpick = Ui.Actions(refine);
-            rpick.style.alignItems = Align.Center;
             var refineCount = Ui.Stepper(rpick, refineAmount.ToString("N0"), () => { refineAmount = Math.Max(1, refineAmount - 1); Refresh(); }, () => { refineAmount += 1; Refresh(); }, out var refineMinus, out var refinePlus, "gold");
             refineMinus.name = "aetherist-refine-minus";
             refineCount.name = "aetherist-refine-amount";

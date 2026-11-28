@@ -81,8 +81,8 @@ namespace GridGame.Meta
         /// <summary>A text size the game offers (GG-T495), or 100 for anything else in the file.</summary>
         public static int ClampTextScale(int pct) => pct == 115 || pct == 130 ? pct : 100;
 
-        /// <summary>A frame-rate cap the game offers (GG-T1221): 30, 60 or -1 (uncapped); 60 for anything else in the file.</summary>
-        public static int ClampFrameRateCap(int fps) => fps == 30 || fps == -1 ? fps : 60;
+        /// <summary>A frame rate the game offers (GG-T2102): 60 or 120; 60 for anything else in the file, the old 30 and uncapped included.</summary>
+        public static int ClampFrameRateCap(int fps) => fps == 120 ? 120 : 60;
 
         /// <summary>The settings a profile's settings.json holds, with defaults for anything missing.</summary>
         public static SettingsSave Read(ProfileSettings ps, bool hasSaves = false)
