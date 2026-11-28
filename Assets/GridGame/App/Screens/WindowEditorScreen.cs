@@ -207,8 +207,11 @@ namespace GridGame.App
             l.style.unityTextAlign = TextAnchor.MiddleCenter;
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
-            // Each tile reads in its own theme's text colour, not the one the active theme puts on the whole stage.
-            l.style.color = WindowThemes.TextColorOf(t) ?? Palette.Text;
+            // A dark plate under white text: the swatch behind the name runs from near-white to saturated, so no one text colour clears 4.5:1 on all of them.
+            l.style.color = Color.white;
+            l.style.backgroundColor = Palette.Ink.WithA(0.8f);
+            l.style.paddingLeft = l.style.paddingRight = Space.S16;
+            l.style.borderTopLeftRadius = l.style.borderTopRightRadius = l.style.borderBottomLeftRadius = l.style.borderBottomRightRadius = Space.S16;
             return tile;
         }
 

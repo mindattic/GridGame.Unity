@@ -140,7 +140,8 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             Ui.Tabs(Tabs, tab, i => { tab = i; selected = null; Refresh(); }, body);
-            var list = Ui.ListPanel(body);
+            // Rows keep their own height at the top of the panel, the spare height left below them (GG-T1882).
+            var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
             var items = S.Inventory.Where(kv => kv.Value > 0).Select(kv => (item: C.TryItem(kv.Key), n: kv.Value)).Where(x => x.item != null)
                 .Where(x => tab == 0 || (tab == 1 && (x.item.Type == ItemType.Consumable || x.item.Type == ItemType.Tome || x.item.Type == ItemType.Chest)) || (tab == 2 && x.item.Type == ItemType.Equipment) || (tab == 3 && x.item.Type == ItemType.CraftingMaterial))
                 .OrderBy(x => x.item.Type).ThenByDescending(x => x.item.Rarity).ThenBy(x => x.item.Name).ToList();
@@ -437,11 +438,17 @@ namespace GridGame.App
         }
 
         /// <summary>The Party tab's cohesion grid: the party down the side and across the top, each cell the pair's cohesion
-        /// tier (gold from the Duo tier). Nothing for a party of fewer than two heroes with cohesion.</summary>
+        /// tier (gold from the Duo tier). Nothing for a party of fewer than two heroes with cohesion; one line while every
+        /// pair is still at tier 0 (GG-T1891: a grid of zeros took a third of the page).</summary>
         public static void CohesionGrid(ContentDb c, SaveData s, VisualElement body)
         {
             var ids = s?.Party?.Where(id => Bonds.HasCohesion(s, id)).ToList();
             if (ids == null || ids.Count < 2) return;
+            if (!ids.Any(a => ids.Any(b => a != b && Bonds.CohesionTier(s, a, b) > 0)))
+            {
+                Ui.Caption($"Party cohesion: every pair at tier 0 of {BondsConfig.MaxTier}", Ui.Panel(body, null, false, "party-cohesion"), "dim");
+                return;
+            }
             var panel = Ui.Panel(body, "Party cohesion", false, "party-cohesion");
             VisualElement Cell(VisualElement row)
             {
@@ -658,10 +665,10 @@ namespace GridGame.App
             support.name = "abilities-support";
             Ui.Para("Pick a slot, then choose what goes in it — or move it along the bar.", barW, "dim");
             var tools = Ui.Actions(barW);
-            var left = RowIcon.IconButton("Move", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
+            var left = RowIcon.IconButton("Move left", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
             left.name = "bar-move-left";
             Ui.SetEnabled(left, slot > 0 && slot < unlocked);
-            var right = RowIcon.IconButton("Move", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
+            var right = RowIcon.IconButton("Move right", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
@@ -901,7 +908,6 @@ namespace GridGame.App
 
         public override void BuildBody(VisualElement body)
         {
-            PartyBoards.Build(C, S, body); // GG-T1044: each party hero's board and bar side by side
             BondsUi.CohesionGrid(C, S, body); // GG-T1299
             var list = Ui.ListPanel(body, $"Active party {S.Party.Count}/{Progression.MaxPartySize} — tap to swap", "party-list");
             foreach (var h in S.Roster.OrderByDescending(x => S.Party.Contains(x.ClassId)).ThenBy(x => x.ClassId))
@@ -917,6 +923,7 @@ namespace GridGame.App
                 MercenaryCamp.Tag(S, h.ClassId, nameRow);
                 Ui.Caption($"Lv {u.Level}   HP {u.MaxHp}   {(active ? "<color=#78EC96>Active</color>" : "Reserve")}", col);
                 GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
+                PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
                 card.AddToClassList("card-tap");
                 Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.select");
             }
@@ -2120,7 +2127,20 @@ namespace GridGame.App
             Ui.Field("Horde", $"{Crucible.FirstWaveEnemies}→{Crucible.MaxWaveEnemies} foes, elites from wave {BattleConfig.CrucibleFirstEliteWave + 1}", list);
             Ui.Field("Pay", $"{Ui.Gold(Crucible.WaveGold(0))}, +{BattleConfig.CrucibleWaveGoldPerWave} G a wave", list, "gold");
             var fams = Crucible.Families(C, S);
-            Ui.Field("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met: " + string.Join(", ", fams.Select(f => f[0].Name)), list);
+            Ui.Field("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met", list);
+            if (fams.Count > 0)
+            {
+                var names = Ui.Para(string.Join(", ", fams.Select(f => f[0].Name)), list, "dim");
+                names.style.display = DisplayStyle.None;
+                Button toggle = null;
+                toggle = Ui.Button("Show names", () =>
+                {
+                    bool show = names.style.display == DisplayStyle.None;
+                    names.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+                    toggle.text = show ? "Hide names" : "Show names";
+                }, "btn--small", list);
+                toggle.name = "crucible-foes-toggle";
+            }
             var rec = Ui.El("col", list);
             rec.name = "crucible-record";
             Ui.Section("Record", rec);
@@ -2154,7 +2174,7 @@ namespace GridGame.App
             var foot = Ui.Footer(body, "crucible-footer");
             var costCol = Ui.El("col grow", foot);
             if (!can) Ui.Para(why, costCol, "bad");
-            Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", costCol, "dim");
+            Ui.Caption($"Costs {RestedPool.LaunchCost} Rested: the energy for a run, up to {RestedPool.Max}, +1 every {(int)RestedPool.RegenEvery.TotalMinutes} min", costCol, "dim");
             var enter = RowIcon.IconButton("Enter the Crucible", RowKind.Enter, () => CrucibleLauncher.Launch(false), "btn--primary", foot);
             enter.name = "crucible-enter";
             Ui.SetEnabled(enter, can);
@@ -2235,6 +2255,8 @@ namespace GridGame.App
 
     public sealed class BestiaryScreen : HubPage
     {
+        /// <summary>The tile behind an unseen creature's black silhouette: light enough that the shape reads against it.</summary>
+        internal static readonly Color UnseenTile = new Color(0.45f, 0.50f, 0.60f, 1f);
         private string selected;
         public override string Id => "bestiary";
         protected override string Title => "Bestiary";
@@ -2261,7 +2283,7 @@ namespace GridGame.App
                 S.Bestiary.TryGetValue(e.Id, out var entry);
                 var t = Ui.Thumb(e.Id, grid, 160, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
                 t.name = "beast-" + e.Id;
-                if (entry == null || !entry.Seen) { t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); }
+                if (entry == null || !entry.Seen) { t.style.backgroundColor = UnseenTile; t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); } // GG-T1889: a black silhouette on a light slate tile (over 4:1), not on the dark card
                 else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
                 t.AddToClassList("card-tap");
                 Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
@@ -2424,15 +2446,15 @@ namespace GridGame.App
             row.style.alignItems = Align.Center;
             row.style.minHeight = Kit.Row;
             Ui.Pad(row, left: Kit.Indent); // the label lines up with the menu rows' labels
-            row.KindIcon(RowKind.Settings); // GG-T750 (§26.7): lines up with the setting rows' icons
+            row.KindIcon(RowKind.Bounty); // GG-T750 (§26.7): lines up with the setting rows' icons
             Ui.Text("Difficulty", "menu-label grow", row);
-            var minus = RowIcon.IconButton("−", RowKind.Settings, () => Set(level - 1), "btn--small", row);
+            var minus = RowIcon.IconButton("−", RowKind.Back, () => Set(level - 1), "btn--small", row);
             minus.name = "difficulty-down";
             var n = Ui.Name(level.ToString(), row, "gold");
             n.name = "difficulty-level";
             // At least a column wide, wider when Text size grows the number (GG-T495: a fixed width ellipsized "10" at 130%).
             n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var plus = RowIcon.IconButton("+", RowKind.Settings, () => Set(level + 1), "btn--small", row);
+            var plus = RowIcon.IconButton("+", RowKind.Enter, () => Set(level + 1), "btn--small", row);
             plus.name = "difficulty-up";
             Ui.SetEnabled(minus, level > DifficultyTable.Min);
             Ui.SetEnabled(plus, level < DifficultyTable.Max);
@@ -2455,7 +2477,7 @@ namespace GridGame.App
                 Refresh();
             }, parent);
             row.name = "settings-turn-mode";
-            row.KindIcon(RowKind.Settings);
+            row.KindIcon(RowKind.NewGamePlus);
             string text = TurnModes.Describe(c, mode);
             if (App.Save?.TurnModeLock is TurnMode locked)
                 text += $" This save is locked to {TurnModes.Name(c, locked)} until you change it here.";
@@ -2483,7 +2505,7 @@ namespace GridGame.App
                 else SpendGate.Parental(() => { limitUnlocked = true; Cycle(); });
             }, parent);
             row.name = "settings-spending-limit";
-            row.KindIcon(RowKind.Settings);
+            row.KindIcon(RowKind.Shop);
         }
 
         /// <summary>Delete all game data (§15, GG-T1580): two questions, then <see cref="GameApp.DeleteAllData"/> erases this
@@ -2495,7 +2517,7 @@ namespace GridGame.App
                     Confirm.Show("Purchased Shards, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
                         App.DeleteAllData(ok => App.Toast(ok ? "All game data deleted" : "Some game data couldn't be deleted")))), parent);
             row.name = "settings-delete-all-data";
-            row.KindIcon(RowKind.Settings);
+            row.KindIcon(RowKind.Close);
         }
 
         protected override void BuildBody(VisualElement body)
@@ -2505,24 +2527,24 @@ namespace GridGame.App
             // GG-T454: one scrolling list (the rows, then How to play), so the last rows are never cut off a short phone.
             // GG-T1223: grouped into Gameplay, Graphics, Display, Sound, Accessibility and Data sections.
             var w = Ui.ListPanel(body, null, "settings-list");
-            // GG-T750 (§26.7): every setting row leads with the Settings gear, the save rows with the Save disk.
-            VisualElement Row(string label, string value, Action set, string name = null)
+            // GG-T750 (§26.7): every setting row leads with its own kind icon (GG-T1886), the save rows with the Save disk.
+            VisualElement Row(RowKind kind, string label, string value, Action set, string name = null)
             {
                 Action apply = () => { set(); App.ApplySettings(); App.SaveSettings(); Refresh(); };
-                var row = Ui.MenuRow(label, value, apply, w).KindIcon(RowKind.Settings);
+                var row = Ui.MenuRow(label, value, apply, w).KindIcon(kind);
                 if (name != null) row.name = name;
                 return row;
             }
-            void Toggle(string label, bool value, Action<bool> set, string name = null) => Row(label, value ? "ON" : "OFF", () => set(!value), name);
-            void Cycle(string label, float value, float[] opts, string fmt, Action<float> set, string name = null)
+            void Toggle(RowKind kind, string label, bool value, Action<bool> set, string name = null) => Row(kind, label, value ? "ON" : "OFF", () => set(!value), name);
+            void Cycle(RowKind kind, string label, float value, float[] opts, string fmt, Action<float> set, string name = null)
             {
                 int i = Array.FindIndex(opts, o => Mathf.Abs(o - value) < 0.01f);
-                Row(label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => set(opts[(i + 1) % opts.Length]), name);
+                Row(kind, label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => set(opts[(i + 1) % opts.Length]), name);
             }
-            void CycleInt(string label, int value, int[] opts, Func<int, string> text, Action<int> set, string name)
+            void CycleInt(RowKind kind, string label, int value, int[] opts, Func<int, string> text, Action<int> set, string name)
             {
                 int i = Array.IndexOf(opts, value);
-                Row(label, text(value), () => set(opts[(i + 1) % opts.Length]), name);
+                Row(kind, label, text(value), () => set(opts[(i + 1) % opts.Length]), name);
             }
             void Section(string title) => Ui.Section(title, w).name = "settings-section-" + title.ToLowerInvariant();
             void CycleFont()
@@ -2539,26 +2561,26 @@ namespace GridGame.App
             Section("Gameplay");
             TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
-            Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
-            Toggle("Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
-            Toggle("Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
-            Toggle("Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
+            Cycle(RowKind.Speed, "Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
+            Toggle(RowKind.Timer, "Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
+            Toggle(RowKind.Confirm, "Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
+            Toggle(RowKind.Focus, "Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
 
             // GG-T1221: quality (-1 = the project's own), frame-rate cap, vsync, shake and effects amount.
             Section("Graphics");
             var qualities = QualitySettings.names;
-            CycleInt("Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
+            CycleInt(RowKind.Diamond, "Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
                 Enumerable.Range(-1, qualities.Length + 1).ToArray(), q => q < 0 ? "Default" : qualities[q], v => st.QualityLevel = v, "settings-quality");
-            CycleInt("Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
+            CycleInt(RowKind.Gauge, "Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
                 f => f < 0 ? "Uncapped" : $"{f} fps", v => st.FrameRateCap = v, "settings-frame-cap");
-            if (!mobile) Toggle("VSync", st.VSync, v => st.VSync = v, "settings-vsync"); // GG-T1240: mobile ignores vsync
-            Cycle("Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
-            Cycle("Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
+            if (!mobile) Toggle(RowKind.Sync, "VSync", st.VSync, v => st.VSync = v, "settings-vsync"); // GG-T1240: mobile ignores vsync
+            Cycle(RowKind.Shake, "Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
+            Cycle(RowKind.New, "Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
 
             Section("Display");
             if (desktop)
             {
-                CycleInt("Window mode", GameSettings.ClampFullScreen(st.FullScreen), new[] { -1, 0, 1 },
+                CycleInt(RowKind.Window, "Window mode", GameSettings.ClampFullScreen(st.FullScreen), new[] { -1, 0, 1 },
                     m => m < 0 ? "As launched" : m == 1 ? "Fullscreen" : "Windowed", v => st.FullScreen = v, "settings-window-mode");
                 var sizes = new List<(int w, int h)> { (0, 0) };
                 foreach (var r in UnityEngine.Screen.resolutions)
@@ -2568,30 +2590,30 @@ namespace GridGame.App
                 var saved = (st.ResolutionWidth, st.ResolutionHeight);
                 if (saved.Item1 > 0 && saved.Item2 > 0 && !sizes.Contains(saved)) sizes.Add(saved);
                 int at = Math.Max(0, sizes.IndexOf(saved));
-                Row("Resolution", at == 0 ? "As launched" : $"{sizes[at].w}×{sizes[at].h}", () =>
+                Row(RowKind.Frame, "Resolution", at == 0 ? "As launched" : $"{sizes[at].w}×{sizes[at].h}", () =>
                 {
                     var next = sizes[(at + 1) % sizes.Count];
                     st.ResolutionWidth = next.w; st.ResolutionHeight = next.h;
                 }, "settings-resolution");
             }
             if (mobile)
-                CycleInt("Thumb margin", GameSettings.ClampThumbMargin(st.ThumbMargin), new[] { 0, 24, 48, 72, GameSettings.MaxThumbMargin },
+                CycleInt(RowKind.Hand, "Thumb margin", GameSettings.ClampThumbMargin(st.ThumbMargin), new[] { 0, 24, 48, 72, GameSettings.MaxThumbMargin },
                     m => m == 0 ? "OFF" : $"{m} px", v => st.ThumbMargin = v, "settings-thumb-margin");
-            CycleInt("UI scale", GameSettings.ClampUiScale(st.UiScale), new[] { 80, 90, 100 }, s => $"{s}%", v => st.UiScale = v, "settings-ui-scale");
+            CycleInt(RowKind.Scale, "UI scale", GameSettings.ClampUiScale(st.UiScale), new[] { 80, 90, 100 }, s => $"{s}%", v => st.UiScale = v, "settings-ui-scale");
 
             Section("Sound");
-            Cycle("Master volume", st.MasterVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MasterVolume = v, "settings-master-volume");
-            Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
-            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
-            Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
-            Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
-            Toggle("Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
+            Cycle(RowKind.Speaker, "Master volume", st.MasterVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MasterVolume = v, "settings-master-volume");
+            Cycle(RowKind.Note, "Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
+            Cycle(RowKind.Wave, "Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
+            Toggle(RowKind.NoteOff, "Mute music", st.MuteMusic, v => st.MuteMusic = v);
+            Toggle(RowKind.SpeakerOff, "Mute sound", st.MuteSfx, v => st.MuteSfx = v);
+            Toggle(RowKind.WindowOff, "Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
 
             Section("Accessibility");
             // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
-            Row("Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
-            Toggle("Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
-            Toggle("Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
+            Row(RowKind.Text, "Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
+            Toggle(RowKind.Eye, "Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
+            Toggle(RowKind.Pause, "Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
             // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
             // then draws with the default theme, font and word wrap).
             if (Features.LookPresets)
@@ -2599,10 +2621,10 @@ namespace GridGame.App
                 // GG-T407: every window theme (presets, the player's own, and the editor for gradient, texture and frame).
                 var windows = Ui.MenuRow("Windows", Art.ThemeName, () => App.Router.Push(new WindowEditorScreen()), w);
                 windows.name = "settings-windows";
-                windows.KindIcon(RowKind.Settings);
-                Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Settings);
+                windows.KindIcon(RowKind.Window);
+                Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Type);
                 // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
-                Row("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
+                Row(RowKind.Lore, "Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
             }
 
             Section("Data");
@@ -2618,7 +2640,7 @@ namespace GridGame.App
             // GG-T1330: version, legal links and third-party notices.
             var about = Ui.MenuRow("About", "", () => App.Router.Push(new AboutScreen()), w);
             about.name = "settings-about";
-            about.KindIcon(RowKind.Settings);
+            about.KindIcon(RowKind.Codex);
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
