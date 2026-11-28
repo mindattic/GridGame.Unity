@@ -53,6 +53,8 @@ Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-g
 
 Palette additions for code: `Palette.Black`, `Palette.Gray` (the fallback when a content colour does not parse), `Palette.Missing` (magenta, for a colour that must never be missing), `Palette.Overbright` (3, 3, 3: an image flashes overbright and eases back to White), `Palette.FoeTint` (a foe's cut-in portrait), `Palette.PlateRim` (a dialogue nameplate whose speaker is not talking) and `Palette.ManalithRock`.
 
+Grouped code colours (GG-T2139), each at the exact value its call sites drew before: `Palette.Vfx.*` holds the battle effects (selection and intent glows such as `SelectGlow`, `Harmful`, `Helpful`, `Threat`; element and status hues such as `Fire`, `Burning`, `Frozen`; sparks, rings, marks, cut-in bands, the board's rock, plate and amplifier, combat text and its outlines; and the vfxstyle fallback hex strings), `Palette.Combo.D` to `SSS` the combo rank badge, `Palette.Backdrop.*` the tints over a screen's background art, `Palette.Scene.*` generated textures and rigs (placeholder art, the card back, the moon's albedo, the fog banks, the coach shade), and `Palette.SkillHex.*` the skill hexagon's own palette. `Palette.Clear` is fully transparent and `Palette.Grey(v, a)` a computed grey. A colour whose alpha is computed at runtime keeps that computation at the call site and tokenizes only the base: `Palette.Vfx.Spark.WithA(1f - k)`, `c.WithA(0.5f)`. TestMode's pacing waits are `Timing.TestModeSettle` and `Timing.TestModeRead`.
+
 ### 2.2 Type
 
 - **One size**: `TypeScale.Base` (`--type-base`). `GuiType` computes it per screen to draw 14 dp, clamped to 40 to 56 design px, then multiplies by Settings → Text size (100, 115 or 130 %). Nominal 40.

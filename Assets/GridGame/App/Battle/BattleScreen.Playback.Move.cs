@@ -57,7 +57,7 @@ namespace GridGame.App
             var a = State.UnitById(p.Attacker1); var b = State.UnitById(p.Attacker2);
             if (a == null || b == null) yield break;
             board.Lines.ClearLines();
-            var color = p.Team == Team.Hero ? Palette.Gold.WithA(0.95f) : new Color(1f, 0.3f, 0.3f, 0.95f);
+            var color = p.Team == Team.Hero ? Palette.Gold.WithA(0.95f) : Palette.Vfx.FoePincer.WithA(0.95f);
             // Every coordinate below is the event's formation-time snapshot. State is already the END of the command,
             // so reading positions from it stretched the outline across the board whenever a member moved later in the
             // same command (GG-T98: "a gold box ~3×3 tiles"). Views that drifted from the snapshot are put back on it.
@@ -102,15 +102,15 @@ namespace GridGame.App
             string label = p.Team == Team.Hero ? (chainCount > 1 ? $"CHAIN ×{chainCount}!" : "PINCER!") : "Enemy pincer!";
             // The first link's cut-in is the announcement (§9.0, GG-T1913): the overlay line and board callout say it again, so they show only when no cut-in plays.
             bool cutInPlays = CutInsEnabled && !ReduceMotion && chainCount == 1;
-            Feed($"{(p.Team == Team.Hero ? "" : "Enemy ")}{(chainCount > 1 ? $"Chain ×{chainCount}" : "Pincer")}: {a.Name} & {b.Name}", p.Team == Team.Hero ? Palette.Gold : new Color(1f, 0.55f, 0.5f));
+            Feed($"{(p.Team == Team.Hero ? "" : "Enemy ")}{(chainCount > 1 ? $"Chain ×{chainCount}" : "Pincer")}: {a.Name} & {b.Name}", p.Team == Team.Hero ? Palette.Gold : Palette.Vfx.FoeText);
             var supporters = p.Supporters.Select(State.UnitById).Where(x => x != null).ToList();
-            if (supporters.Count > 0) Billboard("Support: " + string.Join(", ", supporters.Select(x => x.Name)), null, new Color(0.6f, 0.85f, 1f));
+            if (supporters.Count > 0) Billboard("Support: " + string.Join(", ", supporters.Select(x => x.Name)), null, Palette.Vfx.Sky);
             var mid = (BoardView.CenterOf(aAt.At) + BoardView.CenterOf(bAt.At)) / 2f;
             if (!cutInPlays) ShowBanner(label);
             if (p.BondTier > 0) // §25.20 (GG-T1308): bonded attackers hit harder
             {
-                Text.Show(mid + new Vector2(0f, 44f), CombatTextKind.Callout, $"Bond {p.BondTier}", 0f, new Color(1f, 0.6f, 0.8f));
-                Billboard($"Bond {p.BondTier}: +{Mathf.RoundToInt(p.BondTier * BattleConfig.PincerDamagePerCohesionTier * 100f)}% pincer damage", null, new Color(1f, 0.6f, 0.8f));
+                Text.Show(mid + new Vector2(0f, 44f), CombatTextKind.Callout, $"Bond {p.BondTier}", 0f, Palette.Vfx.Bond);
+                Billboard($"Bond {p.BondTier}: +{Mathf.RoundToInt(p.BondTier * BattleConfig.PincerDamagePerCohesionTier * 100f)}% pincer damage", null, Palette.Vfx.Bond);
             }
             if (board.Units.TryGetValue(a.Id, out var av)) App.StartCoroutine(Tween.Pop(av.Root, 1.15f, 0.2f));
             if (board.Units.TryGetValue(b.Id, out var bv)) App.StartCoroutine(Tween.Pop(bv.Root, 1.15f, 0.2f));
@@ -178,7 +178,7 @@ namespace GridGame.App
             var dim = new VisualElement { pickingMode = PickingMode.Ignore };
             dim.style.position = Position.Absolute;
             dim.style.left = Space.S0; dim.style.top = Space.S0; dim.style.right = Space.S0; dim.style.bottom = Space.S0;
-            dim.style.backgroundColor = team == Team.Hero ? new Color(0.02f, 0.03f, 0.08f) : new Color(0.12f, 0.0f, 0.02f);
+            dim.style.backgroundColor = team == Team.Hero ? Palette.Vfx.DimHero : Palette.Vfx.DimFoe;
             dim.style.opacity = 0f;
             layer.Add(dim);
             App.Overlay.Add(layer);
@@ -241,7 +241,7 @@ namespace GridGame.App
                 band.style.position = Position.Absolute;
                 band.style.backgroundImage = new StyleBackground(BandTex);
                 var bc = BandColor(team);
-                band.style.unityBackgroundImageTintColor = new Color(bc.r, bc.g, bc.b, 0.9f);
+                band.style.unityBackgroundImageTintColor = bc.WithA(0.9f);
                 float thick = (rowLine ? shot.H : shot.W) * 0.28f;
                 var core = new VisualElement { pickingMode = PickingMode.Ignore };
                 core.style.position = Position.Absolute;
@@ -348,7 +348,7 @@ namespace GridGame.App
             yield return Tween.Run(Timing.Standard, k => board.PlaceAmp(Vector2.Lerp(from, to, Tween.EaseOut(k))));
             board.SyncAmplifier(e.To);
             var by = State.UnitById(e.ByUnitId);
-            if (by != null) Feed($"{by.Name} shoved the amplifier", new Color(1f, 0.6f, 0.4f));
+            if (by != null) Feed($"{by.Name} shoved the amplifier", Palette.Vfx.Shove);
         }
 
         /// <summary>A non-hero entered a pickup's tile and shoved it aside (§13.3.1, GG-T228): it slides like the amplifier.</summary>
@@ -368,7 +368,7 @@ namespace GridGame.App
             App.Audio.Sfx("battle.crit", 0.9f);
             Billboard("Power Amplifier ×1.75", null, Palette.Gold);
             ampTally = true;
-            yield return Tween.Run(Timing.Standard, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 40f + 160f * k, new Color(1f, 0.8f, 0.3f, 1f - k), 12f); });
+            yield return Tween.Run(Timing.Standard, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 40f + 160f * k, Palette.Vfx.AmpRing.WithA(1f - k), 12f); });
             board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
             board.SyncAmplifier(null);
             yield return FloatText(e.HeroId, CombatTextKind.Buff, "AMPLIFIED!", 0.2f, 0.6f);

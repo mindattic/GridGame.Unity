@@ -12,7 +12,7 @@ namespace GridGame.App
     /// and that copy stays until its AfterimageFadedEvent: struck (it shatters with a flash) or faded (it thins away).</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color AfterimageColor = new Color(0.62f, 0.88f, 1f);
+        private static readonly Color AfterimageColor = Palette.Vfx.Afterimage;
         private readonly Dictionary<int, VisualElement> afterimageGhosts = new Dictionary<int, VisualElement>();
 
         private VisualElement GhostOf(int unitId, Coord at, float opacity)

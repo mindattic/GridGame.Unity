@@ -382,7 +382,7 @@ namespace GridGame.App
                 v.SetWeaponCracked(weaponDef != null && weaponDef.Durability > 0 && u.WeaponDurability == 1, !ReduceMotion);
                 bool sel = u.Id == SelectedHeroId;
                 var aura = AuraFor(u);
-                if (sel) v.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
+                if (sel) v.SetGlow(Palette.Vfx.SelectGlow, 0.65f);
                 else if (aura.a > 0f && !ReduceMotion) v.SetGlow(aura, 0.45f);
                 else v.SetGlow(Palette.White, 0f);
             }
@@ -434,15 +434,15 @@ namespace GridGame.App
             foreach (var b in u.Buffs)
                 switch (b.Def.Id)
                 {
-                    case "burning": return new Color(1f, 0.45f, 0.1f, 1f);
-                    case "frozen": return new Color(0.6f, 0.9f, 1f, 1f);
-                    case "poisoned": return new Color(0.5f, 1f, 0.3f, 1f);
+                    case "burning": return Palette.Vfx.Burning;
+                    case "frozen": return Palette.Vfx.Frozen;
+                    case "poisoned": return Palette.Vfx.Poisoned;
                     case "regen": return Palette.Good;
-                    case "sleep": return new Color(0.7f, 0.7f, 1f, 1f);
-                    case "taunting": return new Color(1f, 0.3f, 0.2f, 1f);
+                    case "sleep": return Palette.Vfx.Sleep;
+                    case "taunting": return Palette.Vfx.Threat;
                     case "empowered": return Palette.Buff;
                 }
-            return new Color(0, 0, 0, 0);
+            return Palette.Clear;
         }
 
         /// <summary>The effect that stops this unit's clock or turn, if any: buffs that halt/immobilise, else pushback stun.</summary>
@@ -450,7 +450,7 @@ namespace GridGame.App
         {
             foreach (var b in u.Buffs)
                 if (b.Def.HaltsTimeline || b.Def.Immobile)
-                    return (b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, Art.HexColor(b.Def.Color, new Color(0.6f, 0.85f, 1f)), b.Def.Name);
+                    return (b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, Art.HexColor(b.Def.Color, Palette.Vfx.Sky), b.Def.Name);
             if (turn != null && turn.StunTicks > 0) return ("stunned", "!", Palette.Gold, "Stunned");
             return null;
         }
@@ -516,13 +516,13 @@ namespace GridGame.App
             bool silenced = status == SlotStatus.Silenced;
             if (sl.IsWeapon)
             {
-                border = new Color(0.8f, 0.8f, 0.9f);
+                border = Palette.Vfx.EdgeNeutral;
                 Ui.SetAbilitySlot(v, Art.ItemIcon(sl.WeaponId) ?? Art.Orb, silenced: silenced);
                 return false;
             }
             if (sl.IsItem)
             {
-                border = new Color(0.86f, 0.62f, 0.36f);
+                border = Palette.Vfx.EdgeBronze;
                 Ui.SetAbilitySlot(v, Art.ItemIcon(sl.ItemId) ?? Art.AbilityIcon(a) ?? Art.Orb, count: sl.Charges, silenced: silenced);
                 return false;
             }
@@ -530,7 +530,7 @@ namespace GridGame.App
             float sweep = 0f, mana = -1f; int left = 0;
             if (a.Kind == AbilityKind.Skill)
             {
-                border = new Color(0.4f, 0.9f, 0.5f);
+                border = Palette.Vfx.Helpful;
                 if (status == SlotStatus.Cooldown && hero.Cooldowns.TryGetValue(a.Id, out left) && left > 0)
                     sweep = (float)left / Mathf.Max(left, a.CooldownTurns);
             }
@@ -640,7 +640,7 @@ namespace GridGame.App
             foreach (var b in u.Buffs)
             {
                 var pip = StatusRow(col, b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter,
-                    Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f)),
+                    Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff),
                     b.Def.Name, $"{Ui.BuffEffect(b.Def)} ({b.Remaining} {(b.Def.Unit == GridGame.Core.Content.DurationUnit.Turns ? "turns" : "s")} left)");
                 AttachStatusInspect(pip, b.Def, b.Remaining);
             }

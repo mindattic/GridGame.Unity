@@ -24,7 +24,7 @@ namespace GridGame.App
         /// <summary>Body colour (white unless tinted) and outline colour.</summary>
         public Color Fill, Line;
 
-        public static readonly Color Ink = new Color(0f, 0f, 0.05f, 0.9f);
+        public static readonly Color Ink = Palette.Scene.ShapeInk;
 
         /// <summary>On-board pointers and target arrows.</summary>
         public static ShapeStyle Indicator => new ShapeStyle

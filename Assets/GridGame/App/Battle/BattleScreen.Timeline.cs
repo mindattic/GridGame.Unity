@@ -175,7 +175,7 @@ namespace GridGame.App
         private Label gapLabel;
         /// <summary>GG-T1091 (§2.13.2): "Round 3 · 2 of 4 moved", above the track's left end, only when rounds are kept.</summary>
         private Label roundLabel;
-        private static readonly Color GapRoomy = new Color(0.35f, 0.85f, 0.45f), GapTight = new Color(1f, 0.72f, 0.2f), GapNone = new Color(1f, 0.3f, 0.25f);
+        private static readonly Color GapRoomy = Palette.Vfx.GapRoomy, GapTight = Palette.Vfx.GapTight, GapNone = Palette.Vfx.Harmful;
 
         private void BuildGapLane(VisualElement frame)
         {

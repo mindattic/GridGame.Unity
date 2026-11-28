@@ -10,7 +10,7 @@ namespace GridGame.App
     /// the ally (BuffRemovedEvent, Reason "redirected") and dropping in over the foe as it lands (BuffAppliedEvent).</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color ChiColor = new Color(0.55f, 1f, 0.82f);
+        private static readonly Color ChiColor = Palette.Vfx.Chi;
 
         private IEnumerator RedirectAnim(DebuffsRedirectedEvent e)
         {

@@ -1060,7 +1060,7 @@ namespace GridGame.App
             badge.style.borderTopLeftRadius = badge.style.borderTopRightRadius = badge.style.borderBottomLeftRadius = badge.style.borderBottomRightRadius = Size.Chip / 2f;
             badge.style.color = Palette.Text;
             Fonts.UseHeavy(badge);
-            var silenced = StatusPip("silenced", "S", new Color(1f, 0.25f, 0.25f), Size.Chip, slot);
+            var silenced = StatusPip("silenced", "S", Palette.Vfx.Silenced, Size.Chip, slot);
             silenced.name = "silenced";
             silenced.style.position = Position.Absolute;
             silenced.style.left = silenced.style.top = Space.S8;

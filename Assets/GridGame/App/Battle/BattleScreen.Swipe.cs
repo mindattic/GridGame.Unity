@@ -10,7 +10,7 @@ namespace GridGame.App
     /// leaves the foe (BuffRemovedEvent, Reason "stolen") and landing on the Thief (BuffAppliedEvent).</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color SwipeColor = new Color(1f, 0.82f, 0.35f);
+        private static readonly Color SwipeColor = Palette.Vfx.Swipe;
 
         private IEnumerator SwipeAnim(BoonStolenEvent e)
         {

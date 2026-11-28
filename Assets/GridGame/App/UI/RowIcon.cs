@@ -291,7 +291,7 @@ namespace GridGame.App
         /// <summary>The disc: Manalith blue #7590C8 (§11.5, the lit mana orb's colour).</summary>
         public static readonly Color Disc = Palette.OrbLit;
         public static readonly Color Rim = Palette.PewterDark;
-        public static readonly Color Mark = new Color(0.97f, 0.97f, 1f);
+        public static readonly Color Mark = Palette.Scene.RowMark;
 
         public RowKind Kind { get; }
 

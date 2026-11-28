@@ -9,8 +9,8 @@ namespace GridGame.App
     /// run then).</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color VineGreen = new Color(0.37f, 0.55f, 0.23f);
-        private static readonly Color VineBark = new Color(0.61f, 0.48f, 0.27f);
+        private static readonly Color VineGreen = Palette.Vfx.Vine;
+        private static readonly Color VineBark = Palette.Vfx.Bark;
 
         private IEnumerator VineCoil(Vector2 at)
         {

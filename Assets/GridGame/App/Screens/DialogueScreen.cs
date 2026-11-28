@@ -279,7 +279,7 @@ namespace GridGame.App
 
             s.Art.style.opacity = s.Portrait != null ? present : 0f;
             float tint = Mathf.Lerp(0.42f, 1f, lit);
-            s.Art.style.unityBackgroundImageTintColor = new Color(tint, tint, tint);
+            s.Art.style.unityBackgroundImageTintColor = Palette.Grey(tint);
             s.Art.style.scale = new Scale(Vector2.one * Mathf.Lerp(0.93f, 1f, lit));
             s.Art.style.translate = new Translate(s.Toward * (Mathf.Lerp(0f, 40f, lit) - (1f - present) * 140f), 0);
 

@@ -122,7 +122,7 @@ namespace GridGame.App
             cam.farClipPlane = dist + 5f;
             cam.cullingMask = 1 << Layer;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            cam.backgroundColor = Palette.Clear;
             cam.allowHDR = true;
             cam.allowMSAA = true;
             cam.depth = -60;
@@ -369,7 +369,7 @@ namespace GridGame.App
             Debug.Log($"[Build] Manalith t={rig.t:0.00}s: {rig.debris.particleCount} shards, {rig.chunks.particleCount} chunks, {rig.dust.particleCount} dust alive");
             rig.cam.backgroundColor = background;
             rig.cam.Render();
-            rig.cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            rig.cam.backgroundColor = Palette.Clear;
             return rig.rt;
         }
 

@@ -236,7 +236,7 @@ namespace GridGame.App
         private IEnumerator TurnAnim(TurnStartedEvent ts)
         {
             var u = State.UnitById(ts.UnitId);
-            if (u != null) Feed($"▶ {u.Name}'s turn", new Color(1f, 0.6f, 0.5f));
+            if (u != null) Feed($"▶ {u.Name}'s turn", Palette.Vfx.FoeTurn);
             App.Audio.Sfx("battle.turn", 0.7f);
             var entry = State.TurnEntryOf(ts.UnitId);
             if (entry != null && timelineIconViews.ContainsKey(entry.Id))
@@ -269,14 +269,14 @@ namespace GridGame.App
             SyncTimeline(null);
             App.Audio.Sfx("battle.cast");
             var caster = State.UnitById(cq.CasterId);
-            if (cq.LineTiles != null) foreach (var t in cq.LineTiles) board.Mark(t, new Color(1f, 0.2f, 0.15f), 0.4f);
+            if (cq.LineTiles != null) foreach (var t in cq.LineTiles) board.Mark(t, Palette.Vfx.LineDanger, 0.4f);
             string what = App.Content.TryAbility(cq.AbilityId)?.Name ?? "spell";
             var entry = State.Timeline.FirstOrDefault(x => x.Id == cq.EntryId);
             var target = entry == null ? null : State.UnitById(entry.TargetUnitId) ?? State.UnitAt(entry.TargetTile);
             string on = target != null ? $" on {target.Name}" : cq.LineTiles != null ? " down a line" : "";
             float secs = cq.Ticks / (float)BattleConfig.TicksPerSecond;
             ShowBanner($"{caster?.Name} {(cq.IsCharge ? "charges" : "casts")} {what}{on} — lands in {secs:0.#}s");
-            Billboard($"{caster?.Name}: {what}{on}", Art.AbilityIcon(App.Content.TryAbility(cq.AbilityId)), caster != null && caster.IsHero ? Palette.White : new Color(1f, 0.7f, 0.65f));
+            Billboard($"{caster?.Name}: {what}{on}", Art.AbilityIcon(App.Content.TryAbility(cq.AbilityId)), caster != null && caster.IsHero ? Palette.White : Palette.Vfx.FoeCast);
             AddGhost(cq);
             var tu = State.UnitById(cq.TargetUnitId);
             DodgeBillboard(new[] { cq.TargetTile }.Concat(tu != null ? ViewTiles(tu) : Enumerable.Empty<Coord>()).Concat(cq.LineTiles ?? new List<Coord>()));
@@ -354,7 +354,7 @@ namespace GridGame.App
                         Vector2 to = ViewCenter(t);
                         var p = ProjectilePoint(a.Motion, from, to, k);
                         board.Lines.Dot(p, 26f, c);
-                        board.Lines.Dot(ProjectilePoint(a.Motion, from, to, Mathf.Max(0f, k - 0.08f)), 16f, new Color(c.r, c.g, c.b, 0.5f));
+                        board.Lines.Dot(ProjectilePoint(a.Motion, from, to, Mathf.Max(0f, k - 0.08f)), 16f, c.WithA(0.5f));
                     }
                 });
                 board.Lines.ClearLines();
@@ -389,7 +389,7 @@ namespace GridGame.App
             if (a.CastTime <= 0f) yield return Gather(caster, c);
             // 2. Cast burst.
             App.Audio.Sfx("battle.cast", 0.9f, 1.2f);
-            yield return Tween.Run(Timing.Quick, k => { board.Lines.Rings.Clear(); board.Lines.Ring(from, 40f + 90f * k, new Color(c.r, c.g, c.b, 1f - k), 10f); });
+            yield return Tween.Run(Timing.Quick, k => { board.Lines.Rings.Clear(); board.Lines.Ring(from, 40f + 90f * k, c.WithA(1f - k), 10f); });
             board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
             if (cv != null) cv.SetGlow(Palette.White, 0f);
             // 3. One mote per target curves up and over to the space above it.
@@ -397,7 +397,7 @@ namespace GridGame.App
             var bends = targets.ToDictionary(t => t.Id, t => (Random.value < 0.5f ? -1f : 1f) * Random.Range(90f, 160f));
             float travel = calm ? 0.2f : Mathf.Clamp(Vector2.Distance(from, ends.Values.First()) / 1600f, 0.26f, 0.5f);
             // Each projectile is a glowing orb (bloom + white-hot core) leaving a comet tail of fading embers.
-            var heads = targets.ToDictionary(t => t.Id, t => (glow: Particle(110f, new Color(c.r, c.g, c.b, 0.95f)), core: Particle(34f, Palette.White)));
+            var heads = targets.ToDictionary(t => t.Id, t => (glow: Particle(110f, c.WithA(0.95f)), core: Particle(34f, Palette.White)));
             Vector2 Mid(int id, float kk)
             {
                 Vector2 to = ends[id];
@@ -487,7 +487,7 @@ namespace GridGame.App
         private IEnumerator CleanseBurst(Vector2 at)
         {
             App.Audio.Sfx("battle.heal", 0.7f, 1.3f);
-            var gold = new Color(1f, 0.88f, 0.5f);
+            var gold = Palette.Vfx.GoldBurst;
             for (int i = 0; i < 10; i++)
             {
                 var p = Particle(Random.Range(12f, 20f), gold);

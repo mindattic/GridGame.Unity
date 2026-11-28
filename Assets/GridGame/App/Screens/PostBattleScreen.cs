@@ -59,7 +59,7 @@ namespace GridGame.App
             var c = App.Content;
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, ThemeOf(c, report, stageId), 3);
-            bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.45f, 0.55f);
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Results;
             var col = Ui.El("fill col", root);
             Fit.Columnize(col, Space.S32); // the results sit in the centred content column (GG-T398)
 
@@ -267,7 +267,7 @@ namespace GridGame.App
         {
             var title = Ui.Text("CRUCIBLE", "t-display shadow", col);
             Fonts.UseDisplay(title);
-            title.style.color = new Color(1f, 0.6f, 0.3f);
+            title.style.color = Palette.Vfx.Crucible;
             var waves = Ui.Text($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", "t-h1 shadow gold", col);
             waves.name = "crucible-waves";
             waves.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -620,7 +620,7 @@ namespace GridGame.App
                 cell.style.alignItems = Align.Center;
                 cell.style.justifyContent = Justify.Center;
                 Ui.Pad(cell, top: Space.S8, bottom: Space.S8);
-                cell.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)).style.marginRight = 0;
+                cell.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)).style.marginRight = Space.S0;
                 Ui.Caption($"×{n}", cell).AddToClassList(Ui.RarityClass(it.Rarity));
                 Ui.Pressable(cell);
                 var shown = it;

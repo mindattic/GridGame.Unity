@@ -9,7 +9,7 @@ namespace GridGame.App
     /// The smoke cloud itself is the region tile wash its RegionTilesEvent paints. Reduce Motion keeps one fading puff.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color SmokeColor = new Color(0.62f, 0.64f, 0.7f);
+        private static readonly Color SmokeColor = Palette.Vfx.Smoke;
 
         private IEnumerator VanishedAnim(VanishedEvent e)
         {
