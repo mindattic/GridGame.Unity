@@ -1831,3 +1831,20 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   carried orbs. Owned-orb sources pay replacement rewards and old saves migrate (pending owner). GG-LAW-6 amended.
 - *Why:* owner (quoted above): a cheap spell should come round often and a big one should be earned, each on its own
   bar, readable without counting orbs.
+
+## 2026-11-27 — Battle HUD in fixed rows; info tabs, banner row, Combo meter and orbs row leave the battle screen (owner, GG-T1805, GG-T1808)
+
+- **Owner, 2026-11-27 (GG-T1805):** *"hamburger is always in upper left, gold in upper right, next row is timeline, next
+  8 rows is the board, next row is abilities"*; *"the skills need the bottom of the screen below them to describe
+  exactly what they are, what they do, how they work, how they target, who they target"*; *"if it has a cast time that
+  cast time needs to be on the timeline not all over the play board"*; *"the abilities wont work as 5 buttons if they
+  have long names that get truncated or `...`"*.
+- **Was ([§9](BIBLE.md#9-the-hud)):** top bar, timeline, a banner row, the board, the ability bar with the mana globe
+  (earlier an orbs row), and a Party · Lore · Log tab window to the bottom; a Combo meter in the board's corner; slot
+  names on the buttons; per-tile cast and heal markers.
+- **Now ([§9.0](BIBLE.md#90-battle-hud-rows-gg-t1808-owner-2026-11-27)):** hamburger and gold; timeline with GUARD at
+  its right end; 8 board rows with no cast markers (cast times only on the caster's timeline entry; heals keep theirs);
+  one bar of icon-only slots (skill sweep, item stack count, spell fill bar; no name in the bar, never truncated); the
+  skill description panel below. Announcements overlay the board's top edge; Log → hamburger menu page, Party → hero
+  long-press sheet, Lore → hub, Combo → brief callout plus results, lessons and advice → the panel.
+- *Why:* owner (quoted above): too much on one screen; every row has one job and the panel explains the ability.
