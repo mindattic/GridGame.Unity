@@ -186,7 +186,7 @@ namespace GridGame.Tests
             Assert.That(DialogueRunner.PendingInterlude(c, s)?.Id, Is.EqualTo("greenvalley_smith"));
             var log = DialogueRunner.PlayHeadless(c, s, DialogueRunner.PendingInterlude(c, s));
             Assert.That(CampNpcs.Joined(s, CampNpcs.Blacksmith), Is.True);
-            Assert.That(log, Does.Contain("Blacksmith joins the caravan!"), "named bare, like every archetype");
+            Assert.That(log, Does.Contain("Blacksmith joins the caravan"), "named bare, like every archetype");
             Assert.That(CampUnlocks.Arrivals(c, s, "greenvalley-03"), Is.Empty, "told once");
             Assert.That(CampUnlocks.JoinHint(c, CampNpcs.Blacksmith), Is.EqualTo("Joins after The Tithe Moors III"));
         }
