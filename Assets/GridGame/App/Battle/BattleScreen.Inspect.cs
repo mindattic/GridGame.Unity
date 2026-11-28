@@ -336,7 +336,7 @@ namespace GridGame.App
         {
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null || !PendingTarget.HasValue) return;
-            var p = OutcomePreviewer.Preview(State, new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = PendingTarget.Value }, 6);
+            var p = OutcomePreviewer.Preview(State, PendingCommand(hero), 6);
             if (p.Refused) return;
             int shown = 0;
             foreach (var t in p.Targets.OrderByDescending(t => t.DamageMax + t.HealMax))

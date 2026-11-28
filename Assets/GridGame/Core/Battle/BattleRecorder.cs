@@ -29,12 +29,14 @@ namespace GridGame.Core.Battle
         /// ManaGained with Amount 0 and no meters.
         /// v7 (2026-11-28, GG-T1926): one party mana pool (§3.1.0). Every state's "meters" becomes "mana"
         /// ({"points", "capacity"}); "startMana" is the points in the pool before wave 1; ManaGained carries "Before",
-        /// "After", "Capacity" and "Wasted" and no longer "Meters" or "Readied".</summary>
-        public const int SchemaVersion = 7;
+        /// "After", "Capacity" and "Wasted" and no longer "Meters" or "Readied".
+        /// v8 (2026-11-28, GG-T2141): a "use" command may carry "targets", a multi-pick's picks in resolve order (absent: one
+        /// pick, "target").</summary>
+        public const int SchemaVersion = 8;
 
-        /// <summary>The battle rules a record was made under. 3 (GG-T1926): one party mana pool (§3.1.0). 2 (GG-T1812):
+        /// <summary>The battle rules a record was made under. 4 (GG-T2141): multi-pick and direction aims. 3 (GG-T1926): one party mana pool (§3.1.0). 2 (GG-T1812):
         /// per-spell mana meters. A record without it was made under the shared orb bank (1).</summary>
-        public const int RulesVersion = 3;
+        public const int RulesVersion = 4;
         public const string RulesVersionKey = "rulesVersion";
 
         /// <summary>A record made under older rules: shown as it was, never re-simulated (§3.1.0).</summary>
@@ -268,7 +270,10 @@ namespace GridGame.Core.Battle
             switch (cmd)
             {
                 case MoveCommand m: return new JObject { ["type"] = "move", ["hero"] = m.HeroId, ["path"] = new JArray(m.Path.Select(c => new JArray(c.X, c.Y))), ["timeLeft"] = m.TimeLeftSeconds, ["held"] = m.HeldSeconds };
-                case UseSlotCommand u: return new JObject { ["type"] = "use", ["hero"] = u.HeroId, ["slot"] = u.Slot, ["target"] = new JArray(u.Target.X, u.Target.Y) };
+                case UseSlotCommand u:
+                    var use = new JObject { ["type"] = "use", ["hero"] = u.HeroId, ["slot"] = u.Slot, ["target"] = new JArray(u.Target.X, u.Target.Y) };
+                    CommandCodec.WriteTargets(use, u); // GG-T2141: a multi-pick's picks
+                    return use;
                 case ShieldCommand sh: return new JObject { ["type"] = "guard", ["held"] = sh.HeldSeconds }; // as CommandCodec keeps it
                 case TalkCommand t: return new JObject { ["type"] = "talk", ["hero"] = t.HeroId, ["target"] = t.TargetId };
                 case TutorialSceneCommand sc: return new JObject { ["type"] = "scene", ["scene"] = sc.Scene };

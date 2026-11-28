@@ -79,8 +79,10 @@ namespace GridGame.Core.Battle
             var a = AbilityForSlot(C, slot, hero);
             if (a == null) return Refuse(hero, "Empty");
 
-            Coord anchor = a.Mode == TargetMode.Auto ? TargetResolver.AutoAnchor(hero) : cmd.Target;
-            if (a.Mode != TargetMode.Auto && !TargetResolver.IsValidPick(S, a, hero, anchor)) return Refuse(hero, "No target");
+            var picks = a.Mode == TargetMode.PickMulti ? cmd.Picks : null; // GG-T2141
+            Coord anchor = a.Mode == TargetMode.Auto ? TargetResolver.AutoAnchor(hero) : picks?[0] ?? cmd.Target;
+            if (picks != null ? !TargetResolver.IsValidPicks(S, a, hero, picks)
+                : a.Mode != TargetMode.Auto && !TargetResolver.IsValidPick(S, a, hero, anchor)) return Refuse(hero, "No target");
             if (a.Revives && !S.Units.Exists(u => u.IsHero && !u.Alive && u.Hp <= 0 && !u.IsWildTamed)) return Refuse(hero, "Nobody to revive");
             if (a.Revives && ReviveSpot(hero) == null) return Refuse(hero, "No room!");
             if (a.Vanishes && SmokeVanish.Landings(S, hero, hero.Pos).Count == 0) return Refuse(hero, "No room!"); // GG-T861
@@ -107,12 +109,12 @@ namespace GridGame.Core.Battle
                 slot.Charges--;
                 if (slot.FromInventory) Add(S.Results.ItemsConsumed, slot.ItemId, 1);
                 Emit(new ItemUsedEvent { UserId = hero.Id, ItemId = slot.ItemId, ChargesLeft = slot.Charges });
-                ResolveAbility(hero, a, anchor, TargetUnitAt(anchor, a));
+                ResolvePicks(hero, a, anchor, picks);
             }
             else if (a.Kind == AbilityKind.Skill)
             {
                 if (a.CooldownTurns > 0) hero.Cooldowns[a.Id] = a.CooldownTurns;
-                ResolveAbility(hero, a, anchor, TargetUnitAt(anchor, a));
+                ResolvePicks(hero, a, anchor, picks);
             }
             else
             {
@@ -142,7 +144,7 @@ namespace GridGame.Core.Battle
                 }
                 else
                 {
-                    ResolveAbility(hero, a, anchor, TargetUnitAt(anchor, a));
+                    ResolvePicks(hero, a, anchor, picks);
                 }
             }
             CheckEnd();
@@ -150,7 +152,22 @@ namespace GridGame.Core.Battle
         }
 
         private Unit TargetUnitAt(Coord anchor, AbilityDef a) =>
-            a.Mode == TargetMode.PickActor ? S.UnitAt(anchor) : null;
+            TargetResolver.PicksUnit(a) ? S.UnitAt(anchor) : null;
+
+        /// <summary>GG-T2141: a multi-pick resolves on each picked unit in pick order (the units named before the first
+        /// resolves, so a knockback never moves a later pick onto someone else; one already down is skipped); every other
+        /// mode resolves once at its anchor.</summary>
+        private void ResolvePicks(Unit hero, AbilityDef a, Coord anchor, IReadOnlyList<Coord> picks)
+        {
+            if (picks == null) { ResolveAbility(hero, a, anchor, TargetUnitAt(anchor, a)); return; }
+            var units = new List<Unit>();
+            foreach (var c in picks) units.Add(S.UnitAt(c));
+            foreach (var u in units)
+            {
+                if (S.IsOver || !hero.Alive) return;
+                if (u != null && u.Alive) ResolveAbility(hero, a, u.Pos, u);
+            }
+        }
 
         /// <summary>A cast icon reached the trigger (or a Clutch forced it): resolve and remove it.</summary>
         private void ResolveCast(TimelineEntry cast)
@@ -392,7 +409,7 @@ namespace GridGame.Core.Battle
             if (u == null || a == null) return;
             u.LastAbilityId = a.Id;
             u.LastAnchor = anchor;
-            var t = a.Mode == TargetMode.PickActor ? S.UnitAt(anchor) : null;
+            var t = TargetResolver.PicksUnit(a) ? S.UnitAt(anchor) : null;
             u.LastTargetUnitId = t?.Id ?? -1;
         }
 
@@ -416,7 +433,7 @@ namespace GridGame.Core.Battle
             Announce($"Echo: {copy.Name}!", caster.Id);
             Remember(caster, copy, plan.Value.Anchor);
             var anchor = plan.Value.Anchor;
-            ResolveAbility(caster, copy, anchor, copy.Mode == TargetMode.PickActor ? S.UnitAt(anchor) : null);
+            ResolveAbility(caster, copy, anchor, TargetResolver.PicksUnit(copy) ? S.UnitAt(anchor) : null);
         }
 
         /// <summary>GG-T336 (§25.11.2.1): Countermarch. The foe's turn icon and the furthest-off foe's trade their times to

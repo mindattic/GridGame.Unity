@@ -102,7 +102,7 @@ namespace GridGame.App.Automation
                     {
                         case "shield": cmd = new ShieldCommand(); break;
                         case "move": cmd = new MoveCommand { HeroId = (int)F(q["hero"]), Path = ParseTiles(q["path"]) }; break;
-                        case "use": cmd = new UseSlotCommand { HeroId = (int)F(q["hero"]), Slot = (int)F(q["slot"]), Target = new Coord((int)F(q["x"]), (int)F(q["y"])) }; break;
+                        case "use": cmd = new UseSlotCommand { HeroId = (int)F(q["hero"]), Slot = (int)F(q["slot"]), Target = new Coord((int)F(q["x"]), (int)F(q["y"])), Targets = q["targets"] != null ? ParseTiles(q["targets"]) : new List<Coord>() }; break;
                     }
                     if (cmd == null) return new { error = "bad type" };
                     b.Commit(cmd);
