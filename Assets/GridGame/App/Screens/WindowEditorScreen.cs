@@ -208,7 +208,7 @@ namespace GridGame.App
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
             // A dark plate under white text: the swatch behind the name runs from near-white to saturated, so no one text colour clears 4.5:1 on all of them.
-            l.style.color = Color.white;
+            l.style.color = Palette.White;
             l.style.backgroundColor = Palette.Ink.WithA(0.8f);
             l.style.paddingLeft = l.style.paddingRight = Space.S16;
             l.style.borderTopLeftRadius = l.style.borderTopRightRadius = l.style.borderBottomLeftRadius = l.style.borderBottomRightRadius = Space.S16;
@@ -406,7 +406,7 @@ namespace GridGame.App
         }
 
         private static string Mix(string a, string b) =>
-            WindowThemes.HexOf(Color.Lerp(WindowThemes.Hex(a, Color.gray), WindowThemes.Hex(b, Color.gray), 0.5f));
+            WindowThemes.HexOf(Color.Lerp(WindowThemes.Hex(a, Palette.Gray), WindowThemes.Hex(b, Palette.Gray), 0.5f));
 
         // ── Texture ─────────────────────────────────────────────────────────────────
 
@@ -594,7 +594,7 @@ namespace GridGame.App
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
             var hex = Ui.Text("", "small", chip);
-            void Show() { chip.style.backgroundColor = WindowThemes.Hex(get(), Color.gray); hex.text = get(); }
+            void Show() { chip.style.backgroundColor = WindowThemes.Hex(get(), Palette.Gray); hex.text = get(); }
             Show();
             live.Add(Show);
             Ui.Tappable(chip, onTap, "ui.select");
@@ -616,7 +616,7 @@ namespace GridGame.App
             sw.style.borderTopWidth = sw.style.borderBottomWidth = sw.style.borderLeftWidth = sw.style.borderRightWidth = Size.Hairline;
             sw.style.borderTopColor = sw.style.borderBottomColor = sw.style.borderLeftColor = sw.style.borderRightColor = Palette.Text;
             sw.style.borderTopLeftRadius = sw.style.borderTopRightRadius = sw.style.borderBottomLeftRadius = sw.style.borderBottomRightRadius = Space.S8;
-            void Show() { hex.text = get(); sw.style.backgroundColor = WindowThemes.Hex(get(), Color.gray); }
+            void Show() { hex.text = get(); sw.style.backgroundColor = WindowThemes.Hex(get(), Palette.Gray); }
             Show();
             live.Add(Show);
             int Channel(int shift) => WindowThemeCatalog.TryHex(get(), out int v) ? (v >> shift) & 0xFF : 0;

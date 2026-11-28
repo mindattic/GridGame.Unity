@@ -372,7 +372,7 @@ namespace GridGame.App
         private void ClearTargetGlows()
         {
             foreach (var id in targetGlows)
-                if (board.Units.TryGetValue(id, out var v)) v.SetGlow(Color.white, 0f);
+                if (board.Units.TryGetValue(id, out var v)) v.SetGlow(Palette.White, 0f);
             targetGlows.Clear();
             if (board.Units.TryGetValue(SelectedHeroId, out var sv)) sv.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
         }

@@ -12,8 +12,6 @@ namespace GridGame.App
 {
     public sealed class BestiaryScreen : HubPage
     {
-        /// <summary>The tile behind an unseen creature's black silhouette: light enough that the shape reads against it.</summary>
-        internal static readonly Color UnseenTile = new Color(0.45f, 0.50f, 0.60f, 1f);
         private string selected;
         public override string Id => "bestiary";
         protected override string Title => "Bestiary";
@@ -25,39 +23,69 @@ namespace GridGame.App
 
         /// <summary>The grid and detail into <paramref name="body"/>: this screen's own body, and the Codex's Foes tab
         /// (GG-T925), which embeds it rather than copying it. <paramref name="onPick"/> hears each creature opened;
-        /// <paramref name="isNew"/> puts the New badge on a seen creature's card until it is opened.</summary>
+        /// <paramref name="isNew"/> puts the New badge on a seen creature's card until it is opened.
+        /// GG-T1975: grouped by region (<see cref="BestiaryRegions"/>), each headed "3/12 met"; a region's unmet foes are one
+        /// "?" card with their count, never a wall of silhouettes.</summary>
         internal void BuildGrid(VisualElement body, Action<string> onPick = null, Func<string, bool> isNew = null)
         {
-            var enemies = C.Classes.Values.Where(c => c.Team == Team.Enemy).OrderBy(c => c.Name).ToList();
-            int seen = enemies.Count(e => S.Bestiary.TryGetValue(e.Id, out var b) && b.Seen);
-            var grid = Ui.ListPanel(body, $"Seen {seen}/{enemies.Count}", out var scroll, "bestiary-grid");
-            grid.style.flexDirection = FlexDirection.Row;
-            grid.style.flexWrap = Wrap.Wrap;
+            bool Met(ClassDef d) => S.Bestiary.TryGetValue(d.Id, out var b) && b.Seen;
+            var regions = BestiaryRegions.Group(C);
+            int total = regions.Sum(r => r.Foes.Count), met = regions.Sum(r => r.Foes.Count(Met));
+            var grid = Ui.ListPanel(body, $"{met}/{total} met", out var scroll, "bestiary-grid");
             var detail = Ui.DetailPanel(body);
-            foreach (var e in enemies)
+            var sections = new List<(VisualElement Box, List<VisualElement> Cells)>();
+            foreach (var (theme, foes) in regions)
             {
-                var def = e;
-                S.Bestiary.TryGetValue(e.Id, out var entry);
-                var t = Ui.Thumb(e.Id, grid, 160, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
-                t.name = "beast-" + e.Id;
-                if (entry == null || !entry.Seen) { t.style.backgroundColor = UnseenTile; t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); } // GG-T1889: a black silhouette on a light slate tile (over 4:1), not on the dark card
-                else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
-                t.AddToClassList("card-tap");
-                Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
+                string key = theme?.Id ?? "elsewhere", place = theme?.Name ?? "Elsewhere";
+                var seen = foes.Where(Met).ToList();
+                Ui.Section($"{place} · {seen.Count}/{foes.Count} met", grid).name = "beast-region-" + key;
+                var box = Ui.El(null, grid);
+                box.name = "beast-cells-" + key;
+                foreach (var e in seen)
+                {
+                    var def = e;
+                    var entry = S.Bestiary[e.Id];
+                    var t = Ui.Thumb(e.Id, box, 160, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
+                    t.name = "beast-" + e.Id;
+                    if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
+                    t.AddToClassList("card-tap");
+                    Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
+                }
+                int unmet = foes.Count - seen.Count;
+                if (unmet > 0)
+                {
+                    var q = Ui.El("thumb", box);
+                    q.name = "beast-unmet-" + key;
+                    q.style.alignItems = Align.Center;
+                    q.style.justifyContent = Justify.Center;
+                    Ui.Heading("?", q, "dim");
+                    Ui.Caption($"{unmet} to meet", q, "dim");
+                    q.AddToClassList("card-tap");
+                    Ui.Tappable(q, () => { selected = null; ShowUnmet(detail, place, theme != null, unmet); });
+                }
+                sections.Add((box, box.Children().ToList()));
             }
-            grid.style.flexDirection = FlexDirection.Column;
-            grid.style.flexWrap = Wrap.NoWrap;
-            var cells = grid.Children().ToList();
-            int laidCols = -1;
+            var laidCols = sections.Select(_ => -1).ToArray();
             // Listen on the viewport, not the ScrollView: the vertical scroller appears only after the cells fill it,
             // shrinking the viewport without resizing the ScrollView, so a ScrollView listener never re-lays the grid.
             scroll.contentViewport.RegisterCallback<GeometryChangedEvent>(_ =>
             {
                 // The content viewport (inside the ScrollView's border, padding and scroller) is what the rows really get.
-                laidCols = EvenGrid(grid, cells, scroll.contentViewport.layout.width, 160f, Space.S24, laidCols);
+                float w = scroll.contentViewport.layout.width - grid.resolvedStyle.paddingLeft - grid.resolvedStyle.paddingRight;
+                for (int i = 0; i < sections.Count; i++)
+                    laidCols[i] = EvenGrid(sections[i].Box, sections[i].Cells, w, 160f, Space.S24, laidCols[i]);
             });
             if (selected != null && C.TryClass(selected) is ClassDef sel) { Show(detail, sel, S.Bestiary.TryGetValue(selected, out var se) ? se : null); onPick?.Invoke(selected); }
             else Ui.Empty("Tap a creature.", detail);
+        }
+
+        /// <summary>The detail for a region's "?" card: how many of its foes are still unmet, and where to meet them.</summary>
+        private static void ShowUnmet(VisualElement w, string place, bool region, int unmet)
+        {
+            w.Clear();
+            Ui.Heading("??? — not yet encountered", w, "dim");
+            Ui.Para(region ? $"{unmet} {(unmet == 1 ? "foe" : "foes")} of {place} still to meet. Fight there to fill this page."
+                : $"{unmet} {(unmet == 1 ? "foe" : "foes")} still to meet outside the regions: summoned, hatched or in the Crucible.", w, "dim").name = "beast-unmet-text";
         }
 
         /// <summary>Fits as many cells of about <paramref name="target"/> px as the width allows, then stretches them so the

@@ -84,7 +84,7 @@ namespace GridGame.App
             mat.SetTexture("_MaskTex", mask);
             mat.SetTexture("_RampBody", body);
             mat.SetTexture("_RampSecondary", sec);
-            mat.SetColor("_KeepTint", Art.HexColor(breed.KeepTint, Color.white));
+            mat.SetColor("_KeepTint", Art.HexColor(breed.KeepTint, Palette.White));
             mat.SetFloat("_KeepMix", breed.KeepMix);
             mat.SetFloat("_LightLift", breed.LightLift);
             mat.SetFloat("_ChromaScale", breed.ChromaScale);
@@ -120,7 +120,7 @@ namespace GridGame.App
             string key = string.Join(",", stops);
             if (ramps.TryGetValue(key, out var r) && r != null) return r;
             var cols = new List<Color>(stops.Count);
-            foreach (var s in stops) cols.Add(Art.HexColor(s, Color.gray));
+            foreach (var s in stops) cols.Add(Art.HexColor(s, Palette.Gray));
             if (cols.Count == 1) cols.Add(cols[0]);
             var px = new Color[RampWidth];
             for (int i = 0; i < RampWidth; i++)

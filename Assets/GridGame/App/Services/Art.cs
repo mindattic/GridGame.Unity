@@ -584,8 +584,9 @@ namespace GridGame.App
                 if (!string.IsNullOrEmpty(t) && Exists(AssetNames.Path("Tiles", t))) return Load(AssetNames.Path("Tiles", t));
             return Load(AssetNames.Path("Tiles", "tile"));
         }
-        /// <summary>A UI-group pixel icon (tools/icons.json "ui": cursor, pickups), or null.</summary>
-        public static Texture2D UiIcon(string id) => Pixelled("UI", id);
+        /// <summary>A UI-group pixel icon (tools/icons.json "ui": cursor, pickups, and the interface set under UI/Icons,
+        /// GG-T2050: <c>cur-gold</c>, <c>stat-hp</c>, <c>chrome-station</c>), or null.</summary>
+        public static Texture2D UiIcon(string id) => Pixelled("UI", id) ?? Pixelled("UI/Icons", id);
         public static Texture2D Icon(string key) => string.IsNullOrEmpty(key) ? null : Load(AssetNames.Path("Icons", key));
 
         private static readonly Dictionary<string, BackdropSet> backdropSets = new Dictionary<string, BackdropSet>(System.StringComparer.OrdinalIgnoreCase);

@@ -917,7 +917,7 @@ namespace GridGame.App
         private IEnumerator ExtendRecovery(int entryId, int ticks)
         {
             if (!recoverView.TryGetValue(entryId, out var r)) yield break;
-            yield return Tween.Run(0.3f, k =>
+            yield return Tween.Run(Timing.Standard, k =>
             {
                 int add = Mathf.RoundToInt(ticks * Tween.EaseOut(k));
                 if (recoverView.ContainsKey(entryId)) recoverView[entryId] = (r.left + add, r.total + add);
@@ -1073,7 +1073,7 @@ namespace GridGame.App
     internal sealed class RecoverRing : VisualElement
     {
         private float frac = -1f;
-        private Color color = Color.white;
+        private Color color = Palette.White;
 
         public RecoverRing(float span)
         {

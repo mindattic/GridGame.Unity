@@ -1,5 +1,5 @@
 [
-  {"Key": "place:greenvalley", "Related": ["faction:holds", "foe:slime00", "foe:wolf00", "foe:frog00", "foe:goblinthug00", "foe:soldier00", "foe:captain"]},
+  {"Key": "place:greenvalley", "Related": ["faction:holds", "foe:slime00", "foe:wolf00", "foe:frog00", "foe:goblinthug00", "foe:soldier00", "foe:captain", "foe:collector", "foe:ward_engine"]},
   {"Key": "place:lanternroad", "Related": ["faction:lantern", "foe:oni00", "foe:bat00", "foe:wolf00", "foe:steppinrazor00", "foe:flyingmonkey"]},
   {"Key": "place:desert", "Related": ["faction:lantern", "faction:ember", "foe:scorpion", "foe:vulture", "foe:sandmaw", "foe:mechaarmor00", "foe:techgremlin00", "foe:hellspawn01", "foe:infernalist01"]},
   {"Key": "place:swamp", "Related": ["faction:fendark", "foe:lurker00", "foe:marshshambler00", "foe:frog00", "foe:treegolem00", "foe:lich"]},
@@ -105,6 +105,8 @@
   {"Key": "foe:vampire", "Related": []},
   {"Key": "foe:hierarch", "Related": []},
   {"Key": "foe:lich", "Related": []},
+  {"Key": "foe:collector", "Related": ["place:greenvalley", "faction:holds", "foe:captain"]},
+  {"Key": "foe:ward_engine", "Related": ["place:greenvalley"]},
   {"Key": "story:chapter/ch01", "Related": ["place:lanternroad"]},
   {"Key": "story:chapter/ch02", "Related": ["place:swamp"]},
   {"Key": "story:chapter/ch03", "Related": ["place:cave"]},
@@ -124,5 +126,5 @@
   {"Key": "story:dialogue/boss_intro_still", "Related": ["place:still", "foe:chronomancer"]},
   {"Key": "story:dialogue/boss_intro_cityruins", "Related": ["place:cityruins", "foe:ceramicknight06"]},
   {"Key": "story:dialogue/boss_intro_cathedral", "Related": ["place:cathedral", "foe:hierarch"]},
-  {"Key": "keyword:skill_board", "Title": "The Skill Board", "Related": []}
+  {"Key": "keyword:skill_board", "Title": "Talents", "Related": []}
 ]
