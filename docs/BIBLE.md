@@ -2283,6 +2283,36 @@ Source (spell, item, charge, trap, expire chain, Shield) → `ApplyBuff` (refres
 ```
 
 - **Owner decision 2026-11-28 (GG-T1904): where the hamburger lives.** The hamburger is on the **hub** and **in battle** only. Every **sub-page** keeps **Back top-left** and has **no hamburger**.
+- **Amended 2026-11-28 (GG-T1914, owner): one Abilities button and a sheet replace the five slots.** Owner (verbatim): *"the abilities can't be a static 5 buttons on the bottom there just isn't room for all of them, but one button which allows you to select a skill/spell/consumable would work, it has to open up a modal which you select the move then it brings back the game and you select the target"*; refined the same day: tabs for Abilities, Spells and Consumables, category drill-down with a breadcrumb ("Abilities › Ninjutsu › Smokebomb"), a full detail page per move, a commit button labelled by kind, and the board kept in view behind the sheet. Slices: GG-T1920 (the button and sheet, built), GG-T1921 (the slots go; the row becomes the action row below), GG-T1922 (automation, tutorial and coach marks move to the button, tab, row and commit button). Mana becomes one thin shared party bar (GG-T1915), and the tree becomes customizable per hero (GG-T1917).
+  ```
+  ├─────────────────────────────────────┤ board bottom + 24
+  │ ▰▰▰▰▰▰▰▰▰▰▰▱▱▱▱▱  party mana (T1915)│  thin bar, full width
+  │ [ (hero) Abilities• ] [ Info ] [ GUARD ]│  row 11: the action row
+  ├─────────────────────────────────────┤  (Info: Examine, own ticket)
+  │ description panel (gains the height │
+  │ the five slots gave back)           │
+  └─────────────────────────────────────┘
+  ```
+  - **The action row** (GG-T1921): `[Abilities] [Info] [GUARD]`, three big thumb buttons, with the party bar just above them. It is lower than the slot row, and the height it frees goes to the **description panel** (the board keeps its 180-px tiles). Until GG-T1921 lands, the Abilities cell sits at the left of the old row, beside the five slots and GUARD.
+  - **The Abilities button** (`abilities`) shows the selected hero's thumbnail over the word "Abilities", plus a gold dot when a move has become ready since that hero's sheet last opened. A tap opens the sheet. A long-press (`InspectCard.HoldSeconds`) re-aims that hero's last move without opening it.
+  - **The sheet** (`abilities-sheet`) slides up from the bottom (Timing.Standard; no slide under Reduce Motion) and covers 62% of the safe height. Behind it, the board stays visible under a 50% ink dim, with a gold glow on the hero's tile. UI Toolkit has no backdrop blur, so the dim alone sets the sheet apart. Tapping the dim closes the sheet.
+    - **Header:** the hero's thumbnail, name and HP, and Close.
+    - **Breadcrumb** (`crumbN`): the tab, any folder, then the move. Tapping a crumb jumps back to that level.
+    - **Tabs:** Abilities (skills and weapon attacks), Spells, Consumables. A tab with nothing ready is dimmed but still opens.
+  - **One tree source:** `ActionTree.For(state, hero)` (Core) builds the tree from the hero's unlocked, filled bar slots. Content has no category field, so the default folders are the ability's damage type. A tab is foldered only when it holds more than 3 moves of 2 or more types; otherwise it is flat. Consumables are never foldered. GG-T1917 swaps in the hero's saved tree here, and the sheet never builds its own.
+  - **List rows** (`moveN`, N = bar slot): each row shows:
+    - the move's face, with the same widgets as the slots: a skill's recharge sweep, a spell's readiness fill, an item's stack;
+    - the **full name**, wrapped and never truncated;
+    - readiness: "Ready", "Ready in 2 turns", "0 left", or the spell's line. A move that isn't ready is dimmed and gives the reason;
+    - the "how it targets" sentence (`TargetText.How`).
+    Folder rows show their ready count. The sheet reopens at the list holding the hero's last committed move, with that row highlighted. Highlighting a row calls the hook the board-preview ticket fills: outlining on the dimmed board what the move could reach.
+  - **The detail page** (tap a row) shows:
+    - the face, full name and readiness;
+    - the whole `InspectCard.Ability` card in the five answers' order;
+    - a footer in thumb reach: **Back**, and the commit button labelled **Perform** (a skill or weapon attack), **Cast** (a spell) or **Use** (a consumable). The button is disabled when the move can't be used now, and the readiness line says why.
+    Committing remembers the move as the hero's last, slides the sheet away and starts that move's own aiming (`OnSlot`): a unit, a tile, or self/automatic into the confirm card. The multi-pick and direction aim modes come with the board-preview ticket. The description panel keeps the aim prompt and the confirm card as above. Cancel reopens the sheet at the move's detail page (GG-T1921).
+  - **Back:** the detail page goes back to its list, a folder to its tab, and a tab closes the sheet. The device Back button does the same.
+  - **Spell readiness has one switch:** `SpellFill` / `SpellReadyText`. It reads each spell's own meter today ("120 / 300 mana · charging 40%"). GG-T1915 turns it into cost against the party bar ("Costs 300 · bar 240") in that one place.
 - **Row 1, the top bar.** The **hamburger** (`[≡]`, was `[II]`) sits top-left and opens the pause menu (Resume, **Battle log**, Settings, Retreat, as built plus the log page); **gold** (coins this battle) sits top-right; the stage name and "Wave n/m" sit small between them on one auto-fit line, the name dropping first when there is no room. Nothing else lives in this row.
 - **Row 2, the timeline** ([§2.6](#26-one-track-diamond-icons-the-prominence-diamond)), unchanged, except that **GUARD has left it** (GG-T1904, owner 2026-11-28: it sits at the right end of the bottom action row, [§2.5](#25-auto-skip--shield)) and the track and recovery tray take back its width. Every cast time, a heal's included (owner answer: heals **keep** their cast times; GG-T1818 dropped), shows **only** as the caster's cast entry on this track. The optional drag timer's seconds, which had the banner row's right end, show beside the NOW diamond while a drag is live (designer's default).
 - **Rows 3-10, the board** (6 × 8), starting a gutter under the timeline: the banner row is gone, so the board gains its 117 px. **No per-tile countdown rings, ring-and-plus heal markers, numbers or stacked pending markers for casts or heals** (owner screenshot, GG-T1805 image 6). **Built (GG-T1817):** the image was `holy-light` tiles (Judgment of Warding, Holy Burst): a painted tile keeps its wash and glyph but no life ring and no 3-2-1 countdown; a pending cast draws no caster ring, charging bar or target chip; a unit's status slot is one plain pip (no timer ring, no stacked count). Pickup tokens keep their fade ring (a board item, not a cast). While aiming, the legal anchors glow and the locked pick's area and touched units get one light tint (red harmful, green helpful, blue teleport); after Confirm nothing persists on the tiles until the cast resolves. The enemy turn-count badge ([§2.10](#210-countdown-badge)) is a unit number, not a cast marker, and stays (whether it should also go: **pending owner**).
