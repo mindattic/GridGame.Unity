@@ -4829,6 +4829,99 @@
     ]
   },
   {
+    "Id": "prologue-vault",
+    "Name": "The Sleeper's Vault",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13161,
+    "Intro": "Commander, the slimes want the mana leaking off you. Trap one between two of us and we both strike.",
+    "PartySize": 2,
+    "Lessons": [
+      { "Id": "pincer", "Wave": 0 },
+      { "Id": "chain", "Wave": 1 },
+      { "Id": "timeline", "Wave": 2 }
+    ],
+    "Scenes": [
+      { "Id": "pincer", "Class": "slime00", "Level": 1 },
+      { "Id": "chain", "Class": "slime00", "Level": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 2, "Y": 4 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 2, "Y": 3 },
+          { "Class": "slime01", "Level": 1, "X": 3, "Y": 3 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "slime01", "Level": 1, "X": 4, "Y": 2 }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "prologue-ambush",
+    "Name": "The Road to Tithe",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13162,
+    "Intro": "Wolves in the heather, Commander! The clock runs now, but only while you hold one of us. Each of us acts once.",
+    "Lessons": [
+      { "Id": "hold", "Wave": 0 },
+      { "Id": "guard", "Wave": 0 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "wolf00", "Level": 1, "X": 1, "Y": 3 },
+          { "Class": "wolf00", "Level": 1, "X": 4, "Y": 3 },
+          { "Class": "wolf01", "Level": 1, "X": 3, "Y": 1 }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "prologue-bridge-skirmish",
+    "Name": "The Toll Bridge",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13163,
+    "Intro": "The Collector's men hold the bridge, Commander. If one of us drops low, the potion is there to drink.",
+    "Lessons": [
+      { "Id": "pickup", "Wave": 0 },
+      { "Id": "spell", "Wave": 1, "FocusRole": "Healer" },
+      { "Id": "read", "Wave": 1 }
+    ],
+    "Scenes": [
+      { "Id": "pickup", "Pickup": "pk_potion" }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "soldier00", "Level": 3, "X": 2, "Y": 3 },
+          { "Class": "goblinthug00", "Level": 1, "X": 4, "Y": 4 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "goblinthug00", "Level": 1, "X": 1, "Y": 2 },
+          { "Class": "goblinthug00", "Level": 1, "X": 4, "Y": 2 }
+        ]
+      }
+    ]
+  },
+  {
     "Id": "prologue-bridge-a",
     "Name": "The Toll Bridge",
     "Theme": "greenvalley",
