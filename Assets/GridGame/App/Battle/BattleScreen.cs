@@ -227,6 +227,7 @@ namespace GridGame.App
                 outcomeTags.Clear();
                 darkHidden.Clear();
                 awayOnSettings = false; // playback, held at its next beat while Settings was up, carries on
+                if (pauseVeil != null) pauseVeil.style.display = DisplayStyle.Flex; // back from the pause menu's Settings (GG-T1909)
             }
             if (firstBuild)
             {
@@ -308,7 +309,7 @@ namespace GridGame.App
             var bar = Ui.El("row", root);
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = TopBarTop; bar.style.height = TopBarHeight;
-            RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
+            RowIcon.HamburgerButton(OpenMenu, bar); // GG-T754: icon-only pause
             // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
             // shrinks to the floor, then scrolls (GG-T1143), the wave never does.
             var mid = Ui.El("row grow", bar);
@@ -1275,6 +1276,7 @@ namespace GridGame.App
             Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter); // GG-T751 (§26.7)
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
             Ui.MenuRow("Battle log", logLines.Count > 0 ? Ui.Count(logLines.Count) : "", () => ShowBattleLog(veil, w), w).KindIcon(RowKind.Menu);
+            Ui.MenuRow("Settings", "", () => { veil.style.display = DisplayStyle.None; awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Settings); // GG-T1909
             Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
@@ -1309,7 +1311,6 @@ namespace GridGame.App
             }, w);
             back.KindIcon(RowKind.Back);
             back.name = "battle-log-back";
-            Ui.Select(back);
             ScrollLogToEnd();
         }
 
@@ -1430,7 +1431,7 @@ namespace GridGame.App
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
             {
                 dragTimeLeft -= dt;
-                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}s";
+                timerLabel.text = gapLabel != null && gapLabel.style.display == DisplayStyle.Flex ? "" : $"{Mathf.Max(0, dragTimeLeft):0.0}s"; // GG-T1912: the gap caption already shows the seconds
                 if (dragTimeLeft <= 0f && !CoachRail && !coachCancelStep) CommitDrag(); // a coached drag is never forced (GG-T539)
             }
             else if (timerLabel != null) timerLabel.text = "";

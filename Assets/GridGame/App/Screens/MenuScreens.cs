@@ -764,7 +764,7 @@ namespace GridGame.App
             corners.style.alignItems = Align.Center;
             corners.style.flexShrink = 0;
             corners.style.justifyContent = Justify.SpaceBetween;
-            RowIcon.IconButton("", RowKind.Menu, () => OpenMenu(), "btn--small btn--icon", corners).name = "menu";
+            RowIcon.HamburgerButton(() => OpenMenu(), corners);
             var currencies = Ui.El("header-currencies", corners);
             currencies.name = "header-currencies";
             Ui.Currencies(currencies, s, () => App.Router.PushOrReturn(new DiamondStoreScreen()));
