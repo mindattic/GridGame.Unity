@@ -1467,7 +1467,7 @@ namespace GridGame.App
             }
             TickLinger(dt);
             TickHeroTurn(dt);
-            if (dragging && !simulatingDrag && App.Settings.DragTimer)
+            if (dragging && !simulatingDrag && App.Settings.DragTimer && !Untimed)
             {
                 dragTimeLeft -= dt;
                 timerLabel.text = gapLabel != null && gapLabel.style.display == DisplayStyle.Flex ? "" : $"{Mathf.Max(0, dragTimeLeft):0.0}s"; // GG-T1912: the gap caption already shows the seconds

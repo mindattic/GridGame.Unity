@@ -15,7 +15,7 @@ namespace GridGame.App
     public sealed class ShopHubScreen : HubPage
     {
         private const int MerchantTab = 0, ShardsTab = 1, OffersTab = 2;
-        private static readonly string[] TabNames = { "Merchant", "Shards", "Offers" };
+        private static readonly string[] TabNames = { "Merchant", ShardText.Plural, "Offers" };
 
         internal readonly ShopScreen Merchant = new ShopScreen();
         internal readonly DiamondStoreScreen Shards = new DiamondStoreScreen();
