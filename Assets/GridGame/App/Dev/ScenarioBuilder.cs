@@ -244,8 +244,12 @@ namespace GridGame.App.Dev
         private static readonly EquipmentSlot[] GearSlots =
             new[] { EquipmentSlot.Weapon }.Concat(BattleEngine.ArmorSlots).Concat(Equipment.JewelrySlots).ToArray();
 
+        /// <summary>The weapon family a class is trained in (Martial, Arcane), or Simple for a class trained in neither.</summary>
+        public static WeaponClass WeaponFamily(ContentDb c, HeroSave h) =>
+            c.TryClass(h.ClassId)?.WeaponProficiencies.Where(w => w != WeaponClass.Simple).DefaultIfEmpty(WeaponClass.Simple).First() ?? WeaponClass.Simple;
+
         /// <summary>Per party hero and slot, the dearest piece on this save's shelf (the stock tiers its progress has
-        /// opened) that the hero can wear, bought and equipped.</summary>
+        /// opened) that the hero can wear, bought and equipped; the weapon of the hero's own family first.</summary>
         private static void EquipBest(ContentDb c, SaveData s, ScenarioResult result)
         {
             var shelf = Shop.Stock(c, s).Where(i => i.Type == ItemType.Equipment).ToList();
@@ -254,7 +258,14 @@ namespace GridGame.App.Dev
                 var worn = new List<string>();
                 foreach (var slot in GearSlots)
                 {
-                    var best = shelf.Where(i => Equipment.Fits(c, h, i, slot)).OrderByDescending(i => i.BaseCost).ThenByDescending(i => i.Rarity).FirstOrDefault();
+                    var fits = shelf.Where(i => Equipment.Fits(c, h, i, slot)).ToList();
+                    if (slot == EquipmentSlot.Weapon)
+                    {
+                        var own = WeaponFamily(c, h);
+                        var family = fits.Where(i => i.WeaponClass == own).ToList();
+                        if (family.Count > 0) fits = family;
+                    }
+                    var best = fits.OrderByDescending(i => i.BaseCost).ThenByDescending(i => i.Rarity).FirstOrDefault();
                     if (best == null) continue;
                     s.AddItem(best.Id, 1);
                     if (Equipment.Equip(c, s, h, slot, best.Id).Ok) worn.Add(best.Id);

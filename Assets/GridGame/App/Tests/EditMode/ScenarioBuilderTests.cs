@@ -44,6 +44,17 @@ namespace GridGame.App.Tests
         }
 
         [Test]
+        public void First_boss_heroes_wield_a_weapon_of_their_own_family()
+        {
+            var r = ScenarioBuilder.Build(C, ScenarioDef.ForTarget("first-boss"));
+            var heroes = r.Save.Party.Select(r.Save.Hero).ToList();
+            Assert.That(heroes.All(h => h.WeaponId != null), Is.True);
+            Assert.That(heroes.Select(h => h.WeaponId).Distinct().Count(), Is.GreaterThan(1));
+            foreach (var h in heroes)
+                Assert.That(C.TryItem(h.WeaponId).WeaponClass, Is.EqualTo(ScenarioBuilder.WeaponFamily(C, h)), h.ClassId);
+        }
+
+        [Test]
         public void No_story_beat_is_left_pending_before_the_target()
         {
             foreach (var target in new[] { "first-boss", "overworld", "final-boss" })
