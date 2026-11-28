@@ -86,15 +86,12 @@ namespace GridGame.App
         /// <summary>The description panel's page (§9.0): the selected unit, its skills and the ability/confirm card draw here
         /// (a ScrollView, so Add/Clear reach its content).</summary>
         private VisualElement panel;
+        /// <summary>Where the announcement overlay sits (§9.0, GG-T1824): no row of its own, an empty anchor on the board's
+        /// top edge that the billboard reads its place from; it takes no input.</summary>
         private VisualElement bannerViewport;
-        private Coroutine bannerScrollRoutine;
-        /// <summary>The announcement band (§9.0): no row of its own; it overlays the board's top edge and takes no input
-        /// (banner, billboard, drag timer). Two lines of the stepped-down banner font fit.</summary>
         private const float BannerTop = BoardTop + Space.S8, TopBarHeight = 110f;
+        /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
         private const float BannerViewportHeight = Size.Target - Space.S24;
-        /// <summary>Room the drag-timer seconds take at the band's left end, under the NOW diamond; the banner keeps the same
-        /// inset on both sides so it stays centred and never runs under the timer (GG-T391).</summary>
-        private const float TimerReserve = Size.Label + Space.S24;
         // The HUD rows under the board, top to bottom, a gutter apart (§9.0): the ability bar (five icon-only slots), then
         // the description panel, which stretches to the safe bottom and so alone absorbs a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
@@ -104,7 +101,9 @@ namespace GridGame.App
         // enough for them.
         /// <summary>The description panel starts a target gap (POL-C3, 24) under the ability row.</summary>
         private static float DescriptionTop => BarTop + Size.Slot + Space.S24;
-        private Label banner, waveLabel, coinLabel, timerLabel;
+        private Label waveLabel, coinLabel, timerLabel;
+        /// <summary>The newest ShowBanner line (automation reads it); the line itself is a billboard row that fades.</summary>
+        private string bannerText = "";
         private VisualElement shake;
         private VisualElement boardHost;
         /// <summary>Stage-sized layer inside the board, under board.Lines, that holds cut-in cards (GG-T128).</summary>
@@ -119,6 +118,13 @@ namespace GridGame.App
         // First-battles hint: after a pause, show the move the bot would make (§29 tutorial question → contextual hints).
         private float idle;
         private bool hintShown;
+        /// <summary>The hint's or a tip's words (§9.2.1): the description panel's idle content, gone on input or after
+        /// <see cref="AdviceSeconds"/>. The hint's board marks stay on the board.</summary>
+        private string advice;
+        private float adviceAt;
+        private const float AdviceSeconds = 6f;
+        /// <summary>The last refusal's reason (§9.0): the panel's state line until the next input.</summary>
+        private string refusal;
         private const float HintDelay = 5f;
         private bool HintsEnabled => App.Save == null || App.Save.HighestClearedStage < 2;
 
@@ -180,10 +186,6 @@ namespace GridGame.App
             billboard?.RemoveFromHierarchy();
             billboard = null;
             if (Coach.Active && (Coach.LessonId ?? "").StartsWith("battle-")) Coach.Cancel(); // GG-T539: a lesson leaves with its battle
-            // Build() rebuilds `banner` fresh when the player backs out of "How to play" onto this same
-            // instance (see the Build() comment); an in-flight scroll left running would keep animating
-            // whatever `banner` now points to using timing measured against the old one (GG-T70).
-            if (bannerScrollRoutine != null) { App.StopCoroutine(bannerScrollRoutine); bannerScrollRoutine = null; }
         }
 
         private bool Colorblind => App.Settings.ColorblindMode;
@@ -289,7 +291,7 @@ namespace GridGame.App
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
-                panel.schedule.Execute(() => ShowBanner("Tip: tap or hold any hero, foe, slot or icon to read it")).StartingIn(2500);
+                panel.schedule.Execute(() => Advise("Tip: tap or hold any hero, foe, slot or icon to read it")).StartingIn(2500);
             }
             CaptureUnity.Raise("battle-start", new CaptureData { ["stage"] = State.Stage.Id });
         }
@@ -323,26 +325,22 @@ namespace GridGame.App
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
         }
 
-        /// <summary>The announcement band (§9.0): an overlay on the board's top edge, over the board and taking no input. The
-        /// banner keeps the band's centre; the drag timer's seconds sit at its left end, under the NOW diamond.</summary>
+        /// <summary>The announcement anchor (§9.0, GG-T1824): an empty, input-free box on the board's top edge where the
+        /// billboard's fading lines stack. The drag timer's seconds sit in the timeline row beside the NOW diamond, above the
+        /// track, so nothing of the drag covers the board.</summary>
         private void BuildAnnouncementBand(VisualElement root)
         {
             bannerViewport = Ui.El("", root);
             bannerViewport.name = "banner-viewport";
             bannerViewport.pickingMode = PickingMode.Ignore;
             bannerViewport.style.position = Position.Absolute;
-            bannerViewport.style.left = TimerReserve; bannerViewport.style.right = TimerReserve; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
-            bannerViewport.style.overflow = Overflow.Hidden;
-            banner = Ui.Text("", "h2 shadow", bannerViewport);
-            banner.pickingMode = PickingMode.Ignore;
-            banner.style.position = Position.Absolute;
-            banner.style.left = Space.S0; banner.style.right = Space.S0; banner.style.top = Space.S0;
-            banner.style.unityTextAlign = TextAnchor.UpperCenter;
-            banner.style.whiteSpace = WhiteSpace.Normal;
-            timerLabel = Ui.Text("", "h1 shadow warn", root);
+            bannerViewport.style.left = bannerViewport.style.right = Fit.Edge; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
+            timerLabel = Ui.Text("", "h2 shadow warn", root);
+            timerLabel.name = "drag-timer";
             timerLabel.pickingMode = PickingMode.Ignore;
             timerLabel.style.position = Position.Absolute;
-            timerLabel.style.left = Fit.Edge; timerLabel.style.top = BannerTop; timerLabel.style.height = BannerViewportHeight;
+            timerLabel.style.left = Fit.Edge + SlotSpan + Space.S8;
+            timerLabel.style.top = TimelineY - TimelineFrameHeight / 2f; timerLabel.style.height = TrackY - IconSpan / 2f;
             timerLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
         }
 
@@ -653,11 +651,13 @@ namespace GridGame.App
             panel.Clear();
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
+            if (refusal != null) PanelLine(panel, refusal, "small warn", "refusal");
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
                 if (ab != null) { AbilityInfo(caster, TargetingSlot, ab); return; }
             }
+            if (advice != null) PanelLine(panel, advice, "small gold", "advice");
             // A slot read without aiming (a hold, or a tap on one that can't aim) stays in the panel until a unit is read or
             // another hero is selected (GG-T1823).
             if (panelUnitId >= 0 || readSlotHero != SelectedHeroId) readSlot = -1;
@@ -924,7 +924,9 @@ namespace GridGame.App
             SyncBar();
         }
 
-        public string BannerText => banner?.text;
+        public string BannerText => bannerText;
+        /// <summary>The hint or tip the description panel shows right now (§9.2.1), or null.</summary>
+        public string AdviceText => advice;
 
         // GG-T358: the battle-start announcements (a wanderer, a guest) play in the opening beats and the billboard
         // drops each line after 1.6 s, so a poll that arrives a moment late misses them. Automation reads this
@@ -1035,6 +1037,7 @@ namespace GridGame.App
 
         private void OnSlot(int slot)
         {
+            DropRefusal();
             if (!CanCommand()) { TapSlotCard(slot); return; } // GG-T450: looking is free, even mid-playback
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null) return;
@@ -1064,7 +1067,6 @@ namespace GridGame.App
             TargetingSlot = slot;
             board.ClearMarks();
             foreach (var t in targets) board.Mark(t, Palette.Gold, 0.35f);
-            ShowBanner($"{a.Name}: choose a target");
             SyncBar();
             SyncPanel();
         }
@@ -1108,8 +1110,8 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// Lock a pick and ask for confirmation: the area and every unit it would touch light up, the banner names the
-        /// deal, and the actor panel turns into the confirm card. Tapping another legal tile re-aims; tapping the same
+        /// Lock a pick and ask for confirmation: the area and every unit it would touch light up and the description panel
+        /// turns into the confirm card (on whom, the outcome, Cast / Cancel). Tapping another legal tile re-aims; tapping the same
         /// tile again (or Confirm) commits.
         /// </summary>
         private void SetPending(Coord anchor)
@@ -1119,9 +1121,6 @@ namespace GridGame.App
             if (a == null) return;
             PendingTarget = anchor;
             RedrawTargeting();
-            var hits = TargetResolver.Collect(State, a, hero, anchor);
-            string who = hits.Count == 0 ? "" : hits.Count == 1 ? $" on {(hits[0] == hero ? "self" : hits[0].Name)}" : $" on {hits.Count} targets";
-            ShowBanner($"{a.Name}{who}? Confirm below");
             App.Audio.Sfx("ui.select", 0.8f);
             SyncPanel();
             var btn = panel.Q<Button>("confirm-action");
@@ -1420,10 +1419,12 @@ namespace GridGame.App
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
             {
                 dragTimeLeft -= dt;
-                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}";
+                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}s";
                 if (dragTimeLeft <= 0f && !CoachRail && !coachCancelStep) CommitDrag(); // a coached drag is never forced (GG-T539)
             }
             else if (timerLabel != null) timerLabel.text = "";
+            if (roundLabel != null) roundLabel.style.visibility = string.IsNullOrEmpty(timerLabel?.text) ? Visibility.Visible : Visibility.Hidden;
+            if (advice != null && battleTime - adviceAt > AdviceSeconds) DropAdvice();
 
             TickBoardInspect();
             if (TutorialActive && !LessonWaiting && CurrentLesson.DoneOnInspect && InspectCard.IsOpen && (!CoachOn || (!Coach.Active && coachPopupFor == TutorialStep))) NextLesson();
@@ -1564,17 +1565,17 @@ namespace GridGame.App
                 {
                     SelectHero(caster.Id);
                     if (use.Slot < slotViews.Count) App.StartCoroutine(Tween.Pop(slotViews[use.Slot], 1.12f, 0.35f));
-                    ShowBanner($"Hint: {caster.Name} can use {ab.Name}");
+                    Advise($"Hint: {caster.Name} can use {ab.Name}");
                 }
                 return;
             }
-            if (decision is ShieldCommand) { ShowBanner("Hint: nothing good to do? Press GUARD"); return; }
+            if (decision is ShieldCommand) { Advise("Hint: nothing good to do? Press GUARD"); return; }
             var cmd = decision as MoveCommand;
             if (cmd == null || cmd.Path.Count == 0) return;
             var pv = BattleEngine.PreviewMove(State, cmd.HeroId, cmd.Path);
             // The Moving lesson promises a glowing path even when no pincer is reachable yet (the opening board of
             // the first battle): demo the bot's best positioning move instead of falling back to a bare tip.
-            if (pv.Pincers.Count == 0 && !TutorialDemoMove) { ShowBanner("Tip: trap an enemy between two heroes"); return; }
+            if (pv.Pincers.Count == 0 && !TutorialDemoMove) { Advise("Tip: trap an enemy between two heroes"); return; }
             var hero = State.UnitById(cmd.HeroId);
             var dest = cmd.Path[cmd.Path.Count - 1];
             board.ClearMarks();
@@ -1585,7 +1586,7 @@ namespace GridGame.App
             var route = new List<Vector2> { BoardView.CenterOf(hero.Pos) };
             foreach (var step in cmd.Path) route.Add(BoardView.CenterOf(step));
             board.Lines.PathArrow(route, ShapeStyle.Indicator);
-            ShowBanner($"Hint: drag {hero.Name} to the glowing tile");
+            Advise($"Hint: drag {hero.Name} to the glowing tile");
         }
 
         private void ClearHint()
@@ -1593,9 +1594,42 @@ namespace GridGame.App
             idle = 0f;
             if (!hintShown) return;
             hintShown = false;
+            DropAdvice();
             // While aiming the marks are the aim's own, but the hint's route lines are still the hint's: clear those.
             if (!dragging) board.Lines.ClearLines();
             if (TargetingSlot < 0 && !dragging) board.ClearMarks();
+        }
+
+        /// <summary>Puts a hint's or tip's words in the description panel (§9.2.1), never over the board.</summary>
+        private void Advise(string text)
+        {
+            advice = text;
+            adviceAt = battleTime;
+            NoteShown(text);
+            SyncPanel();
+        }
+
+        private void DropAdvice()
+        {
+            if (advice == null) return;
+            advice = null;
+            SyncPanel();
+        }
+
+        private void DropRefusal()
+        {
+            if (refusal == null) return;
+            refusal = null;
+            SyncPanel();
+        }
+
+        /// <summary>One wrapped line at the top of a description page (the refusal, the hint).</summary>
+        private static void PanelLine(VisualElement page, string text, string classes, string name)
+        {
+            var l = Ui.Text(text, classes, page);
+            l.name = name;
+            l.style.whiteSpace = WhiteSpace.Normal;
+            l.style.marginBottom = Space.S8;
         }
 
         public void SelectHero(int id)
@@ -1628,40 +1662,15 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// Action/status banner in the band between the timeline frame and the board (GG-T405: it never touches either).
-        /// It draws at the one GUI size (GG-T770) and wraps when it runs long; if the lines still don't fit the band it's
-        /// shown, paused, then slowly scrolled so the whole message gets read. It eases in over Timing.Quick.
+        /// An announcement (§9.0, GG-T1824): "PINCER!", a turn, a wave, a refusal, "VICTORY!". It joins the billboard as one
+        /// of its fading lines on the board's top edge, never a row; repeating the newest line keeps it up instead of
+        /// stacking a copy, and an empty text takes the banner lines down (the billboard's own lines run their course).
         /// </summary>
         private void ShowBanner(string text)
         {
-            if (banner == null) return;
-            text ??= "";
-            banner.text = text;
-            NoteShown(text);
-            banner.style.fontSize = TypeScale.Base;
-            banner.style.top = Space.S0;
-            if (bannerScrollRoutine != null) { App.StopCoroutine(bannerScrollRoutine); bannerScrollRoutine = null; }
-            if (text.Length > 0) bannerScrollRoutine = App.StartCoroutine(FitBanner());
-        }
-
-        private IEnumerator FitBanner()
-        {
-            banner.style.opacity = 0f;
-            // A frame so resolvedStyle.height is current.
-            yield return null;
-            float content = banner.resolvedStyle.height;
-            App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (banner != null) banner.style.opacity = k; }));
-            if (content <= BannerViewportHeight)
-            {
-                banner.style.top = (BannerViewportHeight - content) / 2f;
-                bannerScrollRoutine = null;
-                yield break;
-            }
-            float travel = content - BannerViewportHeight;
-            yield return Tween.Wait(Timing.Cinematic); // let the reader start before it moves
-            yield return Tween.Run(Mathf.Clamp(travel / 40f, 0.8f, 4f), k => banner.style.top = -travel * k);
-            yield return Tween.Wait(Timing.Dramatic); // hold on the tail before the next message replaces it
-            bannerScrollRoutine = null;
+            bannerText = text ?? "";
+            if (bannerText.Length == 0) { ClearBannerLines(); return; }
+            Billboard(bannerText, null, Palette.Text, banner: true);
         }
     }
 }

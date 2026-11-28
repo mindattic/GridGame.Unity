@@ -211,7 +211,7 @@ namespace GridGame.App
                 case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" || cc.Reason == "rooted" ? CombatTextKind.Debuff : CombatTextKind.Expire, cc.Reason == "interrupted" ? "Interrupted!" : cc.Reason == "rooted" ? "Snared!" : "Fizzled", 0.35f); // GG-T881: roots snap a Line charge
                 case ClutchEvent cl: return ClutchAnim(cl);
                 case AbilityResolvedEvent ar: FlushTallies(); return AbilityAnim(ar);
-                case AbilityRefusedEvent rf: App.Audio.Sfx("ui.error"); ShowBanner(rf.Reason); return null;
+                case AbilityRefusedEvent rf: App.Audio.Sfx("ui.error"); ShowBanner(rf.Reason); refusal = rf.Reason; SyncPanel(); return null;
                 case ItemUsedEvent iu: pendingItemUser = iu.UserId; pendingItemId = iu.ItemId; ShowBanner($"{App.Content.TryItem(iu.ItemId)?.Name} ({iu.ChargesLeft} left)"); return Tween.Wait(Timing.Instant);
                 case PlateHitEvent ph: return PlateHitAnim(ph);
                 case PlateBrokenEvent pbk: return PlateBrokenAnim(pbk);
@@ -1378,10 +1378,14 @@ namespace GridGame.App
         /// <summary>The billboard no longer sits over the board (GG-T405), so there is nothing on the board to dodge.</summary>
         private void DodgeBillboard(IEnumerable<Coord> tiles) => PlaceBillboard();
 
-        /// <summary>The billboard takes the banner band (§9.0: an overlay on the board's top edge, never over the timeline):
-        /// the banner viewport's height in Overlay coordinates, across the content column (no drag timer runs during
-        /// playback), with the banner hidden under it while it shows. The band holds one line (two when it wraps), so
-        /// each new line replaces the last; the battle log keeps them all.</summary>
+        /// <summary>Most lines the announcement overlay holds at once (§9.0); a fourth pushes the oldest off.</summary>
+        private const int BillboardMaxLines = 3;
+        /// <summary>Marks a billboard row that came from ShowBanner, so an empty banner takes only those down.</summary>
+        private const string BannerRowClass = "billboard__banner";
+
+        /// <summary>The billboard is the announcement overlay (§9.0, GG-T1824): it hangs from the board's top edge in Overlay
+        /// coordinates, across the content column, never over the timeline, one line tall per line it holds (up to
+        /// <see cref="BillboardMaxLines"/>), each line fading on its own; the battle log keeps them all.</summary>
         private void PlaceBillboard()
         {
             if (billboard == null) return;
@@ -1391,12 +1395,36 @@ namespace GridGame.App
             bool laid = !float.IsNaN(r.y) && r.height > 0f;
             billboard.style.top = laid ? r.y - App.Stage.worldBound.y : BannerTop;
             billboard.style.left = billboard.style.right = Fit.Inset + Fit.Edge;
-            billboard.style.height = BannerViewportHeight;
+            billboard.style.height = StyleKeyword.Auto;
         }
 
-        private void Billboard(string text, Texture2D icon, Color color)
+        /// <summary>Takes ShowBanner's lines off the overlay at once (an empty banner: the drag left the pincer, control
+        /// came back); the billboard's own lines keep their 1.6 s.</summary>
+        private void ClearBannerLines()
+        {
+            if (billboard == null) return;
+            foreach (var row in BillboardRows(billboard))
+                if (row.ClassListContains(BannerRowClass)) row.RemoveFromHierarchy();
+            if (BillboardRows(billboard).Count == 0) billboard.style.display = DisplayStyle.None;
+        }
+
+        private void Billboard(string text, Texture2D icon, Color color, bool banner = false)
         {
             if (string.IsNullOrEmpty(text)) return;
+            // The same banner again (a drag preview re-saying "PINCER!" on each step) keeps its line up instead of stacking.
+            if (banner && billboard != null && billboard.style.display.value != DisplayStyle.None)
+            {
+                var shown = BillboardRows(billboard);
+                var last = shown.Count > 0 ? shown[shown.Count - 1] : null;
+                if (last != null && last.ClassListContains(BannerRowClass) && last.Q<Label>()?.text == text)
+                {
+                    var again = new object();
+                    last.userData = again;
+                    last.style.opacity = 1f;
+                    App.StartCoroutine(RetireBillboardRow(billboard, last, again));
+                    return;
+                }
+            }
             NoteShown(text);
             if (billboard == null)
             {
@@ -1413,10 +1441,13 @@ namespace GridGame.App
             billboard.style.display = DisplayStyle.Flex;
             PlaceBillboard();
             billboard.schedule.Execute(PlaceBillboard); // again once the band has its real layout (GG-T409)
-            if (bannerViewport != null) bannerViewport.style.opacity = 0f;
             billboard.BringToFront();
             var row = Ui.El("row", billboard);
             row.pickingMode = PickingMode.Ignore;
+            row.style.height = BannerViewportHeight;
+            if (banner) row.AddToClassList(BannerRowClass);
+            var token = new object();
+            row.userData = token;
             // The line spans the band and centres, so it wraps only against the band's full width (GG-T405).
             row.style.alignSelf = Align.Stretch; row.style.justifyContent = Justify.Center; row.style.alignItems = Align.Center;
             if (icon != null)
@@ -1438,9 +1469,9 @@ namespace GridGame.App
             bool icon0 = icon != null;
             l.RegisterCallback<GeometryChangedEvent>(_ => ShrinkBillboardLineToFit(l, row, icon0));
             var rows = BillboardRows(billboard);
-            for (int i = 0; i < rows.Count - 1; i++) rows[i].RemoveFromHierarchy();
+            for (int i = 0; i < rows.Count - BillboardMaxLines; i++) rows[i].RemoveFromHierarchy();
             App.StartCoroutine(Tween.Pop(row, 1.12f, 0.12f));
-            App.StartCoroutine(RetireBillboardRow(billboard, row));
+            App.StartCoroutine(RetireBillboardRow(billboard, row, token));
         }
 
         /// <summary>The smallest a billboard line is ever allowed to shrink to (GG-T448): below this a one-line
@@ -1476,15 +1507,14 @@ namespace GridGame.App
 
         /// <summary>Drops a billboard line after 1.6 s of game time — held while paused, unlike a scheduler delay (GG-T126).
         /// Takes the billboard itself: OnHidden may null the field before this fires.</summary>
-        private IEnumerator RetireBillboardRow(VisualElement bb, VisualElement row)
+        private IEnumerator RetireBillboardRow(VisualElement bb, VisualElement row, object token)
         {
             yield return Tween.Wait(Timing.Cinematic + Timing.Emphasis);
+            if (row.userData != token) yield break; // a repeat kept it up and retires it itself
+            yield return Tween.Run(Timing.Quick, k => { if (row.userData == token) row.style.opacity = 1f - k; });
+            if (row.userData != token) yield break;
             row.RemoveFromHierarchy();
-            if (BillboardRows(bb).Count == 0)
-            {
-                bb.style.display = DisplayStyle.None;
-                if (bb == billboard && bannerViewport != null) App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (bannerViewport != null) bannerViewport.style.opacity = k; }));
-            }
+            if (BillboardRows(bb).Count == 0) bb.style.display = DisplayStyle.None;
         }
 
         /// <summary>Gold shown on the HUD: the party's purse plus what this battle has dropped so far.</summary>

@@ -2591,11 +2591,11 @@ namespace GridGame.App
                 "• Moving never hurts. Only pincers and spells deal damage.\n" +
                 "• Time moves only when you act. Icons flow left; whoever reaches the left edge acts, and speed decides who gets there first.\n" +
                 "• Pincer an enemy to push its icon back on the timeline.\n" +
-                "• Pincers fill your mana orbs. Spend them on spells; skills and items cost a turn.\n" +
+                "• Every spell has its own mana bar. Pincers and every other mana gain fill every spell's bar, cheap spells faster. Casting empties only that spell's bar. Skills and items cost a turn.\n" +
                 "• Tap a hero, a slot, a target, then Cast. Spells charge on the timeline before they land.\n" +
                 "• Roles need each other: Tanks Taunt so enemies leave your casters alone, Healers mend (WIS), Mages hit hardest with spells (INT), Strikers swing Cleave and War Cry (STR).\n" +
                 "• Fallen enemies sometimes drop a pickup. Walk a hero over it before it fades.\n" +
-                "• GUARD skips to the next enemy turn and shields everyone.", help);
+                "• GUARD skips to the next enemy turn, shields everyone and banks the unused time as mana.", help);
             if (S != null)
             {
                 // GG-T539: one button brings back every lesson: the first battle's (on The Tithe Moors I), each battle system's

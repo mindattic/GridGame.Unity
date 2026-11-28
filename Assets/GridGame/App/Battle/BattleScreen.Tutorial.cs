@@ -166,9 +166,9 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is BuffAppliedEvent a && a.BuffId == "taunting"),
                 Marks = b => b.SlotMarks(a => (a.Id ?? "").Contains("taunt")) },
             new Lesson { Id = "guard", Title = "Guard us", Patience = 2,
-                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time.",
-                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action.",
-                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time.",
+                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time. Time we don't use is banked as mana in every spell's bar.",
+                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action. The turn time we leave unused is banked as mana in every spell's bar.",
+                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time. Time we don't use is banked as mana in every spell's bar.",
                 TextHeroTimeline = "Commander, GUARD gives up the acting hero's turn: that hero is shielded and the clock runs on to the next hero's icon, foes acting on the way. Call it when there is no good move, or when the gap before the next icon is too short for any action.",
                 Example = "Example: tap GUARD at the top right.",
                 Done = (b, c, e) => c is ShieldCommand,
@@ -554,7 +554,7 @@ namespace GridGame.App
             }
             if (Coach.Pending(s, "battle-potion") && PotionPick() is (Unit hero, int slot))
             {
-                RunSystem("battle-potion", "Potions", "A potion on a hero's bar acts at once and costs no orbs. Drink one before a hurt hero falls.", CastMarks(hero, slot));
+                RunSystem("battle-potion", "Potions", "A potion on a hero's bar acts at once and uses no spell bar. Drink one before a hurt hero falls.", CastMarks(hero, slot));
                 return;
             }
             if (comboLanded >= ComboRank.B)

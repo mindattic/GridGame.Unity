@@ -89,7 +89,6 @@ namespace GridGame.App
             perfectBot = null;
             StopRoutine(ref playRoutine);
             StopRoutine(ref dragRoutine);
-            StopRoutine(ref bannerScrollRoutine);
             playing = simulatingDrag = pressing = dragging = false;
             holdTicker?.Pause();
             holdTicker = null;
