@@ -13,7 +13,7 @@ namespace GridGame.App
     public sealed class StageSelectScreen : HubPage
     {
         public override string Id => "stages";
-        protected override string Title => "Adventure";
+        protected override string Title => "Journey";
         protected override string Backdrop => HubScreen.ThemeFor(C, S);
 
         /// <summary>GG-T388 (owner 2026-11-16: "a simple stage select which allows you to travel to and from previous battles

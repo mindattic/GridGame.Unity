@@ -615,7 +615,7 @@ def smoke(run="smoke"):
     files.append(shot("02-charselect"))
     pick_party()
     files.append(shot("02-hub"))
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     files.append(shot("03-stages"))
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
     through_story(files)
@@ -705,7 +705,7 @@ def aspects(run="aspects", height=1200, shapes=None):
             shot(f"{label}-1-title"); entry["screens"]["title"] = call("layout").get("problems")
             call("newgame", slot=0); time.sleep(1.2)
             shot(f"{label}-2-hub"); entry["screens"]["hub"] = call("layout").get("problems")
-            call("clicktext", text="Adventure"); time.sleep(0.8)
+            call("clicktext", text="Journey"); time.sleep(0.8)
             enter_stage("The Tithe Moors I"); time.sleep(1.5)
             through_story(wait=1.2)
             if _wait_screen("battle", 8):
@@ -940,7 +940,7 @@ def campaign(run="campaign", stages=6, speed=3, extra=(), max_loss_retries=3):
     call("newgame", slot=0)
     time.sleep(1)
     call("speed", x=speed)
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     results = []
@@ -1050,7 +1050,7 @@ def fullloop(run="fullloop", battles=4, speed=3):
             fails.append(f"fresh camp: {row} should be a locked row")
 
     # Fights: Adventure -> first stage, story beats, then `battles` battles in a row.
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     for n in range(battles):
@@ -1424,7 +1424,7 @@ def coach(run="coach", camp=False, capture=True):
             print("[coach] lessons before the first battle:", pre, flush=True)
         if call("state")["screen"] != "hub":
             call("goto", screen="hub"); time.sleep(1.0)
-        call("clicktext", text="Adventure"); time.sleep(0.8)
+        call("clicktext", text="Journey"); time.sleep(0.8)
         enter_stage("The Tithe Moors I"); time.sleep(1.5)
         through_story()
         if not _wait_screen("battle", 10):
@@ -2501,7 +2501,7 @@ def story_recruits(run="recruits", speed=3):
     party0 = list(call("state").get("save", {}).get("party") or [])
     ok["starts_with_three"] = party0 == list(STARTING_PARTY)
     call("speed", x=speed)
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
     through_story()
     outcome, st = _play_battle("03-gv1-mid")
@@ -2653,7 +2653,7 @@ def storyarc(run="storyarc", capture=True):
     ok["camp_rested_meter"] = bool(call("names", prefix="camp-rested"))
     call("devrested", limit=1, points=5)
     call("devwanderer")
-    call("clicktext", text="Adventure"); time.sleep(0.8)
+    call("clicktext", text="Journey"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
     _drain_story(seen, "04-gv1")
     ok["gv1_in_battle"] = _wait_screen("battle", 8)
