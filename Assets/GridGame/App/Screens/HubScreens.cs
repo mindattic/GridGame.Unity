@@ -2212,7 +2212,7 @@ namespace GridGame.App
             var target = C.TryClass(b.TargetClass);
             var reward = C.TryItem(b.RewardItem);
             bool slain = Bounties.IsSlain(S, b.Id), hunting = Bounties.IsTaken(S, b.Id);
-            var card = Ui.Card(list, null, b.Name, out var col, "poster-" + b.Id);
+            var card = Ui.Card(list, null, null, out var col, "poster-" + b.Id);
             var face = Ui.El(null, null);
             card.Insert(0, face);
             face.style.position = Position.Relative;
@@ -2220,12 +2220,16 @@ namespace GridGame.App
             var skull = BountySkull.Make(Size.IconM, face);
             skull.style.position = Position.Absolute;
             skull.style.right = Space.S16; skull.style.top = -Space.S4;
+            // GG-T1881: the poster's one action sits on its right edge beside the name, not on a row of its own.
+            var acts = Ui.El("row", col);
+            var title = Ui.Name(b.Name, acts);
+            title.style.flexShrink = 1; title.style.minWidth = 0; title.style.whiteSpace = WhiteSpace.Normal;
+            Ui.El("grow", acts);
             Ui.Caption($"{target?.Name ?? b.TargetClass} · tougher variant", col, "dim");
             Ui.Para(Bounties.Clue(C, b), col, "gold");
             int sp = Bounties.SkillPointsPaid(b);
             Ui.Para($"Reward {Ui.Gold(Bounties.RewardGold(C, b))}{(reward != null ? " + " + reward.Name : "")}{(sp > 0 ? $" + {sp} SP each" : "")}", col, "dim");
             TomeUi.Preview(col, reward); // GG-T301: what a Tome reward teaches
-            var acts = Ui.Actions(col);
             if (slain)
             {
                 var claim = RowIcon.IconButton("Claim", RowKind.Confirm, () => // GG-T750 (§26.7)

@@ -55,34 +55,53 @@ namespace GridGame.App
                 Ui.Name(def.Name, top);
                 Ui.RoleBadge(def.Role, top);
                 Ui.Caption(m.Temperament.ToString(), top, "dim");
-                var pitch = Ui.Para($"\"{m.Pitch}\"", col);
-                pitch.style.flexShrink = 0; pitch.style.minWidth = 0; pitch.style.whiteSpace = WhiteSpace.Normal; // GG-T700: the quote wraps to its full height inside the card, never clipped
+                Fold(Ui.Para($"\"{m.Pitch}\"", col, "dim"));
                 GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", col); // GG-T298
                 int adj = Mercenaries.HaggleAdjust(S, m.Class);
                 if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", col, adj < 0 ? "gold" : "bad");
                 if (walked) { Ui.Para("Walked off. Back after the next battle.", col, "bad"); continue; }
+                // GG-T1881: Haggle on the card's right edge beside the name; the hire lengths below as one segmented row.
+                Ui.El("grow", top);
+                var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", top);
+                haggle.name = "merc-haggle-" + m.Class;
+                haggle.AddToClassList("target-gap");
+                Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
                 var terms = Ui.Actions(col);
-                terms.style.flexShrink = 0; terms.AddToClassList("merc-terms"); // GG-T700: a clear 24 px (12 + the card's gap) above the hire/Haggle row, and the row keeps its height
+                terms.style.flexShrink = 0; terms.AddToClassList("merc-terms"); // GG-T700: a clear 24 px (12 + the card's gap) above the hire row, and the row keeps its height
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.Price(C, S, m.Class, t);
-                    var b = RowIcon.IconButton($"{term} battles · {Ui.Gold(price)}", RowKind.Confirm, () => Confirm.Show(
+                    var b = Ui.Button($"{term} battles\n{Ui.Gold(price)}", () => Confirm.Show(
                         $"Hire {def.Name} for {term} battles at {Ui.Gold(price)}, paid now? The contract runs down every battle, used or not.", "Hire",
                         () =>
                         {
                             // The price shown may be stale (a haggle landed since): never charge a different amount than asked.
                             if (haggling || Mercenaries.Price(C, S, merc.Class, term) != price) { App.Toast("The price has changed"); App.Audio.Sfx("ui.error"); Refresh(); return; }
                             Done(Mercenaries.Hire(C, S, merc.Class, term));
-                        }), "btn--small", terms);
+                        }), "btn--small merc-term", terms);
                     b.name = $"merc-hire-{m.Class}-{term}";
                     b.AddToClassList("target-gap"); // GG-T700: 24 px to the next target, wrapped or not
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
-                var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", terms);
-                haggle.name = "merc-haggle-" + m.Class;
-                haggle.AddToClassList("target-gap");
-                Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
             }
+        }
+
+        /// <summary>GG-T1881 (E4): the flavour quote sits on one line ending in an ellipsis; a tap unfolds it to its full
+        /// height, another folds it back.</summary>
+        private void Fold(Label quote)
+        {
+            quote.AddToClassList("fit-off");
+            quote.AddToClassList(TextFit.EllipsisClass);
+            quote.style.minWidth = 0; quote.style.flexShrink = 0;
+            bool open = false;
+            void Apply()
+            {
+                quote.style.whiteSpace = open ? WhiteSpace.Normal : WhiteSpace.NoWrap;
+                quote.style.overflow = open ? Overflow.Visible : Overflow.Hidden;
+                quote.style.textOverflow = open ? TextOverflow.Clip : TextOverflow.Ellipsis;
+            }
+            Apply();
+            quote.RegisterCallback<ClickEvent>(_ => { open = !open; Apply(); App.Audio.Sfx("ui.click"); });
         }
 
         // The merc weighs the offer for a beat before answering (law 5: nothing lands in a single frame).
