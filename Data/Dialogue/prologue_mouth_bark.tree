@@ -1,0 +1,12 @@
+dialogue prologue_mouth_bark
+title: The Vault Mouth
+trigger: Prologue Drill level=3
+speaker cleric cleric
+speaker knight knight
+
+node hurt cleric
+  It caught me on the way up. I can mend it, if someone keeps that glob off me.
+  -> cover
+
+node cover knight
+  Heal yourself. I'll stand in front.

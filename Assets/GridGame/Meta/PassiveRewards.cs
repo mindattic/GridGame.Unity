@@ -81,7 +81,7 @@ namespace GridGame.Meta
         }
     }
 
-    /// <summary>Reading a Tome (§25.6.4, GG-T301): the hero learns its Passive/Reactive and the Tome is used up.</summary>
+    /// <summary>Reading a Tome (§25.6.4, GG-T301): the hero learns its Passive/Reactive (or, GG-T2074, its Spell) and the Tome is used up.</summary>
     public static class Tomes
     {
         /// <summary>Why <paramref name="heroId"/> can't learn this Tome, or null when it can.</summary>
@@ -95,7 +95,7 @@ namespace GridGame.Meta
             if (h == null || cls == null) return "No such hero";
             if (h.Domesticated) return "A tamed monster can't read"; // GG-T303
             if (PassiveLoadout.IsInnate(c, h, a.Id) || h.Known.Contains(a.Id)) return "Already knows it";
-            if (!RewardCatalog.AllowedFor(a, cls)) return $"Only {string.Join("/", a.LearnableBy)} can learn it";
+            if (!RewardCatalog.AllowedFor(a, cls)) return a.Kind == AbilityKind.Spell ? $"{cls.Name} can't cast {a.Name}" : $"Only {string.Join("/", a.LearnableBy)} can learn it";
             return null;
         }
 
@@ -111,7 +111,7 @@ namespace GridGame.Meta
             Codex.Unlock(s, CodexKinds.Ability, a.Id); // GG-T929
             PassiveLoadout.OnLearned(c, h, a.Id);
             string hero = c.TryClass(heroId)?.Name ?? heroId;
-            bool on = PassiveLoadout.IsActive(c, h, a.Id);
+            bool on = !RewardCatalog.Teachable(a) || PassiveLoadout.IsActive(c, h, a.Id);
             return Result.Success($"{hero} learned {a.Name}" + (on ? "" : " (passive slots full: switch it on at Abilities)"));
         }
 
@@ -125,10 +125,11 @@ namespace GridGame.Meta
             var done = new List<Result>();
             foreach (var id in s.Inventory.Where(kv => kv.Value > 0).Select(kv => kv.Key).ToList())
             {
-                if (RewardCatalog.TaughtBy(c, c.TryItem(id)) == null) continue;
+                var a = RewardCatalog.TaughtBy(c, c.TryItem(id));
+                if (a == null) continue;
                 while (s.Count(id) > 0)
                 {
-                    var h = Candidates(c, s, id).FirstOrDefault(x => s.Party.Contains(x.ClassId) && PassiveLoadout.Active(c, x).Count < PassiveLoadout.Slots(x));
+                    var h = Candidates(c, s, id).FirstOrDefault(x => s.Party.Contains(x.ClassId) && (!RewardCatalog.Teachable(a) || PassiveLoadout.Active(c, x).Count < PassiveLoadout.Slots(x)));
                     if (h == null) break;
                     done.Add(Teach(c, s, id, h.ClassId));
                 }

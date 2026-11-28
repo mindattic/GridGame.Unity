@@ -484,8 +484,8 @@ namespace GridGame.App
         private static readonly Color GuardEdge = Palette.PewterLight;
 
         /// <summary>GG-T1904 (owner 2026-11-28, §9.0): GUARD at the right end of the bottom action row, in thumb reach, built
-        /// apart from the other cells (GG-T1914). Its Protection shield fills the cell; the GUARD
-        /// caption shows only while it fits whole.</summary>
+        /// apart from the other cells (GG-T1914). Its Protection shield fills the cell above the GUARD
+        /// caption, which always shows: TextFit shrinks it to the 30 px floor rather than hiding it (GG-T2112).</summary>
         private void BuildGuardCell(VisualElement bar)
         {
             var cell = guardButton = HudCell(bar);
@@ -513,9 +513,7 @@ namespace GridGame.App
             cell.RegisterCallback<GeometryChangedEvent>(_ =>
             {
                 var need = caption.MeasureTextSize(caption.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
-                bool fits = need.x <= cell.contentRect.width - 2 * Space.S8 && need.y <= cell.contentRect.height / 3f;
-                caption.style.display = fits ? DisplayStyle.Flex : DisplayStyle.None;
-                icon.style.bottom = fits ? Space.S8 + need.y : Space.S16;
+                icon.style.bottom = Space.S8 + need.y;
             });
         }
 

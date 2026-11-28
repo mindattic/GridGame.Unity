@@ -52,6 +52,8 @@ def art_findings():
     pdir = os.path.join(RESD, "Portraits")
     for f in sorted(glob.glob(os.path.join(pdir, "*.png"))):
         n = os.path.basename(f)[:-4]
+        if n.endswith("-mask"):
+            continue  # a breed recolour mask beside its portrait (tools/breed_masks.py, GG-T1798): a data map, not art
         im = Image.open(f)
         w, h = im.size
         hard, soft = [], []
@@ -75,7 +77,8 @@ def art_findings():
             out.append(("POL-H4", f"Portraits/{n}.png", scale <= 1.0,
                         f"drawn at {scale:.2f}x its native size in dialogue (a {bh} px figure at {drawn:.0f} px)", False))
 
-    for folder, px in (("AbilityIcons", ICON_PX), ("ItemIcons", ICON_PX), ("StatusIcons", ICON_PX), ("Icons", UI_ICON_PX)):
+    for folder, px in (("AbilityIcons", ICON_PX), ("ItemIcons", ICON_PX), ("StatusIcons", ICON_PX), ("Icons", UI_ICON_PX),
+                       ("UI/Icons", ICON_PX)):
         for f in sorted(glob.glob(os.path.join(RESD, folder, "*.png"))):
             im = Image.open(f).convert("RGBA")
             why, hard = [], False
@@ -131,6 +134,11 @@ def main():
     def _ids(name): return [x["Id"] for x in json.load(open(os.path.join(RESD, "Content", name), encoding="utf-8"))]
     for folder, ids in (("AbilityIcons", _ids("abilities.json")), ("ItemIcons", _ids("items.json")), ("StatusIcons", _ids("buffs.json") + ["stunned"])):
         missing += [f"icon:{folder}/{asset_names.of(i)} (run GridGame.Studio/tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, asset_names.of(i) + ".png"))]
+    # GG-T2050: every UI chrome concept in the tools/icons.json "ui" group (docs/ICONS.md) has its Resources/UI/Icons art;
+    # the pk_* field pickups stay in Resources/UI.
+    ui = json.load(open(os.path.join(ROOT, "tools", "icons.json"), encoding="utf-8"))["ui"]
+    missing += [f"icon:UI/Icons/{asset_names.of(i)} (run GridGame.Studio/tools/make_icons.py)" for i in ui
+                if not i.startswith("pk_") and not os.path.exists(os.path.join(RESD, "UI", "Icons", asset_names.of(i) + ".png"))]
 
     # GG-T561: every image under Resources follows the asset naming rule (word-word-00.ext).
     for folder in ("Tiles", "Tutorial", "UI", "Backgrounds"):

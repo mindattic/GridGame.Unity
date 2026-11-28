@@ -330,7 +330,6 @@ namespace GridGame.Meta
             if (s.Version < 23) s.Version = 23;
             s.Summon ??= new SummonState();
             s.Summon.Pulls ??= new Dictionary<BannerKind, int>();
-            s.Summon.NewHeroMiss ??= new Dictionary<BannerKind, int>();
             s.Summon.History ??= new List<PullRecord>();
             // GG-T1626: drill progress. An older save that finished the tutorial has, in effect, cleared every drill.
             bool beforeDrills = s.Version < 24;

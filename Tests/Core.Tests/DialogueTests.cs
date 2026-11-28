@@ -455,5 +455,19 @@ namespace GridGame.Tests
             Assert.That(s.Flags, Is.Not.Null);
             Assert.That(s.SeenDialogues, Is.Not.Null);
         }
+
+        [Test]
+        public void Every_prologue_step_has_its_dialogue_seeded()
+        {
+            var s = NewSave();
+            foreach (var step in DialogueDef.PrologueSteps)
+                if (step == "Drill")
+                    for (int drill = 1; drill <= DialogueDef.PrologueDrills; drill++)
+                        Assert.That(DialogueRunner.PrologueScenes(Real, s, step, drill), Is.Not.Empty, $"no dialogue for Prologue Drill {drill}");
+                else Assert.That(DialogueRunner.PrologueScenes(Real, s, step), Is.Not.Empty, $"no dialogue for Prologue {step}");
+            var wake = DialogueRunner.PrologueScenes(Real, s, "Wake")[0];
+            DialogueRunner.PlayHeadless(Real, s, wake);
+            Assert.That(DialogueRunner.PrologueScenes(Real, s, "Wake"), Has.None.Matches<DialogueDef>(d => d.Id == wake.Id), "a seen prologue dialogue plays once");
+        }
     }
 }
