@@ -195,8 +195,8 @@ namespace GridGame.Tests
             Assert.That(s.Expedition, Is.Null);
             Assert.That(s.World.NodeId, Is.EqualTo("frontier"), "placed at the frontier first");
             Assert.That(s.World.Camped, Is.False, "the drain runs after PlaceAtFrontier camps it");
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(3));
-            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(3));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(300), "each legacy orb is 100 points");
+            Assert.That(TravelRules.StartMana(s), Is.EqualTo(300));
         }
 
         [Test]
@@ -208,13 +208,13 @@ namespace GridGame.Tests
             Assert.That(away.Version, Is.EqualTo(SaveData.CurrentVersion));
             Assert.That(away.Expedition, Is.Null);
             Assert.That(away.World.Camped, Is.False);
-            Assert.That(away.World.CarriedOrbs, Is.EqualTo(2));
+            Assert.That(away.World.CarriedMana, Is.EqualTo(200));
 
             var home = new SaveData { Version = 26 };
             home.World.Camped = false; // the old WorldSave default
             SaveMigrations.Migrate(home);
             Assert.That(home.World.Camped, Is.True);
-            Assert.That(home.World.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(home.World.CarriedMana, Is.EqualTo(0));
         }
 
         [Test]
@@ -222,11 +222,32 @@ namespace GridGame.Tests
         {
             var s = new SaveData();
             TravelRules.SetOut(s);
-            s.World.CarriedOrbs = 4;
+            s.World.CarriedMana = 437;
             var back = SaveMigrations.Migrate(JsonConvert.DeserializeObject<SaveData>(JsonConvert.SerializeObject(s)));
             Assert.That(back.World.Camped, Is.False);
-            Assert.That(back.World.CarriedOrbs, Is.EqualTo(4));
+            Assert.That(back.World.CarriedMana, Is.EqualTo(437), "a current save's points are not scaled again");
             Assert.That(back.Expedition, Is.Null);
+        }
+
+        [Test]
+        public void A_v28_save_carrying_orbs_on_the_road_loads_them_as_points()
+        {
+            // GG-T1927: save v29 turns the carried whole orbs into pool points, 100 each, and stops writing the old field.
+            var old = new SaveData { Version = 28 };
+            old.World.Camped = false;
+            string json = SaveFiles.Serialize(old).Replace("\"Camped\": false,", "\"Camped\": false, \"CarriedOrbs\": 4,");
+            Assume.That(json, Does.Contain("\"CarriedOrbs\": 4"));
+            var back = SaveMigrations.Migrate(SaveFiles.Deserialize(json));
+            Assert.That(back.Version, Is.EqualTo(SaveData.CurrentVersion));
+            Assert.That(back.World.Camped, Is.False);
+            Assert.That(back.World.CarriedMana, Is.EqualTo(400));
+            Assert.That(TravelRules.StartMana(back), Is.EqualTo(400));
+            Assert.That(back.World.CarriedOrbs, Is.Null);
+            Assert.That(SaveFiles.Serialize(back), Does.Not.Contain("CarriedOrbs"));
+
+            var none = new SaveData { Version = 28 };
+            SaveMigrations.Migrate(none);
+            Assert.That(none.World.CarriedMana, Is.EqualTo(0));
         }
 
         [Test]
@@ -234,7 +255,7 @@ namespace GridGame.Tests
         {
             var s = new SaveData { Expedition = new ExpeditionSave { CarriedOrbs = -5 } };
             SaveMigrations.DrainExpedition(s);
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(0));
             Assert.That(s.World.Camped, Is.False);
         }
 

@@ -65,10 +65,12 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Unspent_orbs_settle_into_one_dust_each()
+        public void Unspent_mana_settles_into_one_dust_per_whole_100_points()
         {
-            Assert.That(DustEconomy.SettleOrbs(5), Is.EqualTo(5 * DustEconomy.DustPerOrbLeft));
-            Assert.That(DustEconomy.SettleOrbs(-1), Is.EqualTo(0));
+            Assert.That(DustEconomy.SettleMana(500), Is.EqualTo(5 * DustEconomy.DustPerOrbLeft));
+            Assert.That(DustEconomy.SettleMana(599), Is.EqualTo(5 * DustEconomy.DustPerOrbLeft), "a part-100 remainder pays nothing");
+            Assert.That(DustEconomy.SettleMana(99), Is.EqualTo(0));
+            Assert.That(DustEconomy.SettleMana(-1), Is.EqualTo(0));
         }
     }
 }

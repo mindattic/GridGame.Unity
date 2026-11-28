@@ -106,8 +106,8 @@ BOUNDARY = {"AbilityResolved", "ItemUsed", "ActionBegan", "TurnStarted", "Pincer
 
 
 def is_legacy(record):
-    """Records before the per-spell meters (rulesVersion 2, GG-T1812) carry a bank and charge, not meters."""
-    return record.get("rulesVersion", 1) < 2
+    """Records before the party mana pool (rulesVersion 3, GG-T1926) carry a bank or per-spell meters, not "mana"."""
+    return record.get("rulesVersion", 1) < 3
 
 
 def ability_usage(recs, known=None):

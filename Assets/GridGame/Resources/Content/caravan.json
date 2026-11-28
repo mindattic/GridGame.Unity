@@ -9,17 +9,17 @@
     "Levels": [
       {
         "Cost": 400,
-        "Value": 1,
+        "Value": 100,
         "Text": "+100 mana each battle"
       },
       {
         "Cost": 900,
-        "Value": 2,
+        "Value": 200,
         "Text": "+200 mana each battle"
       },
       {
         "Cost": 1800,
-        "Value": 3,
+        "Value": 300,
         "Text": "+300 mana each battle"
       }
     ]

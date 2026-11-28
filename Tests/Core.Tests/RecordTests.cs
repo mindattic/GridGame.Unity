@@ -55,26 +55,27 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_same_seed_and_commands_give_the_same_meters_on_replay()
+        public void The_same_seed_and_commands_give_the_same_mana_on_replay()
         {
             var (_, rec) = PlayRecorded(5, 0f, "bot:greedy", 80);
             Assert.That(BattleRecorder.IsLegacy(rec), Is.False);
             Assert.That(BattleRecorder.IsLegacy(new JObject { ["schema"] = 4 }), Is.True, "a bank-rule record loads as legacy");
+            Assert.That(BattleRecorder.IsLegacy(new JObject { ["schema"] = 6, [BattleRecorder.RulesVersionKey] = 2 }), Is.True, "a per-spell meter record loads as legacy");
             var c = Real;
             var setup = BattleFactory.Build(c, Progression.NewGame(c, "Rec"), c.CampaignStages()[0].Id, 5);
             var s = BattleEngine.Create(c, setup, new System.Collections.Generic.List<BattleEvent>());
-            Assert.That(BattleRecorder.Meters(s).ToString(), Is.EqualTo(rec["opening"]["state"]["meters"].ToString()));
+            Assert.That(BattleRecorder.Mana(s).ToString(), Is.EqualTo(rec["opening"]["state"]["mana"].ToString()));
             var turns = (JArray)rec["turns"];
             Assert.That(turns.Count, Is.GreaterThan(10));
             bool moved = false;
             foreach (var t in turns)
             {
                 BattleEngine.Apply(s, CommandCodec.FromJObject((JObject)t["command"]));
-                var meters = BattleRecorder.Meters(s);
-                Assert.That(meters.ToString(), Is.EqualTo(t["after"]["meters"].ToString()), $"turn {t["index"]}");
-                moved |= meters.Any(m => (int)m["points"] > 0);
+                var mana = BattleRecorder.Mana(s);
+                Assert.That(mana.ToString(), Is.EqualTo(t["after"]["mana"].ToString()), $"turn {t["index"]}");
+                moved |= (int)mana["points"] > 0;
             }
-            Assert.That(moved, Is.True, "some meter gained mana");
+            Assert.That(moved, Is.True, "the pool gained mana");
         }
 
         [Test]

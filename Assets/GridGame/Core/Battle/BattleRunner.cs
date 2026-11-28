@@ -584,7 +584,14 @@ namespace GridGame.Core.Battle
         private void GrantOrbs(int orbs, int sourceId, string reason)
         {
             if (orbs <= 0) return;
-            int points = orbs * BattleConfig.ManaPointsPerOrb;
+            GrantMana(orbs * BattleConfig.ManaPointsPerOrb, sourceId, reason, orbs);
+        }
+
+        /// <summary>A whole grant of <paramref name="points"/> (§3.1.0), the same way as <see cref="GrantOrbs"/>; a grant made
+        /// in points (mana carried on the road, Mana Casks, Well Rested) reports 0 <paramref name="orbs"/>.</summary>
+        private void GrantMana(int points, int sourceId, string reason, int orbs = 0)
+        {
+            if (points <= 0) return;
             if (!GainMana(points, sourceId, reason, e => e.Orbs = orbs))
                 Emit(new ManaGainedEvent
                 {
@@ -601,10 +608,15 @@ namespace GridGame.Core.Battle
             if (e == null) return false;
             tag?.Invoke(e);
             Emit(e);
-#pragma warning disable CS0618
-            foreach (var d in e.Readied)
-                Emit(new SpellReadyEvent { UnitId = d.UnitId, Slot = d.Slot, AbilityId = S.UnitById(d.UnitId)?.Bar[d.Slot].AbilityId });
-#pragma warning restore CS0618
+            foreach (var u in S.Units)
+            {
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count; i++)
+                {
+                    int price = S.SpellPrice(u, i);
+                    if (price > e.Before && price <= e.After) Emit(new SpellReadyEvent { UnitId = u.Id, Slot = i, AbilityId = u.Bar[i].AbilityId });
+                }
+            }
             return true;
         }
 

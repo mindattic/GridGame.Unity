@@ -272,8 +272,8 @@ def balance(tally, rec_dirs):
             continue
         turns = r["turns"]
         if turns:
-            ready = sum(1 for t in turns if any(m["points"] >= m["full"] for m in t["before"].get("meters", [])))
-            tally.one("POL-G3", ready / len(turns) <= 0.95, {"screen": "records", "subject": r.get("stage", "?"), "detail": f"a spell sat full on {ready / len(turns):.0%} of turns ({r.get('source')})"})
+            ready = sum(1 for t in turns if (m := t["before"].get("mana")) and m["points"] >= m["capacity"])
+            tally.one("POL-G3", ready / len(turns) <= 0.95, {"screen": "records", "subject": r.get("stage", "?"), "detail": f"the mana pool sat full on {ready / len(turns):.0%} of turns ({r.get('source')})"})
     barred, used = {}, {}
     for r in recs:
         stats, _ = records.ability_usage([r])
