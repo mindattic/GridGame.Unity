@@ -166,8 +166,8 @@ Same row OR column, every tile strictly between them covered by opponents — no
 ### {#GG-LAW-5} Every spell is a (shape × mode × filter) triad
 Adding a spell is a new `abilities.json` row picking targeting axes and effect knobs; it never touches `BattleRunner.ResolveAbility`. *(Source: `TargetResolver.cs`, `BattleRunner.Abilities.cs`; test `Every_hero_ability_resolves_against_a_live_board`.)*
 
-### {#GG-LAW-6} Mana is one shared, visible, capped pool
-A single 12-orb `ManaBank` for the whole party — no per-hero MP. Over-minting past 12 fades out (felt as "leaving value on the table"). **Amended 2026-11-02 (GG-T189):** orbs have fractional progress — the one forming bubble (`BattleState.ManaCharge`, [§3.1.9](#319-mana-charge)) fills toward the next orb; a bubble that rolls over while the bank holds 12 mints an orb that fades like any other, keeping the remainder. *(Source: `ManaBank.Add`, `BattleRunner.AddCharge`; tests `Bank_overflow_fades_extra_orbs`, `Guard_bubble_rolls_into_an_orb_and_fades_when_the_bank_holds_12`.)*
+### {#GG-LAW-6} Every spell fills its own mana meter (was: one shared, visible, capped pool)
+**Amended 2026-11-27 (GG-T1807, owner, GG-T1805: "mana should be collected as percentage for each of them a small heal and a tornado get equal amounts of mana but obviously the small heal would fill up faster"):** there is no shared pool. Every Spell slot of every living hero has its own meter, full at `Cost x 100` points; every mana gain goes **in full to every meter**, so a 1-cost spell fills four times faster than a 4-cost one; casting empties only that spell's meter. Rules, sources and determinism: [§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27). Mana stays visible (each spell slot's fill bar, [§9](#9-the-hud)) and capped (a meter stops at full). The text below is history. ~~A single 12-orb `ManaBank` for the whole party — no per-hero MP. Over-minting past 12 fades out (felt as "leaving value on the table"). **Amended 2026-11-02 (GG-T189):** orbs have fractional progress — the one forming bubble (`BattleState.ManaCharge`, [§3.1.9](#319-mana-charge)) fills toward the next orb; a bubble that rolls over while the bank holds 12 mints an orb that fades like any other, keeping the remainder. *(Source: `ManaBank.Add`, `BattleRunner.AddCharge`; tests `Bank_overflow_fades_extra_orbs`, `Guard_bubble_rolls_into_an_orb_and_fades_when_the_bank_holds_12`.)*~~
 
 ### {#GG-LAW-7} Verify-then-checkpoint; the bible is the brief
 Land a feature end-to-end and verify it before committing — no mid-phase commits. If code and bible disagree, reconcile in writing. **Amended 2026-10-09:** the old "every system ships a `DebugManager.Demo_*` button" rule is replaced by harness evidence ([GG-LAW-12](#GG-LAW-12)) — a scripted automation step or a test is the demo.
@@ -279,7 +279,8 @@ Owner: *"we are aiming for a polished, releasable game once the story has been e
 - **Prominence diamond** — the large diamond at the timeline's left end showing who acts next, with its seconds ("NOW" while acting). ([§2.6](#26-one-track-diamond-icons-the-prominence-diamond))
 - **Sentient** — the enemy tag for a foe with a society or that plans ahead; only Sentient enemies (and every hero) may be pincer attackers. ([§1.3](#13-sentient-restriction))
 - **Clutch** — the reward for a really cool moment (flash, "Clutch!", bonus mana charge): a rare LCK interrupt outcome on hero casts (the hit is shrugged and the cast resolves on the spot), a hero's crit landed while Blind, a kill at 15 % HP or less (Last Stand), the blow that clears a wave (Finisher), two pincers from one move (Double Pincer), a foe shoved into a lethal hazard (Hazard Kill) or a foe's charge interrupted in its last half second (Last-Tick Interrupt); one per action. ([§13.4.1](#1341-clutch-added-2026-11-21-gg-t566))
-- **ManaBank / orb** — shared 12-orb pool of identical orbs; any orbs pay any spell. ([§3.1](#31-mana-the-orb-economy))
+- **Mana meter** — each Spell slot's own store of mana points, full at the spell's cost x 100; every gain fills every meter by the same amount; a full meter can cast. Replaced the shared orb bank (GG-T1807). ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27))
+- ~~**ManaBank / orb** — shared 12-orb pool of identical orbs; any orbs pay any spell.~~ **Superseded 2026-11-27 (GG-T1807):** "orb" survives only as a unit of 100 mana points in whole grants (a Mana Potion's 2 orbs = 200 points to every meter). ([§3.1](#31-mana-the-orb-economy))
 - **Drag timer** — optional Terra Battle–style 4 s limit per drag (Settings). ([§2.9](#29-drag-timer-optional))
 - **Time-banked orbs** — Blue orbs minted from drag-timer seconds left at the drop. ([§3.1.8](#318-time-banked-orbs))
 - **Countdown badge** — the number on an enemy: actions you get before it acts. ([§2.10](#210-countdown-badge))
@@ -802,6 +803,8 @@ Icons advance independently. Within a tick, arrivals resolve one at a time: **ca
 - **Under Any hero every turn ([§2.13.1](#2131-any-hero-every-turn)),** Guard is the turn's alternative to the one hero action (owner: "cancel remaining time with Guard to gain some mana"): it gives up the whole turn and banks the gap's seconds by the same rule. It is the only way to bank turn time there; a hero action's leftover seconds are lost.
 
 *(Tests: `GuardBankTests` — conversion maths, time-left proportionality, overflow at 12 orbs, Guard ending the turn after banking; `Guard_still_banks_the_time_left_to_the_next_arrival`.)*
+
+**Amended 2026-11-27 (GG-T1807, owner answer on GG-T1805): Guard under per-spell meters.** The **GUARD** button stays at the right end of the timeline row ([§9](#9-the-hud)), Guard keeps **Protection**, and it still banks the unused turn time by the same formula (`GuardChargePerSecond` 10 a second, `GuardMaxCharge` 40, both settings in `BattleConfig`), but the result is a mana gain applied to **every spell meter** ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)), damped like any earned gain. There is no forming bubble or orb rollover any more; the "Guard · Mana +N · Xs banked" billboard stays, and the gain shows on each spell slot's fill bar. `GuardBankTests` move to the meter rule (GG-T1814).
 
 <a id="26-one-timeline-two-lanes--turn-icons-above-cast-icons-below"></a>
 
@@ -1408,7 +1411,25 @@ Under the old rule the foes out-paced the party (under one hero action per enemy
 
 ### 3.1 Mana (the orb economy)
 
-**Amended 2026-10-10 (owner decision): mana is generic.** Every orb is identical and any spell can be paid from any orbs. `ManaBank` is a capped count (capacity **12**) shared by the party ([GG-LAW-6](#GG-LAW-6)). The HUD draws 12 orb slots; filled slots glow mana-blue, empty slots are dim.
+**Amended 2026-10-10 (owner decision): mana is generic.** ~~Every orb is identical and any spell can be paid from any orbs. `ManaBank` is a capped count (capacity **12**) shared by the party ([GG-LAW-6](#GG-LAW-6)). The HUD draws 12 orb slots; filled slots glow mana-blue, empty slots are dim.~~ **Superseded 2026-11-27 (GG-T1807)** by [§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27): wherever 3.1.1 to 3.1.9 below say bank, orb row, owned orbs or "mint an orb", read the meter rule; the earning formulas (pincer charge, crits, interrupts, supporters, kills, strikes, regen, Guard) stand and now produce points for every meter.
+
+#### 3.1.0 Per-spell mana meters (GG-T1807, owner 2026-11-27)
+
+**Added 2026-11-27 (GG-T1807, under GG-T1805). ⬜ Spec only; build GG-T1809 (meters), GG-T1810 (sources), GG-T1811 (meta: carried orbs, casks, Dust), GG-T1812 (bot, preview, recorder), GG-T1813 (automation), GG-T1814/GG-T1815 (tests), GG-T1829 (delete the `ManaBank` shim).** Owner: *"I guess mana should be collected as percentage for each of them a small heal and a tornado get equal amounts of mana but obviously the small heal would fill up faster ... spells would each have a loading bar to fill with mana gained through combat or through consumables."* Owner answers (2026-11-27): Mana Orbs are **retired as a progression item**; Guard stays as built and banks into every spell; everything else takes the planner's defaults, marked *pending owner* below.
+
+- **The meter.** Every **Spell** slot of every hero has its own meter `m` in mana points (integer; **100 points = 1 former orb**), full at `Full = Cost x 100` (`AbilityDef.Cost`, still 1 to `BattleConfig.MaxSpellOrbCost` 4, so 100..400). Skill and Item slots, Locked and Empty slots have no meter. Two slots holding the same spell (two heroes, or one hero twice) are two meters. Meters start each battle at 0 plus whole grants (below).
+- **A gain G** (any source, after damping) adds `G` to **every** meter of every living hero, each capped at its own `Full`; nothing overflows into another meter and nothing is banked past full. Equal points, unequal fill: a 1-cost Heal and a 4-cost Tornado both gain 40 from a Guard, so Heal is 40% full and Tornado 10%. *(Which spells receive a gain: every Spell slot of every living hero — **pending owner** (planner default 1).)*
+- **Dead and disabled.** A downed hero's meters keep their points and receive nothing until revived. Silence, Sleep and Frozen block casting, not charging. A slot whose spell changes mid-battle (it cannot today) would restart at 0.
+- **Casting.** A spell is castable only when its meter is full (and the usual checks: not Silenced, cast cap, target). Casting sets **that** meter to 0 at cast start; every other meter is untouched. An interrupted cast refunds nothing (as [§3.1.3](#313-spending)). The slot status `Unaffordable` ([§4.5](#45-slot-visual-states)) now means "meter not full".
+- **Fullness damping** (replaces the bank-count damping of [§3.1.9](#319-mana-charge)): every **earned** gain is multiplied by `1 - ChargeFullnessDamping (0.7) x fullShare`, where `fullShare` = full meters / all meters of living heroes (`BattleEngine.DampedCharge`; a positive gain never rounds below 1). **When every meter is full, earning stops** (the gain is 0 and no event fires a fill). Whole grants skip damping, as before. *(Damping base and stop-when-full — **pending owner**, planner default 4.)*
+- **Earned sources** (unchanged formulas, now a gain to every meter): pincer charge, critical, interrupt, amplifier, mana supporters, kills (`KillCharge`), skill strikes (`StrikeCharge`), Clutch (`ClutchCharge`), time regen (`RegenCharge` 10 every 5 s of battle clock), Guard ([§2.5](#25-auto-skip--shield)), the Mana Siphon armor bonus.
+- **Whole grants** are **N orbs = N x 100 points to every meter**, undamped, capped at each `Full`: battle-start gear (`ItemDef.BattleStartManaOrbs`, Mage Robes 2, Wizard Robe 3), caravan `mana_casks` (+1..+3), orbs carried on the road (`TravelRules.CarriedOrbs`), Well Rested (`CampRest.WellRestedExtraOrbs`), items with `GrantsOrbs` (Mana Potion 2, Ether 3, Hi-Ether 6), the pickup `pk_mana`, Steal/Mug (1 per success), Meditate and Mana Pour (`PoursOrbs`), the drag-timer time bank ([§3.1.8](#318-time-banked-orbs)), region `GrantOrbs` and armor set bonuses. A foe's **siphon** (`DrainsOrbs` N) removes N x 100 from every meter (floor 0). *(Translation rule — **pending owner**, planner default 3.)* `ItemDef.BankCapacityBonus` has no meaning under meters and is retired (validation warns; GG-T1810).
+- **Mana Orbs retired as progression (owner answer 2).** `SaveData.OwnedOrbs` no longer caps or gates anything: there is no owned-orb count, no "row you can fill", and no loadout warning "needs 3 orbs, you have 2". The orb sources of [§3.1.4.3](#3143-owned-mana-orbs-are-progression-gg-t677-owner-2026-11-22) pay something else (GG-T1811), **all pending owner**: each **milestone orb** (11) becomes **3 Mana Shards** (`mat_diamond`); each **Halcyon find** (5) becomes **15 Mana Dust** plus a Halcyon gear roll; **Broken Mana Orbs** stop dropping and the Manasmith's "Restore a Mana Orb" action goes, a carried Broken Mana Orb paying 20 Mana Dust once. **Migration** (pending owner): a save that already holds owned orbs is paid once the replacement reward for each orb beyond the starting one, and each carried Broken Mana Orb as above; the fields `OwnedOrbs`, `OrbRolls` and the broken-orb count keep their names and are read only by that migration.
+- **Stage end, Dust and carried orbs.** `BattleReport.OrbsLeft` is redefined as the number of **full spell meters** when a won battle ends (no owned-orb cap, since owned orbs are retired); it settles at `DustEconomy.DustPerOrbLeft` = 1 Mana Dust each ([§3.1.4.2](#3142-unspent-orbs-settle-into-mana-dust-gg-t676-owner-2026-11-22)), and an expedition carries that count to its next battle as `CarriedOrbs`, which arrive there as N x 100 points to every meter. A loss settles nothing. *(Planner default 6, adapted to retired orbs — **pending owner**; the Dust rate is a balance setting.)*
+- **Bots.** `HeroBot` treats a spell as available exactly when its meter is full; `SavingFor` / `SaveForCost` retire (meters are independent, so nothing is saved for). With several ready spells the bot scores them as it scores any spell today; Guard is valued by the points it adds across unfilled meters. `CampRoutine.BestLearnable`'s "above 6 orbs" rule reads cost tiers 1..4.
+- **Determinism and replay.** Meters live in `BattleState` keyed by (hero id, slot index), integer points, iterated in party then slot order, and copied by `BattleState.Clone`; no gain or damping step touches the RNG. `OutcomePreviewer` reports the points an action would add (and the meters it would fill) instead of orbs minted. The `BattleRecorder` **rules version bumps**; records made under the bank rule load as **legacy** (shown, never re-simulated). `ManaChargedEvent` carries the gain (after damping) and its reason; the view derives each meter's fill. The automation endpoints and soak JSON report per-meter points (GG-T1813).
+- **HUD.** The orbs row ([§3.1.4.1](#3141-the-orbs-row-orb-costs-and-regeneration-gg-t673-owner-2026-11-22)) and the mana globe are retired; each spell slot carries its own fill bar ([§9](#9-the-hud), GG-T1820, GG-T1821).
+- **Balance is unmeasured.** Every spell now receives each gain, so a party's effective mana rate rises with how many spells it carries. Retune `KillCharge`, `RegenCharge`, `PincerChargePerHp` and the damping only from owner-run soaks (after midnight, one at a time).
 
 #### 3.1.1 Costs
 
@@ -1453,9 +1474,11 @@ The view flies each orb from its source to its slot in a 0.22 s arc (overflowing
 
 #### 3.1.3 Spending
 
-`ManaBank.Spend(cost)` removes `cost` orbs or fails without spending. Orbs are spent at cast start; an interrupted cast refunds nothing. *(Test: `Any_orbs_pay_for_any_spell`.)*
+**Superseded 2026-11-27 (GG-T1807):** casting empties the spell's own meter ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)); the no-refund rule stands. ~~`ManaBank.Spend(cost)` removes `cost` orbs or fails without spending.~~ Orbs are spent at cast start; an interrupted cast refunds nothing. *(Test: `Any_orbs_pay_for_any_spell`.)*
 
 #### 3.1.4 Bank-full rules (overflow)
+
+**Superseded 2026-11-27 (GG-T1807):** no bank, no overflow; each meter stops at full ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)). History:
 
 | State | Mint |
 |---|---|
@@ -1467,6 +1490,8 @@ The view flies each orb from its source to its slot in a 0.22 s arc (overflowing
 
 #### 3.1.4.1 The orbs row, orb costs and regeneration (GG-T673, owner 2026-11-22)
 
+**Superseded 2026-11-27 (GG-T1807, GG-T1808):** the orbs row, its capacity and "full stops earning" are replaced by per-spell meters and fill bars ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27), [§9](#9-the-hud)). Costs 1–4 and the kill, strike and regen sources stand.
+
 Owner: *"return the mana orbs line, doing things fills mana orbs which glow with bloom once they are active"*; *"it's easier to interpret orbs than it is to do math … make spells cost mana orbs that you regenerate with time and more so with actions"*; *"all mana orbs need to always be sized properly and spaced equally, rendered from left to right."*
 
 - **HUD.** GG-T405's single globe is gone. A row of orbs (one per bank slot) sits a target gap under the ability row (under the board when the bar stands beside it). Every orb is the same size and the same gap apart, left to right, shrinking for a larger count so any capacity 1–20 fits. Lit orbs bloom (soft breathing glow, steady under Reduce Motion); the next empty orb shows the forming charge as a ring round its rim. Each orb earned from an action flies in as a mote with a sparkling trail along a quadratic bezier (randomised control point, so several fan out) into its own slot in order; time regen and Reduce Motion fill the orb without a flight. Aiming a spell pulses the orbs it would spend and rims the ones it still lacks in red; slot cost pips the row can't cover dim. Colours come from the blue Manalith art (GG-T674): `Palette.ManaDeep` #20193C, `ManaIndigo` #4B447D, `ManaBloom` #7A74AB, `ManaGlint` #B4516C.
@@ -1477,6 +1502,8 @@ Owner: *"return the mana orbs line, doing things fills mana orbs which glow with
 - **Battle report.** `BattleReport.OrbsLeft` is the orbs still lit when the battle ended (GG-T676 converts them at stage end).
 
 #### 3.1.4.2 Unspent orbs settle into Mana Dust (GG-T676, owner 2026-11-22)
+
+**Amended 2026-11-27 (GG-T1807):** "orbs still lit" now means full spell meters at the end of a won battle, uncapped ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)); 1 Dust each and the expedition carry stand.
 
 Owner: *"any Mana Orbs you have at the end of a stage are converted back to manadust and added to your currencies."* The
 orbs are Halcyon batteries that can't hold mana for long ([§27.3.3](#2733-the-mana-terminology-gg-t675-owner-2026-11-22)),
@@ -1493,6 +1520,8 @@ counted inside `DustEarned`). The results screen's Mana Dust row names the share
 - The economy ledger (`polish.py --balance`) prints each run's Mana Dust and the share from orbs (`#dust`, `#orbdust`).
 
 #### 3.1.4.3 Owned Mana Orbs are progression (GG-T677, owner 2026-11-22)
+
+**Retired 2026-11-27 (GG-T1807, owner answer on GG-T1805: "RETIRE them as a progression item").** Nothing below caps a battle any more; the sources pay replacement rewards and old saves migrate as [§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27) says (pending owner). History:
 
 Owner: *"collecting 'Mana Orbs' becomes important because that is literally how much mana orbs you can fill in combat,
 so once you fill all your mana orbs you have to cast it to gather more mana, so the impact is immediately felt because
@@ -1560,6 +1589,8 @@ them identically.
 - It is cleared at control return and by Shield. Consequence (current truth, tuning watch): a quick drop that is **not** followed by an enemy turn within the same action banks nothing.
 
 #### 3.1.9 Mana charge
+
+**Amended 2026-11-27 (GG-T1807):** there is no forming bubble and no rollover; each charge below is a gain added to every spell meter, and fullness damping uses the share of full meters ([§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)). The formulas stand.
 
 Added 2026-10-11 (owner direction). `BattleState.ManaCharge` (0–99) is the forming bubble; the HUD draws it filling the next empty orb from the centre. `AddCharge` emits `ManaChargedEvent` and every full `ManaChargePerOrb` = **100** becomes an orb.
 
@@ -1672,7 +1703,7 @@ The battle HUD shows **5 slot buttons** for the **selected hero** (`BattleRunner
 | Kind | Cost | Cast time | Frame |
 |---|---|---|---|
 | **Skill** | free; costs the action; per-skill cooldown | instant | green |
-| **Spell** | mana orbs | cast icon on the timeline (all content spells: 1.5 s base) | blue + cost pips |
+| **Spell** | its own mana meter, full at cost x 100 (GG-T1807) | cast icon on the timeline (all content spells: 1.5 s base) | blue + fill bar (GG-T1808) |
 | **Item** | one charge of the slot's stack | instant | warm leather; "name n/max" |
 
 **Amended 2026-11-06 (GG-T296, owner): Active, Passive, Reactive.** Skills, spells and items are the *Active* kind: you take them. Two more kinds never sit on the bar. A **Passive** just happens (Vampire's Kiss heals when you attack; Tough Hide always softens blows). A **Reactive** fires after something happens *to* you, usually on a chance ("when [attacked directly], a [slight] chance to [Counterstrike]"). Heroes and enemies use the same system, so a character can be built to benefit from being hit, dodging or being surrounded.
@@ -1760,7 +1791,7 @@ On a fresh save (2 slots) the starting trio's potion sits in locked slot 3 until
 All three go through `UseSlotCommand` → `BattleRunner.DoUseSlot`, which re-checks `GetSlotStatus` and the target ([§4.5](#45-slot-visual-states)); a refusal costs nothing.
 - **Item** — spend a charge → resolve its ability immediately.
 - **Skill** — start its cooldown → resolve immediately.
-- **Spell** — `Bank.Spend(cost)` → if `CastTime > 0` queue a cast icon (target unit remembered for PickActor, tile for PickTile), else resolve immediately. Every accepted use is an action (it ends the turn at the next enemy arrival, GG-T188).
+- **Spell** — ~~`Bank.Spend(cost)`~~ empty the slot's own meter (needs it full; GG-T1807, [§3.1.0](#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)) → if `CastTime > 0` queue a cast icon (target unit remembered for PickActor, tile for PickTile), else resolve immediately. Every accepted use is an action (it ends the turn at the next enemy arrival, GG-T188).
 
 #### 4.4.1 Select → confirm → act
 

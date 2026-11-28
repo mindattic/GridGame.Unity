@@ -1814,3 +1814,20 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
     is OFF by default on every platform**.
 - *Why:* owner (quoted above): danger should be felt anywhere off the safe roads, encounters stay regional and
   readable, and this is a relaxing game, so nothing vibrates unless the player asks for it.
+
+## 2026-11-27 — Per-spell mana meters replace the shared orb bank; Mana Orbs retired (owner, GG-T1805, GG-T1807)
+
+- **Owner, 2026-11-27 (GG-T1805):** *"I guess mana should be collected as percentage for each of them a small heal and
+  a tornado get equal amounts of mana but obviously the small heal would fill up faster"*; answers the same day: Mana
+  Orbs are retired as a progression item, Guard keeps Protection and banks unused turn time as mana for every spell,
+  the rest takes the planner's defaults.
+- **Was ([GG-LAW-6](BIBLE.md#GG-LAW-6), [§3.1](BIBLE.md#31-mana-the-orb-economy)):** one shared, capped orb bank
+  (12, then the owned-orb row of 1–20); a forming charge bubble rolled into whole orbs; any orbs paid any spell; owned
+  Mana Orbs were progression (GG-T677).
+- **Now ([§3.1.0](BIBLE.md#310-per-spell-mana-meters-gg-t1807-owner-2026-11-27)):** every Spell slot has its own meter,
+  full at cost x 100 points; every gain adds its full amount to every meter, so cheap spells fill faster; casting
+  empties only that meter; damping uses the share of full meters and earning stops when all are full; whole-orb grants
+  are N x 100 points to every meter; full meters at a won stage's end settle into Dust and ride an expedition as
+  carried orbs. Owned-orb sources pay replacement rewards and old saves migrate (pending owner). GG-LAW-6 amended.
+- *Why:* owner (quoted above): a cheap spell should come round often and a big one should be earned, each on its own
+  bar, readable without counting orbs.
