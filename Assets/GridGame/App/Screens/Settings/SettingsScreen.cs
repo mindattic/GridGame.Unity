@@ -107,6 +107,9 @@ namespace GridGame.App
         /// <summary>Party levels the Developer section cycles through.</summary>
         private static readonly int[] DevLevels = { 1, 5, 10, 20, 30, 40, 50 };
 
+        /// <summary>Shards one tap of the Developer section's Give shards adds (a dev grant, GG-T1965).</summary>
+        private static int DevShards = 1000;
+
         /// <summary>Settings &gt; Developer (GG-T1938): shown only once the version line was tapped seven times on this device.
         /// The Cheats switch adds the pause menu's cheat rows and the DEV badge; with it on, the save cheats below run the
         /// dev automation's own code paths (<see cref="Dev.DevCheats"/>) on the loaded save.</summary>
@@ -126,7 +129,7 @@ namespace GridGame.App
             gallery.KindIcon(RowKind.Settings);
             if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
             var s = App.Save;
-            if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }
+            if (s == null) { Ui.Note("Load a save to give gold, items, shards, stages, levels and story skips.", w); return; }
             var c = App.Content;
             void Cheat(string label, string value, string name, Action act, string done)
             {
@@ -146,6 +149,9 @@ namespace GridGame.App
             int next = DevLevels.FirstOrDefault(l => l > level);
             if (next == 0) next = DevLevels[0];
             Cheat("Party level", $"{level} → {next}", "settings-dev-level", () => Dev.DevCheats.SetLevel(s.Roster, next), $"Party level {next}");
+            Cheat("Give shards", $"+{DevShards:N0}", "settings-dev-shards", () => Dev.DevCheats.GiveShards(c, s, DevShards),
+                $"+{ShardText.Of(DevShards)} (dev)");
+            Cheat("Skip story beats", "", "settings-dev-story", () => Dev.DevCheats.SkipStoryBeats(c, s), "Pending story marked seen");
         }
 
         protected override void BuildBody(VisualElement body)
