@@ -206,12 +206,12 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step.</summary>
-        private void ShowDragOutcome(MovePreview pv)
+        /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step or tap-move pick.</summary>
+        private void ShowDragOutcome(MovePreview pv, int heroId, List<Coord> path)
         {
             ClearOutcomeTags();
-            if (pv.Pincers.Count == 0 || dragPath.Count == 0) return;
-            var p = OutcomePreviewer.Preview(State, new MoveCommand { HeroId = dragHeroId, Path = new List<Coord>(dragPath) }, 3);
+            if (pv.Pincers.Count == 0 || path.Count == 0) return;
+            var p = OutcomePreviewer.Preview(State, new MoveCommand { HeroId = heroId, Path = new List<Coord>(path) }, 3);
             if (p.Refused) return;
             foreach (var t in p.Targets)
             {
@@ -254,9 +254,15 @@ namespace GridGame.App
         }
 
         /// <summary>The seconds held that travel with a drop. A coached drag (GG-T539) never counts as running the window out:
-        /// the player may take their time reading the marks.</summary>
+        /// the player may take their time reading the marks. Untimed (GG-T1978) it is the human drag model's seconds for the
+        /// path, kept inside the window so it is never a forced drop.</summary>
         private float HeldSeconds()
         {
+            if (Untimed && !simulatingDrag)
+            {
+                float model = holdElapsed + BattleEngine.DragSeconds(dragPath.Count);
+                return holdWindow > 0f ? Mathf.Min(model, holdWindow * 0.99f) : model;
+            }
             float held = holdWindow > 0f ? Mathf.Min(holdElapsed, holdWindow) : holdElapsed;
             if ((CoachRail || coachCancelStep) && holdWindow > 0f) held = Mathf.Min(held, holdWindow * 0.9f);
             return held;
