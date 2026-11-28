@@ -953,11 +953,11 @@ namespace GridGame.App
         internal static string NextStage(ContentDb c, SaveData s) =>
             c.CampaignStages().FirstOrDefault(st => !s.ClearedStages.Contains(st.Id))?.Id;
 
-        /// <summary>GG-T1786: "On the road · N orbs carried": the caravan has set out and has not made camp.</summary>
+        /// <summary>GG-T1786: "On the road · N00 mana carried": the caravan has set out and has not made camp.</summary>
         internal static string TravelLine(SaveData s)
         {
             int n = TravelRules.StartOrbs(s);
-            return "On the road · " + (n == 0 ? "no orbs carried" : n == 1 ? "1 orb carried" : $"{n} orbs carried");
+            return "On the road · " + (n == 0 ? "no mana carried" : $"{n * 100} mana to every spell carried");
         }
 
         /// <summary>A destination's tile name: camp-&lt;old row&gt; when open, locked-&lt;old row&gt; when closed.</summary>

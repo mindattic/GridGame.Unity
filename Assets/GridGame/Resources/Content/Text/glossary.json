@@ -1490,7 +1490,7 @@
       "speakers": [],
       "payload": {
         "term": "mana charge",
-        "definition": "Fills the party's mana meter; every 100 is one orb for spells."
+        "definition": "Fills every spell's mana bar by the same amount. A spell is ready when its own bar is full, so a cheap spell fills faster."
       }
     },
     "glossary:mana_dust": {
@@ -1504,7 +1504,7 @@
       "speakers": [],
       "payload": {
         "term": "Mana Dust",
-        "definition": "The Manalith breaking up: its debris burns and grinds apart high in the air and settles across the world as a blue sparkle, thicker in every region as the Manalith draws closer. Raw mana that dissipates if nothing holds it. Mana Orbs capture it for a fight; the Manasmith refines it into Mana Shards.",
+        "definition": "The Manalith breaking up: its debris burns and grinds apart high in the air and settles across the world as a blue sparkle, thicker in every region as the Manalith draws closer. Raw mana that dissipates if nothing holds it. The Manasmith refines it into Mana Shards.",
         "aliases": []
       }
     },
@@ -1519,7 +1519,7 @@
       "speakers": [],
       "payload": {
         "term": "Mana Orb",
-        "definition": "Halcyon's old batteries, scavenged from its ruins. An orb captures Mana Dust and holds it ready to cast, but it can't hold it for long: whatever charge is left after a battle settles back into dust. How many orbs you carry is how much mana you can bring to bear at once.",
+        "definition": "Halcyon's old batteries, retired as something to collect. Mana now lives in each spell's own mana bar: every gain fills every spell's bar, a cheap spell fills faster than a dear one, and casting empties only that spell's bar. Where text says an orb, it means 100 mana to every spell.",
         "aliases": [
           "Mana Orbs"
         ]
