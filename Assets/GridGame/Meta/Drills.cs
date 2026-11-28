@@ -32,6 +32,21 @@ namespace GridGame.Meta
             Onboarding.Begin(s, OnboardingStep.HubIntro);
         }
 
+        /// <summary>GG-T1959: the lesson that teaches the turn clock; its drill is The Clock.</summary>
+        public const string ClockLesson = "hold";
+
+        /// <summary>GG-T1959: a drill that comes before The Clock in campaign.json's Tutorial order plays untimed, so the
+        /// clock waits even while a hero is held until the drill that teaches it.</summary>
+        public static bool BeforeClock(ContentDb c, StageDef stage)
+        {
+            if (!IsDrill(stage)) return false;
+            var order = c?.Campaign?.Tutorial;
+            if (order == null) return false;
+            int at = order.FindIndex(id => string.Equals(id, stage.Id, StringComparison.OrdinalIgnoreCase));
+            int clock = order.FindIndex(id => c.TryStage(id)?.Lessons?.Any(l => l.Id == ClockLesson) == true);
+            return at >= 0 && clock >= 0 && at < clock;
+        }
+
         /// <summary>Marks every drill cleared: a save that finished the tutorial, and Test Mode.</summary>
         public static void MarkAllCleared(ContentDb c, SaveData s)
         {

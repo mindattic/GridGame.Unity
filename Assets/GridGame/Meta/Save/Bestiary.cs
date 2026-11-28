@@ -69,14 +69,20 @@ namespace GridGame.Meta
         };
 
         /// <summary>Its elemental weaknesses and resistances from the class's multipliers, e.g. "Immune to Poison ·
-        /// weak to Fire (×1.5)", or "No elemental weakness or resistance".</summary>
+        /// weak to Fire (×1.5)", "Immune to all but Lightning" for an element-locked foe (§3.3.1, GG-T2071), or "No elemental
+        /// weakness or resistance".</summary>
         public static string ElementLine(ClassDef d)
         {
             var parts = new List<string>();
+            var open = new List<DamageType>();
+            foreach (DamageType t in Enum.GetValues(typeof(DamageType)))
+                if (d?.Resistances == null || !d.Resistances.TryGetValue(t, out var m) || m > 0f) open.Add(t);
+            bool locked = open.Count == 1;
+            if (locked) parts.Add($"immune to all but {open[0]}");
             if (d?.Resistances != null)
                 foreach (var kv in d.Resistances)
                 {
-                    if (Math.Abs(kv.Value - 1f) < 0.001f) continue;
+                    if (Math.Abs(kv.Value - 1f) < 0.001f || (locked && kv.Value <= 0f)) continue;
                     parts.Add(kv.Value <= 0f ? $"immune to {kv.Key}"
                         : kv.Value > 1f ? $"weak to {kv.Key} (×{kv.Value:0.##})" : $"resists {kv.Key} (×{kv.Value:0.##})");
                 }
