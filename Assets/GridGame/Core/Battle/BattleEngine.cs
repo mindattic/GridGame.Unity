@@ -386,46 +386,49 @@ namespace GridGame.Core.Battle
         /// </summary>
         public static int GuardCharge(BattleState s, float heldSeconds = 0f) => TurnRules.GuardCharge(s, heldSeconds); // §2.13 seam
 
-        /// <summary>Fullness damping (§3.1.0, GG-T247): earned mana is scaled down by the share of the living heroes' spell
-        /// meters already full.</summary>
-        public static float ChargeDamping(BattleState s)
-        {
-            s.CountMeters(out int full, out int total);
-            if (total <= 0) return 1f;
-            return 1f - BattleConfig.ChargeFullnessDamping * (full / (float)total);
-        }
+        /// <summary>Fullness damping (§3.1.0, GG-T247): earned mana is scaled down by how full the party pool is.</summary>
+        public static float ChargeDamping(BattleState s) =>
+            1f - BattleConfig.ChargeFullnessDamping * (s.PartyMana / (float)BattleConfig.PartyManaCapacity);
 
         /// <summary>An earned charge after fullness damping; a positive amount never rounds to nothing.</summary>
         public static int DampedCharge(BattleState s, int amount) =>
             amount <= 0 ? 0 : System.Math.Max(1, (int)System.Math.Round(amount * ChargeDamping(s)));
 
         /// <summary>
-        /// A mana gain (§3.1.0, GG-LAW-6): <paramref name="points"/> go in full to every spell meter of every living hero,
-        /// each capped at its own full (a negative amount is a siphon, floored at 0). Callers damp earned gains first
-        /// (<see cref="DampedCharge"/>). Returns the per-slot deltas, or null when no meter changed; a meter this gain
-        /// fills is listed in <see cref="ManaGainedEvent.Readied"/>. No RNG; party then slot order.
+        /// A mana gain (§3.1.0, GG-LAW-6): <paramref name="points"/> go into the party pool, capped at
+        /// <see cref="BattleConfig.PartyManaCapacity"/> (a negative amount is a siphon, floored at 0). Callers damp earned
+        /// gains first (<see cref="DampedCharge"/>). Returns the change, or null when the pool didn't move; each spell slot
+        /// of a living hero this gain made affordable is listed in <see cref="ManaGainedEvent.Readied"/>, party then slot
+        /// order. No RNG.
         /// </summary>
         public static ManaGainedEvent GainMana(BattleState s, int points, string reason, int sourceId = -1)
         {
             if (points == 0) return null;
-            ManaGainedEvent e = null;
+            int before = s.PartyMana;
+            s.SetPartyMana(before + points);
+            int after = s.PartyMana;
+            if (after == before) return null;
+            var e = new ManaGainedEvent
+            {
+                SourceId = sourceId, Amount = after - before, Reason = reason, Kind = points < 0 ? ManaGainKind.Siphon : ManaGainKind.Grant,
+                Before = before, After = after, Capacity = BattleConfig.PartyManaCapacity, Wasted = points > 0 ? points - (after - before) : 0,
+            };
+#pragma warning disable CS0618
             foreach (var u in s.Units)
             {
                 if (!u.IsHero || !u.Alive) continue;
                 for (int i = 0; i < u.Bar.Count; i++)
                 {
-                    int full = s.ManaFull(u, i);
-                    if (full <= 0) continue;
-                    int before = s.ManaIn(u.Id, i);
-                    int after = System.Math.Max(0, System.Math.Min(full, before + points));
-                    if (after == before) continue;
-                    s.SetMana(u.Id, i, after);
-                    if (e == null) e = new ManaGainedEvent { SourceId = sourceId, Amount = points, Reason = reason, Kind = points < 0 ? ManaGainKind.Siphon : ManaGainKind.Grant };
-                    var d = new ManaMeterDelta { UnitId = u.Id, Slot = i, Delta = after - before, After = after, Full = full };
+                    int price = s.SpellPrice(u, i);
+                    if (price <= 0) continue;
+                    int was = System.Math.Min(before, price), now = System.Math.Min(after, price);
+                    if (was == now) continue;
+                    var d = new ManaMeterDelta { UnitId = u.Id, Slot = i, Delta = now - was, After = now, Full = price };
                     e.Meters.Add(d);
-                    if (after >= full) e.Readied.Add(d);
+                    if (now >= price) e.Readied.Add(d);
                 }
             }
+#pragma warning restore CS0618
             return e;
         }
 
