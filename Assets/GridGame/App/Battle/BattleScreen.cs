@@ -108,6 +108,10 @@ namespace GridGame.App
         /// <summary>The description panel starts 16 px under the action row (GG-T1894).</summary>
         private static float DescriptionTop => BarTop + BarHeight + Space.S16;
         private Label waveLabel, coinLabel, timerLabel;
+        private VisualElement bossBox, bossHpFill;
+        private Label stageName, bossName;
+        private int bossBarId = -1;
+        private float bossBarFraction = -1f;
         /// <summary>The newest ShowBanner line (automation reads it); the line itself is a billboard row that fades.</summary>
         private string bannerText = "";
         private VisualElement shake;
@@ -325,7 +329,7 @@ namespace GridGame.App
             mid.style.alignItems = Align.Center; mid.style.justifyContent = Justify.Center;
             mid.style.minWidth = Space.S0;
             mid.style.marginLeft = mid.style.marginRight = Space.S16;
-            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
+            stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
             stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
             var sep = Ui.Text("·", "small shadow", mid);
             sep.style.flexShrink = 0; sep.style.marginLeft = sep.style.marginRight = Space.S8;
@@ -333,6 +337,21 @@ namespace GridGame.App
             // vanished against a pale shard so the label read as just "Wave" (GG-T666).
             waveLabel = Ui.Text("", "small shadow", mid);
             waveLabel.style.flexShrink = 0;
+            // GG-T1952 (§9.0): during a boss wave the stage name gives way to the boss's name over a thin HP bar, so the boss
+            // costs no row of its own.
+            bossBox = Ui.El("col", mid);
+            bossBox.name = "boss-bar";
+            bossBox.style.flexShrink = 1; bossBox.style.flexGrow = 1; bossBox.style.minWidth = Space.S0;
+            bossBox.style.justifyContent = Justify.Center;
+            bossBox.style.display = DisplayStyle.None;
+            bossBox.PlaceBehind(sep);
+            bossName = Ui.Marquee(Ui.Text("", "small shadow", bossBox), grow: false);
+            bossName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            bossName.style.color = Palette.TeamBoss;
+            var gauge = Ui.El("gauge", bossBox);
+            gauge.style.height = Size.Bar + Space.S4; gauge.style.marginTop = Space.S4;
+            bossHpFill = Ui.El("gauge-fill", gauge);
+            bossBarId = -1;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
         }
@@ -386,8 +405,10 @@ namespace GridGame.App
 
         /// <summary>The action row (named "abilitybar") under the board: Abilities, Info, GUARD (§9.0, GG-T1921).</summary>
         private VisualElement abilityBar;
-        /// <summary>The empty host the party mana bar (GG-T1928) draws into: a thin full-width strip above the action row.</summary>
+        /// <summary>The host of the party mana bar (GG-T1928): a thin full-width strip above the action row.</summary>
         private VisualElement partyManaHost;
+        /// <summary>The party's one mana bar (§3.1.0), filled by <see cref="SyncPartyMana"/>.</summary>
+        private PartyManaBar partyManaBar;
         /// <summary>A hero's bar slots, which the tutorial and automation still address by index (<see cref="TapSlot"/>).</summary>
         private const int BarSlots = Progression.MaxBarSlots;
 
@@ -427,6 +448,10 @@ namespace GridGame.App
             strip.pickingMode = PickingMode.Ignore;
             strip.style.position = Position.Absolute;
             strip.style.top = ManaStripTop; strip.style.height = ManaStripHeight; // left/right: ApplyStageLayout
+            partyManaBar = new PartyManaBar { name = "party-mana-bar" };
+            partyManaBar.style.position = Position.Absolute;
+            partyManaBar.style.left = partyManaBar.style.right = partyManaBar.style.top = partyManaBar.style.bottom = 0;
+            strip.Add(partyManaBar);
             var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
@@ -555,6 +580,34 @@ namespace GridGame.App
             if (shownCoins < 0) SyncCoins();
         }
 
+        /// <summary>GG-T1952 (§9.0): the top bar's named boss HP bar. The first living boss on the board (Unit.IsBossLike, lowest
+        /// id) swaps in for the stage name; its fill follows the boss token's own gauge, so it drops with playback's beats.</summary>
+        private void SyncBossBar()
+        {
+            if (bossBox == null || State == null) return;
+            Unit boss = null;
+            UnitView bv = null;
+            foreach (var u in State.Units)
+                if (u.Team == Team.Enemy && u.OnBoard && u.IsBossLike && (boss == null || u.Id < boss.Id)
+                    && board.Units.TryGetValue(u.Id, out var v) && !v.Dead) { boss = u; bv = v; }
+            int id = boss?.Id ?? -1;
+            if (id != bossBarId)
+            {
+                bossBarId = id;
+                bossBarFraction = -1f;
+                bossBox.style.display = boss != null ? DisplayStyle.Flex : DisplayStyle.None;
+                VisualElement nameHost = stageName; // the marquee may have wrapped the name in a clip
+                while (nameHost.parent != null && nameHost.parent != bossBox.parent) nameHost = nameHost.parent;
+                nameHost.style.display = boss != null ? DisplayStyle.None : DisplayStyle.Flex;
+                if (boss != null) bossName.text = boss.Name;
+            }
+            if (bv == null || Mathf.Approximately(bv.HpFraction, bossBarFraction)) return;
+            float f = bossBarFraction = bv.HpFraction;
+            bossHpFill.style.width = Length.Percent(f * 100f);
+            bossHpFill.EnableInClassList("gauge-fill--mid", f <= 0.5f && f > 0.25f);
+            bossHpFill.EnableInClassList("gauge-fill--low", f <= 0.25f);
+        }
+
         /// <summary>Linger effect (bible §6.2 stage 4): units carrying a strong status glow its color.</summary>
         private static Color AuraFor(Unit u)
         {
@@ -630,7 +683,7 @@ namespace GridGame.App
             e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c;
         }
 
-        private void SyncBar() => SyncAbilitiesButton();
+        private void SyncBar() { SyncAbilitiesButton(); SyncPartyMana(); }
 
         /// <summary>Fills one move's <see cref="Ui.AbilitySlot"/> face (an Abilities sheet row's or detail page's icon): the
         /// recharge sweep for a skill, the spell's readiness fill (<see cref="SpellFill"/>), an item's stack. Returns whether
@@ -666,7 +719,7 @@ namespace GridGame.App
                 border = Palette.Mana;
                 mana = SpellFill(hero, i);
             }
-            Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, mana: mana, ready: mana >= 1f && !silenced);
+            Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, ready: mana >= 1f && !silenced);
             return mana >= 0f && mana < 1f;
         }
 
@@ -1445,6 +1498,7 @@ namespace GridGame.App
         public override void Tick(float dt)
         {
             TickPrefabFx();
+            SyncBossBar();
             if (Paused)
             {
                 // GG-T126: the battle's clock is stopped — no watchdog, drag timer, hint, long-press or auto battle

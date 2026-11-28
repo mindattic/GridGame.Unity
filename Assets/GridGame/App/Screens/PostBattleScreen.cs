@@ -18,7 +18,7 @@ namespace GridGame.App
         public PostBattleScreen(BattleReport report, string stageId) { this.report = report; this.stageId = stageId; }
         public override string Id => "postbattle";
         /// <summary>GG-T458: campaign.json MomentMusic.victory (a Crucible run's results too) or .defeat.</summary>
-        public override string Music => music ??= report.Victory || report.Crucible
+        public override string Music => music ??= report.Victory || report.Crucible || report.Withdrawn
             ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Victory) ?? "heroic-age-00"
             : App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Defeat) ?? "heartbreaking-00";
         private string music;
@@ -66,6 +66,7 @@ namespace GridGame.App
 
             if (report.Crucible) { BuildCrucible(root, col, c); return; }
             if (Drills.IsDrill(c.TryStage(stageId))) { BuildDrill(col, c); return; }
+            if (report.Withdrawn) { BuildWithdrawn(root, col, c); return; }
             var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "t-display shadow", col);
             Fonts.UseDisplay(title);
             title.style.fontSize = TypeScale.Base * 1.6f;
@@ -253,6 +254,40 @@ namespace GridGame.App
             if (DemoMode.Active) root.schedule.Execute(() => App.Router.ResetTo(new HubScreen())).ExecuteLater(1500);
         }
 
+        /// <summary>GG-T2070: a scripted withdrawal's results are one short Fall back card: the party's line to the Commander,
+        /// nothing lost, and Continue on into the story (no Retry: it is not a defeat).</summary>
+        private void BuildWithdrawn(VisualElement root, VisualElement col, ContentDb c)
+        {
+            var title = Ui.Text("FALL BACK", "t-display shadow", col);
+            title.name = "withdraw-title";
+            Fonts.UseDisplay(title);
+            title.style.fontSize = TypeScale.Base * 1.6f;
+            title.style.unityTextAlign = TextAnchor.MiddleCenter;
+            title.style.color = Palette.Gold;
+            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+
+            var w = Ui.Panel(col, null, true);
+            Ui.Margin(w, top: Space.S48);
+            var list = Ui.List(w).contentContainer;
+            if (!string.IsNullOrEmpty(report.WithdrawLine))
+            {
+                var line = Ui.Text(report.WithdrawLine, "kit-text", list);
+                line.name = "withdraw-line";
+                line.style.whiteSpace = WhiteSpace.Normal;
+            }
+            Ui.Text("Nothing is lost. Everyone recovers, and the road goes on.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
+            TurnsRow(list);
+
+            var row = Ui.El("row", col);
+            row.style.justifyContent = Justify.Center;
+            onContinue = () => StoryBeats.AfterResults(true, stageId);
+            var cont = RowIcon.IconButton("Continue", RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
+            cont.name = "continue";
+            Ui.El("", col).style.height = Space.S48;
+            if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+            else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+        }
+
         /// <summary>GG-T1379: a drill's results are one short card, since a drill earns nothing. A win goes on to the next
         /// drill (Next drill ›), or after the last one to Camp, recording the onboarding step either way. A loss, retreat or
         /// escape offers Retry, which replays the drill from its start at no cost; Back does the same.</summary>
@@ -262,7 +297,8 @@ namespace GridGame.App
             int idx = drills.IndexOf(stageId);
             string nextId = idx >= 0 && idx + 1 < drills.Count && c.TryStage(drills[idx + 1]) != null ? drills[idx + 1] : null;
 
-            var title = Ui.Text(report.Victory ? "DRILL CLEARED" : "TRY AGAIN", "t-display shadow", col);
+            bool first = idx == 0 && !report.Practice; // GG-T1958: The Trap plays before the crawl; its win is the first VICTORY
+            var title = Ui.Text(!report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
             title.name = "drill-title";
             Fonts.UseDisplay(title);
             title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
@@ -273,6 +309,7 @@ namespace GridGame.App
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
             var t = Ui.Text(!report.Victory ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
+                : first ? "That's the trap, Commander. Catch a foe between two of us and it falls."
                 : nextId != null ? "Drill cleared. We're ready for the next, Commander."
                 : "That's all we know, Commander. Lead us out.", "kit-text", list);
             t.name = "drill-line";
@@ -292,6 +329,15 @@ namespace GridGame.App
                 onContinue = () => StageLauncher.Launch(stageId, true);
                 RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";
             }
+            else if (first)
+            {
+                onContinue = () =>
+                {
+                    if (nextId == null) MarkDrillsFinished();
+                    App.Router.ResetTo(StoryBeats.AfterFirstDrill()); // GG-T1958: the opening crawl and the Founding, then drill 2
+                };
+                RowIcon.IconButton("Next", RowKind.Enter, Go, "btn--primary", row).name = "next";
+            }
             else if (nextId != null)
             {
                 onContinue = () =>
@@ -308,11 +354,7 @@ namespace GridGame.App
                 {
                     Onboarding.Begin(App.Save, OnboardingStep.HubIntro);
                     App.Persist();
-                    if (App.Settings != null && !App.Settings.DrillsFinished)
-                    {
-                        App.Settings.DrillsFinished = true; // GG-T1645: Start Campaign's New to GridGame? now defaults to Skip
-                        App.SaveSettings();
-                    }
+                    MarkDrillsFinished();
                     StoryBeats.AfterResults(true, stageId);
                 };
                 RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
@@ -326,6 +368,14 @@ namespace GridGame.App
                 continued = true;
                 onContinue();
             }
+        }
+
+        /// <summary>GG-T1645: the last drill won, so Start Campaign's New to GridGame? now defaults to Skip.</summary>
+        private void MarkDrillsFinished()
+        {
+            if (App.Settings == null || App.Settings.DrillsFinished) return;
+            App.Settings.DrillsFinished = true;
+            App.SaveSettings();
         }
 
         /// <summary>The drill card's cue (Law 5): a chime and a pop on the title once the card is up; Reduce Motion keeps

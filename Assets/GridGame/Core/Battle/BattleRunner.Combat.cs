@@ -476,6 +476,7 @@ namespace GridGame.Core.Battle
             if (side != target.Facing) return false;
             if (Unyielding(target))
             {
+                S.Results.PlateClangs++; // GG-T2070: toward a scripted withdrawal
                 Emit(new PlateHitEvent { UnitId = target.Id, AttackerId = attacker.Id, Amount = 0, Left = target.PlateHp, Max = target.PlateMax });
                 return true;
             }

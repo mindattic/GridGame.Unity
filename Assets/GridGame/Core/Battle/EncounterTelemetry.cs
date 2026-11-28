@@ -149,6 +149,7 @@ namespace GridGame.Core.Battle
                 case BattlePhase.Defeat: return "defeat";
                 case BattlePhase.Escaped: return "escaped";
                 case BattlePhase.Retreated: return "retreated";
+                case BattlePhase.Withdrawn: return "withdrawn";
                 default: return Stalled;
             }
         }

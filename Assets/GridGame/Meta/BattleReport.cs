@@ -18,6 +18,10 @@ namespace GridGame.Meta
         public bool Escaped;
         /// <summary>A voluntary pause-menu Retreat (FFIV-style partial loss, §22.2) — distinct from Defeat.</summary>
         public bool Retreated;
+        /// <summary>GG-T2070: the stage's scripted withdrawal ended it (<see cref="GridGame.Core.Content.WithdrawDef"/>): no
+        /// defeat and no costs, the story goes on; <see cref="WithdrawLine"/> is the party's line to the Commander.</summary>
+        public bool Withdrawn;
+        public string WithdrawLine;
         public string StageId;
         /// <summary>The stage's name and theme as fought, copied at commit so the results flow never has to look the
         /// stage up again: a generated stage (a harness skirmish, a Crucible run) can be pruned from the ContentDb
