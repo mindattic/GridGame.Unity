@@ -229,6 +229,7 @@ namespace GridGame.App
 
             var root = Document.rootVisualElement;
             root.styleSheets.Add(Resources.Load<StyleSheet>("UI/Theme"));
+            root.EnableInClassList("no-cursor", !Ui.ShowsCursor); // GG-T1923: touch menus reserve no cursor gutter
             root.style.backgroundColor = Color.black;
             Fonts.UseBody(root);
 

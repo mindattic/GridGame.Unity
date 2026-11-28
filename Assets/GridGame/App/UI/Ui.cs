@@ -608,12 +608,22 @@ namespace GridGame.App
         /// would print "1.250" or a narrow no-break space the game font may not have.</summary>
         public static string Count(int n) => n.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
 
-        /// <summary>FF-style menu row: cursor hand, optional icon, label, right-aligned value.</summary>
+        /// <summary>Whether menus show the pointing-hand cursor: PC builds and the editor only. A phone, tablet or
+        /// touch browser has no cursor and no gutter for one (GG-T1923).</summary>
+        public static bool ShowsCursor => !Application.isMobilePlatform;
+
+        /// <summary>FF-style menu row: optional cursor hand (PC only, <see cref="ShowsCursor"/>), optional icon, label,
+        /// right-aligned value. Select-then-confirm (GG-T1923): a tap on a row that isn't selected selects it (it shows
+        /// pressed in); a tap on the selected row runs it. A mouse selects by hovering, so its click runs the row at once
+        /// (automation taps are mouse events too).</summary>
         public static VisualElement MenuRow(string label, string value, Action onClick, VisualElement parent, Texture2D icon = null, bool enabled = true)
         {
             var row = El("menu-row", parent);
-            var cur = El("menu-cursor", row);
-            cur.style.backgroundImage = new StyleBackground(Art.Cursor);
+            if (ShowsCursor)
+            {
+                var cur = El("menu-cursor", row);
+                cur.style.backgroundImage = new StyleBackground(Art.Cursor);
+            }
             if (icon != null)
             {
                 var ic = El("menu-icon", row);
@@ -639,20 +649,23 @@ namespace GridGame.App
             });
             row.EnableInClassList("menu-row--disabled", !enabled);
             Pressable(row);
-            row.RegisterCallback<PointerEnterEvent>(_ => { if (enabled) Select(row); });
-            row.RegisterCallback<ClickEvent>(_ =>
+            row.RegisterCallback<PointerEnterEvent>(e => { if (enabled && IsMouse(e.pointerType)) Select(row); });
+            row.RegisterCallback<ClickEvent>(click =>
             {
                 try
                 {
+                    if (!enabled) { Select(row); GameApp.I?.Audio?.Sfx("ui.error"); return; }
+                    if (!row.ClassListContains("menu-row--selected") && !IsMouse(click.pointerType)) { Select(row); GameApp.I?.Audio?.Sfx("ui.select"); return; }
                     Select(row);
-                    if (!enabled) { GameApp.I?.Audio?.Sfx("ui.error"); return; }
-                    GameApp.I?.Audio?.Sfx("ui.select");
+                    GameApp.I?.Audio?.Sfx("ui.confirm");
                     onClick?.Invoke();
                 }
                 catch (Exception e) { Debug.LogException(e); }
             });
             return row;
         }
+
+        private static bool IsMouse(string pointerType) => pointerType == UnityEngine.UIElements.PointerType.mouse;
 
         public static void Select(VisualElement row)
         {
@@ -661,9 +674,11 @@ namespace GridGame.App
             row.AddToClassList("menu-row--selected");
         }
 
-        /// <summary>Put the cursor on the first enabled row of a menu container.</summary>
+        /// <summary>Put the cursor on the first enabled row of a menu container. Without a cursor (touch) nothing starts
+        /// selected, so a first tap always selects rather than runs the row (GG-T1923).</summary>
         public static void SelectFirst(VisualElement menu)
         {
+            if (!ShowsCursor) return;
             foreach (var c in menu.Children())
                 if (c.ClassListContains("menu-row") && !c.ClassListContains("menu-row--disabled")) { Select(c); return; }
         }
