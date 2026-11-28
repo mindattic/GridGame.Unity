@@ -50,7 +50,13 @@ namespace GridGame.App
         private void Card(QuestDef q, VisualElement parent, System.Action<QuestDef, VisualElement> extra)
         {
             var st = Quests.State(C, S, q);
-            var card = Ui.Card(parent, ThumbFor(q), q.Name, out var col, "quest-" + q.Id);
+            var thumb = GiverPortrait(q) ?? ThumbFor(q);
+            var card = Ui.Card(parent, thumb, q.Name, out var col, "quest-" + q.Id);
+            if (thumb == null)
+            {
+                var icon = card.KindIcon(RowKind.Quest);
+                icon.style.width = icon.style.height = Kit.Thumb;
+            }
             string theme = C.Campaign.Themes.FirstOrDefault(t => t.Id == q.Theme)?.Name;
             Ui.Caption($"{q.Giver}{(theme != null ? " · " + theme : "")}", col, "dim");
             var chain = Quests.ChainLine(C, S, q); // GG-T434: the chain's steps
@@ -58,12 +64,33 @@ namespace GridGame.App
             if (st == QuestState.Available && !Quests.Heard(C, S).Contains(q))
             {
                 Ui.Para(q.Giver == "Party" ? "One of your companions has something on their mind. Talk to the party." : $"The {q.Giver} has something on their mind. Talk to them.", col);
+                RowIcon.IconButton("Talk", RowKind.Talk, () => Talk(q), "btn--small", Ui.Actions(col)).name = "quest-talk-" + q.Id;
                 return;
             }
             Ui.Para(q.Summary, col);
             Ui.Para(st == QuestState.Done ? Quests.Describe(C, q) : $"{Quests.Describe(C, q)}  {Quests.Progress(S, q)}/{Quests.Goal(q)}", col, st == QuestState.Ready ? "good" : "gold");
             Ui.Para("Reward: " + Quests.RewardText(C, q), col, "dim");
             if (extra != null) extra(q, Ui.Actions(col));
+        }
+
+        private string GiverId(QuestDef q)
+        {
+            var words = (q.Giver ?? "").ToLowerInvariant().Split(' ');
+            return words[words.Length - 1];
+        }
+
+        private string GiverPortrait(QuestDef q)
+        {
+            var id = GiverId(q);
+            return DialogueScreen.HasPortrait(id) ? id : null;
+        }
+
+        /// <summary>Opens the giver's conversation: an NPC's Talk topic, else the Talk list (the party has no one voice).</summary>
+        private void Talk(QuestDef q)
+        {
+            var id = GiverId(q);
+            var topic = System.Array.IndexOf(DialogueDef.Npcs, id) >= 0 ? DialogueRunner.TalkTopic(C, S, ContentLoader.NpcFlagPrefix + id) : null;
+            App.Router.Push(topic != null ? new DialogueScreen(topic, (string)null, (GameScreen)null) : (GameScreen)new TalkScreen());
         }
 
         /// <summary>The portrait a quest card leads with: the foe to defeat (a family's first member), or the hero to
