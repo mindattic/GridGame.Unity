@@ -153,11 +153,16 @@ namespace GridGame.App
             return new StoryCrawlScreen(p, next);
         }
 
+        /// <summary>The Founding scene, opened (GG-T2127) by the Commander's look and pronouns pick; runs that don't stop
+        /// to ask (<see cref="VariantPicker.Asks"/>) keep the defaults.</summary>
         private static GameScreen Founding(Func<GameScreen> next)
         {
             var app = GameApp.I;
             var founding = DialogueRunner.PendingFounding(app.Content, app.Save);
-            return founding == null ? next() : Play(founding, next, OpeningBackdrop(app.Content.Campaign.Opening));
+            if (founding == null) return next();
+            string backdrop = OpeningBackdrop(app.Content.Campaign.Opening);
+            GameScreen Scene() => Play(founding, next, backdrop);
+            return VariantPicker.Asks ? new CommanderLookScreen(Scene, backdrop) : Scene();
         }
 
         /// <summary>GG-T1958: the first tutorial drill (campaign.json Tutorial, GG-T1374), before the crawl, when its stage

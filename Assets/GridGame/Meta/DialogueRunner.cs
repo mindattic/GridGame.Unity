@@ -182,7 +182,7 @@ namespace GridGame.Meta
         public (string name, string portrait) Resolve(DialogueSpeaker sp)
         {
             if (sp == null) return ("", null);
-            if (sp.Class == Commander.Token) return (sp.Name ?? Commander.Name(s), sp.Portrait ?? Commander.Portrait);
+            if (sp.Class == Commander.Token) return (sp.Name ?? Commander.Name(s), sp.Portrait ?? Commander.PortraitOf(s));
             string cls = sp.Class == "$lead" ? s.Party.FirstOrDefault() : Who(sp.Class);
             var def = c.TryClass(cls);
             return (sp.Name ?? def?.Name ?? sp.Id, sp.Portrait ?? def?.Id);
