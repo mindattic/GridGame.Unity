@@ -80,6 +80,29 @@ SHAPES = [
  ("pixel-20x9", "pixel9", "Pixel 9 (reference shape the tools already use)"),
  ("ipad", "ipad", "iPad 10th gen (reference: letterboxed)"),
 ]
+# GG-T2119: the camera cutout and the display's rounded corners, in pt. cutout: (type, w, h, top, corner radius); type is
+# island (a pill floating below the top edge), notch (hangs from the top edge, bottom corners rounded) or punch (a circle).
+# Each device's cutout and corner radius, and which of them are estimates (DEVICES.md, "Camera cutouts", cites both).
+ISLAND = ("island", 126.0, 37.33, 11.33, 18.67)
+CUTOUTS = {
+ # id: (cutout or None, display corner radius pt, estimated fields)
+ "iphone12mini": (None, 44.0, []), "iphone13mini": (None, 44.0, []),
+ "iphone12": (("notch", 210.0, 30.0, 0.0, 20.0), 47.33, ["cutout"]),
+ "iphone12pro": (("notch", 210.0, 30.0, 0.0, 20.0), 47.33, ["cutout"]),
+ "iphone12promax": (("notch", 210.0, 30.0, 0.0, 20.0), 53.33, ["cutout"]),
+ "iphone13": (("notch", 162.0, 33.0, 0.0, 20.0), 47.33, ["cutout"]),
+ "iphone13pro": (("notch", 162.0, 33.0, 0.0, 20.0), 47.33, ["cutout"]),
+ "iphone13promax": (("notch", 162.0, 33.0, 0.0, 20.0), 53.33, ["cutout"]),
+ "iphone14": (("notch", 162.0, 33.0, 0.0, 20.0), 47.33, ["cutout"]),
+ "iphone14plus": (("notch", 162.0, 33.0, 0.0, 20.0), 53.33, ["cutout"]),
+ "iphone16e": (("notch", 162.0, 33.0, 0.0, 20.0), 47.33, ["cutout"]),
+ **{k: (ISLAND, 55.0, ["cutout"]) for k in ("iphone14pro", "iphone14promax", "iphone15", "iphone15plus", "iphone15pro",
+                                            "iphone15promax", "iphone16", "iphone16plus")},
+ "iphone16pro": (("island", 126.0, 37.33, 14.0, 18.67), 62.0, ["cutout"]),
+ "iphone16promax": (("island", 126.0, 37.33, 14.0, 18.67), 62.0, ["cutout"]),
+ **{k: (("island", 126.0, 37.33, 14.0, 18.67), 62.0, ["cutout", "screen_radius"]) for k in ("iphone17", "iphone17pro", "iphone17promax")},
+ "iphoneair": (("island", 126.0, 37.33, 20.0, 18.67), 62.0, ["cutout", "screen_radius"]),
+}
 devices = {}
 for r in rows:
     (id_, name, year, w, h, lw, lh, scale, ppi, hz, soc, top, bot, shape), extra = r[:14], r[14:]
@@ -95,7 +118,12 @@ for r in rows:
     d.update({"unit": "pt" if apple else "dp", "scale": scale, "logical": [lw, lh], "ppi": ppi,
               "safe_px": {"top": round(top * scale), "bottom": round(bot * scale), "left": 0, "right": 0},
               "aspect": round(w / h, 4), "hz": hz, "soc": soc, "soc_tier": TIER[soc], "shape": shape, "inTarget": id_ in IN_TARGET})
-    est = []
+    cut, corner, cut_est = CUTOUTS.get(id_, (None, None, []))
+    px = lambda v: round(v * scale)
+    d["cutout"] = None if cut is None else {"type": cut[0], "w": px(cut[1]), "h": px(cut[2]), "top": px(cut[3]), "radius": px(cut[4]),
+                                            "pt": {"w": cut[1], "h": cut[2], "top": cut[3], "radius": cut[4]}}
+    d["screen_radius"] = None if corner is None else {"px": px(corner), "pt": corner}
+    est = list(cut_est)
     if not apple:
         est.append("safe_px")
         if est_dp:
@@ -112,7 +140,7 @@ for sid, rep, label in SHAPES:
 for k, v in devices.items():
     assert any(k in s["devices"] for s in shapes), k
 data = {"schema": 1, "checked": "2026-11-28", "reference": REFERENCE,
-        "about": "GridGame target device matrix (GG-T2025, baseline GG-T2116); docs/devices/DEVICES.md cites the sources. px: the physical panel, portrait. default_px: the FHD+ resolution Samsung ships its QHD+ panels at, which is what the app sees until the player changes it. scale: px per pt (iOS) or dp (Android, default display size). safe_px: the portrait safe area in device px. reference: the owner's baseline device. inTarget: the device is inside the 2023+ target (iPhone 15 Pro and newer, Galaxy S23 and newer); out-of-target rows stay for comparison. estimated: fields not taken from a published figure.",
+        "about": "GridGame target device matrix (GG-T2025, baseline GG-T2116); docs/devices/DEVICES.md cites the sources. px: the physical panel, portrait. default_px: the FHD+ resolution Samsung ships its QHD+ panels at, which is what the app sees until the player changes it. scale: px per pt (iOS) or dp (Android, default display size). safe_px: the portrait safe area in device px. cutout: the camera cutout in device px (pt alongside): type island (pill below the top edge), notch (hangs from the top edge, bottom corners rounded) or punch (circle); w, h, top offset, corner radius; null where not recorded. screen_radius: the display's rounded-corner radius (circular approximation of Apple's continuous corner). reference: the owner's baseline device. inTarget: the device is inside the 2023+ target (iPhone 15 Pro and newer, Galaxy S23 and newer); out-of-target rows stay for comparison. estimated: fields not taken from a published figure.",
         "soc_tiers": {"1": "A14, A15, Snapdragon 888, Snapdragon 8 Gen 1, Exynos 2100, Exynos 2200",
                       "2": "A16, A17 Pro, A18, Snapdragon 8 Gen 2, Snapdragon 8 Gen 3, Exynos 2400 / 2400e, Tensor G4",
                       "3": "A18 Pro, A19, A19 Pro, Snapdragon 8 Elite"},
@@ -139,11 +167,26 @@ for k, d in devices.items():
     safe = f"{sp['top']}/{sp['bottom']}/{sp['left']}/{sp['right']}" + ("\\*" if "safe_px" in e else "")
     star = "\\*" if "scale" in e else ""
     L.append(f"| `{k}` | {d['name']} | {d['year']} | {px} | {d['logical'][0]}×{d['logical'][1]} {d['unit']}{star} | {d['scale']}{star} | {d['ppi']} | {safe} | {d['aspect']:.3f} | {d['hz']} | {d['soc']} ({d['soc_tier']}) | `{d['shape']}` | {'**yes**' if d['inTarget'] else 'out'} |")
-shape_t, dev_t = [], []
+L += ["", "| Id | Model | Cutout | W×H pt | Top pt | Cutout radius pt | Screen radius pt | Device px (w×h, top, r / screen r) |",
+      "|---|---|---|---|---|---|---|---|"]
+for k, d in devices.items():
+    c, sr, e = d["cutout"], d["screen_radius"], d.get("estimated", [])
+    if c is None and sr is None:
+        continue
+    cs, ss = ("\*" if "cutout" in e else ""), ("\*" if "screen_radius" in e else "")
+    srs = f"{sr['pt']:g}{ss}" if sr else "—"
+    if c:
+        p = c["pt"]
+        L.append(f"| `{k}` | {d['name']} | {c['type']}{cs} | {p['w']:g}×{p['h']:g} | {p['top']:g} | {p['radius']:g} | {srs} | {c['w']}×{c['h']}, {c['top']}, {c['radius']} / {sr['px'] if sr else '—'} |")
+    else:
+        L.append(f"| `{k}` | {d['name']} | — | — | — | — | {srs} | — / {sr['px']} |")
+shape_t, dev_t, cut_t = [], [], []
 cur = shape_t
 for line in L:
-    if line.startswith("| Id |"):
+    if line.startswith("| Id | Model | Year"):
         cur = dev_t
+    if line.startswith("| Id | Model | Cutout"):
+        cur = cut_t
     if line:
         cur.append(line)
 old = open(out_md, encoding="utf-8").read().split("\n")
@@ -155,6 +198,8 @@ while i < len(old):
             j += 1
         if old[i].startswith("| Shape |"):
             res += shape_t
+        elif old[i].startswith("| Id | Model | Cutout"):
+            res += cut_t
         else:
             res += dev_t
         i = j

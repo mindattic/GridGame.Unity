@@ -5,7 +5,8 @@ GG-T1837: capture every screen for the screen-by-screen UI audit (docs/research/
 
 Walks the StartScreens ids (Assets/GridGame/App/Automation/StartScreens.cs, plus the results screens) with `goto`, then
 the scenario-only spots (battle, boss, overworld, camp on the road, skill hex, summon, caravan) with the in-session
-`scenario` endpoint, one player at a time at the device's size and safe area (tools/scenario.py). Per screen it writes
+`scenario` endpoint, one player at a time at the device's size and safe area, with its camera cutout and screen corners
+drawn over the UI (tools/scenario.py, GG-T2119), so the captures show what the hardware hides. Per screen it writes
 docs/design/ui-audit/captures/<device>/<screen>.png and an entry in that folder's facts.json: tap targets and text sizes
 in pt/dp and mm (design px through the stage scale and the device's ppi), text contrast sampled from the screenshot,
 safe-area intrusions and the whole polish measure. Refuses to start while any other GridGame player is running.
@@ -301,7 +302,9 @@ def main():
     if a.dry_run:
         for d in targets:
             w, h, top, bottom = scenario.DEVICES[d]
-            print(f"{d} ({w}x{h}, safe {top}/{bottom}, window {'x'.join(map(str, scenario.window_size(d)))}): {len(items)} screens")
+            fr = devices.frame(d)
+            cut = f"{fr['type']} {fr.get('w', 0)}x{fr.get('h', 0)}@{fr.get('top', 0)}, corners {fr['corner']}" if fr else "none"
+            print(f"{d} ({w}x{h}, safe {top}/{bottom}, frame {cut}, window {'x'.join(map(str, scenario.window_size(d)))}): {len(items)} screens")
             for name, method, arg in items:
                 print(f"  {name:16} {method:8} {arg:20} -> {os.path.relpath(os.path.join(OUT, d, name + '.png'), ROOT)}")
         return

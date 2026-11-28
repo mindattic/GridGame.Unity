@@ -112,6 +112,57 @@ which is what a tool runs when it wants one window per shape. Models in a shape 
 | `pixel9` | Pixel 9 | 2024 | 1080×2424 | 412×923 dp | 2.625 | 422 | 110/63/0/0\* | 0.446 | 120 | Tensor G4 (2) | `pixel-20x9` | out |
 | `ipad` | iPad (10th gen) | 2022 | 1640×2360 | 820×1180 pt | 2 | 264 | 48/40/0/0 | 0.695 | 60 | A14 (1) | `ipad` | out |
 
+## Camera cutouts
+
+GG-T2119: every iPhone row carries its camera cutout (`cutout`) and its display's rounded-corner radius
+(`screen_radius`), in device px with the pt figure alongside. Dev builds draw both over the UI when a tool launches
+the player as a device (the automation `deviceframe` endpoint, sent by `tools/scenario.py` and `tools/uiaudit.py`), so the owner sees what the island, notch and corners cover.
+
+- **type**: `island` is the Dynamic Island, a pill floating `top` pt below the screen's top edge; `notch` hangs from
+  the top edge with its bottom corners rounded by `radius`; `punch` (reserved for Galaxy punch-hole cameras, not filled
+  yet) is a circle of diameter `w`, its top `top` below the edge. Every cutout is centred horizontally.
+- **Display corner radius**: the value iOS reports as the screen's corner radius (`_displayCornerRadius`), as
+  tabulated by the ScreenCorners project: 44 pt (12/13 mini), 47.33 (12, 12 Pro, 13, 13 Pro, 14, 16e), 53.33 (12/13
+  Pro Max, 14 Plus), 55 (14 Pro through 16 Plus, including 15 Pro / Pro Max), 62 (16 Pro / Pro Max). Apple's real
+  corner is a continuous-curvature curve; the overlay draws a circular arc of that radius, which differs by about a
+  pixel. The iPhone 17 family and Air take the 16 Pro's 62 pt: *estimated* until read off iOS on those models.
+- **Dynamic Island**: Apple publishes no island dimensions. The resting island is about 126 × 37.33 pt (a pill, radius
+  18.67) on every model that has one, the figure design kits and simulator measurements use; it sits 11.33 pt below
+  the top on the 393/430-pt models. The 402/440-pt models (16 Pro, 17 family) have a 3 pt deeper top inset (62 vs
+  59 pt), so their island is put at 14 pt; the Air (68 pt inset) at 20 pt. All island figures are *estimated*.
+- **Notch**: about 210 × 30 pt on the iPhone 12 family (the iPhone X notch) and about 162 × 33 pt on the 13, 14 and
+  16e (Apple: the 13's notch is 20% narrower), bottom radius about 20 pt. *Estimated*. The 12/13 mini notch is left
+  null (the mini's 2.88x native scale makes a pt figure misleading); its corner radius is recorded.
+- Galaxy punch-holes are not recorded yet (`cutout: null`); the data shape takes them as `type: punch`.
+
+| Id | Model | Cutout | W×H pt | Top pt | Cutout radius pt | Screen radius pt | Device px (w×h, top, r / screen r) |
+|---|---|---|---|---|---|---|---|
+| `iphone12mini` | iPhone 12 mini | — | — | — | — | 44 | — / 127 |
+| `iphone12` | iPhone 12 | notch\* | 210×30 | 0 | 20 | 47.33 | 630×90, 0, 60 / 142 |
+| `iphone12pro` | iPhone 12 Pro | notch\* | 210×30 | 0 | 20 | 47.33 | 630×90, 0, 60 / 142 |
+| `iphone12promax` | iPhone 12 Pro Max | notch\* | 210×30 | 0 | 20 | 53.33 | 630×90, 0, 60 / 160 |
+| `iphone13mini` | iPhone 13 mini | — | — | — | — | 44 | — / 127 |
+| `iphone13` | iPhone 13 | notch\* | 162×33 | 0 | 20 | 47.33 | 486×99, 0, 60 / 142 |
+| `iphone13pro` | iPhone 13 Pro | notch\* | 162×33 | 0 | 20 | 47.33 | 486×99, 0, 60 / 142 |
+| `iphone13promax` | iPhone 13 Pro Max | notch\* | 162×33 | 0 | 20 | 53.33 | 486×99, 0, 60 / 160 |
+| `iphone14` | iPhone 14 | notch\* | 162×33 | 0 | 20 | 47.33 | 486×99, 0, 60 / 142 |
+| `iphone14plus` | iPhone 14 Plus | notch\* | 162×33 | 0 | 20 | 53.33 | 486×99, 0, 60 / 160 |
+| `iphone14pro` | iPhone 14 Pro | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone14promax` | iPhone 14 Pro Max | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone15` | iPhone 15 | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone15plus` | iPhone 15 Plus | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone15pro` | iPhone 15 Pro | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone15promax` | iPhone 15 Pro Max | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone16` | iPhone 16 | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone16plus` | iPhone 16 Plus | island\* | 126×37.33 | 11.33 | 18.67 | 55 | 378×112, 34, 56 / 165 |
+| `iphone16pro` | iPhone 16 Pro | island\* | 126×37.33 | 14 | 18.67 | 62 | 378×112, 42, 56 / 186 |
+| `iphone16promax` | iPhone 16 Pro Max | island\* | 126×37.33 | 14 | 18.67 | 62 | 378×112, 42, 56 / 186 |
+| `iphone16e` | iPhone 16e | notch\* | 162×33 | 0 | 20 | 47.33 | 486×99, 0, 60 / 142 |
+| `iphone17` | iPhone 17 | island\* | 126×37.33 | 14 | 18.67 | 62\* | 378×112, 42, 56 / 186 |
+| `iphone17pro` | iPhone 17 Pro | island\* | 126×37.33 | 14 | 18.67 | 62\* | 378×112, 42, 56 / 186 |
+| `iphone17promax` | iPhone 17 Pro Max | island\* | 126×37.33 | 14 | 18.67 | 62\* | 378×112, 42, 56 / 186 |
+| `iphoneair` | iPhone Air | island\* | 126×37.33 | 20 | 18.67 | 62\* | 378×112, 60, 56 / 186 |
+
 ## What the matrix means for the layout
 
 *Re-checked for the 2023+ baseline (GG-T2116):* the bullets below still list every row; for the in-target set the
@@ -177,6 +228,9 @@ instead of their own dicts, which applies these.
   <https://www.apple.com/iphone/compare/>.
 - Apple, Human Interface Guidelines, Layout (screen sizes in points and scale):
   <https://developer.apple.com/design/human-interface-guidelines/layout>.
+- ScreenCorners (display corner radius per iPhone, read from iOS's `_displayCornerRadius`):
+  <https://github.com/kylebshr/ScreenCorners>.
+- Apple, iPhone 13 announcement (notch 20% smaller): <https://www.apple.com/newsroom/2021/09/apple-introduces-iphone-13-and-iphone-13-mini/>.
 - Use Your Loaf, safe-area insets per model: <https://useyourloaf.com/blog/iphone-13-screen-sizes/>,
   <https://useyourloaf.com/blog/iphone-14-screen-sizes/>, <https://useyourloaf.com/blog/iphone-16-screen-sizes/>,
   <https://useyourloaf.com/blog/iphone-17-screen-sizes/>.

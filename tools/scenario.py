@@ -5,7 +5,8 @@ GG-T1802: show the owner a spot in the game without playing to it.
 
 A preset is tools/scenarios/<name>.json; a target is first-boss, boss:N, boss:<class>, final-boss, stage:<id>,
 region:<theme>, screen:<id> or overworld. --spec runs a spec file instead. The player is launched detached on a throwaway
-"Scenario" profile, sized like the device with its safe area applied, and left open. --device takes any device id in
+"Scenario" profile, sized like the device with its safe area and camera cutout / screen corners (GG-T2119) applied,
+and left open. --device takes any device id in
 tools/devices.json or a shape id (its representative device).
 """
 import argparse, json, os, re, subprocess, sys, time
@@ -150,6 +151,9 @@ def start(arg, device, run):
     else:
         sys.exit("player did not start")
     harness.call("safearea", top=top, bottom=bottom, ref=dh)
+    frame = devices.frame(device)
+    if frame:
+        harness.call("deviceframe", **frame)
 
     summary = read_summary(log)
     end = time.time() + 30
