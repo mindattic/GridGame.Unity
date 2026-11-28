@@ -202,7 +202,7 @@ namespace GridGame.App
                     var marker = Ui.El(null, groupTile);
                     marker.name = TileName(d);
                     marker.style.position = Position.Absolute;
-                    marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = 0;
+                    marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = Space.S0;
                     marker.style.visibility = Visibility.Hidden;
                     marker.pickingMode = PickingMode.Ignore;
                     continue;

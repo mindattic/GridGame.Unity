@@ -64,8 +64,12 @@
     --space-96: 96px;
     --measure-text: 720px; /* POL-A5, GG-T1899: the readable line (about 48 characters) for a long description */
     /* Corner radii (Tokens.cs Radius); tools/design_tokens.py lists each one's uses on the design-system page */
+    --radius-2: 2px;
     --radius-3: 3px;
+    --radius-4: 4px;
+    --radius-5: 5px;
     --radius-6: 6px;
+    --radius-7: 7px;
     --radius-8: 8px;
     --radius-10: 10px;
     --radius-12: 12px;
@@ -73,7 +77,11 @@
     --radius-16: 16px;
     --radius-17: 17px;
     --radius-18: 18px;
+    --radius-20: 20px;
     --radius-22: 22px;
+    --radius-26: 26px;
+    --radius-28: 28px;
+    --radius-pill: 999px;
 }
 
 /* GG-T770 (owner: "all these different font sizes make it look messy"): every GUI label draws at ONE size, --type-base.
