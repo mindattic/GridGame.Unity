@@ -2218,6 +2218,8 @@ namespace GridGame.App
 
     public sealed class BestiaryScreen : HubPage
     {
+        /// <summary>The tile behind an unseen creature's black silhouette: light enough that the shape reads against it.</summary>
+        internal static readonly Color UnseenTile = new Color(0.45f, 0.50f, 0.60f, 1f);
         private string selected;
         public override string Id => "bestiary";
         protected override string Title => "Bestiary";
@@ -2244,7 +2246,7 @@ namespace GridGame.App
                 S.Bestiary.TryGetValue(e.Id, out var entry);
                 var t = Ui.Thumb(e.Id, grid, 160, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
                 t.name = "beast-" + e.Id;
-                if (entry == null || !entry.Seen) { t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); }
+                if (entry == null || !entry.Seen) { t.style.backgroundColor = UnseenTile; t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); } // GG-T1889: a black silhouette on a light slate tile (over 4:1), not on the dark card
                 else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
                 t.AddToClassList("card-tap");
                 Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
