@@ -134,7 +134,7 @@ namespace GridGame.App
             int tiles = tapMovePath.Count;
             int pincers = tapMovePreview?.Pincers.Count ?? 0;
             string what = pincers > 1 ? $" · PINCER ×{pincers}" : pincers == 1 ? " · PINCER" : "";
-            var summary = Ui.Text($"Move {hero.Name} {tiles} tile{(tiles == 1 ? "" : "s")}{what}", "small gold", col);
+            var summary = Ui.Text(PanelCopy(PanelState.TapMove, hero.Name, n: tiles, extra: what), "small gold", col);
             summary.name = "move-confirm-summary";
             summary.style.whiteSpace = WhiteSpace.Normal;
             PincerOutcome(col, hero);

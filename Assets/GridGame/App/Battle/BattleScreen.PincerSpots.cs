@@ -42,16 +42,23 @@ namespace GridGame.App
                 pincerSpotLayer.style.display = DisplayStyle.None;
                 return;
             }
+            pincerSpotLayer.style.display = HasPincerSpots(hero) ? DisplayStyle.Flex : DisplayStyle.None;
+            pincerSpotLayer.style.opacity = ReduceMotion ? 1f : 0.75f + 0.25f * Mathf.Sin(t * 3f);
+        }
+
+        /// <summary>Whether <paramref name="hero"/> can walk to a spot that traps a foe this window, re-searching only when
+        /// the board, the selection or the step budget changed (the panel's instruction asks too, GG-T1953).</summary>
+        private bool HasPincerSpots(Unit hero)
+        {
             int steps = BattleEngine.MaxDragSteps(State);
             int key = PincerSpotsKey(hero.Id, steps);
             if (pincerSpots == null || key != pincerSpotsKey)
             {
                 pincerSpotsKey = key;
                 pincerSpots = MoveReach.PincerSpots(State, hero.Id, steps);
-                pincerSpotLayer.MarkDirtyRepaint();
+                pincerSpotLayer?.MarkDirtyRepaint();
             }
-            pincerSpotLayer.style.display = pincerSpots.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            pincerSpotLayer.style.opacity = ReduceMotion ? 1f : 0.75f + 0.25f * Mathf.Sin(t * 3f);
+            return pincerSpots.Count > 0;
         }
 
         /// <summary>What the search depends on: the state, the hero, the step budget, the clock and where every unit stands.</summary>

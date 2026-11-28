@@ -379,7 +379,7 @@ namespace GridGame.App
             var row = Ui.El("row", list);
             row.name = "move" + slot;
             row.style.alignItems = Align.Center;
-            row.style.minHeight = Size.Target;
+            row.style.minHeight = Kit.Row;
             row.style.marginBottom = Space.S8;
             if (slot == highlightedMove) row.style.backgroundColor = Palette.Gold.WithA(0.18f);
             var face = MoveFace(row, hero, slot, status);
