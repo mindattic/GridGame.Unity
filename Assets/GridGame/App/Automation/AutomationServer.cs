@@ -251,7 +251,7 @@ namespace GridGame.App.Automation
                 case "click":
                 {
                     var e = app.Stage.Q(q["name"]);
-                    // GG-T1921: the five slot cells are gone; "slotN" taps that bar slot by index until GG-T1922.
+                    // GG-T1922: the five slot cells are gone; "slotN" takes bar slot N through the Abilities sheet (BattleScreen.TapSlot).
                     if (e == null && app.Router.Current is BattleScreen sb && q["name"] is string sn && sn.Length == 5 && sn.StartsWith("slot") && char.IsDigit(sn[4]))
                     {
                         StepMarker(q, "click " + sn);

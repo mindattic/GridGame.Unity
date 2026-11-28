@@ -102,6 +102,41 @@ def battle_state():
     return h.call("state").get("battle")
 
 
+def open_move(slot=0):
+    """Abilities, then the move's tab, any folder holding it and its row (GG-T1922: the action row replaced the five
+    slot cells). Leaves the sheet on the move's detail page; True when its row was found."""
+    if "abilities-sheet" not in h.call("names", prefix="abilities-"):
+        h.call("click", name="abilities"); time.sleep(0.5)
+    row = f"move{slot}"
+    for tab in ("", "tab-abilities", "tab-spells", "tab-consumables"):
+        if tab:
+            h.call("click", name=tab); time.sleep(0.3)
+        if row in h.call("names", prefix="move"):
+            break
+        for folder in h.call("names", prefix="folder-"):
+            h.call("click", name=folder); time.sleep(0.3)
+            if row in h.call("names", prefix="move"):
+                break
+            h.call("click", name="crumb0"); time.sleep(0.3)
+        if row in h.call("names", prefix="move"):
+            break
+    if row not in h.call("names", prefix="move"):
+        return False
+    h.call("click", name=row); time.sleep(0.4)
+    return True
+
+
+def aim_move(slot=0):
+    """Abilities → the move's row → Perform / Cast / Use."""
+    if open_move(slot):
+        h.call("click", name="abilities-commit"); time.sleep(0.5)
+
+
+def close_sheet():
+    if "abilities-close" in h.call("names", prefix="abilities-"):
+        h.call("click", name="abilities-close"); time.sleep(0.4)
+
+
 def main():
     art = h.launch("uicheck", fresh=True)
 
@@ -296,23 +331,24 @@ def main():
         hero = next(u for u in b["units"] if u["team"] == "Hero")
         hx, hy = h.tile(hero["x"], hero["y"])
         h.call("tap", x=hx, y=hy); time.sleep(0.3)
-        slot0 = (25 + 108, 450 + 1440 + 20 + 98)
-        h.call("tap", x=slot0[0], y=slot0[1]); time.sleep(0.5)
+        aim_move(0)
         st = battle_state()
         if st["targeting"] == 0:
-            check("slot tap enters targeting", True)
-            check("ability card shows while targeting (or the confirm card for a self skill)", has_text("Tap a highlighted tile") or st.get("confirming"))
+            check("Abilities → move → Perform enters targeting", True)
+            check("the aim card shows while targeting (or the confirm card for a self skill)", has_text("tap a highlighted") or st.get("confirming"))
             h.shot("targeting")
-            h.call("tap", x=slot0[0], y=slot0[1]); time.sleep(0.4)
-            check("re-tapping the slot cancels", battle_state()["targeting"] == -1)
+            h.call("click", name="confirm-cancel" if st.get("confirming") else "aim-cancel"); time.sleep(0.5)
+            check("Cancel stops aiming", battle_state()["targeting"] == -1)
+            check("Cancel goes back to the move's page in the sheet", "abilities-commit" in h.call("names", prefix="abilities-"))
+            close_sheet()
         else:
-            check("slot tap enters targeting (or auto-casts)", st["results"]["ActionsTaken"] >= 2, str(st["targeting"]))
+            check("Abilities → move → Perform enters targeting (or auto-casts)", st["results"]["ActionsTaken"] >= 2, str(st["targeting"]))
 
     with section('Select → confirm → act (owner direction 2026-10-11)'):
         b = battle_state()
         acted = b["results"]["ActionsTaken"]
         h.call("tap", x=hx, y=hy); time.sleep(0.3)
-        h.call("tap", x=slot0[0], y=slot0[1]); time.sleep(0.4)
+        aim_move(0)
         if not battle_state().get("confirming"):
             # a pick ability: aim at the first legal enemy/ally tile by trying each unit
             for u in battle_state()["units"]:
@@ -326,8 +362,9 @@ def main():
         h.shot("confirm-card")
         h.call("click", name="confirm-cancel"); time.sleep(0.4)
         check("Cancel backs out without acting", battle_state()["targeting"] == -1 and battle_state()["results"]["ActionsTaken"] == acted)
+        close_sheet()
         h.call("tap", x=hx, y=hy); time.sleep(0.3)
-        h.call("tap", x=slot0[0], y=slot0[1]); time.sleep(0.4)
+        aim_move(0)
         if not battle_state().get("confirming"):
             for u in battle_state()["units"]:
                 h.call("tap", x=h.tile(u["x"], u["y"])[0], y=h.tile(u["x"], u["y"])[1]); time.sleep(0.3)
@@ -386,13 +423,12 @@ def main():
         check("a pending spell rides the timeline as a cast diamond", len(new_icons) >= 1, f"{sorted(icons_before)} -> new {sorted(new_icons)}")
         h.shot("pendingcast")
 
-    with section('Long-press tooltip'):
+    with section("A move's page reads its card"):
         wait_idle(200)
-        h.call("press", x=slot0[0], y=slot0[1], ms=700)
-        time.sleep(0.2)
+        open_move(0)
         card_words = texts()
-        check("long-press shows the ability card", any(("Instant" in x) or ("Charges" in x) or ("Skill" in x) or ("Item" in x) for x in card_words), str(card_words[-12:]))
-        h.call("release"); time.sleep(0.3)
+        check("the move's page shows the ability card", any(("Instant" in x) or ("Charges" in x) or ("Skill" in x) or ("Item" in x) for x in card_words), str(card_words[-12:]))
+        close_sheet()
 
     with section('Pause menu'):
         h.call("click", name="menu"); time.sleep(0.5)
