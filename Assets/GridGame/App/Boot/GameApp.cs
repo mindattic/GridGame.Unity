@@ -25,11 +25,11 @@ namespace GridGame.App
         /// <summary>The minimum stage: every screen is laid out to fit at least this (19.5:9 portrait).</summary>
         public const int DesignWidth = 1170;
         public const int DesignHeight = 2532;
-        /// <summary>The widest (9:16, 2532*9/16) and tallest (9:23, 1170*23/9) shape the stage grows to fill edge to edge;
+        /// <summary>The widest (9:16, 2532*9/16) and tallest (1170:3000, just past 9:23, so the Z Fold5 cover fits) shape the stage grows to fill edge to edge;
         /// beyond them (tablets, opened foldables, desktop windows) it is letterboxed at the nearest valid shape inside the
         /// blue mystic fog (GG-T706, owner 2026-11-23, bible §26.3; GG-T398's 3:4 fill is withdrawn).</summary>
         public const int MaxStageWidth = 1424;
-        public const int MaxStageHeight = 2990;
+        public const int MaxStageHeight = 3000;
         /// <summary>Design-pixel margin around a framed stage, so its outline is fully on screen.</summary>
         private const float FramePad = 36f;
 
@@ -503,28 +503,8 @@ namespace GridGame.App
             Cloud?.Saved(Profile?.Name, Slot, Save); // GG-T608: uploaded at most once a minute, and on pause/quit
         }
 
-        public void Toast(string text, float seconds = 1.8f)
-        {
-            StartCoroutine(ToastRoutine(text, seconds));
-        }
-
-        private IEnumerator ToastRoutine(string text, float seconds)
-        {
-            var t = Ui.Text(text, "toast shadow", Overlay);
-            t.name = "toast";
-            t.style.bottom = Size.ToastLift + liveToasts * Size.ToastStack; // GG-T1867: a second toast stacks above the first, never over it
-            liveToasts++;
-            t.style.opacity = 0;
-            yield return null;
-            t.style.opacity = 1;
-            yield return new WaitForSecondsRealtime(seconds);
-            t.style.opacity = 0;
-            yield return new WaitForSecondsRealtime(Timing.Standard);
-            t.RemoveFromHierarchy();
-            liveToasts--;
-        }
-
-        private int liveToasts;
+        /// <summary>The kit's toast (<see cref="Ui.Toast"/>).</summary>
+        public void Toast(string text, float seconds = 1.8f) => Ui.Toast(text, seconds);
 
         /// <summary>The quality level the player booted with, for <see cref="SettingsSave.QualityLevel"/> -1.</summary>
         private int projectQualityLevel;

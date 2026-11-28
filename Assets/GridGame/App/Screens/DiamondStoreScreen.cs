@@ -72,19 +72,13 @@ namespace GridGame.App
     /// <see cref="Confirm"/>'s so Android Back cancels them and a navigation clears them.</summary>
     public static class SpendGate
     {
-        private const string VeilName = "confirm-veil";
         private static readonly System.Random Rng = new System.Random();
 
         private static (VisualElement veil, VisualElement window, Action cancel) Veil(string question, string name)
         {
-            var veil = Ui.El("fill veil col center", GameApp.I.Overlay);
-            veil.name = VeilName;
-            veil.pickingMode = PickingMode.Position;
-            var w = Ui.Panel(veil, null, false, name);
-            w.style.width = Length.Percent(76);
-            Ui.Heading(question, w).style.whiteSpace = WhiteSpace.Normal;
+            var w = Ui.Modal(question, null, name, false);
+            var veil = w.parent;
             Action cancel = () => veil.RemoveFromHierarchy();
-            veil.userData = cancel;
             return (veil, w, cancel);
         }
 

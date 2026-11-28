@@ -1,0 +1,1152 @@
+{
+ "ticket": "GG-T2029",
+ "device": "galaxys25",
+ "name": "Galaxy S25",
+ "shape": "galaxy-fhd",
+ "captured": "2026-11-28T06:04:31",
+ "frame": {
+  "type": "punch",
+  "corner": 90,
+  "refw": 1080,
+  "refh": 2340,
+  "w": 54,
+  "h": 54,
+  "top": 33,
+  "r": 27
+ },
+ "screens": 41,
+ "errors": {},
+ "totals": {
+  "overflow": 0,
+  "clipped": 0,
+  "overlap": 0,
+  "offStage": 0,
+  "underCutout": 0,
+  "topInset": 0,
+  "homeIndicator": 61,
+  "targetsUnder44pt": 8,
+  "contrastFails": 27,
+  "contrastUnderCutout": 0,
+  "screensWith": {
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "abilities",
+    "alchemist",
+    "battle",
+    "battle-boss",
+    "caravan",
+    "credits",
+    "hub",
+    "mercenaries",
+    "overworld",
+    "quests",
+    "settings",
+    "shop",
+    "status"
+   ],
+   "targetsUnder44pt": [
+    "camp",
+    "enchantress",
+    "hub",
+    "items",
+    "overworld",
+    "profiles",
+    "title"
+   ],
+   "contrastFails": [
+    "battle-boss",
+    "blacksmith",
+    "camp",
+    "crucible",
+    "enchantress",
+    "newprofile",
+    "settings",
+    "shop",
+    "summon",
+    "windows"
+   ],
+   "contrastUnderCutout": []
+  }
+ },
+ "findings": {
+  "title": {
+   "landedOn": "title",
+   "png": "docs/design/ui-audit/captures/galaxys25/title.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Start Campaign",
+     "pt": [
+      283.1,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 10,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "hub": {
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/galaxys25/hub.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "\u2014 Lio, rune apprentice"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Continue",
+     "pt": [
+      311.1,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 41,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "stages": {
+   "landedOn": "stages",
+   "png": "docs/design/ui-audit/captures/galaxys25/stages.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 20,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "items": {
+   "landedOn": "items",
+   "png": "docs/design/ui-audit/captures/galaxys25/items.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "X-Potion",
+     "pt": [
+      325.2,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 27,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "status": {
+   "landedOn": "status",
+   "png": "docs/design/ui-audit/captures/galaxys25/status.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "No bonds yet. Heroes grow closer pinceri\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 83,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "equip": {
+   "landedOn": "equip",
+   "png": "docs/design/ui-audit/captures/galaxys25/equip.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 61,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "abilities": {
+   "landedOn": "abilities",
+   "png": "docs/design/ui-audit/captures/galaxys25/abilities.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Knight's Oath",
+    "Skill \u00b7 CD 3"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 81,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "talents": {
+   "landedOn": "talents",
+   "png": "docs/design/ui-audit/captures/galaxys25/talents.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 35,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "respec": {
+   "landedOn": "respec",
+   "png": "docs/design/ui-audit/captures/galaxys25/respec.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 59,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "party": {
+   "landedOn": "party",
+   "png": "docs/design/ui-audit/captures/galaxys25/party.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 68,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "shop": {
+   "landedOn": "shop",
+   "png": "docs/design/ui-audit/captures/galaxys25/shop.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Fits everyone, not an upgrade"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Buy",
+     "ratio": 2.21,
+     "need": 4.5,
+     "fg": "#282e44",
+     "bg": "#52628a"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 60,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "blacksmith": {
+   "landedOn": "blacksmith",
+   "png": "docs/design/ui-audit/captures/galaxys25/blacksmith.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Nothing needs repair yet",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e43",
+     "bg": "#506087"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 20,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "alchemist": {
+   "landedOn": "alchemist",
+   "png": "docs/design/ui-audit/captures/galaxys25/alchemist.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "???",
+    "Missing Oni Horn"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 38,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "enchantress": {
+   "landedOn": "enchantress",
+   "png": "docs/design/ui-audit/captures/galaxys25/enchantress.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Gutterscrap Stompers",
+     "pt": [
+      320.0,
+      40.0
+     ]
+    },
+    {
+     "target": "Regeneration",
+     "pt": [
+      314.8,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [
+    {
+     "text": "Enchant",
+     "ratio": 2.15,
+     "need": 4.5,
+     "fg": "#272d43",
+     "bg": "#4f5f86"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 62,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "talk": {
+   "landedOn": "talk",
+   "png": "docs/design/ui-audit/captures/galaxys25/talk.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 29,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "bounties": {
+   "landedOn": "bounties",
+   "png": "docs/design/ui-audit/captures/galaxys25/bounties.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 29,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "crucible": {
+   "landedOn": "crucible",
+   "png": "docs/design/ui-audit/captures/galaxys25/crucible.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Costs 1 Rested: the energy for a run, up\u2026",
+     "ratio": 3.56,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#474963"
+    },
+    {
+     "text": "Enter the Crucible",
+     "ratio": 2.2,
+     "need": 4.5,
+     "fg": "#282e44",
+     "bg": "#52618a"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 35,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "bestiary": {
+   "landedOn": "bestiary",
+   "png": "docs/design/ui-audit/captures/galaxys25/bestiary.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 13,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "settings": {
+   "landedOn": "settings",
+   "png": "docs/design/ui-audit/captures/galaxys25/settings.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Sound"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "ON",
+     "ratio": 4.15,
+     "need": 4.5,
+     "fg": "#e6e6ee",
+     "bg": "#606b9c"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 40,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "windows": {
+   "landedOn": "windows",
+   "png": "docs/design/ui-audit/captures/galaxys25/windows.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Steel",
+     "ratio": 3.19,
+     "need": 4.5,
+     "fg": "#ffffff",
+     "bg": "#7590c8"
+    },
+    {
+     "text": "Delete",
+     "ratio": 4.21,
+     "need": 4.5,
+     "fg": "#ad7580",
+     "bg": "#311c2b"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 49,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "credits": {
+   "landedOn": "credits",
+   "png": "docs/design/ui-audit/captures/galaxys25/credits.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "GRIDGAME A MindAttic game \u2014 design, code\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 2,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "newgame": {
+   "landedOn": "newgame",
+   "png": "docs/design/ui-audit/captures/galaxys25/newgame.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 7,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "load": {
+   "landedOn": "load",
+   "png": "docs/design/ui-audit/captures/galaxys25/load.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 5,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "profiles": {
+   "landedOn": "profiles",
+   "png": "docs/design/ui-audit/captures/galaxys25/profiles.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Scenario",
+     "pt": [
+      316.0,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 8,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "newprofile": {
+   "landedOn": "profile-name",
+   "png": "docs/design/ui-audit/captures/galaxys25/newprofile.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Create",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e44",
+     "bg": "#506088"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 4,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "createprofile": {
+   "landedOn": "create-profile",
+   "png": "docs/design/ui-audit/captures/galaxys25/createprofile.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 6,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "splash": {
+   "landedOn": "create-profile",
+   "png": "docs/design/ui-audit/captures/galaxys25/splash.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 6,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "diamonds": {
+   "landedOn": "diamonds",
+   "png": "docs/design/ui-audit/captures/galaxys25/diamonds.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 37,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "mercenaries": {
+   "landedOn": "mercenaries",
+   "png": "docs/design/ui-audit/captures/galaxys25/mercenaries.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "\"Fastest legs in the underspire. I run o\u2026",
+    "As",
+    "a",
+    "Supporter",
+    "(reach",
+    "3):",
+    "Hastens",
+    "the"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 64,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "summon-history": {
+   "landedOn": "summon-history",
+   "png": "docs/design/ui-audit/captures/galaxys25/summon-history.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 12,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "quests": {
+   "landedOn": "quests",
+   "png": "docs/design/ui-audit/captures/galaxys25/quests.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Blacksmith \u00b7 The Shardfall",
+    "The Blacksmith has something on their mi\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 29,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "about": {
+   "landedOn": "about",
+   "png": "docs/design/ui-audit/captures/galaxys25/about.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 12,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "results": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/galaxys25/results.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 39,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "results-mid": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/galaxys25/results-mid.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 45,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "battle": {
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/galaxys25/battle.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "every",
+    "enemy",
+    "that",
+    "can",
+    "reach",
+    "you",
+    "must",
+    "come",
+    "for",
+    "you",
+    "(",
+    "Taunting",
+    "),",
+    "and",
+    "you",
+    "take",
+    "25%",
+    "less",
+    "damage.",
+    "Keeps"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 40,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "battle-boss": {
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/galaxys25/battle-boss.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "every",
+    "enemy",
+    "that",
+    "can",
+    "reach",
+    "you",
+    "must",
+    "come",
+    "for",
+    "you",
+    "(",
+    "Taunting",
+    "),",
+    "and",
+    "you",
+    "take",
+    "25%",
+    "less",
+    "damage.",
+    "Keeps"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "The Captain",
+     "ratio": 3.1,
+     "need": 4.5,
+     "fg": "#db66ff",
+     "bg": "#444963"
+    },
+    {
+     "text": "BOSS",
+     "ratio": 2.37,
+     "need": 4.5,
+     "fg": "#db66ff",
+     "bg": "#685852"
+    },
+    {
+     "text": "3.5s",
+     "ratio": 4.33,
+     "need": 4.5,
+     "fg": "#f4f4f6",
+     "bg": "#876a82"
+    },
+    {
+     "text": "must",
+     "ratio": 2.08,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#6f704c"
+    },
+    {
+     "text": "come",
+     "ratio": 2.61,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#626041"
+    },
+    {
+     "text": "for",
+     "ratio": 3.01,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#57573c"
+    },
+    {
+     "text": "you",
+     "ratio": 2.84,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#585b4a"
+    },
+    {
+     "text": "(",
+     "ratio": 4.47,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#403b3b"
+    },
+    {
+     "text": "you",
+     "ratio": 2.11,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#6e6f4d"
+    },
+    {
+     "text": "take",
+     "ratio": 3.5,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#4e4d35"
+    },
+    {
+     "text": "25%",
+     "ratio": 3.1,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#535544"
+    },
+    {
+     "text": "less",
+     "ratio": 3.47,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#524b49"
+    },
+    {
+     "text": "damage.",
+     "ratio": 4.21,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#4a3d40"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 41,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "overworld": {
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/galaxys25/overworld.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "\u2014 Osk, quartermaster"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Continue",
+     "pt": [
+      311.1,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 41,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "camp": {
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/galaxys25/camp.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Continue",
+     "pt": [
+      318.2,
+      40.0
+     ]
+    }
+   ],
+   "contrastFails": [
+    {
+     "text": "Craft",
+     "ratio": 2.4,
+     "need": 4.5,
+     "fg": "#aab8ff",
+     "bg": "#6d777d"
+    },
+    {
+     "text": "Journal",
+     "ratio": 2.13,
+     "need": 4.5,
+     "fg": "#aab8ff",
+     "bg": "#737f90"
+    },
+    {
+     "text": "Recruit",
+     "ratio": 2.21,
+     "need": 4.5,
+     "fg": "#4c4b5d",
+     "bg": "#11101d"
+    },
+    {
+     "text": "Shop",
+     "ratio": 2.21,
+     "need": 4.5,
+     "fg": "#4c4b5d",
+     "bg": "#12111d"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 33,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "skill-hex": {
+   "landedOn": "talents",
+   "png": "docs/design/ui-audit/captures/galaxys25/skill-hex.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 35,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "summon": {
+   "landedOn": "summon",
+   "png": "docs/design/ui-audit/captures/galaxys25/summon.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "x1 \u00b7 1 Summon Ticket",
+     "ratio": 1.19,
+     "need": 4.5,
+     "fg": "#0c0c16",
+     "bg": "#1d1d35"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 24,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "caravan": {
+   "landedOn": "caravan",
+   "png": "docs/design/ui-audit/captures/galaxys25/caravan.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "1,200 G"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 32,
+   "minTextPt": null,
+   "layoutProblems": []
+  }
+ }
+}
