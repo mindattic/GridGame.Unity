@@ -181,7 +181,7 @@ namespace GridGame.Tests
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((1, 6)) });
             Assert.That(ev.OfType<SquishedEvent>().Single().UnitId, Is.EqualTo(knight.Id));
             Assert.That(s.Region.At(new Coord(1, 6)), Is.Null, "squished");
-            var charged = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "rule:slime_glob");
+            var charged = ev.OfType<ManaGainedEvent>().Single(c => c.Kind == ManaGainKind.Earned && c.Reason == "rule:slime_glob");
             Assert.That(charged.Amount, Is.EqualTo(Real.TryTileState("slime_glob").OnSquish.Single().Amount));
             Assert.That(charged.SourceId, Is.EqualTo(knight.Id));
             Assert.That(s.ManaIn(knight.Id, 0), Is.GreaterThanOrEqualTo(System.Math.Min(s.ManaFull(knight, 0), before + charged.Amount)));

@@ -263,7 +263,8 @@ namespace GridGame.App
             Ui.Gauge(hp / (float)u.MaxHp, stats);
             var (lvl, into) = GridGame.Core.Rules.Formulas.LevelFromTotalXp(h.TotalXp);
             Ui.Heading($"Level {lvl}", stats, "gold");
-            Ui.Caption($"Next: {GridGame.Core.Rules.Formulas.XpToNext(lvl) - into} XP  ·  Skill points: {h.SkillPoints}", stats, "dim");
+            Ui.Caption($"Next: {GridGame.Core.Rules.Formulas.XpToNext(lvl) - into} XP", stats, "dim");
+            Ui.Caption($"Skill points: {h.SkillPoints}", stats, "dim");
 
             // GG-T48: base (pre-gear) vs. gear-bought vs. total, instead of just the effective total.
             // GG-T1043: the skill hexagon's owned passives get their own Board column (they were folded into Base).
@@ -271,23 +272,24 @@ namespace GridGame.App
             var withBoard = u.LevelStats; // the preview's level stats already carry the board bonus (BattleFactory.SpecFor)
             var baseStats = withBoard + board * -1f;
             var eff = u.Effective;
+            float statCol = Size.ColumnL * 1.25f; // wide enough for "Board" and "+24" at the phone caption size (GG-T1861)
             var statHead = Ui.El("row", stats);
             statHead.name = "status-stat-head";
             Ui.Caption("", statHead).style.width = Size.Column;
-            Ui.Caption("Base", statHead, "dim").style.width = Size.ColumnS;
-            Ui.Caption("Board", statHead, "dim").style.width = Size.ColumnS;
-            Ui.Caption("Gear", statHead, "dim").style.width = Size.ColumnS;
-            Ui.Caption("Total", statHead, "dim").style.width = Size.Column;
+            Ui.Caption("Base", statHead, "dim").style.width = statCol;
+            Ui.Caption("Board", statHead, "dim").style.width = statCol;
+            Ui.Caption("Gear", statHead, "dim").style.width = statCol;
+            Ui.Caption("Total", statHead, "dim").style.width = statCol;
             void Delta(VisualElement r, float d) =>
-                Ui.Caption(Math.Abs(d) < 0.05f ? "—" : $"{(d > 0 ? "+" : "")}{d:0}", r, d > 0.05f ? "good" : d < -0.05f ? "bad" : "dim").style.width = Size.ColumnS;
+                Ui.Caption(Math.Abs(d) < 0.05f ? "—" : $"{(d > 0 ? "+" : "")}{d:0}", r, d > 0.05f ? "good" : d < -0.05f ? "bad" : "dim").style.width = statCol;
             void Stat(string n, float b, float bb, float t)
             {
                 var r = Ui.El("row", stats);
                 Ui.Caption(n, r, "dim").style.width = Size.Column;
-                Ui.Caption($"{b:0}", r, "dim").style.width = Size.ColumnS;
+                Ui.Caption($"{b:0}", r, "dim").style.width = statCol;
                 Delta(r, bb - b);
                 Delta(r, t - bb);
-                Ui.Name($"{t:0}", r).style.width = Size.Column;
+                Ui.Name($"{t:0}", r).style.width = statCol;
             }
             Stat("STR", baseStats.Strength, withBoard.Strength, eff.Strength); Stat("VIT", baseStats.Vitality, withBoard.Vitality, eff.Vitality);
             Stat("AGI", baseStats.Agility, withBoard.Agility, eff.Agility); Stat("SPD", baseStats.Speed, withBoard.Speed, eff.Speed);
@@ -1152,7 +1154,7 @@ namespace GridGame.App
                     string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
                     row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
-                    if (!can) row.style.opacity = 0.55f;
+                    if (!can) row.style.opacity = Dim.Row;
                 }
                 else
                 {
@@ -1203,7 +1205,7 @@ namespace GridGame.App
                     var rec = r;
                     var row = ItemUi.Row(c.Item(r.Result), value, () => ShowLocked(detail, c, s, rec, LockReason(c, s, rec)), list, true, false);
                     row.name = "recipe-locked-" + r.Id;
-                    row.style.opacity = 0.55f;
+                    row.style.opacity = Dim.Row;
                 }
                 if (set.Count > VendorTiers.PreviewRows) Ui.Note($"+{set.Count - VendorTiers.PreviewRows} more {more}", list);
             }
@@ -1549,7 +1551,7 @@ namespace GridGame.App
                     () => { enchant = ench; Refresh(); }, elist);
                 row.KindIcon(RowKind.Ability, passive != null ? Art.AbilityIcon(passive) : null); // GG-T746 (§26.7), else the Ability emblem
                 row.name = ArmorEnchanting.EnchantRowPrefix + e.Id;
-                if (!can) row.style.opacity = 0.55f;
+                if (!can) row.style.opacity = Dim.Row;
                 if (enchant == e) Ui.Select(row);
             }
 

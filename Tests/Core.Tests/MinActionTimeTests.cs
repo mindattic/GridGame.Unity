@@ -131,7 +131,7 @@ namespace GridGame.Tests
             int expected = BattleEngine.DampedCharge(s, BattleEngine.GuardChargeFor(0.5f));
             var first = BattleEngine.Apply(s, new ShieldCommand());
             Assert.That(first.OfType<TurnStartedEvent>().Select(t => t.UnitId), Is.EqualTo(new[] { w[0].Id }));
-            Assert.That(first.OfType<ManaChargedEvent>().Single(c => c.Reason == "guard").Amount, Is.EqualTo(expected));
+            Assert.That(first.OfType<ManaGainedEvent>().Single(c => c.Reason == "guard").Amount, Is.EqualTo(expected));
             var shielded = first.OfType<BuffAppliedEvent>().Where(b => b.BuffId == BattleConfig.ShieldBuffId).Select(b => b.UnitId).ToList();
             Assert.That(s.LivingList(Team.Hero).All(h => shielded.Contains(h.Id)), Is.True, "Protection covered the enemy's blow");
             Assert.That(first.Last() is PlayerControlEvent pc && pc.NewWindow, Is.True);

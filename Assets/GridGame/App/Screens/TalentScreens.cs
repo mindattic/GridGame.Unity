@@ -40,7 +40,7 @@ namespace GridGame.App
                 GlossaryText.Create(C.TryClass(hero.ClassId)?.Card ?? "", "kit-text dim", col);
                 card.AddToClassList("card-tap");
                 card.AddToClassList("card--fill");
-                if (!ok) title.style.opacity = status.style.opacity = 0.55f; // GG-T1862: the blurb keeps full colour (4.5:1)
+                if (!ok) title.style.opacity = status.style.opacity = Dim.Row; // GG-T1862: the blurb keeps full colour (4.5:1)
                 Ui.Tappable(card, () =>
                 {
                     if (!ok) { GameApp.I?.Audio?.Sfx("ui.error"); return; }

@@ -28,7 +28,7 @@ namespace GridGame.Tests
             var meters = Kit(s);
             for (int i = 0; i < fullMeters; i++) s.SetMana(meters[i].u.Id, meters[i].slot, s.ManaFull(meters[i].u, meters[i].slot));
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
-            return ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "pincer").Amount;
+            return ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "pincer").Amount;
         }
 
         private static (Unit u, int slot)[] Kit(BattleState s)
@@ -123,7 +123,6 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
             foreach (var (u, slot) in Kit(s)) s.SetMana(u.Id, slot, s.ManaFull(u, slot));
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
-            Assert.That(ev.Any(e => e is ManaChargedEvent), Is.False);
             Assert.That(ev.Any(e => e is ManaGainedEvent), Is.False);
         }
 
@@ -162,7 +161,7 @@ namespace GridGame.Tests
             Hero(s, "knight").Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             var mage = Hero(s, "mage");
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
-            var support = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "support" && c.SourceId == mage.Id);
+            var support = ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "support" && c.SourceId == mage.Id);
             Assert.That(IsDampedFrom(support.Amount, (int)System.Math.Round(40 * BattleConfig.SupportManaFactor)), Is.True);
             Assert.That(ev.OfType<ManaGainedEvent>().Any(g => g.Reason == "support" && g.SourceId == mage.Id), Is.True, "the gain reaches the meters");
         }
