@@ -187,8 +187,8 @@ namespace GridGame.App
             // its members (GG-T1613). Every destination keeps its old Camp row name as a hidden full-size marker, so camp tips,
             // the coach and the harness still find it on the hub: inside its group tile, or over the nav tab that now opens it.
             //   camp-craft:   camp-items, camp-blacksmith, camp-alchemist, camp-manasmith, camp-enchantress, camp-caravan
-            //   camp-journal: camp-quests, camp-bounties, camp-mercenaries, camp-talk, camp-codex, camp-bestiary
-            //   nav-heroes:   camp-heroes;  nav-summon: camp-summon-circle;  nav-shop: camp-merchant, camp-diamonds
+            //   camp-journal: camp-quests, camp-bounties, camp-talk, camp-codex, camp-bestiary
+            //   nav-heroes:   camp-heroes;  nav-summon: camp-summon-circle, camp-mercenaries;  nav-shop: camp-merchant, camp-diamonds
             // (each locked-<name> while that member is closed).
             var grid = Ui.El("kit-pillar", page);
             grid.name = "camp-tiles";
@@ -203,7 +203,7 @@ namespace GridGame.App
                 }
                 else
                 {
-                    string tab = d.Id == CampMenu.Heroes || d.Id == CampMenu.Summon ? d.Id : d.Group == CampGroup.Shop ? CampMenu.Shop : null;
+                    string tab = d.Id == CampMenu.Heroes ? CampMenu.Heroes : d.Group == CampGroup.Summon ? CampMenu.Summon : d.Group == CampGroup.Shop ? CampMenu.Shop : null;
                     host = tab != null ? nav.Q("nav-" + tab) : null;
                     if (host == null) continue;
                 }
