@@ -393,8 +393,8 @@
 
 /* ── Camp hub tiles (GG-T1612): a wrapping grid of destination tiles, styled like the nav tabs ── */
 .kit-pillar { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; padding: 0 var(--space-12); }
-.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; height: 160px; margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
-.kit-tile > .menu-icon { width: 56px; height: 56px; margin: 0; }
+.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; min-height: 160px; padding: var(--space-8) var(--space-4); margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
+.kit-tile > .menu-icon { width: var(--size-icon); height: var(--size-icon); margin: 0; } /* row role, docs/ICONS.md (GG-T2085) */
 .kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
 .kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
