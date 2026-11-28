@@ -72,6 +72,19 @@ def metrics(dev_id):
     return d["ppi"], float(d["scale"]), d["unit"]
 
 
+def frame(dev_id):
+    """GG-T2119: the deviceframe endpoint's arguments for a device (its cutout and screen corners in device px), or None
+    when devices.json records neither."""
+    d = DEVICES[dev_id]
+    c, sr = d.get("cutout"), d.get("screen_radius")
+    if c is None and sr is None:
+        return None
+    args = {"type": "none", "corner": sr["px"] if sr else 0, "refw": d["px"][0], "refh": d["px"][1]}
+    if c:
+        args.update(type=c["type"], w=c["w"], h=c["h"], top=c["top"], r=c["radius"])
+    return args
+
+
 def shapes_help():
     """One line per shape for a --help epilog."""
     lines = []

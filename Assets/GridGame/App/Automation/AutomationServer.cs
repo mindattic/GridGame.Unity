@@ -871,6 +871,20 @@ namespace GridGame.App.Automation
                         screens = new[] { screensBox.y, screensBox.height }, device = Screen.safeArea.ToString(), screen = new[] { Screen.width, Screen.height },
                     };
                 }
+                case "deviceframe":
+                {
+                    // GG-T2119: draw an emulated phone's camera cutout and rounded screen corners over everything.
+                    // type=island|notch|punch|none&w=&h=&top=&r=&corner= in the device's px, refw=&refh= its panel; clear=1
+                    // removes it; no arguments reports what is drawn (null when off).
+                    if (q["clear"] == "1") { Dev.DeviceFrame.Hide(); return new { ok = true, frame = (object)null }; }
+                    if (q["refh"] != null)
+                    {
+                        Dev.DeviceFrame.Show(q["type"] ?? "none", F(q["w"]), F(q["h"]), F(q["top"]), F(q["r"]), F(q["corner"]),
+                            F(q["refw"], Screen.width), F(q["refh"], Screen.height));
+                        return new { ok = true, frame = Dev.DeviceFrame.Report() };
+                    }
+                    return new { frame = Dev.DeviceFrame.Report() };
+                }
                 case "resize":
                     Screen.SetResolution((int)F(q["w"], 585), (int)F(q["h"], 1266), FullScreenMode.Windowed);
                     return new { ok = true };
