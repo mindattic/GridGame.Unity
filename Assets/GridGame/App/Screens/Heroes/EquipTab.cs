@@ -27,29 +27,39 @@ namespace GridGame.App
             // GG-T1873: slots, the stat compare and the bag are one scroll region filling the leftover height, no nested scroll windows.
             var slotWin = Ui.Panel(body, null, true, "equip-slots");
             var slotList = Ui.List(slotWin);
-            VisualElement pickedRow = null;
-            void SlotGroup(string title, IEnumerable<EquipmentSlot> slots)
+            // GG-T1972 (UX review): the eleven slots as a paper-doll grid of thumbnails, Weapon, armor, then jewelry (§24.2);
+            // tapping one picks it and lists the bag for it below.
+            var slotGrid = Ui.El("kit-pillar equip-grid", slotList.contentContainer);
+            foreach (var sl in AutoEquip.Slots)
             {
-                Ui.Section(title, slotList.contentContainer);
-                foreach (var sl in slots)
-                {
-                    var s2 = sl;
-                    var it = C.TryItem(Equipment.Equipped(h, sl));
-                    bool mastery = MasteryFor(sl);
-                    bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
-                    var row = Ui.MenuRow(ItemUi.SlotName(sl), it == null ? "—" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), () => { slot = s2; previewId = null; Refresh(); }, slotList.contentContainer);
-                    row.AddToClassList("menu-row--compact"); // GG-T760: the Equip list's own shorter rows, smaller text
-                    row.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : null); // GG-T718: the worn piece, else the Item emblem
-                    row.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
-                    if (it != null) row.Q<Label>("value").AddToClassList(Ui.RarityClass(it.Rarity));
-                    if (sl == slot) { Ui.Select(row); pickedRow = row; }
-                }
+                var s2 = sl;
+                var it = C.TryItem(Equipment.Equipped(h, sl));
+                bool mastery = MasteryFor(sl);
+                bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
+                var tile = Ui.El("kit-tile equip-tile", slotGrid);
+                tile.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
+                tile.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : null); // GG-T718: the worn piece, else the Item emblem
+                Ui.Text(ItemUi.SlotName(sl), "kit-tile-label", tile);
+                var value = Ui.Text(it == null ? "Empty" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), "kit-tile-value", tile);
+                value.name = "value";
+                if (it != null) value.AddToClassList(Ui.RarityClass(it.Rarity));
+                else value.AddToClassList("dim");
+                tile.EnableInClassList("equip-tile--selected", sl == slot);
+                Ui.Tappable(tile, () => { slot = s2; previewId = null; Refresh(); }, "ui.select");
             }
-            // §24.2 equip screen layout (GG-T89): Weapon, then the five armor pieces, then the five jewelry pieces.
-            SlotGroup("Weapon", new[] { EquipmentSlot.Weapon });
-            SlotGroup("Armor", BattleEngine.ArmorSlots);
-            SlotGroup("Jewelry", Equipment.JewelrySlots);
-            if (pickedRow != null) slotList.schedule.Execute(() => slotList.ScrollTo(pickedRow)).ExecuteLater(30);
+
+            if (!h.Domesticated)
+            {
+                var plan = AutoEquip.Plan(C, S, h);
+                var auto = Ui.Actions(slotList.contentContainer);
+                auto.name = "equip-auto";
+                var autoBtn = Ui.Button(plan.Count == 0 ? "Best gear on" : $"Auto-equip best ({plan.Count})",
+                    () => Done(AutoEquip.Apply(C, S, h), cue: "ui.equip"), null, auto, confirmTap: true);
+                autoBtn.name = "equip-auto-best";
+                Ui.SetEnabled(autoBtn, plan.Count > 0);
+                foreach (var p in plan)
+                    Ui.Caption($"{ItemUi.SlotName(p.Slot)}: {p.Item.Name}", slotList.contentContainer, "gold");
+            }
 
             var cmp = Ui.Panel(slotList.contentContainer, null, false, "equip-compare");
             var curId = Equipment.Equipped(h, slot);
