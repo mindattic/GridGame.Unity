@@ -1012,10 +1012,7 @@ namespace GridGame.App
                     ownLabel.name = "shop-own";
                     ownLabel.style.whiteSpace = WhiteSpace.NoWrap;
                 }
-                var minus = RowIcon.IconButton("−", RowKind.Shop, () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
-                var n = Ui.Name(q.ToString(), row);
-                n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter; // grows with Text size (GG-T495)
-                var plus = RowIcon.IconButton("+", RowKind.Shop, () => { Step(cart, item.Id, +1, max); }, "btn--small btn--icon", row);
+                Ui.Stepper(row, q.ToString(), () => { Step(cart, item.Id, -1, max); }, () => { Step(cart, item.Id, +1, max); }, out var minus, out var plus);
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
                 Ui.SetEnabled(plus, q < max);
@@ -1425,13 +1422,14 @@ namespace GridGame.App
             all.name = RepairAllButton;
             Ui.SetEnabled(all, due.Any(p => Repair.Cost(C, S, p) <= S.Gold));
             bool any = false;
-            int sound = 0;
+            int sound = 0, worn = 0;
             foreach (var p in Repair.Pieces(C, S))
             {
                 any = true;
                 var piece = p;
                 int cost = Repair.Cost(C, S, p);
                 if (cost <= 0) { sound++; continue; } // GG-T1865: full-durability pieces collapse into one row below
+                worn++;
                 bool bad = cost > 0 && Repair.IsUneconomical(p.Item, p.Durability, p.Repairs, p.Mastery);
                 string name = (p.Mastery > 1f ? "★ " : "") + p.Item.Name;
                 var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
@@ -1443,8 +1441,19 @@ namespace GridGame.App
                 if (cost > 0) RepairPriceNote(list, p);
                 if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);
             }
-            if (sound > 0) Ui.Note($"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)", list);
-            if (!any) Ui.Empty("Nobody has gear that wears out. Equip forged weapons first.", list);
+            string soundText = $"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)";
+            if (worn > 0 && sound > 0) Ui.Note(soundText, list);
+            if (worn > 0) return;
+            // GG-T1883: nothing to mend, so the tab is a compact note that points at the work he can do instead.
+            var state = Ui.EmptyState(list, any ? RowKind.Cleared : RowKind.Craft, any ? soundText : "Nobody has gear that wears out. Equip forged weapons first.", "smith-empty");
+            if (!salvage) return;
+            var next = Ui.Actions(state);
+            if (any)
+            {
+                RowIcon.IconButton("Upgrade", RowKind.Craft, () => { tab = 1; selected = null; Refresh(); }, "btn--small", next);
+                RowIcon.IconButton("Salvage", RowKind.Item, () => { tab = 2; selected = null; Refresh(); }, "btn--small", next);
+            }
+            else RowIcon.IconButton("Forge", RowKind.Craft, () => { tab = 0; selected = null; Refresh(); }, "btn--small", next);
         }
 
         /// <summary>GG-T544: the line under a worn piece's repair row — "Cheaper to wait" while it's above the threshold, then
@@ -1901,7 +1910,12 @@ namespace GridGame.App
         {
             var pulls = S.Summon?.History ?? new List<PullRecord>();
             var list = Ui.ListPanel(body, pulls.Count == 0 ? "Pulls" : $"Last {pulls.Count} pulls", "summon-history");
-            if (pulls.Count == 0) { Ui.Empty("No pulls yet.", list); return; }
+            if (pulls.Count == 0)
+            {
+                var state = Ui.EmptyState(list, RowKind.Summon, "No pulls yet. Each banner pull is kept here, newest first.");
+                RowIcon.IconButton("Summon", RowKind.Summon, () => App.Router.Pop(), "btn--small", Ui.Actions(state)).name = "summon-history-summon";
+                return;
+            }
             for (int i = 0; i < pulls.Count; i++)
             {
                 var p = pulls[i];
@@ -2431,13 +2445,9 @@ namespace GridGame.App
             Ui.Pad(row, left: Kit.Indent); // the label lines up with the menu rows' labels
             row.KindIcon(RowKind.Bounty); // GG-T750 (§26.7): lines up with the setting rows' icons
             Ui.Text("Difficulty", "menu-label grow", row);
-            var minus = RowIcon.IconButton("−", RowKind.Back, () => Set(level - 1), "btn--small", row);
+            var n = Ui.Stepper(row, level.ToString(), () => Set(level - 1), () => Set(level + 1), out var minus, out var plus, "gold");
             minus.name = "difficulty-down";
-            var n = Ui.Name(level.ToString(), row, "gold");
             n.name = "difficulty-level";
-            // At least a column wide, wider when Text size grows the number (GG-T495: a fixed width ellipsized "10" at 130%).
-            n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var plus = RowIcon.IconButton("+", RowKind.Enter, () => Set(level + 1), "btn--small", row);
             plus.name = "difficulty-up";
             Ui.SetEnabled(minus, level > DifficultyTable.Min);
             Ui.SetEnabled(plus, level < DifficultyTable.Max);
