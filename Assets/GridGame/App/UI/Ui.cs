@@ -224,8 +224,8 @@ namespace GridGame.App
 
         /// <summary>GG-T1361: fills a header's currency strip with what <paramref name="s"/> holds. Gold is pinned last, so it sits
         /// at the header's right edge (GG-T1858); to its left come <paramref name="talk"/> (a station's Talk button), the Shards
-        /// button (tapping it runs <paramref name="onShards"/>, the Shard Store) and, while an account wallet is bound, the
-        /// Summon Tickets; a zero Shards or Tickets chip stays hidden unless <paramref name="showZeroShards"/> or
+        /// button (tapping it runs <paramref name="onShards"/>, the Shard Store) and the
+        /// Summon Tickets (earned plus bought, <see cref="SummonTickets.Have"/>, the count the Summon page shows); a zero Shards or Tickets chip stays hidden unless <paramref name="showZeroShards"/> or
         /// <paramref name="showZeroTickets"/> says this page spends it (GG-T1879). The Talk button keeps its label and never folds. When the header runs short of room the chips drop to icon plus number, then fold into one "+N" chip
         /// that toasts what it holds; gold never moves. Rebuilds the strip each call, so a refresh shows the new balances.</summary>
         public static void Currencies(VisualElement bar, SaveData s, Action onShards = null, Button talk = null, bool showZeroShards = false, bool showZeroTickets = false)
@@ -243,9 +243,9 @@ namespace GridGame.App
                 if (onShards == null) shards.pickingMode = PickingMode.Ignore;
                 chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
             }
-            if (DiamondExchange.Wallet is AccountWallet w && (w.Tickets > 0 || showZeroTickets))
+            if (SummonTickets.Have(s) > 0 || showZeroTickets)
             {
-                int t = Math.Max(0, w.Tickets);
+                int t = SummonTickets.Have(s);
                 var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
                 tickets.name = "header-tickets";
                 tickets.pickingMode = PickingMode.Ignore;
