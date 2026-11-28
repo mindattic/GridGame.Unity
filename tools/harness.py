@@ -2890,7 +2890,7 @@ def pause_check(run="pause", speed=1, timeout=240):
         "paused mid-chain": s1["busy"] and s1["chain"] >= 1 and s1["lines"] > 0,
         "no beat advanced": s1["beats"] == s2["beats"] and s2["beatsWhilePaused"] == 0,
         "outline frozen": s1["lines"] == s2["lines"],
-        "clock frozen": s1["clock"] == s2["clock"] and s1["meters"] == s2["meters"],
+        "clock frozen": s1["clock"] == s2["clock"] and s1["mana"] == s2["mana"],
         "veil on top": s1["pauseOnTop"] and s2["pauseOnTop"],
         "frames identical": diff == 0.0,
     }

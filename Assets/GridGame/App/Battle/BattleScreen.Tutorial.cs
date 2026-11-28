@@ -88,8 +88,8 @@ namespace GridGame.App
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero)), "Drag the {0} along the dotted line: the drop traps the foe between two heroes.") },
             // GG-T252: recognition over recall — anything on screen explains itself. GG-T450: a tap reads it too.
             new Lesson { Id = "read", Title = "Read the field", Patience = 3, DoneOnInspect = true,
-                Short = "Commander, size them up first: tap any of us, a foe, a timeline icon or a spell slot to read its card. Holding reads it too.",
-                Text = "Commander, size up the field before you order us: tap one of us, an enemy or an icon on the timeline to read its card; tap a spell slot that can't be used yet to see why. The card stays until your next tap. Holding anything — a spell slot or status pip too — reads it without acting.",
+                Short = "Commander, size them up first: tap any of us, a foe or a timeline icon to read its card; Abilities lists every move. Holding reads it too.",
+                Text = "Commander, size up the field before you order us: tap one of us, an enemy or an icon on the timeline to read its card; in Abilities, open a move that can't be used yet to see why. The card stays until your next tap. Holding anything — a status pip too — reads it without acting.",
                 Example = "Example: tap a slime to open its card.",
                 Done = (b, c, e) => false,
                 Marks = b => b.ReadMarks() },
@@ -889,7 +889,8 @@ namespace GridGame.App
             };
         }
 
-        /// <summary>A cast mark: tap the hero, its slot, the target (when it has one), then Cast / Use / Go.</summary>
+        /// <summary>A cast mark: tap the hero, Abilities, the move's tab and row, Perform / Cast / Use, the target (when it has
+        /// one), then Cast / Use / Go.</summary>
         private List<CoachStep> CastMarks(Unit hero, int slot)
         {
             if (hero == null || slot < 0 || slot >= BarSlots) return null;
@@ -909,15 +910,31 @@ namespace GridGame.App
                 target = valid.Contains(pick) ? pick : valid[0];
             }
             string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+            var path = ActionTree.PathTo(ActionTree.For(State, hero), slot);
+            if (path == null) return null;
             bool Aiming() => coachCommitted || (SelectedHeroId == id && TargetingSlot == slot);
+            bool Ready() => coachCommitted || (SelectedHeroId == id && BattleEngine.GetSlotStatus(State, id, slot) == SlotStatus.Ready);
+            bool SheetOpen() => AbilitiesOpen && sheetHeroId == id;
+            bool SheetAt(int depth) => SheetOpen() && sheetPath.Count > depth
+                && Enumerable.Range(0, depth + 1).All(i => sheetPath[i].Name == path[i].Name && sheetPath[i].Slot == path[i].Slot);
             var marks = new List<CoachStep>
             {
                 new CoachStep { Caption = $"Tap the {hero.Name}.", Area = () => UnitRect(id),
                     Done = () => coachCommitted || (SelectedHeroId == id && !pressing), Valid = () => State.UnitById(id) is Unit u && u.Alive },
-                // Until GG-T1922 walks the sheet, the boxed Abilities button aims this slot directly (coachSlot).
-                new CoachStep { Caption = $"Tap Abilities to ready {a.Name}.", Element = () => abilitiesButton,
-                    Enter = () => coachSlot = slot, Exit = () => coachSlot = -1, Done = Aiming, Valid = () => coachCommitted || (SelectedHeroId == id && BattleEngine.GetSlotStatus(State, id, slot) == SlotStatus.Ready) },
+                new CoachStep { Caption = $"Tap Abilities to find {a.Name}.", Element = () => abilitiesButton,
+                    Done = () => Aiming() || SheetOpen(), Valid = Ready },
             };
+            // The sheet (GG-T1922): the move's tab, any folder holding it, its row, then the commit button. A step the sheet
+            // already stands past (it opened on that tab) is done at once.
+            for (int d = 0; d < path.Count; d++)
+            {
+                var node = path[d];
+                int depth = d;
+                string el = node.IsMove ? "move" + node.Slot : d == 0 ? "tab-" + node.Name.ToLowerInvariant().Replace(' ', '-') : "folder-" + node.Name.ToLowerInvariant();
+                marks.Add(new CoachStep { Caption = node.IsMove ? $"Tap {a.Name}." : d == 0 ? $"Tap the {node.Name} tab." : $"Open {node.Name}.",
+                    Element = () => sheetVeil?.Q(el), Done = () => Aiming() || SheetAt(depth), Valid = Ready });
+            }
+            marks.Add(new CoachStep { Caption = $"Tap {CommitVerb(hero, slot, a)}.", Element = () => sheetVeil?.Q("abilities-commit"), Done = Aiming, Valid = Ready });
             if (target is Coord t)
             {
                 var who = State.UnitAt(t);
