@@ -720,7 +720,7 @@ namespace GridGame.App
                 btns.style.marginTop = Space.S8;
                 var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
                 cancel.name = "confirm-cancel";
-                string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+                string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
                 var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns, confirmTap: false);
                 ok.name = "confirm-action";
             }
