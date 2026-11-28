@@ -131,11 +131,11 @@ namespace GridGame.App
             col.Add(body);
             var page = body.contentContainer;
 
-            // Campaign card: Continue launches the next stage straight away; the Adventure row opens Stage select.
+            // Campaign card: Continue launches the next stage straight away; the Journey row opens Stage select.
             var campaign = Ui.Window(null, page);
             campaign.name = "camp-campaign";
             string next = NextStage(c, s);
-            var cont = Ui.Button(next != null ? "Continue" : "Adventure", () =>
+            var cont = Ui.Button(next != null ? "Continue" : "Journey", () =>
             {
                 if (next != null) StageLauncher.Launch(next, false);
                 else App.Router.Push(new StageSelectScreen());
@@ -150,7 +150,7 @@ namespace GridGame.App
             if (TravelRules.OnTheRoad(s)) // GG-T1786: travel (§28) replaces the expedition line
                 Ui.Caption(TravelLine(s), campaign, "dim").name = "camp-travel";
             var adv = Dest(CampMenu.Campaign);
-            var advRow = Ui.MenuRow(adv?.Label ?? "Adventure", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
+            var advRow = Ui.MenuRow(adv?.Label ?? "Journey", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
             advRow.name = "camp-adventure";
             advRow.KindIcon(RowKind.Place, ThemeFor(c, s));
             Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");
@@ -279,7 +279,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = TileName(d);
             tile.EnableInClassList("kit-tile--locked", !d.Open);
-            var icon = d.Id == CampMenu.Shop ? tile.KindIcon(RowKind.Shop) : d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
+            var icon = d.Id != CampMenu.Shop && d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id), Art.UiIcon(TileIcon(d.Id)));
             if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
             else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
@@ -300,7 +300,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = (open ? "camp-" : "locked-") + label.ToLowerInvariant();
             tile.EnableInClassList("kit-tile--locked", !open);
-            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex);
+            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex, Art.UiIcon(group == CampGroup.Craft ? "hub-craft" : "hub-journal"));
             if (!open) RowIcon.Badge(icon, RowKind.Locked);
             else if (CampMenu.GroupBadge(dests, group)) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(label, "kit-tile-label", tile));
@@ -310,10 +310,26 @@ namespace GridGame.App
             return tile;
         }
 
+        /// <summary>A destination's icon in the menu set (docs/ICONS.md, hub tiles and stations).</summary>
+        internal static string TileIcon(string id)
+        {
+            switch (id)
+            {
+                case CampMenu.Campaign: return "hub-stage-select";
+                case CampMenu.Diamonds: return "hub-diamond-store";
+                case CampMenu.NewGamePlus: return "hub-new-game-plus";
+                case CampMenu.Quit: return "hub-quit-to-title";
+                case CampMenu.Blacksmith: case CampMenu.Alchemist: case CampMenu.Enchantress: case CampMenu.Aetherist: case CampMenu.Caravan:
+                    return "station-" + id;
+                default: return "hub-" + id;
+            }
+        }
+
         private static RowKind TileKind(string id)
         {
             switch (id)
             {
+                case CampMenu.Shop: return RowKind.Shop;
                 case CampMenu.Heroes: case CampMenu.Mercenaries: return RowKind.Hero;
                 case CampMenu.Items: return RowKind.Item;
                 case CampMenu.Talk: return RowKind.Talk;

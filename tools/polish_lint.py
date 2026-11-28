@@ -34,21 +34,33 @@ USS = os.path.join(ROOT, "Assets", "GridGame", "Resources", "UI", "Theme.uss")
 TOKEN_FILES = {os.path.join(APP, "UI", "Tokens.cs")}
 PALETTE_FILES = {os.path.join(APP, "UI", "WindowThemes.cs")}  # theme definitions: color data, exempt from POL-B1 (GG-T1184)
 SKIP_DIRS = {os.path.join(APP, "Automation")}  # dev-only tooling, never shipped
+# dev-only screens that may keep literals under the token rules (GG-T2135), each with its reason
+DEV_ALLOW = {
+    os.path.join(APP, "Screens", "WindowEditorScreen.cs"): "theme editor: its default stops and frame colours are hex data it edits",
+    os.path.join(APP, "Screens", "BreedGalleryScreen.cs"): "dense review grid of every class x breed at small sizes; never shown to players",
+    os.path.join(APP, "Dev", "DevOptions.cs"): "dev overlay drawn over the game, outside the player's UI",
+}
 
 NUM = r"-?\d+(?:\.\d+)?f?"
 
 # rule -> (kind, literal regexes, token regexes)
 CS_RULES = {
     # a literal size passed to FloatText( or board.Float( is counted by float_size_literals below (GG-T829)
-    "POL-A1": ("token", [rf"\bfontSize\s*=\s*{NUM}\b"], [r"\bTypeScale\.\w+"]),
-    "POL-B1": ("token", [r"\bnew\s+Color32?\s*\(", r"\bColor\.(?:white|black|red|green|blue|yellow|cyan|magenta|gray|grey)\b"],
+    "POL-A1": ("token", [rf"\bfontSize\s*=\s*{NUM}\b"], [r"\bTypeScale\.\w+", r"\bTypeFloor\.\w+"]),
+    # GG-T2135: Color(?:32)?, not Color32?, which only matched "Color3" and so missed every new Color(...); a hex colour in a
+    # string ("#7fd1ff") is a literal colour too
+    "POL-B1": ("token", [r"\bnew\s+Color(?:32)?\s*\(", r"\bColor\.(?:white|black|red|green|blue|yellow|cyan|magenta|gray|grey)\b",
+                         r"\"#[0-9a-fA-F]{3,8}\""],
                [r"\bPalette\.\w+"]),
-    # a corner radius is a literal assigned to a border*Radius, or the radius argument of SetRadius(e, r) / SetBorder(e, r, w, c)
+    # a corner radius is a literal assigned to a border*Radius, or the radius argument of SetRadius(e, r) / SetBorder(e, r, w, c);
+    # a USS length in a C# string ("12px") is a literal size too (GG-T2135)
     "POL-C1": ("token", [rf"\bstyle\.(?:margin|padding)\w*\s*=\s*{NUM}\b", rf"\bstyle\.(?:width|height|left|right|top|bottom)\s*=\s*{NUM}\b",
                          rf"\bborder\w*Radius\s*=\s*{NUM}\b", rf"\bSetRadius\(\s*\w+\s*,\s*{NUM}\s*[)+-]",
-                         rf"\bSetBorder\(\s*\w+\s*,\s*{NUM}\s*,"],
+                         rf"\bSetBorder\(\s*\w+\s*,\s*{NUM}\s*,", r"\"[^\"\n]*\b\d+px\b[^\"\n]*\""],
                [r"\bSpace\.\w+", r"\bSize\.\w+", r"\bFit\.\w+", r"\bLength\.Percent\(", r"\bRadius\.\w+"]),  # GG-T272 stage-relative units
-    "POL-E1": ("token", [rf"\bTween\.(?:Run|Wait|Move|Fade|Shake|Pop)\(\s*{NUM}\s*[,)]"], [r"\bTiming\.\w+"]),
+    # a raw wait is a duration too (GG-T2135)
+    "POL-E1": ("token", [rf"\bTween\.(?:Run|Wait|Move|Fade|Shake|Pop)\(\s*{NUM}\s*[,)]", rf"\bWaitForSeconds(?:Realtime)?\(\s*{NUM}\s*\)"],
+               [r"\bTiming\.\w+"]),
     "POL-E2": ("token", [r"Mathf\.Sin\(\s*\w+\s*\*\s*Mathf\.PI\s*\)", r"\bMathf\.SmoothStep\("], [r"\bEase\.\w+"]),
     "POL-A3": ("never", [r"\bFontStyle\.Bold(?:AndItalic)?\b"], []),
     "POL-A6": ("never", [r"\.Length\s*>\s*\d+\s*\?"], []),
@@ -154,8 +166,8 @@ def lint():
         rel = os.path.relpath(p, ROOT).replace("\\", "/")
         subjects_files.append(rel)
         text = strip_comments(open(p, encoding="utf-8", errors="replace").read())
-        for rule, (_, lits, toks) in CS_RULES.items():
-            if rule == "POL-B1" and p in PALETTE_FILES:
+        for rule, (kind, lits, toks) in CS_RULES.items():
+            if rule == "POL-B1" and p in PALETTE_FILES or kind == "token" and p in DEV_ALLOW:
                 continue
             for rx in lits:
                 n = len(re.findall(rx, text))
@@ -165,7 +177,7 @@ def lint():
                 n = len(re.findall(rx, text))
                 if n:
                     tok[rule][rel] += n
-        n = float_size_literals(text)
+        n = 0 if p in DEV_ALLOW else float_size_literals(text)
         if n:
             lit["POL-A1"][rel] += n
         cues.update(CUE.findall(text))
@@ -219,8 +231,10 @@ def vfx_rules():
     """POL-E4: every element and status has a vfxstyle.json look, and the battle VFX code has no per-element or
     per-status switch of its own (GG-T253). POL-E5: three tiers that scale count, shake and hit-stop upward, read by the
     hit playback."""
-    models = open(os.path.join(ROOT, "Assets", "GridGame", "Core", "Content", "ContentModels.cs"), encoding="utf-8").read()
-    elements = re.search(r"enum DamageType\s*\{([^}]*)\}", models).group(1).replace(" ", "").split(",")
+    core = os.path.join(ROOT, "Assets", "GridGame", "Core", "Content")
+    enum = next(m for d, _, fs in os.walk(core) for f in fs if f.endswith(".cs")
+                for m in [re.search(r"enum DamageType\s*\{([^}]*)\}", open(os.path.join(d, f), encoding="utf-8").read())] if m)
+    elements = enum.group(1).replace(" ", "").split(",")
     buffs = [b["Id"] for b in json.load(open(os.path.join(CONTENT, "buffs.json"), encoding="utf-8"))]
     path = os.path.join(CONTENT, "vfxstyle.json")
     sheet = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}

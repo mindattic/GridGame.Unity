@@ -17,9 +17,9 @@ namespace GridGame.Meta
     }
 
     /// <summary>
-    /// The bottom nav's five tabs (GG-T1338, docs/design/hub-navigation): Home, Campaign, Heroes, Summon, Shop, read off
+    /// The bottom nav's five tabs (GG-T1338, docs/design/hub-navigation): Home, Journey, Heroes, Recruit, Shop, read off
     /// <see cref="CampMenu"/> so a tab locks, hints and badges exactly as its Camp destination does. Engine-free: the App
-    /// layer maps <see cref="NavTab.Id"/> to a screen and an icon. Summon follows <see cref="CampUnlocks.SummonOpen"/>;
+    /// layer maps <see cref="NavTab.Id"/> to a screen and an icon. Recruit opens with the Summon Circle or the Mercenaries, whichever comes first;
     /// Shop opens when the Merchant joins or the Shard Store opens, whichever comes first.
     /// </summary>
     public static class NavBadges
@@ -32,9 +32,9 @@ namespace GridGame.Meta
             return new List<NavTab>
             {
                 new NavTab { Id = Home, Label = "Home", Badge = HomeBadge(menu) },
-                new NavTab { Id = CampMenu.Campaign, Label = "Campaign", Badge = CampaignBadge(c, s) },
+                new NavTab { Id = CampMenu.Campaign, Label = "Journey", Badge = CampaignBadge(c, s) },
                 new NavTab { Id = CampMenu.Heroes, Label = "Heroes", Badge = HeroesBadge(c, s) },
-                Group(menu, CampMenu.Summon, "Summon", CampGroup.Summon, SummonBadge(c, s)),
+                Group(menu, CampMenu.Summon, "Recruit", CampGroup.Summon, SummonBadge(c, s)),
                 Group(menu, CampMenu.Shop, "Shop", CampGroup.Shop, ShopBadge(c, s)),
             };
         }

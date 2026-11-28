@@ -28,15 +28,15 @@ namespace GridGame.App
 
         /// <summary>On-board pointers and target arrows.</summary>
         public static ShapeStyle Indicator => new ShapeStyle
-        { Width = 8f, Outline = 3f, HeadLength = 34f, HeadWidth = 42f, Dash = 18f, Gap = 12f, Fill = Color.white, Line = Ink };
+        { Width = 8f, Outline = 3f, HeadLength = 34f, HeadWidth = 42f, Dash = 18f, Gap = 12f, Fill = Palette.White, Line = Ink };
 
         /// <summary>Coach marks: the caption's pointer, a move's route, the destination box.</summary>
         public static ShapeStyle Tutorial => new ShapeStyle
-        { Width = 10f, Outline = 3f, HeadLength = 46f, HeadWidth = 58f, Dash = 22f, Gap = 14f, Fill = Color.white, Line = Ink };
+        { Width = 10f, Outline = 3f, HeadLength = 46f, HeadWidth = 58f, Dash = 22f, Gap = 14f, Fill = Palette.White, Line = Ink };
 
         /// <summary>Inline glyph-sized marks (chevrons on rows, small rings).</summary>
         public static ShapeStyle Small => new ShapeStyle
-        { Width = 4f, Outline = 2f, HeadLength = 14f, HeadWidth = 16f, Dash = 8f, Gap = 6f, Fill = Color.white, Line = Ink };
+        { Width = 4f, Outline = 2f, HeadLength = 14f, HeadWidth = 16f, Dash = 8f, Gap = 6f, Fill = Palette.White, Line = Ink };
 
         public ShapeStyle Tint(Color c) { var s = this; s.Fill = c; return s; }
         public ShapeStyle Outlined(Color c, float width) { var s = this; s.Line = c; s.Outline = width; return s; }

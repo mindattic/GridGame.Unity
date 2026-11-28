@@ -18,6 +18,13 @@ namespace GridGame.App
         /// <summary>A window's subtitle line (USS <c>--color-sub</c>, <c>.window-sub</c>).</summary>
         public static readonly Color TextSub = new Color(0.816f, 0.816f, 0.84f);
         public static readonly Color White = Color.white;
+        public static readonly Color Black = Color.black;
+        /// <summary>A neutral mid grey: the fallback when a content colour does not parse.</summary>
+        public static readonly Color Gray = Color.gray;
+        /// <summary>The loud fallback for a colour that should never be missing, so it shows in a capture.</summary>
+        public static readonly Color Missing = Color.magenta;
+        /// <summary>A multiplier over 1: an image tinted with it flashes overbright, then eases back to White.</summary>
+        public static readonly Color Overbright = new Color(3f, 3f, 3f);
         public static readonly Color Ink = new Color(0.055f, 0.055f, 0.07f);
         public static readonly Color Panel = new Color(0.17f, 0.17f, 0.19f, 0.94f);
         public static readonly Color Shade = new Color(0f, 0f, 0f, 0.6f);
@@ -55,6 +62,10 @@ namespace GridGame.App
         public static readonly Color Pewter = new Color(0x60 / 255f, 0x64 / 255f, 0x6F / 255f);
         public static readonly Color PewterDark = new Color(0x34 / 255f, 0x36 / 255f, 0x3F / 255f);
         public static readonly Color PewterLight = new Color(0x8C / 255f, 0x90 / 255f, 0x9C / 255f);
+        /// <summary>A dialogue nameplate's rim while its speaker is not talking.</summary>
+        public static readonly Color PlateRim = new Color(0.42f, 0.46f, 0.62f);
+        /// <summary>The Manalith's rock: the base texture's average colour (104, 92, 132) x 0.5.</summary>
+        public static readonly Color ManalithRock = new Color(0x34 / 255f, 0x2E / 255f, 0x42 / 255f);
         // The conduit's glass always holds a dim charge of mana (it reads as a mana line even between pulses).
         public static readonly Color ConduitGlass = new Color(0x2D / 255f, 0x34 / 255f, 0x6C / 255f, 0.9f);
         public static readonly Color ConduitMana = new Color(0x9C / 255f, 0xB2 / 255f, 0xE2 / 255f, 0.95f);
@@ -68,6 +79,8 @@ namespace GridGame.App
         public static readonly Color Tamed = new Color(0.76f, 0.92f, 0.28f);
         /// <summary>A wanderer fighting the monsters on its own (GG-T342): its keyline, WANDERER tag, turn icon and trust meter.</summary>
         public static readonly Color Wanderer = new Color(1f, 0.56f, 0.8f);
+        /// <summary>The faint red a foe's portrait is tinted with in its cut-in.</summary>
+        public static readonly Color FoeTint = new Color(1f, 0.88f, 0.88f);
         public static readonly Color Neutral = new Color(1f, 0.8f, 0.37f);
         // Casts riding the timeline (GG-T287): never the red of an enemy turn, so a spell reads apart from a foe.
         public static readonly Color CastHero = new Color(0.15f, 0.77f, 0.9f);
@@ -351,7 +364,9 @@ namespace GridGame.App
         public const float GlowRing = 5;
         // A toast's height above the stage bottom, and how much higher each one already showing pushes the next.
         public const float ToastLift = 260, ToastStack = 170;
-        // Icons and pictures
+        // Icons and pictures. The menu icon set's roles (docs/ICONS.md): IconInline in text and chips, IconButton in
+        // header and dialog buttons, Icon leading a row or tile, IconNav on the bottom nav tabs.
+        public const float IconInline = 32, IconButton = 48, IconNav = 72;
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
             ArtW = 420, ArtH = 620;
@@ -469,6 +484,8 @@ namespace GridGame.App
         public const float Instant = 0.08f, Quick = 0.15f, Standard = 0.25f, Emphasis = 0.4f, Dramatic = 0.7f, Cinematic = 1.2f;
         /// <summary>GG-T673: a mana trail drops a spark every TrailSparkEvery seconds, each living TrailSparkLife.</summary>
         public const float TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
+        /// <summary>The screen change's fade through black (ScreenRouter; Theme.uss .fade runs 0.22 s, so the screen swaps under full black).</summary>
+        public const float ScreenFade = 0.2f;
         /// <summary>GG-T761: a Manapunk conduit's Quake light style steps ConduitStep seconds a letter (10 Hz), and the
         /// tube idles a random ConduitIdleMin..ConduitIdleMax seconds between bursts of power.</summary>
         public const float ConduitStep = 0.1f, ConduitIdleMin = 2.5f, ConduitIdleMax = 9f;

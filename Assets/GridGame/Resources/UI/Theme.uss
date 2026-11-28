@@ -54,6 +54,10 @@
     --space-8: 8px;
     --space-12: 12px; /* half of the 24-px target gap: two neighbours' margins add up to POL-C3 */
     --size-target: 132px; /* POL-C2 minimum tap target (44 pt) */
+    --size-icon-inline: 32px; /* docs/ICONS.md roles: Size.IconInline, IconButton, Icon, IconNav */
+    --size-icon-button: 48px;
+    --size-icon: 64px;
+    --size-icon-nav: 72px;
     --row-fill-max: 264px; /* two targets: the tallest a short list's row grows to fill its panel (GG-T654) */
     --kit-note-actions: 60px; /* Kit.Indent (72) less a button's 12-px margin: a row's buttons under its label */
     --space-16: 16px;
@@ -82,6 +86,53 @@
     --radius-26: 26px;
     --radius-28: 28px;
     --radius-pill: 999px;
+    /* Base-theme surfaces and controls (GG-T2135): every colour a rule outside :root uses; a .theme-* block overrides by selector. */
+    --color-black: rgb(0, 0, 0); /* the stage frame's fill and the screen-change fade */
+    --color-clear: rgba(0, 0, 0, 0); /* no colour: a border or shadow that is switched off */
+    --color-stage: rgb(12, 12, 14); /* behind everything before a theme paints it */
+    --color-letterbox: rgb(6, 6, 8); /* the bars around the stage */
+    --color-title: rgb(255, 244, 214); /* the warm cream of .title */
+    --color-hover: rgba(255, 255, 255, 0.06); /* a menu row under the pointer (PC) */
+    --color-card: rgba(255, 255, 255, 0.05); /* a card's faint lift off the window */
+    --color-well: rgba(0, 0, 0, 0.38); /* the pressed-in well of a selected row, card or tile (R3) */
+    --color-well-edge: rgba(0, 0, 0, 0.7); /* the dark top edge of that well */
+    --color-shade: rgba(0, 0, 0, 0.6); /* Palette.Shade: the veil and a gauge's empty tube */
+    --color-press: rgba(140, 170, 255, 0.34); /* a menu row while the finger is down */
+    --color-card-selected: rgba(140, 170, 255, 0.22); /* a selected card */
+    --color-btn: rgb(34, 58, 150); /* a button's face */
+    --color-btn-lip: rgb(120, 132, 196); /* the lip a button stands on */
+    --color-btn-hover: rgb(52, 84, 196);
+    --color-btn-pressed: rgb(24, 40, 108);
+    --color-btn-primary: rgb(196, 120, 24);
+    --color-btn-primary-rim: rgb(255, 232, 170);
+    --color-btn-primary-lip: rgb(150, 92, 30);
+    --color-btn-primary-hover: rgb(226, 146, 40);
+    --color-btn-primary-pressed: rgb(150, 88, 14);
+    --color-btn-danger: rgb(150, 30, 40);
+    --color-btn-danger-lip: rgb(96, 18, 26);
+    --color-btn-danger-hover: rgb(178, 40, 52);
+    --color-btn-danger-pressed: rgb(110, 20, 28);
+    --color-badge: rgba(4, 6, 20, 0.75); /* a role badge's dark plate */
+    --color-chrome: rgba(4, 8, 30, 0.85); /* the header and bottom nav */
+    --color-label: rgb(170, 184, 255); /* an inactive tab, nav tab or tile label */
+    --color-alert: rgb(214, 48, 64); /* a nav tab's count badge */
+    --color-mana-core: rgb(220, 240, 255); /* the pale core of the title conduit */
+    --color-mana-tint: rgba(107, 199, 255, 0.14); /* an active nav tab, a pressed tile */
+    --color-mana-faint: rgba(107, 199, 255, 0.08); /* a hub tile at rest */
+    --color-continue: rgba(20, 24, 60, 0.75); /* the title screen's Continue panel */
+    --color-tab: rgb(18, 28, 84);
+    --color-tab-active: rgb(40, 66, 170);
+    --color-gauge-rim: rgba(255, 255, 255, 0.5);
+    --color-pip-rim: rgba(255, 255, 255, 0.8);
+    --color-toast: rgba(12, 18, 60, 0.96);
+    --color-scrollbar: rgba(236, 238, 255, 0.6);
+    --color-thumb: rgb(30, 36, 70); /* a thumbnail's plate before its art loads */
+    --color-tamed: rgb(194, 235, 71); /* Palette.Tamed */
+    --color-wanderer: rgb(255, 143, 204); /* Palette.Wanderer */
+    --color-cb-hero: rgb(87, 181, 232); /* Palette.CbHero (Colorblind setting) */
+    --color-cb-foe: rgb(245, 122, 10); /* Palette.CbFoe */
+    --color-cb-boss: rgb(191, 77, 5); /* Palette.CbBoss */
+    --space-16-framed: 13px; /* --space-16 less the 3-px frame of a selected card, so it does not grow (GG-T1942) */
 }
 
 /* GG-T770 (owner: "all these different font sizes make it look messy"): every GUI label draws at ONE size, --type-base.
@@ -119,12 +170,12 @@
     width: 1170px;
     height: 2532px;
     overflow: hidden;
-    background-color: rgb(12, 12, 14);
+    background-color: var(--color-stage);
     color: var(--color-text);
     font-size: var(--type-base);
 }
 
-.letterbox { background-color: rgb(6, 6, 8); }
+.letterbox { background-color: var(--color-letterbox); }
 /* Outline around the stage when the device is wider/taller than any supported phone (tablets): the bars read
    as a deliberate bezel around one big game window, in the same white rounded frame every window uses. */
 .stage-frame {
@@ -132,7 +183,7 @@
     border-width: 5px;
     border-color: var(--color-frame);
     border-radius: var(--radius-22);
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-black);
 }
 
 .fill { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
@@ -164,7 +215,7 @@
 .window-sub { font-size: var(--type-base); color: var(--color-sub); }
 
 /* ── Text ────────────────────────────────────────────────────────────────── */
-.title { font-size: var(--type-base); color: rgb(255, 244, 214); -unity-text-align: middle-center; }
+.title { font-size: var(--type-base); color: var(--color-title); -unity-text-align: middle-center; }
 .h1 { font-size: var(--type-base); color: var(--color-white); }
 .h2 { font-size: var(--type-base); color: var(--color-white); }
 .small { font-size: var(--type-base); }
@@ -197,7 +248,7 @@
     -unity-text-outline-color: var(--color-text-edge);
     text-shadow: 2px 2px 0 var(--color-text-drop);
 }
-.pip, .text-ink, .depth-none { -unity-text-outline-width: 0; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+.pip, .text-ink, .depth-none { -unity-text-outline-width: 0; text-shadow: 0 0 0 var(--color-clear); }
 .text-ink { color: var(--color-ink); }
 
 /* ── Menu rows (cursor hand on PC only) ──────────────────────────────────── */
@@ -208,13 +259,13 @@
     padding: var(--space-8) var(--space-16) var(--space-8) var(--space-8);
     border-radius: var(--radius-10);
     border-width: 3px;
-    border-color: rgba(0, 0, 0, 0);
+    border-color: var(--color-clear);
     margin: var(--space-12) 0;
 }
-.menu-row:hover { background-color: rgba(255, 255, 255, 0.06); }
+.menu-row:hover { background-color: var(--color-hover); }
 /* GG-T1923: the selected row is pressed in, not lit: a darker inset well (white text gains contrast), a bright 3-px frame
    (non-text contrast over 3:1 on every window, so it never reads by colour alone) and a small sink. A tap on it confirms. */
-.menu-row--selected { background-color: rgba(0, 0, 0, 0.38); border-color: var(--color-frame); border-top-color: rgba(0, 0, 0, 0.7); translate: 0 3px; scale: 0.985 0.985; }
+.menu-row--selected { background-color: var(--color-well); border-color: var(--color-frame); border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
 /* GG-T495: a locked row greys its name, value and icon, not the whole row, so the hint under it ("Joins when gear
    wears below 60%") stays readable dim text (4.9:1) instead of dim at 42% opacity (1.8:1). GG-T1864: 0.6, not 0.45, so a grey label that still informs (the shop's "More stock after ..." row) clears 4.5:1, not 3.76. */
 .menu-row--disabled .menu-label, .menu-row--disabled .menu-value, .menu-row--disabled .menu-icon,
@@ -227,9 +278,9 @@
 .menu-value { font-size: var(--type-base); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
 /* GG-T760: the Equip slot list's shorter rows; the tap target stays above 88px. Text keeps the one GUI size (GG-T770). */
 .menu-row--compact { min-height: var(--size-target); margin: var(--space-12) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
-.menu-row--compact .menu-icon { width: 48px; height: 48px; margin-right: var(--space-12); }
+.menu-row--compact .menu-icon { width: var(--size-icon-button); height: var(--size-icon-button); margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
-.menu-icon { width: 64px; height: 64px; margin-right: var(--space-16); background-size: contain; }
+.menu-icon { width: var(--size-icon); height: var(--size-icon); margin-right: var(--space-16); background-size: contain; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 /* Every button stands on a darker lip (the thick bottom border). Pressing sinks it onto the lip. */
@@ -242,24 +293,24 @@
     border-bottom-width: 12px;
     border-radius: var(--radius-16);
     border-color: var(--color-frame);
-    border-bottom-color: rgb(120, 132, 196);
-    background-color: rgb(34, 58, 150);
+    border-bottom-color: var(--color-btn-lip);
+    background-color: var(--color-btn);
     color: var(--color-white);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
 }
-.btn:hover { background-color: rgb(52, 84, 196); }
-.btn--primary { background-color: rgb(196, 120, 24); border-color: rgb(255, 232, 170); border-bottom-color: rgb(150, 92, 30); }
-.btn--primary:hover { background-color: rgb(226, 146, 40); }
-.btn--danger { background-color: rgb(150, 30, 40); border-bottom-color: rgb(96, 18, 26); }
-.btn--danger:hover { background-color: rgb(178, 40, 52); }
+.btn:hover { background-color: var(--color-btn-hover); }
+.btn--primary { background-color: var(--color-btn-primary); border-color: var(--color-btn-primary-rim); border-bottom-color: var(--color-btn-primary-lip); }
+.btn--primary:hover { background-color: var(--color-btn-primary-hover); }
+.btn--danger { background-color: var(--color-btn-danger); border-bottom-color: var(--color-btn-danger-lip); }
+.btn--danger:hover { background-color: var(--color-btn-danger-hover); }
 
 .role-badge {
     border-width: 3px;
     border-radius: var(--radius-10);
     padding: 0 var(--space-8);
     margin: 0 var(--space-8);
-    background-color: rgba(4, 6, 20, 0.75);
+    background-color: var(--color-badge);
     -unity-text-align: middle-center;
     flex-shrink: 0;
 }
@@ -272,23 +323,23 @@
 }
 .pressable.is-pressed { scale: 0.95 0.95; translate: 0 6px; }
 .pressable.is-released { transition-duration: 0.14s; transition-timing-function: ease-out-back; }
-.btn.is-pressed { border-bottom-width: 4px; translate: 0 8px; background-color: rgb(24, 40, 108); }
-.btn--primary.is-pressed { background-color: rgb(150, 88, 14); }
-.btn--danger.is-pressed { background-color: rgb(110, 20, 28); }
-.menu-row.is-pressed { background-color: rgba(140, 170, 255, 0.34); translate: 4px 2px; scale: 0.985 0.985; }
+.btn.is-pressed { border-bottom-width: 4px; translate: 0 8px; background-color: var(--color-btn-pressed); }
+.btn--primary.is-pressed { background-color: var(--color-btn-primary-pressed); }
+.btn--danger.is-pressed { background-color: var(--color-btn-danger-pressed); }
+.menu-row.is-pressed { background-color: var(--color-press); translate: 4px 2px; scale: 0.985 0.985; }
 .tab.is-pressed { translate: 0 4px; scale: 0.94 0.94; }
 .card-tap.is-pressed { scale: 0.94 0.94; translate: 0 6px; }
 /* GG-T1942: a list card or action button selected by a first tap (Ui.ConfirmTap) is pressed in like a selected menu row;
    a second tap runs it. A card gains the inset well and 3-px frame (padding gives the border back); a button stays sunk
    onto its lip with a dark top edge. */
-.card.tap--selected { background-color: rgba(0, 0, 0, 0.38); border-width: 3px; border-color: var(--color-frame); border-top-color: rgba(0, 0, 0, 0.7); padding: 13px; translate: 0 3px; scale: 0.985 0.985; }
-.btn.tap--selected { border-bottom-width: 4px; border-top-color: rgba(0, 0, 0, 0.7); translate: 0 8px; }
+.card.tap--selected { background-color: var(--color-well); border-width: 3px; border-color: var(--color-frame); border-top-color: var(--color-well-edge); padding: var(--space-16-framed); translate: 0 3px; scale: 0.985 0.985; }
+.btn.tap--selected { border-bottom-width: 4px; border-top-color: var(--color-well-edge); translate: 0 8px; }
 .btn--small.tap--selected { border-bottom-width: 3px; translate: 0 6px; }
 /* The Main Menu's mana conduit under the wordmark (GG-T1350): a lit line with a pale core. */
-.title-conduit { height: 6px; margin-top: var(--space-8); border-radius: var(--radius-3); background-color: rgb(107, 199, 255); border-top-width: 2px; border-top-color: rgb(220, 240, 255); }
+.title-conduit { height: 6px; margin-top: var(--space-8); border-radius: var(--radius-3); background-color: var(--color-mana); border-top-width: 2px; border-top-color: var(--color-mana-core); }
 .splash-copy { margin-top: var(--space-32); }
 .crawl-title { -unity-text-align: middle-center; margin-bottom: var(--space-64); }
-.title-continue { align-items: flex-start; background-color: rgba(20, 24, 60, 0.75); border-width: 3px; border-color: rgb(107, 199, 255); }
+.title-continue { align-items: flex-start; background-color: var(--color-continue); border-width: 3px; border-color: var(--color-mana); }
 .slot { transition-property: scale, translate, opacity; transition-duration: 0.07s, 0.07s, 0.15s; }
 .slot--targeting { scale: 1.06 1.06; }
 .slot.is-pressed { scale: 0.92 0.92; translate: 0 10px; }
@@ -303,7 +354,7 @@
     align-items: center;
     min-height: 150px; /* Kit.HeaderHeight; grows when a title + subtitle at a larger Settings text size need more */
     padding: 0 var(--space-24);
-    background-color: rgba(4, 8, 30, 0.85);
+    background-color: var(--color-chrome);
     border-bottom-width: 4px;
     border-color: var(--color-frame);
 }
@@ -323,13 +374,13 @@
     flex-direction: row;
     flex-shrink: 0;
     min-height: 132px; /* Kit.NavHeight; grows by the gesture-bar inset */
-    background-color: rgba(4, 8, 30, 0.85);
+    background-color: var(--color-chrome);
     border-top-width: 4px;
     border-color: var(--color-frame);
 }
-.kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 132px; align-items: center; justify-content: center; border-top-width: 6px; border-color: rgba(0, 0, 0, 0); }
-.kit-navtab > .menu-icon { width: 56px; height: 56px; margin: 0; }
-.kit-navtab-label { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; }
+.kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 132px; align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); }
+.kit-navtab > .menu-icon { width: var(--size-icon-nav); height: var(--size-icon-nav); margin: 0; }
+.kit-navtab-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
 .kit-navtab-badge {
     position: absolute;
     top: var(--space-8);
@@ -337,27 +388,27 @@
     min-width: 44px;
     padding: 0 var(--space-8);
     border-radius: var(--radius-22);
-    background-color: rgb(214, 48, 64);
+    background-color: var(--color-alert);
     color: var(--color-white);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
 }
-.kit-navtab--active { border-color: var(--color-mana); background-color: rgba(107, 199, 255, 0.14); }
+.kit-navtab--active { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
 .kit-navtab--active > .kit-navtab-label { color: var(--color-mana); }
 .kit-navtab--locked { opacity: 0.4; }
 
 /* ── Camp hub tiles (GG-T1612): a wrapping grid of destination tiles, styled like the nav tabs ── */
 .kit-pillar { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; padding: 0 var(--space-12); }
-.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; height: 160px; margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: rgba(0, 0, 0, 0); background-color: rgba(107, 199, 255, 0.08); }
+.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; height: 160px; margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
 .kit-tile > .menu-icon { width: 56px; height: 56px; margin: 0; }
-.kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; }
-.kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; white-space: normal; }
-.kit-tile.is-pressed { border-color: var(--color-mana); background-color: rgba(107, 199, 255, 0.14); }
+.kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
+.kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; white-space: normal; }
+.kit-tile.is-pressed { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
 .kit-tile--locked { opacity: 0.4; }
 /* GG-T1972: the Equip tab's slot grid, four thumbnails a row; names wrap, never cut off */
 .equip-tile { flex-basis: 21%; height: auto; min-height: 160px; padding: var(--space-8) var(--space-4); justify-content: flex-start; }
 .equip-tile > .kit-tile-label, .equip-tile > .kit-tile-value { white-space: normal; }
-.equip-tile--selected { border-color: var(--color-mana); background-color: rgba(0, 0, 0, 0.38); translate: 0 3px; scale: 0.985 0.985; }
+.equip-tile--selected { border-color: var(--color-mana); background-color: var(--color-well); translate: 0 3px; scale: 0.985 0.985; }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .tabs { flex-direction: row; margin: var(--space-8) var(--space-8) 0 var(--space-8); padding: 0 var(--space-12); flex-shrink: 0; } /* edge = tab margin 12 + 12 = gap 24 (POL-C8) */
@@ -369,16 +420,16 @@
     border-color: var(--color-frame);
     border-top-left-radius: var(--radius-16);
     border-top-right-radius: var(--radius-16);
-    background-color: rgb(18, 28, 84);
+    background-color: var(--color-tab);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
-    color: rgb(170, 184, 255);
+    color: var(--color-label);
 }
-.tab--active { background-color: rgb(40, 66, 170); color: var(--color-white); }
+.tab--active { background-color: var(--color-tab-active); color: var(--color-white); }
 .tab--locked { opacity: 0.4; }
 
 /* ── Gauges ──────────────────────────────────────────────────────────────── */
-.gauge { height: 20px; border-radius: var(--radius-10); background-color: rgba(0, 0, 0, 0.6); border-width: 2px; border-color: rgba(255, 255, 255, 0.5); overflow: hidden; }
+.gauge { height: 20px; border-radius: var(--radius-10); background-color: var(--color-shade); border-width: 2px; border-color: var(--color-gauge-rim); overflow: hidden; }
 .gauge-fill { height: 100%; border-radius: var(--radius-8); background-color: var(--color-gauge-full); }
 .gauge-fill--mid { background-color: var(--color-gauge-mid); }
 .gauge-fill--low { background-color: var(--color-gauge-low); }
@@ -391,23 +442,23 @@
     border-radius: var(--radius-18);
     border-width: 4px;
     border-color: var(--color-frame);
-    background-color: rgba(12, 18, 60, 0.96);
+    background-color: var(--color-toast);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
     white-space: normal;
     transition-property: opacity, translate;
     transition-duration: 0.18s;
 }
-.veil { background-color: rgba(0, 0, 0, 0.6); }
+.veil { background-color: var(--color-shade); }
 
 /* ── Fade overlay ────────────────────────────────────────────────────────── */
-.fade { background-color: rgb(0, 0, 0); opacity: 0; transition-property: opacity; transition-duration: 0.22s; }
+.fade { background-color: var(--color-black); opacity: 0; transition-property: opacity; transition-duration: 0.22s; }
 .fade--on { opacity: 1; }
 
 /* ── Scroll views ────────────────────────────────────────────────────────── */
 .list { flex-grow: 1; }
 .list .unity-scroller--vertical { width: 18px; }
-.list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(236, 238, 255, 0.6); border-radius: var(--radius-8); }
+.list .unity-scroller__slider .unity-base-slider__dragger { background-color: var(--color-scrollbar); border-radius: var(--radius-8); }
 
 /* ── Menu kit (GG-T454, Tokens.cs Kit) ──────────────────────────────────────
    One look for every menu: four type sizes (title 60 in the header, heading 48, body 40, caption 30), windows 24 px from
@@ -486,17 +537,17 @@
     margin: var(--space-12) 0; /* the same 24-px pitch as menu rows (GG-T454) */
     flex-shrink: 0; /* a tall card (a Mercenary's quote, perk and terms) must never be squeezed into the next one (GG-T656) */
     border-radius: var(--radius-14);
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--color-card);
 }
 /* A list of few cards (Respec) shares the panel height between them instead of spreading gaps (GG-T1182). */
 .list--fill .unity-scroll-view__content-container > .card--fill { flex-grow: 1; }
-.card--selected { background-color: rgba(140, 170, 255, 0.22); }
+.card--selected { background-color: var(--color-card-selected); }
 .thumb {
     width: 150px; height: 150px;
     border-radius: var(--radius-16);
     border-width: 4px;
     border-color: var(--color-frame);
-    background-color: rgb(30, 36, 70);
+    background-color: var(--color-thumb);
     background-size: cover;
     margin-right: var(--space-24);
 }
@@ -514,15 +565,15 @@
 .unit-keyline--boss { border-color: var(--color-boss); }
 .unit-keyline--guest { border-color: var(--color-guest); }
 .unit-keyline--neutral { border-color: var(--color-neutral); }
-.unit-keyline--tamed { border-color: rgb(194, 235, 71); } /* Palette.Tamed: a tamed/domesticated monster (GG-T303) */
-.unit-keyline--wanderer { border-color: rgb(255, 143, 204); } /* Palette.Wanderer: a wandering hero earning trust (GG-T342) */
+.unit-keyline--tamed { border-color: var(--color-tamed); } /* Palette.Tamed: a tamed/domesticated monster (GG-T303) */
+.unit-keyline--wanderer { border-color: var(--color-wanderer); } /* Palette.Wanderer: a wandering hero earning trust (GG-T342) */
 /* GG-T525 Colorblind palette (root class set by GameApp.ApplySettings): sides as one blue/orange pair, Palette.CbHero/CbFoe/CbBoss. */
-.colorblind .unit-keyline--hero { border-color: rgb(87, 181, 232); }
-.colorblind .unit-keyline--foe { border-color: rgb(245, 122, 10); }
-.colorblind .unit-keyline--boss { border-color: rgb(191, 77, 5); }
+.colorblind .unit-keyline--hero { border-color: var(--color-cb-hero); }
+.colorblind .unit-keyline--foe { border-color: var(--color-cb-foe); }
+.colorblind .unit-keyline--boss { border-color: var(--color-cb-boss); }
 
 /* ── Orb pips (generic mana) ──────────────────────────────────────────── */
-.pip { width: 34px; height: 34px; border-radius: var(--radius-17); margin: 0 var(--space-4); border-width: 2px; border-color: rgba(255,255,255,0.8); font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-ink); }
+.pip { width: 34px; height: 34px; border-radius: var(--radius-17); margin: 0 var(--space-4); border-width: 2px; border-color: var(--color-pip-rim); font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-ink); }
 .pip--mana { background-color: var(--color-mana); }
 
 /* ── Rarity colors ───────────────────────────────────────────────────────── */

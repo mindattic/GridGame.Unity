@@ -77,10 +77,14 @@ namespace GridGame.App
             RowIcon.HamburgerButton(OpenMenu, bar); // GG-T754: icon-only pause
             // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
             // shrinks to the floor, then scrolls (GG-T1143), the wave never does.
-            var mid = Ui.El("row grow", bar);
+            // GG-T1943: under that line, in the same row, the turn strip (BuildTurnStrip), so it costs the board no height.
+            var col = Ui.El("col grow", bar);
+            col.style.alignItems = Align.Stretch; col.style.justifyContent = Justify.Center;
+            col.style.minWidth = Space.S0;
+            col.style.marginLeft = col.style.marginRight = Space.S16;
+            var mid = Ui.El("row", col);
             mid.style.alignItems = Align.Center; mid.style.justifyContent = Justify.Center;
             mid.style.minWidth = Space.S0;
-            mid.style.marginLeft = mid.style.marginRight = Space.S16;
             stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
             stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
             var sep = Ui.Text("·", "small shadow", mid);
@@ -106,6 +110,75 @@ namespace GridGame.App
             bossBarId = -1;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+            BuildTurnStrip(col);
+        }
+
+        /// <summary>The turn strip (GG-T1943, UX review §1.4 #2): whose turn it is and the heroes who can still act.</summary>
+        private VisualElement turnStrip, turnHeroes;
+        private Label turnState;
+        private string turnStripKey;
+
+        /// <summary>GG-T1943 (§9.0 row 1): one line under the stage name, on its own dark plate: YOUR TURN, CLOCK RUNNING, ENEMY
+        /// TURN or TOO LITTLE TIME, then a thumbnail for each hero who can still act (thumbnails, so no name is ever cut).
+        /// It polls the state on a short beat and redraws only when what it says changes; nothing on it moves.</summary>
+        private void BuildTurnStrip(VisualElement parent)
+        {
+            turnStrip = Ui.El("row", parent);
+            turnStrip.name = "turn-strip";
+            turnStrip.pickingMode = PickingMode.Ignore;
+            turnStrip.style.alignSelf = Align.Center;
+            turnStrip.style.height = Size.IconS;
+            turnStrip.style.marginTop = Space.S4;
+            turnStrip.style.backgroundColor = Palette.Ink.WithA(0.6f);
+            Ui.Pad(turnStrip, Space.S16, Space.S0, Space.S16, Space.S0);
+            turnStrip.style.borderTopLeftRadius = turnStrip.style.borderTopRightRadius =
+                turnStrip.style.borderBottomLeftRadius = turnStrip.style.borderBottomRightRadius = Space.S8;
+            turnState = Ui.Text("", "small shadow", turnStrip);
+            turnState.name = "turn-state";
+            turnState.pickingMode = PickingMode.Ignore;
+            turnState.style.flexShrink = 1; turnState.style.minWidth = Space.S0;
+            turnHeroes = Ui.El("row", turnStrip);
+            turnHeroes.name = "turn-heroes";
+            turnHeroes.pickingMode = PickingMode.Ignore;
+            turnStripKey = null;
+            turnStrip.schedule.Execute(SyncTurnStrip).Every(100);
+            SyncTurnStrip();
+        }
+
+        /// <summary>GG-T1943: fills the turn strip from the state. The rules are the state's own (TurnRules via BattleEngine);
+        /// the clock runs while a hero is held, or while a hero-timeline turn's own seconds tick (TickHeroTurn), never untimed.</summary>
+        private void SyncTurnStrip()
+        {
+            if (turnStrip == null || State == null) return;
+            string state;
+            Color color;
+            var who = new List<Unit>();
+            var actor = playing && actingEntry >= 0 ? State.UnitById(State.Timeline.FirstOrDefault(e => e.Id == actingEntry)?.OwnerId ?? -1) : null;
+            if (ended || State.IsOver) { state = null; color = Palette.Text; }
+            else if (actor != null && !actor.IsHero) { state = "ENEMY TURN"; color = Palette.Bad; who.Add(actor); }
+            else if (!playing && BattleEngine.TooLittleTime(State)) { state = "TOO LITTLE TIME · tap GUARD"; color = Palette.Bad; }
+            else
+            {
+                bool clock = !Untimed && (dragging || heroTurnHero >= 0);
+                state = clock ? "CLOCK RUNNING" : "YOUR TURN";
+                color = clock ? Palette.Warn : Palette.Good;
+                who.AddRange(BattleEngine.HeroesLeftToAct(State));
+            }
+            string key = state + "|" + string.Join(",", who.Select(u => u.Id));
+            if (key == turnStripKey) return;
+            turnStripKey = key;
+            turnStrip.style.display = state == null ? DisplayStyle.None : DisplayStyle.Flex;
+            turnState.text = state ?? "";
+            turnState.style.color = color;
+            turnHeroes.Clear();
+            foreach (var u in who)
+            {
+                var t = Ui.Thumb(u.Def.Id, turnHeroes, Size.IconS);
+                t.name = "turn-unit-" + u.Id;
+                t.pickingMode = PickingMode.Ignore;
+                t.style.marginLeft = Space.S8;
+                t.style.borderTopLeftRadius = t.style.borderTopRightRadius = t.style.borderBottomLeftRadius = t.style.borderBottomRightRadius = Space.S8;
+            }
         }
 
         /// <summary>The announcement anchor (§9.0, GG-T1824): an empty, input-free box on the board's top edge where the
@@ -311,7 +384,7 @@ namespace GridGame.App
                 var aura = AuraFor(u);
                 if (sel) v.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
                 else if (aura.a > 0f && !ReduceMotion) v.SetGlow(aura, 0.45f);
-                else v.SetGlow(Color.white, 0f);
+                else v.SetGlow(Palette.White, 0f);
             }
             board.SyncTraps(State);
             board.SyncRegion(State); // GG-T359
@@ -321,6 +394,7 @@ namespace GridGame.App
             SyncTimeline(null);
             SyncBar();
             SyncPanel();
+            SyncTurnStrip();
             int wave = Math.Min(State.Wave + 1, State.Stage.Waves.Count);
             waveLabel.text = InCrucible ? $"Crucible wave {wave}" : $"Wave {wave}/{State.Stage.Waves.Count}";
             if (shownCoins < 0) SyncCoins();

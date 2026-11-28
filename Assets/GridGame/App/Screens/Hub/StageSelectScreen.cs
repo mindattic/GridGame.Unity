@@ -13,7 +13,7 @@ namespace GridGame.App
     public sealed class StageSelectScreen : HubPage
     {
         public override string Id => "stages";
-        protected override string Title => "Adventure";
+        protected override string Title => "Journey";
         protected override string Backdrop => HubScreen.ThemeFor(C, S);
 
         /// <summary>GG-T388 (owner 2026-11-16: "a simple stage select which allows you to travel to and from previous battles
@@ -143,8 +143,8 @@ namespace GridGame.App
         /// <summary>The Enter arrow at the right end of an enterable stage row (GG-T715), after its value.</summary>
         private static void EnterMark(VisualElement row)
         {
-            var go = new KindEmblem(RowKind.Enter) { name = "enter-mark" };
-            go.AddToClassList(RowIcon.Class);
+            var go = RowIcon.SetIcon(RowIcon.IconId(RowKind.Enter), RowIcon.Class);
+            go.name = "enter-mark";
             go.style.width = go.style.height = Size.IconS;
             go.style.flexShrink = 0f;
             go.AddToClassList("enter-mark");
