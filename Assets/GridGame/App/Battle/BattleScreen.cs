@@ -667,9 +667,25 @@ namespace GridGame.App
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
-                if (ab != null) { AbilityInfo(ab); return; }
+                if (ab != null) { AbilityInfo(caster, TargetingSlot, ab); return; }
+            }
+            // A slot read without aiming (a hold, or a tap on one that can't aim) stays in the panel until a unit is read or
+            // another hero is selected (GG-T1823).
+            if (panelUnitId >= 0 || readSlotHero != SelectedHeroId) readSlot = -1;
+            if (readSlot >= 0 && State.UnitById(SelectedHeroId) is Unit reader && BattleEngine.SlotAbility(State, reader, readSlot) is AbilityDef read)
+            {
+                InspectCard.Ability(panel, read, SlotState(reader, readSlot, read));
+                return;
             }
             if (u == null) return;
+            // Idle (§9.0): one line for the selected hero, then its card and every skill's readout.
+            if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable)
+            {
+                var idle = Ui.Text($"{u.Name}: tap a skill to aim it · hold one to read it · drag {u.Name} to move", "small gold", panel);
+                idle.name = "idle-prompt";
+                idle.style.whiteSpace = WhiteSpace.Normal;
+                idle.style.marginBottom = Space.S8;
+            }
             var row = Ui.El("row", panel);
             row.style.alignItems = Align.FlexStart;
             Ui.Thumb(u.Def.Id, row, Size.Thumb).style.marginRight = Space.S16;
@@ -749,55 +765,47 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// The ability card in the actor panel (fits its ~260 design px). While aiming it explains the ability; once a
-        /// target is picked it becomes the confirm card: what, on whom, then Cast / Cancel stacked on the right.
+        /// The aimed ability in the description panel (§9.0, GG-T1823). While aiming: "Name: choose a target"; once a target
+        /// is picked, the confirm card (on whom, the outcome preview, Cast / Cancel) takes the top. Under either, the full
+        /// card: what it is, its cost, how and who it targets, its numbers and description, and the slot's live state.
         /// </summary>
-        private void AbilityInfo(AbilityDef a)
+        private void AbilityInfo(Unit hero, int slot, AbilityDef a)
         {
             bool confirm = PendingTarget.HasValue && TargetingSlot >= 0;
             var row = Ui.El("row", panel);
-            row.style.alignItems = Align.Center;
-            var icon = Ui.El("menu-icon", row);
-            icon.style.width = icon.style.height = Size.Avatar;
-            var itemTex = a.Id != null && a.Id.StartsWith("item:") ? Art.ItemIcon(a.Id.Substring(5)) : null;
-            icon.style.backgroundImage = new StyleBackground(itemTex ?? Art.AbilityIcon(a) ?? Art.Orb);
+            row.name = "aim-card";
+            row.style.alignItems = Align.FlexStart;
+            row.style.marginBottom = Space.S16;
             var col = Ui.El("col grow", row);
             col.style.flexShrink = 1;
-            var top = Ui.El("row", col);
-            top.style.alignItems = Align.Center;
-            Ui.Text(a.Name, "h2", top);
-            if (a.Cost > 0) Ui.CostPips(a.Cost, top, 32).style.marginLeft = Space.S16;
-            string timing = a.Kind == AbilityKind.Skill ? (a.CooldownTurns > 0 ? $"Skill · recharges in {a.CooldownTurns} turns" : "Skill")
-                : a.Kind == AbilityKind.Item ? "Item · acts at once"
-                : a.CastTime > 0 ? $"Charges {a.CastTime:0.#}s on the timeline" : "Instant";
-            Ui.Text(timing, "tiny gold", col);
             if (!confirm)
             {
-                var d = GlossaryText.Create(a.Description ?? "", "tiny", col);
-                d.style.whiteSpace = WhiteSpace.Normal;
-                Ui.Text("Tap a highlighted tile · tap the slot again to cancel", "tiny dim", col);
-                return;
+                var ask = Ui.Text($"{a.Name}: choose a target", "small gold", col);
+                ask.name = "aim-prompt";
+                ask.style.whiteSpace = WhiteSpace.Normal;
+                Ui.Text("Tap a highlighted tile · tap the slot again to cancel", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
             }
-            var hero = State.UnitById(SelectedHeroId);
-            var hits = hero == null ? new List<Unit>() : TargetResolver.Collect(State, a, hero, PendingTarget.Value);
-            string who = hits.Count == 0 ? (a.IsTeleport ? "Teleport to the marked tile" : "No one in the area")
-                : hits.Count == 1 ? (hits[0] == hero ? $"On {hero.Name} (self)" : $"On {hits[0].Name}")
-                : $"On {string.Join(", ", hits.Take(3).Select(h => h.Name))}{(hits.Count > 3 ? $" +{hits.Count - 3}" : "")}";
-            var summary = Ui.Text(who, "small", col);
-            summary.name = "confirm-summary";
-            summary.style.whiteSpace = WhiteSpace.Normal;
-            OutcomeLines(col, a);
-            // Cast / Cancel side by side at the top of the card (GG-T391): the Party page is one tap target tall at the
-            // shortest stage, so the two never stack out of view.
-            row.style.alignItems = Align.FlexStart;
-            var btns = Ui.El("row", row);
-            btns.style.flexShrink = 0;
-            btns.style.marginLeft = Space.S16;
-            string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
-            var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
-            ok.name = "confirm-action";
-            var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
-            cancel.name = "confirm-cancel";
+            else
+            {
+                var hits = TargetResolver.Collect(State, a, hero, PendingTarget.Value);
+                string who = hits.Count == 0 ? (a.IsTeleport ? "Teleport to the marked tile" : "No one in the area")
+                    : hits.Count == 1 ? (hits[0] == hero ? $"On {hero.Name} (self)" : $"On {hits[0].Name}")
+                    : $"On {string.Join(", ", hits.Take(3).Select(h => h.Name))}{(hits.Count > 3 ? $" +{hits.Count - 3}" : "")}";
+                var summary = Ui.Text(who, "small", col);
+                summary.name = "confirm-summary";
+                summary.style.whiteSpace = WhiteSpace.Normal;
+                OutcomeLines(col, a);
+                // Cast / Cancel side by side at the top of the card (GG-T391), so the two never scroll out of view.
+                var btns = Ui.El("row", row);
+                btns.style.flexShrink = 0;
+                btns.style.marginLeft = Space.S16;
+                string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+                var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
+                ok.name = "confirm-action";
+                var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
+                cancel.name = "confirm-cancel";
+            }
+            InspectCard.Ability(panel, a, SlotState(hero, slot, a));
         }
 
         // ─────────────────────────────────────────────────────────────────────────
@@ -933,7 +941,8 @@ namespace GridGame.App
                     d.style.whiteSpace = WhiteSpace.Normal;
                 }
                 var ab = a;
-                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotNote(hero, ab)));
+                int idx = i;
+                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotState(hero, idx, ab)));
             }
         }
 
@@ -1061,6 +1070,7 @@ namespace GridGame.App
             if (!CanCommand()) return;
             bool wasTargeting = TargetingSlot >= 0;
             CancelTargeting();
+            readSlot = -1;
             if (wasTargeting) { SyncBar(); panelUnitId = -1; SyncPanel(); }
             bool telemetryOn = TelemetryUnity.Current.Enabled;
             var before = recorder != null || telemetryOn ? BattleRecorder.Snapshot(State) : null;
@@ -1624,7 +1634,7 @@ namespace GridGame.App
             if (SelectedHeroId == id)
             {
                 // Re-touching the selected hero still dismisses an inspected enemy card (it hid the tutorial card).
-                if (panelUnitId >= 0) { panelUnitId = -1; SyncPanel(); }
+                if (panelUnitId >= 0 || readSlot >= 0) { panelUnitId = -1; readSlot = -1; SyncPanel(); }
                 return;
             }
             CancelTargeting();

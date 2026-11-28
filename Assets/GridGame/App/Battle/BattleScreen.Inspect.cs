@@ -32,28 +32,50 @@ namespace GridGame.App
         {
             var hero = State.UnitById(SelectedHeroId);
             var ab = hero == null ? null : BattleEngine.SlotAbility(State, hero, idx);
-            return InspectCard.Ability(body, ab, ab == null ? null : SlotNote(hero, ab));
+            if (ab != null) ReadSlot(idx);
+            return InspectCard.Ability(body, ab, ab == null ? null : SlotState(hero, idx, ab));
         }
 
         /// <summary>GG-T450: a tapped slot that can't be aimed (recharging, no mana, no target …) still reads — its card
-        /// opens on the tap. A slot that aims needs no card: the Party page shows the ability while it's aimed.</summary>
+        /// opens on the tap. A slot that aims needs no card: the description panel shows the ability while it's aimed.</summary>
         private void TapSlotCard(int idx)
         {
             if (idx >= 0 && idx < slotViews.Count) InspectCard.Tap(slotViews[idx], body => SlotCard(body, idx));
         }
 
-        private string SlotNote(Unit hero, AbilityDef a)
+        /// <summary>The slot <see cref="SlotCard"/> last read without aiming, shown in the description panel (GG-T1823)
+        /// until another hero is selected, a unit is read or an aim takes the panel.</summary>
+        private int readSlot = -1, readSlotHero = -1;
+
+        private void ReadSlot(int idx)
         {
-            if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) return $"{hero.Name} can use it again in {cd} turns.";
-            for (int i = 0; a.Kind == AbilityKind.Spell && i < hero.Bar.Count; i++)
+            if (readSlot == idx && readSlotHero == SelectedHeroId && panelUnitId < 0) return;
+            readSlot = idx;
+            readSlotHero = SelectedHeroId;
+            panelUnitId = -1;
+            if (TargetingSlot < 0) SyncPanel();
+        }
+
+        /// <summary>A slot's live state (GG-T1823): items left, recharge turns, how full its mana meter is, and why it can't be
+        /// used right now, one line for its card and the description panel.</summary>
+        private string SlotState(Unit hero, int slot, AbilityDef a)
+        {
+            var parts = new List<string>();
+            var sl = slot >= 0 && slot < hero.Bar.Count ? hero.Bar[slot] : null;
+            if (sl != null && sl.IsItem) parts.Add($"{sl.Charges} / {sl.MaxCharges} left");
+            if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) parts.Add($"recharging: ready in {cd} turn{(cd == 1 ? "" : "s")}");
+            int full = State.ManaFull(hero, slot);
+            if (full > 0)
             {
-                int full = State.ManaFull(hero, i);
-                if (full <= 0 || BattleEngine.SlotAbility(State, hero, i) != a) continue;
-                int have = ShownMana(hero.Id, i);
-                if (have < full) return $"{have} / {full} mana · fills with every gain.";
-                break;
+                int have = ShownMana(hero.Id, slot);
+                parts.Add(have >= full ? $"charged: {full} / {full} mana" : $"charging: {have} / {full} mana, fills with every gain");
             }
-            return $"Tap to aim with {hero.Name}.";
+            var status = BattleEngine.GetSlotStatus(State, hero.Id, slot);
+            if (status == SlotStatus.Ready) { if (TargetingSlot != slot) parts.Add($"tap to aim with {hero.Name}"); }
+            else if (status != SlotStatus.Cooldown && status != SlotStatus.Unaffordable && status != SlotStatus.OutOfCharges) parts.Add(StatusText(status));
+            if (parts.Count == 0) return null;
+            string line = string.Join(" · ", parts);
+            return char.ToUpperInvariant(line[0]) + line.Substring(1) + (line.EndsWith(".") || line.EndsWith("!") ? "" : ".");
         }
 
         private void AttachTimelineInspect(VisualElement icon, TimelineEntry e)
