@@ -25,7 +25,7 @@ namespace GridGame.App
         // width (bible §26.3) so a wider phone centres the board and stretches the timeline instead of leaving a gap.
         // §9.0 (GG-T1822, GG-T2118): fixed rows, nothing stacked between them: the top bar, the board a gutter under it, the
         // timeline under the board (the thumb zone, GG-T2118), the party mana strip, the action row, the description panel.
-        private const float BoardTop = TopBarTop + TopBarHeight + Space.S8;
+        private static float BoardTop => TopBarTop + TopBarHeight + Space.S8;
         private static float BoardLeft => (GameApp.StageWidth - BoardView.Tile * BattleConfig.Cols) / 2f;
         // The timeline's geometry lives with it in BattleScreen.Timeline.cs (GG-T287).
 
@@ -38,13 +38,17 @@ namespace GridGame.App
         // Row heights (§9.0, GG-T1894): the top bar hugs the safe top and every gap between rows is tightened, so the description
         // panel gets the height back (the board keeps its 180-px tiles). GG-T1921: the action row's three buttons are one tap
         // target tall, so the description panel takes the rest of the five slots' row.
-        private const float TopBarTop = Space.S8, TopBarHeight = 110f, BarHeight = Size.Target;
-        private const float BannerTop = BoardTop + Space.S8;
+        private const float TopBarTop = Space.S8, BarHeight = Size.Target;
+        /// <summary>GG-T2143: the top bar hugs its content, never less than 110 px: the title line (the type size, which grows on a
+        /// narrow phone, GG-T2114) over the boss gauge (boss waves, GG-T1952), then the turn strip (GG-T1943). The board and the rows
+        /// under it move down by what it grows; the description panel, which stretches to the bottom, gives the height.</summary>
+        private static float TopBarHeight => Mathf.Max(110f, Mathf.Ceil(TypeScale.Base * 1.25f + Size.Bar + Space.S8 + Space.S4 + Size.IconS));
+        private static float BannerTop => BoardTop + Space.S8;
         /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
         private const float BannerViewportHeight = Size.Target - Space.S24;
         // The HUD rows under the timeline, top to bottom, a gutter apart (§9.0): the party mana strip and the action row, then
         // the description panel, which stretches to the safe bottom and so alone absorbs a taller stage (§26.3).
-        private const float BoardBottom = BoardTop + BoardView.Tile * BattleConfig.Rows;
+        private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => TimelineBottom + Space.S24; // 24 px from the timeline's diamonds, also targets (GG-T656, POL-C3)
         /// <summary>The thin party mana strip (GG-T1921) sits in the gap between the timeline and the action row, full width.</summary>
         private static float ManaStripTop => TimelineBottom + Space.S8;

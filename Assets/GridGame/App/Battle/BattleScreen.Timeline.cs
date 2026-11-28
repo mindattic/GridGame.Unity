@@ -23,9 +23,9 @@ namespace GridGame.App
         // ── Geometry (design px). The frame spans the stage; the slot sits on the left gutter, the tray at the right end. ──
         /// <summary>GG-T2118 (owner 2026-11-28, §9.0): the timeline sits a gutter under the board, in the thumb zone, above the
         /// party mana strip and the action row.</summary>
-        private const float TimelineY = BoardBottom + Space.S8 + TimelineFrameHeight / 2f;
+        private static float TimelineY => BoardBottom + Space.S8 + TimelineFrameHeight / 2f;
         private const float TimelineFrameHeight = 150f;
-        private const float TimelineBottom = TimelineY + TimelineFrameHeight / 2f;
+        private static float TimelineBottom => TimelineY + TimelineFrameHeight / 2f;
         /// <summary>The track line's y inside the timeline frame; every icon centres on it.</summary>
         private const float TrackY = TimelineFrameHeight / 2f;
         private const float Sqrt2 = 1.41421356f;

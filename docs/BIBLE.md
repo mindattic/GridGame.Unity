@@ -2305,6 +2305,8 @@ Source (spell, item, charge, trap, expire chain, Shield) → `ApplyBuff` (refres
 
 **Amended 2026-11-28 (GG-T2111):** the idle description panel for a commandable hero reads, top to bottom, the instruction line, the Skills section, then the hero card (header, stats, statuses). On a short panel (9:20, 3:4) the instruction and the first skill are visible without scrolling and the card scrolls below; the text size is unchanged.
 
+**Amended 2026-11-28 (GG-T2143):** the top bar's height is no longer a fixed 110 px: it is the title line at the live type size (which grows on a narrow phone, GG-T2114) plus the boss gauge plus the turn strip, never under 110 px, so the strip never draws over the board's first row. Every row under it moves down by what the bar grows; the description panel, which stretches to the safe bottom, gives the height, and the 180-px tiles stay.
+
 **Amended 2026-11-28 (GG-T2118, owner):** the timeline moves to the **bottom, in the thumb zone**, between the board and the party mana strip. Owner (verbatim): *"I think the timeline needs to be on the bottom so you can easily click a timeline diamond and get a bezier curve line to the associated enemy/hero"*. Rows, top to bottom: the top bar; the 8-row board a gutter under it; the timeline; the thin party mana strip; the action row `[Abilities][Info][GUARD]`; the description panel. The diagram below is the current layout; row numbers in the bullets keep their old names (row 2 = the timeline, rows 3-10 = the board).
 
 ```
