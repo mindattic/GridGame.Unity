@@ -161,7 +161,7 @@ All of them sit on `GameApp.I.Overlay` above a `.veil` (#05050C at 0.72) that sw
 | Bottom sheet | `Ui.Sheet(name, onClose, full, heightPct)`, `Ui.CloseSheet`; the Abilities sheet (`BattleScreen.AbilitySheet`, GG-T1914, GG-T1920) | full width, rising from the thumb zone. Header with the hero thumbnail, name, HP and Close; tabs; a breadcrumb (`Abilities › Ninjutsu › Smokebomb`). The board stays visible behind it | Close, Back, a tap on the veil | rows are select-then-confirm; the commit button (Perform, Cast, Use) is single |
 | Inspect card | `InspectCard.Attach(e, build)`, `InspectCard.Tap` | a floating card beside its anchor | lift the finger, tap elsewhere | press and hold inspects anything (POL-D1) |
 | Art preview | `ArtPreview.Open(classId)` | the full 1024 portrait over the veil | a tap anywhere, Back | n/a (R9) |
-| Toast | `Ui.Toast(text, seconds)` (`GameApp.Toast` forwards) | a small pane above the nav, never over content | times out (1.8 s) | n/a |
+| Toast | `Ui.Toast(text, seconds)` (`GameApp.Toast` forwards) | a small pane in the band just under the header (`Size.ToastTop` below the safe top), out of the thumb zone so it never covers an action; taps pass through, and a second one stacks under the first (GG-T2156). A page that grants something on arrival names it inline instead (the Summon starter Tickets under the wallet) | times out (1.8 s) | n/a |
 | Pause menu | hamburger, then `OpenMenu` | a sheet of menu rows | Resume, Back | rows are select-then-confirm |
 
 A sheet rises from the bottom (`Timing.Standard`, `Ease.Out`) and drops away faster (`Timing.Quick`). A dialog fades in and scales up from 96 % (`Timing.Quick`, `Ease.Back`).
@@ -171,7 +171,7 @@ A sheet rises from the bottom (`Timing.Standard`, `Ease.Out`) and drops away fas
 The stage is in design px and scales uniformly: at least 1170 × 2532 (`GameApp.DesignWidth`, `DesignHeight`), up to 1424 wide (9:16) or 3000 tall (about 9:23). The safe areas come off the top and bottom.
 
 - **Columns**: one content column, `Fit.Column`, with a 24-px gutter (`Fit.Edge`) on each side. Inside it, a 4-column grid with 24-px gutters is the default for card grids, and the battle action row's three cells share the width evenly. Grids keep even gutters (POL-C8).
-- **Vertical bands, top to bottom**: safe top, header or top bar (150), body (flex), footer (132, optional), nav (132), safe bottom.
+- **Vertical bands, top to bottom**: safe top, header or top bar (150), the toast band (toasts only, over the body's top, GG-T2156), body (flex), footer (132, optional), nav (132), safe bottom.
 - **Thumb zone**: primary actions sit in the **bottom 45 %** of the safe stage (POL-C4). Lists anchor to the lower half (GG-T1853). The commit button, the footer, the nav, the battle action row and the timeline (GG-T2118) live there. The top-left corner (hamburger, Back) is the hard-to-reach corner on purpose: those taps are deliberate, not frequent.
 
 Per device shape, from `tools/devices.json` (the representative device of each shape; the reference device, `iphone15pro`, is in `iphone-island-393`). "132 px is" and "30 px is" convert design px into the device's own pt or dp.
@@ -211,7 +211,7 @@ Per device shape, from `tools/devices.json` (the representative device of each s
 | Show heroes as their thumbnail and open the full art on tap | Show a shrunken 1024 portrait in a list or on a card | R9 |
 | Keep one primary button per screen, in the thumb zone | Stack three price buttons on every row; float the commit button at the top | POL-C4, POL-C7 |
 | Take every colour, space and duration from a token | Write `new Color(…)`, `12px` or `0.3f` in a screen | POL-A1, B1, C1, E1 |
-| Pin the footer and toasts above the nav | Let a footer or toast sit under the nav or over a row | REVIEW §2.3 |
+| Pin the footer above the nav; let toasts drop from under the header | Let a footer sit under the nav, or a toast sit over the thumb zone's actions | REVIEW §2.3, GG-T2156 |
 
 ## 7. What the UX review asks of the kit
 
