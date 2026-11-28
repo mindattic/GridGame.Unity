@@ -32,7 +32,7 @@ namespace GridGame.App
                 cell.style.flexShrink = 0;
                 cell.style.width = cell.style.height = Size.IconM;
                 Ui.Margin(cell, right: Space.S8, bottom: Space.S8);
-                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 4;
+                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = Radius.R4;
                 cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 1;
                 var bc = Palette.Text.WithA(0.4f);
                 cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = bc;

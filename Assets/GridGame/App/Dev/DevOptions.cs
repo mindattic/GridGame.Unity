@@ -76,11 +76,11 @@ namespace GridGame.App.Dev
                 badge.name = "dev-badge";
                 badge.pickingMode = PickingMode.Ignore;
                 badge.style.position = Position.Absolute;
-                badge.style.right = 24; badge.style.top = 24;
-                badge.style.paddingLeft = 12; badge.style.paddingRight = 12;
+                badge.style.right = Space.S24; badge.style.top = Space.S24;
+                badge.style.paddingLeft = Space.TargetHalfGap; badge.style.paddingRight = Space.TargetHalfGap;
                 badge.style.backgroundColor = new Color(0.55f, 0.08f, 0.08f, 0.85f);
-                badge.style.borderTopLeftRadius = badge.style.borderTopRightRadius = 8;
-                badge.style.borderBottomLeftRadius = badge.style.borderBottomRightRadius = 8;
+                badge.style.borderTopLeftRadius = badge.style.borderTopRightRadius = Radius.R8;
+                badge.style.borderBottomLeftRadius = badge.style.borderBottomRightRadius = Radius.R8;
             }
             else if (!Cheats && badge != null) { badge.RemoveFromHierarchy(); badge = null; }
             badge?.BringToFront();

@@ -886,6 +886,22 @@
         "long": "Knows every reagent, every breath, and when to spend both."
       }
     },
+    "class:collector": {
+      "key": "class:collector",
+      "id": "description-class-collector",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7b93a1bb05b1f324e331f2626ead353d0a6a62678bd1480de9ff25064d0291d3",
+      "about": [
+        "class-collector"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "The Captain's man in black-and-steel plate under a white surcoat, a closed helm, a tithe ledger chained at his belt.",
+        "long": "The Captain's Tithe Collector bleeds the hamlet of Tithe dry and holds the toll bridge with his back to the river. His front plate turns every blow; no sword has ever dented it."
+      }
+    },
     "class:corpse": {
       "key": "class:corpse",
       "id": "description-class-corpse",
