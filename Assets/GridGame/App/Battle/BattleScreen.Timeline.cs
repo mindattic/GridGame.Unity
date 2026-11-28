@@ -267,6 +267,7 @@ namespace GridGame.App
             if (TurnRules.HeroesOnTimeline(State) && State.UnitById(State.ActiveHeroId) is Unit ah && ah.Alive)
                 gapLabel.text = $"{ah.Name}'s turn · {gapLabel.text}"; // GG-T1109 (§2.13.3)
             gapLabel.style.color = c;
+            gapLabel.style.backgroundColor = Palette.Shade; // GG-T2149: the lane tint under the label left green text at 3.6:1
             float gapMin = Fit.Edge + SlotSpan + Space.S8; // GG-T1158: clear of the NOW portrait
             gapLabel.style.left = Mathf.Max(gapMin, XOfU(0f) + Mathf.Max(0f, w * 0.5f - 60f));
             gapLabel.style.maxWidth = Mathf.Max(0f, XOfU(1f) + IconSpan / 2f - gapMin);

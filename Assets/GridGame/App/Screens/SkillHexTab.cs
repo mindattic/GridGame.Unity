@@ -48,7 +48,19 @@ namespace GridGame.App
             var start = board.StartOf(h.ClassId);
 
             var head = Ui.Panel(body, null, false, "hex-head");
-            Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", RowIcon.Line("cur-skill-points", head), h.SkillPoints > 0 ? "gold" : "dim").name = "hex-points";
+            var top = Ui.El("row", head);
+            top.style.alignItems = Align.Center;
+            var pointsLine = RowIcon.Line("cur-skill-points", top);
+            pointsLine.style.flexGrow = 1; pointsLine.style.flexShrink = 1; pointsLine.style.minWidth = 0;
+            var points = Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", pointsLine, h.SkillPoints > 0 ? "gold" : "dim");
+            points.name = "hex-points";
+            // GG-T2085: the Inn's Respec opens from here, off the hub's mode banner, while the caravan is camped.
+            if (CampMenu.Build(C, S, App.Settings).Any(d => d.Id == CampMenu.Respec))
+            {
+                var respec = RowIcon.IconButton("Respec", RowKind.Station, () => App.Router.Push(new RespecScreen()), "btn--small", top, false, Art.UiIcon("hub-respec"));
+                respec.name = "hex-respec";
+                respec.style.marginLeft = Space.S16;
+            }
             var have = StatLine(board.StatTotals(owned));
             int bought = SkillHexProgress.Refundable(C, h).Count;
             Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(string.IsNullOrEmpty(have) ? "" : " · " + have)} · earn 1 a level", head, "dim");

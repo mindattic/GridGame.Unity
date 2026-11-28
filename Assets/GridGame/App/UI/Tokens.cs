@@ -98,6 +98,9 @@ namespace GridGame.App
         public static readonly Color CbBoss = new Color(0.75f, 0.3f, 0.02f);
         /// <summary>A foe's mark (keyline, timeline icon): enemy red, or the colourblind orange.</summary>
         public static Color TeamFoe => Colorblind ? CbFoe : Enemy;
+        /// <summary>A boss's mark (keyline, timeline icon, the notched base plate of GG-T2128): boss purple, or the colourblind
+        /// burnt orange. Apart from the next actor ring (aqua, or reddish purple under Colorblind palette) and the enemy
+        /// intent red.</summary>
         public static Color TeamBoss => Colorblind ? CbBoss : Boss;
         public static Color TeamCast(bool hero) => Colorblind ? (hero ? CbHero : CbFoe) : hero ? CastHero : CastEnemy;
         /// <summary>A hero's mark (base plate, turn ring): hero blue, or the colourblind sky blue.</summary>
@@ -171,7 +174,7 @@ namespace GridGame.App
         {
             switch (role)
             {
-                case "Tank": return new Color(0.95f, 0.36f, 0.3f);
+                case "Tank": return new Color(1f, 0.45f, 0.38f); // GG-T2154: 4.5:1+ on the badge plate even over bright art
                 case "Healer": return new Color(0.4f, 0.9f, 0.5f);
                 case "Mage": return new Color(0.55f, 0.6f, 1f);
                 case "Striker": return new Color(1f, 0.66f, 0.25f);
@@ -263,6 +266,10 @@ namespace GridGame.App
             public static readonly Color Steel = new Color(0.72f, 0.76f, 0.84f);
             public static readonly Color Shatter = new Color(1f, 0.85f, 0.5f);
             public static readonly Color Shard = new Color(0.78f, 0.82f, 0.9f);
+            /// <summary>GG-T1950: the board's grid line, drawn over a <see cref="Palette.Ink"/> keyline on each side. Over the
+            /// battle art dimmed by the board scrim (sky.json BoardScrim, 0.35) the light core alone is 3.8:1 or better against
+            /// every campaign theme's median art, and core or keyline is 3.5:1 or better against any of it.</summary>
+            public static readonly Color GridLine = new Color(0.8f, 0.82f, 0.88f);
             public static readonly Color Well = new Color(0.55f, 0.30f, 0.95f);
             public static readonly Color WellEye = new Color(0.12f, 0.04f, 0.2f, 0.9f);
             public static readonly Color Burning = new Color(1f, 0.45f, 0.1f);

@@ -99,7 +99,7 @@ namespace GridGame.App
             catch (Exception e) when (e is ArgumentException || e is InvalidOperationException || e is System.IO.IOException)
             {
                 App.Audio.Sfx("ui.error");
-                App.Toast("Couldn't create the profile");
+                App.Toast("Couldn't create the profile. Try again.");
                 Debug.LogError("[Profiles] create: " + e.Message);
             }
         }

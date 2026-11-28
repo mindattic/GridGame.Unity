@@ -61,25 +61,24 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Choose Your Party", () => App.Router.Back(), col, out _);
-            var hint = Ui.Text($"Pick {PartySize} to set out with: tap a hero to preview, tap again to lock in. More join along the road.", "small dim", col);
-            hint.name = "charselect-hint";
+            var hint = Ui.Para($"Pick {PartySize} to set out with; more heroes join along the road. Tap a hero to preview, tap again to lock in.", col, "dim");
+            hint.name = "charselect-hint"; // the how-to lives here, not in the grid title (GG-T403)
             hint.style.unityTextAlign = TextAnchor.MiddleCenter;
-            hint.style.whiteSpace = WhiteSpace.Normal; // the how-to lives here, not in the grid title (GG-T403)
 
             partyStrip = Ui.El("row", col);
             partyStrip.style.justifyContent = Justify.Center;
             partyStrip.style.marginTop = Space.S8; partyStrip.style.marginBottom = Space.S8;
 
             revealPanel = Ui.Window(null, col);
-            revealPanel.style.minHeight = 420;
+            revealPanel.style.minHeight = Size.PortraitH + 2 * Kit.PadY;
             Fit.Center(revealPanel);
 
-            lockBtn = RowIcon.IconButton("Lock In", RowKind.Confirm, LockInHighlighted, "btn--primary", col);
+            lockBtn = RowIcon.IconButton("Lock in", RowKind.Confirm, LockInHighlighted, "btn--primary", col);
             lockBtn.style.alignSelf = Align.Center;
             lockBtn.style.width = Size.Card;
             lockBtn.style.marginBottom = Space.S8;
 
-            var gridWindow = Ui.Window("Every hero", col);
+            var gridWindow = Ui.Window("Every Hero", col);
             gridWindow.style.flexGrow = 1;
             Fit.Center(gridWindow);
             grid = Ui.List(gridWindow).contentContainer;
@@ -89,7 +88,7 @@ namespace GridGame.App
             foreach (var def in App.Content.Classes.Values.Where(d => d.Team == Team.Hero && !d.IsCut).OrderBy(d => d.Name))
             {
                 var id = def.Id;
-                var t = Ui.Thumb(id, grid, 164, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
+                var t = Ui.Thumb(id, grid, Size.Cell, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
                 t.name = "tile-" + id;
                 t.style.marginLeft = t.style.marginRight = t.style.marginTop = t.style.marginBottom = Space.S8;
                 t.AddToClassList("card-tap");
@@ -168,8 +167,8 @@ namespace GridGame.App
                 slot.style.width = Size.PartySlot; slot.style.marginLeft = slot.style.marginRight = Space.S8; slot.style.alignItems = Align.Center;
                 if (i < locked.Count)
                 {
-                    Ui.Thumb(locked[i], slot, 96);
-                    var nm = Ui.Text(App.Content.Class(locked[i]).Name, "tiny", slot);
+                    Ui.Thumb(locked[i], slot, Kit.Avatar);
+                    var nm = Ui.Caption(App.Content.Class(locked[i]).Name, slot);
                     nm.style.unityTextAlign = TextAnchor.MiddleCenter;
                 }
                 else
@@ -178,13 +177,13 @@ namespace GridGame.App
                     empty.style.width = empty.style.height = Size.Avatar;
                     empty.style.opacity = 0.3f;
                     // Reserve the name line so the strip doesn't grow (and shove the page down) on the first lock-in.
-                    Ui.Text(" ", "tiny", slot);
+                    Ui.Caption(" ", slot);
                 }
             }
 
             revealPanel.Clear();
             var showId = highlighted ?? (locked.Count > 0 && !finishing ? locked[locked.Count - 1] : null);
-            if (finishing) { Ui.Text("Party complete!", "h1 shadow gold", revealPanel).style.unityTextAlign = TextAnchor.MiddleCenter; }
+            if (finishing) { Ui.Heading("Party complete", revealPanel, "gold").style.unityTextAlign = TextAnchor.MiddleCenter; }
             else if (showId != null)
             {
                 var def = App.Content.Class(showId);
@@ -192,7 +191,7 @@ namespace GridGame.App
                 row.style.opacity = 0f; // slammed into place below, not swapped in cold
                 var frame = Ui.El(null, row);
                 frame.style.width = Size.PortraitW; frame.style.height = Size.PortraitH;
-                frame.style.borderTopWidth = frame.style.borderBottomWidth = frame.style.borderLeftWidth = frame.style.borderRightWidth = 4;
+                frame.style.borderTopWidth = frame.style.borderBottomWidth = frame.style.borderLeftWidth = frame.style.borderRightWidth = Size.Hairline;
                 var roleColor = Ui.RoleColor(def.Role);
                 frame.style.borderTopColor = frame.style.borderBottomColor = frame.style.borderLeftColor = frame.style.borderRightColor = roleColor;
                 frame.style.backgroundColor = Palette.Ink.WithA(0.6f);
@@ -200,17 +199,16 @@ namespace GridGame.App
                 frame.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
                 var info = Ui.El("col", row);
                 info.style.marginLeft = Space.S24; info.style.flexGrow = 1;
-                var nm = Ui.Text(def.Name, "h1 shadow", info);
-                Fonts.UseDisplay(nm);
+                Ui.Heading(def.Name, info);
                 Ui.RoleBadge(def.Role, info).style.marginBottom = Space.S8;
-                var desc = GlossaryText.Create(def.Description ?? "", "small dim", info);
+                var desc = GlossaryText.Create(def.Description ?? "", "kit-text dim", info);
                 desc.style.whiteSpace = WhiteSpace.Normal;
-                var sup = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(App.Content, def.Support), "small gold", info); // GG-T298
+                var sup = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(App.Content, def.Support), "kit-text gold", info); // GG-T298
                 sup.style.whiteSpace = WhiteSpace.Normal; sup.style.marginTop = Space.S8;
-                if (locked.Contains(showId)) Ui.Text("Locked in", "small good", info).style.marginTop = Space.S8;
+                if (locked.Contains(showId)) Ui.Caption("Locked in", info, "good").style.marginTop = Space.S8;
                 App.StartCoroutine(SlamIn(row));
             }
-            else Ui.Text("Tap a hero below to preview them.", "h2 dim", revealPanel).style.unityTextAlign = TextAnchor.MiddleCenter;
+            else Ui.Para("Tap a hero below to preview them.", revealPanel, "dim").style.unityTextAlign = TextAnchor.MiddleCenter;
 
             foreach (var child in grid.Children())
             {
@@ -219,7 +217,7 @@ namespace GridGame.App
                 bool isLocked = locked.Contains(id);
                 child.SetEnabled(!isLocked && !finishing);
                 child.style.opacity = isLocked ? 0.25f : (highlighted == id ? 1f : 0.85f);
-                child.EnableInClassList("thumb--selected", highlighted == id);
+                child.EnableInClassList("tap--selected", highlighted == id); // R3: pressed in, never colour alone
             }
             Ui.SetEnabled(lockBtn, !finishing && highlighted != null && !locked.Contains(highlighted));
         }

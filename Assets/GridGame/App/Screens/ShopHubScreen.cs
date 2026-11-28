@@ -66,7 +66,7 @@ namespace GridGame.App
             if (offers.Count == 0)
             {
                 var panel = Ui.Panel(body, "Offers", false, "offers-panel");
-                Ui.Para(EmptyLine(w), panel, "dim").name = "offers-empty";
+                Ui.EmptyState(panel, RowKind.Diamond, EmptyLine(w), "offers-empty");
                 return;
             }
             var store = DiamondStores.Current;
@@ -75,7 +75,7 @@ namespace GridGame.App
             {
                 var o = offer;
                 var card = Ui.Panel(body, o.Name, false, "offer-" + o.Id);
-                Ui.Caption(Contents(o), card);
+                ContentChips(o, card);
                 var product = Offers.ForMoney(o) ? StoreCatalog.Of(o.ProductId) : null;
                 if (product != null)
                     Ui.Field("Price", DiamondStores.InFlight == product.Id ? "Processing" : store.PriceOf(product) ?? product.Price, card, null, "offer-price-" + o.Id);
@@ -88,6 +88,17 @@ namespace GridGame.App
                 buy.name = "offer-buy-" + o.Id;
                 Ui.SetEnabled(buy, product != null ? store.Connected && !busy : AccountWallets.CanSpend(w, o.ShardPrice));
             }
+        }
+
+        /// <summary>What the offer holds, one currency chip per kind (Shards, Summon Tickets, cosmetics).</summary>
+        private static void ContentChips(OfferDef o, VisualElement card)
+        {
+            var chips = Ui.Actions(card);
+            chips.name = "offer-contents-" + o.Id;
+            if (o.Shards > 0) Ui.Chip(ShardText.Of(o.Shards), chips, RowKind.Diamond, tone: "gold");
+            if (o.Tickets > 0) Ui.Chip(TicketText.Of(o.Tickets), chips, RowKind.Summon);
+            int looks = o.Cosmetics?.Count ?? 0;
+            if (looks > 0) Ui.Chip(looks == 1 ? "1 cosmetic" : $"{looks} cosmetics", chips, RowKind.Item);
         }
 
         private static string Contents(OfferDef o)

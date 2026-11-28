@@ -133,7 +133,7 @@ namespace GridGame.App
             boardHost.style.position = Position.Absolute;
             boardHost.style.top = BoardTop;
             board = new BoardView(boardHost, State.Stage.Theme);
-            board.SetScrim(App.Content.Sky?.RegionFor(State.Stage.Theme)?.BoardScrim ?? 0f); // GG-T665
+            board.SetScrim(Mathf.Max(App.Content.Sky?.BoardScrim ?? 0f, App.Content.Sky?.RegionFor(State.Stage.Theme)?.BoardScrim ?? 0f)); // GG-T665, GG-T1950
             CreatePrefabFx();
             board.Root.pickingMode = PickingMode.Position;
             // The pincer outline (board.Lines) stays inside the board, so it inherits every camera twist, zoom,
