@@ -2305,6 +2305,23 @@
     ]
   },
   {
+    "Id": "collector",
+    "Entries": [
+      {
+        "Item": "eq_armor_chain",
+        "Chance": 1.0,
+        "Min": 1,
+        "Max": 1
+      },
+      {
+        "Item": "chest_tithe",
+        "Chance": 1.0,
+        "Min": 1,
+        "Max": 1
+      }
+    ]
+  },
+  {
     "Id": "chest_tithe",
     "CoinsMin": 150,
     "CoinsMax": 150,

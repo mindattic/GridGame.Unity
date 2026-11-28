@@ -576,7 +576,7 @@ namespace GridGame.App
             board.ClearMarks();
             if (heroId == dragHeroId && dragging && !simulatingDrag) ShowDragOutcome(pv, dragHeroId, dragPath);
             foreach (var u in State.Units)
-                if (board.Units.TryGetValue(u.Id, out var uv) && u.Alive && u.Id != heroId) uv.SetGlow(Color.white, 0f);
+                if (board.Units.TryGetValue(u.Id, out var uv) && u.Alive && u.Id != heroId) uv.SetGlow(Palette.White, 0f);
             // GG-T190: shoving is a tactic, so show the whole migration — a ghost on every displaced hero's and
             // enemy's current tile and an arrow to where the drop leaves it (the tokens themselves already slid there).
             var shove = ShovePreview.Of(State, heroId, pv);

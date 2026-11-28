@@ -29,7 +29,7 @@ namespace GridGame.App
             reveals.Clear();
         }
 
-        /// <summary>What the Continue button does (set by Build): Android Back does the same, so it never pops back past the
+        /// <summary>What the exit button (To Camp, or Continue) does (set by Build): Android Back does the same, so it never pops back past the
         /// results to the stage list and skips StoryBeats.AfterResults (the ending crawl, the credits, chapter crawls).</summary>
         private System.Action onContinue;
         private bool continued;
@@ -62,26 +62,59 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.45f, 0.55f);
             var col = Ui.El("fill col", root);
             Fit.Columnize(col, Space.S32); // the results sit in the centred content column (GG-T398)
-            Ui.El("", col).style.height = Fit.H(5.5f);
 
+            bool drill = Drills.IsDrill(c.TryStage(stageId));
+            if (report.Crucible || drill || report.Withdrawn) Ui.El("", col).style.height = Fit.H(5.5f);
             if (report.Crucible) { BuildCrucible(root, col, c); return; }
-            if (Drills.IsDrill(c.TryStage(stageId))) { BuildDrill(col, c); return; }
+            if (drill) { BuildDrill(col, c); return; }
             if (report.Withdrawn) { BuildWithdrawn(root, col, c); return; }
-            var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "t-display shadow", col);
-            Fonts.UseDisplay(title);
-            title.style.fontSize = TypeScale.Base * 1.6f;
-            title.style.unityTextAlign = TextAnchor.MiddleCenter;
-            title.style.color = report.Victory ? Palette.Gold : new Color(1f, 0.45f, 0.45f);
-            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+            BuildBattle(root, col, c);
+        }
 
-            var w = Ui.Panel(col, null, true);
-            Ui.Margin(w, top: Space.S48);
-            var list = Ui.List(w).contentContainer;
+        /// <summary>GG-T1969 (UX review §2.3): a battle's results, top to bottom: a big centred VICTORY (or DEFEAT) with its
+        /// cue, the stage, one summary row (gold, XP, best combo), on the road a "Carried to next battle" box (party HP and
+        /// the mana carried, in points), then one scrolling list (unlocks and offers, the loot grid, a Teach card per Tome,
+        /// the rest), and the footer in the thumb zone: To Camp on the left, the one primary (Next battle, Retry) on the right.</summary>
+        private void BuildBattle(VisualElement root, VisualElement col, ContentDb c)
+        {
+            Ui.El("", col).style.height = Space.S48;
+            var title = Ui.Display(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", col, "shadow");
+            title.name = "results-title";
+            title.style.fontSize = TypeScale.Celebration;
+            title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
+            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+            reveals.Add(App.StartCoroutine(TitleCue(title, report.Victory)));
+
+            bool onRoad = report.Victory && TravelRules.OnTheRoad(App.Save);
+            bool comboTile = report.BestComboRank != GridGame.Core.Battle.ComboRank.None;
+            if (report.Victory || report.Retreated) SummaryRow(col, comboTile);
+            if (onRoad) CarriedBox(c, col);
+
+            var list = Ui.ListPanel(col, null, "results-list");
             if (report.Victory)
             {
-                Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold"); // GG-T749: the coin emblem
-                // GG-T623: a slow, repeatable trickle, same row style as Gold — the Aetherist refines it once joined.
-                // GG-T676, GG-T1927: the mana left in the pool settles into Dust; the row says how much of it came from there.
+                // GG-T514: milestones, unlocks and decisions (a joining hero, a tame or wanderer offer) lead the list, so a
+                // player tapping on past the results still sees them; the loot grid and its Teach card follow.
+                if (report.CampaignComplete) Ui.MenuRow("Campaign complete", "New Game+ unlocked at camp", null, list).WithKindIcon(RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
+                if (report.Milestone != null) // GG-T301: a theme's first full clear
+                    Ui.MenuRow($"{report.Milestone} cleared", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(report.MilestoneItem)).name = "results-milestone";
+                if (report.UnlockedStage != null) Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list).WithKindIcon(RowKind.Stage).Q<Label>("value").AddToClassList("gold");
+                if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked", $"+{report.NewSlots}", null, list).WithKindIcon(RowKind.Ability).Q<Label>("label").AddToClassList("good");
+                foreach (var g in report.GuestsJoined)
+                    Ui.MenuRow($"{c.Class(g).Name} joins the caravan", "New hero", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("good");
+                // GG-T537: a vendor whose story beat is this clear arrives at Camp (its join scene plays on the way there).
+                foreach (var arrival in CampUnlocks.Arrivals(c, App.Save, stageId))
+                {
+                    var ar = Ui.MenuRow(arrival, "At Camp", null, list);
+                    ar.name = "results-arrival";
+                    ar.KindIcon(RowKind.Npc);
+                    ar.Q<Label>("label").AddToClassList("good");
+                }
+                foreach (var offer in report.TameOffers) TameOfferBlock(offer, c, list); // GG-T303
+                if (report.WandererOffer != null) WandererBlock(report.WandererOffer, c, list); // GG-T342
+                RevealItems(report.Items, c, list, true);
+                if (report.AutoSold > 0) Ui.MenuRow("Stack full, extras sold", SoldCount(report.AutoSold), null, list).KindIcon(RowKind.Shop);
+                // GG-T623, GG-T676, GG-T1927: the mana left in the pool settles into Dust; the row says how much came from there.
                 if (report.DustEarned > 0)
                     Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
                         ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from unspent mana)"
@@ -95,104 +128,129 @@ namespace GridGame.App
                     orbRow.KindIcon(RowKind.Item);
                     orbRow.Q<Label>("label")?.AddToClassList("gold");
                 }
-                Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
                 NextAbilityRows(c, list);
-                TurnsRow(list);
-                ComboRows(c, list);
-                BondRows(c, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)
                     Ui.MenuRow($"Difficulty {report.Difficulty}", "rewards " + GridGame.Core.Battle.DifficultyTable.RewardLabel(report.Difficulty), null, list).WithKindIcon(RowKind.Settings).name = "results-difficulty";
-                // GG-T514: milestones, unlocks and decisions (a joining hero, a tame or wanderer offer, a tome's
-                // "Teach to…") come before the loot list. A first-hour stage drops ~15 rows, which pushed all of
-                // these off the bottom, so a player tapping on past the results never saw them.
-                if (report.CampaignComplete) Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list).WithKindIcon(RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
-                if (TravelRules.OnTheRoad(App.Save)) // GG-T1786: travel (§28) replaces the expedition rows
-                {
-                    var tr = Ui.MenuRow("On the road", report.CarriedMana == 0 ? "no mana carries over" : $"{report.CarriedMana} mana carries over", null, list);
-                    tr.name = "travel-orbs";
-                    tr.KindIcon(RowKind.Stage);
-                    if (report.MedicHealed > 0)
-                        Ui.MenuRow("Medic Wagon", $"+{report.MedicHealed} HP patched", null, list).WithKindIcon(RowKind.Hero).name = "travel-medic";
-                    Ui.Text("Wounds carry to the next battle. Set up camp to rest.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
-                }
-                if (report.Milestone != null) // GG-T301: a theme's first full clear
-                    Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(report.MilestoneItem)).name = "results-milestone";
-                if (report.UnlockedStage != null) Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list).WithKindIcon(RowKind.Stage).Q<Label>("value").AddToClassList("gold");
-                if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).WithKindIcon(RowKind.Ability).Q<Label>("label").AddToClassList("good");
-                foreach (var g in report.GuestsJoined)
-                    Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("good");
-                // GG-T537: a vendor whose story beat is this clear arrives at Camp (its join scene plays on the way there).
-                foreach (var arrival in CampUnlocks.Arrivals(c, App.Save, stageId))
-                {
-                    var ar = Ui.MenuRow(arrival + "!", "At Camp", null, list);
-                    ar.name = "results-arrival";
-                    ar.KindIcon(RowKind.Npc);
-                    ar.Q<Label>("label").AddToClassList("good");
-                }
-                foreach (var offer in report.TameOffers) TameOfferBlock(offer, c, list); // GG-T303
-                if (report.WandererOffer != null) WandererBlock(report.WandererOffer, c, list); // GG-T342
+                if (comboTile) TurnsRow(list);
+                ComboRows(c, list, !comboTile);
+                BondRows(c, list);
                 if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list).KindIcon(RowKind.Bounty);
                 foreach (var note in report.QuestProgress) Ui.MenuRow("Quest", note, null, list).KindIcon(RowKind.Quest);
-                if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
-                else Ui.Text("Loot", "small dim", list).name = "results-loot-head";
-                RevealItems(report.Items, c, list);
-                if (report.AutoSold > 0) Ui.MenuRow("Stack full — sold extras", SoldCount(report.AutoSold), null, list).KindIcon(RowKind.Shop);
             }
             else
             {
-                var t = Ui.Text(report.Retreated ? "You fall back with part of your spoils — safer than risking the whole party. The stage is yours to retry." :
-                    report.Escaped ? "The party slips away in the smoke. Wounds remain; no rewards." :
-                    "The party retreats to camp and recovers. The gold and loot are lost — but every hero keeps the experience they earned. The stage is yours to retry.", "kit-text", list);
+                var t = Ui.Para(report.Retreated ? "You fall back with part of your spoils, safer than risking the whole party. The stage is yours to retry." :
+                    report.Escaped ? "Your party slips away in the smoke. Wounds remain, and there are no rewards." :
+                    "Your party falls back to camp and recovers. You lose the gold and loot, but every hero keeps the experience they earned. The stage is yours to retry.", list);
                 t.style.whiteSpace = WhiteSpace.Normal;
-                if (report.Retreated)
-                {
-                    Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
-                    RevealItems(report.Items, c, list);
-                }
-                if (!report.Escaped && report.XpEach > 0)
-                    Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list).WithKindIcon(RowKind.Hero).name = "defeat-xp";
+                if (report.Retreated) RevealItems(report.Items, c, list, false);
+                if (!report.Retreated && !report.Escaped && report.XpEach > 0)
+                    Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list).WithKindIcon(RowKind.Hero, Art.UiIcon("cur-xp")).name = "defeat-xp";
                 NextAbilityRows(c, list);
-                TurnsRow(list);
-                ComboRows(c, list);
+                if (report.Retreated && comboTile) TurnsRow(list);
+                if (!report.Retreated) TurnsRow(list);
+                ComboRows(c, list, !(report.Retreated && comboTile));
             }
 
-            // A guest down at the end isn't lost (GG-T114) — they'll be met on this stage again.
+            // A guest down at the end isn't lost (GG-T114): they'll be met on this stage again.
             foreach (var g in report.GuestsFell)
                 Ui.MenuRow($"{c.Class(g).Name} fell in battle", "Will return", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("dim");
             // A wanderer who fell (or saw a defeat) goes back to the road: still out there to be met again (GG-T342).
             if (report.Wanderer != null && report.WandererOffer == null && App.Save.Hero(report.Wanderer) == null && c.TryClass(report.Wanderer) != null)
                 Ui.MenuRow($"The wandering {c.Class(report.Wanderer).Name} goes on their way", "May be met again", null, list).WithKindIcon(RowKind.Hero, report.Wanderer).Q<Label>("label").AddToClassList("dim");
-            foreach (var g in report.GuestsLost) // permadeath only (a future Ironman mode) — never in the normal game
+            foreach (var g in report.GuestsLost) // permadeath only (a future Ironman mode), never in the normal game
                 Ui.MenuRow($"{c.Class(g).Name} fell in battle", "Gone for good", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("bad");
-            var row = Ui.El("row", col);
-            row.style.justifyContent = Justify.Center;
-            if (!report.Victory)
-            {
-                // A pruned generated stage can't be retried. GG-T749: named "retry" (tools/playthrough_sim.py looks for that name).
-                if (c.TryStage(stageId) != null) RowIcon.IconButton("Retry", RowKind.NewGamePlus, () => StageLauncher.Launch(stageId, true), null, row).name = "retry";
-            }
+
             bool ending = Story.EndingDue(c, App.Save, report.Victory, stageId);
-            // GG-T1786 (travel, §28): a win on the road offers "To Camp", which sets up camp (the orbs carried are let go)
-            // then goes back to Camp, beside "Next battle", which stays on the road; GG-T513's rule holds: To Camp steps
-            // back to a plain button, leaving Next battle the one primary. Its automation name stays "continue" either way.
+            if (ending) Ui.Para("The road ahead is quiet, for now. Continue to see how the story closes.", list, "gold").style.whiteSpace = WhiteSpace.Normal;
+            // GG-T1786 (travel, §28): To Camp on the road sets up camp (the mana carried is let go), then goes to Camp; Next
+            // battle stays on the road. GG-T513: one primary, on the right; To Camp steps back to a plain button beside it.
+            // Every exit to camp reads "To Camp" (COPY_STYLE §4); only the ending's exit, which plays the closing, reads
+            // Continue. Automation names: "continue" (the exit), "next", "retry".
             string nextId = !ending && report.Victory ? NextBattle(c, stageId) : null;
-            bool toCamp = !ending && report.Victory && TravelRules.OnTheRoad(App.Save);
+            bool toCamp = onRoad && !ending;
+            bool canRetry = !report.Victory && c.TryStage(stageId) != null; // a pruned generated stage can't be retried
             onContinue = () =>
             {
                 if (toCamp) { TravelRules.MakeCamp(App.Save); App.Persist(); }
                 StoryBeats.AfterResults(report.Victory, stageId);
             };
-            bool primaryNext = nextId != null;
-            var cont = RowIcon.IconButton(toCamp ? "To Camp" : "Continue", toCamp ? RowKind.Station : RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, primaryNext ? null : "btn--primary", row);
+            bool exitPrimary = nextId == null && !canRetry;
+            var footer = Ui.Footer(col, "results-footer");
+            var cont = FooterButton(ending ? "Continue" : "To Camp", ending ? RowKind.Enter : RowKind.Station, () => { if (continued) return; continued = true; onContinue(); }, exitPrimary, footer);
             cont.name = "continue";
-            if (ending) Ui.Text("The road ahead is quiet, for now. Continue to see how the story closes.", "small gold", list).style.whiteSpace = WhiteSpace.Normal;
-            if (nextId != null)
-                RowIcon.IconButton("Next battle", RowKind.Enter, () => StageLauncher.Launch(nextId, true), "btn--primary", row).name = "next";
+            if (nextId != null) FooterButton("Next battle", RowKind.Enter, () => StageLauncher.Launch(nextId, true), true, footer).name = "next";
+            // GG-T749: named "retry" (tools/playthrough_sim.py looks for that name).
+            if (canRetry) FooterButton("Retry", RowKind.NewGamePlus, () => StageLauncher.Launch(stageId, true), true, footer).name = "retry";
 
-            Ui.El("", col).style.height = Space.S48;
+            Ui.El("", col).style.height = Kit.Gap;
             if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
             else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+        }
+
+        /// <summary>A footer button: they share the footer's width evenly; <paramref name="primary"/> is the one primary.</summary>
+        private static Button FooterButton(string text, RowKind kind, System.Action onClick, bool primary, VisualElement footer)
+        {
+            var b = RowIcon.IconButton(text, kind, onClick, primary ? "btn--primary" : null, footer);
+            b.style.flexGrow = 1; b.style.flexShrink = 1; b.style.flexBasis = 0;
+            return b;
+        }
+
+        /// <summary>GG-T1969: the one summary row under the title: the gold, the XP each hero earned and the best combo
+        /// (or, with no combo, how long the battle ran), each a tile of icon, value and caption.</summary>
+        private void SummaryRow(VisualElement col, bool comboTile)
+        {
+            var w = Ui.Panel(col, null, false, "results-summary");
+            Ui.Margin(w, top: Space.S32);
+            var row = Ui.El("row", w);
+            Tile(row, Art.UiIcon("cur-gold"), "+" + Ui.Gold(report.Gold), "Gold", "gold", "results-gold");
+            if (report.XpEach > 0) Tile(row, Art.UiIcon("cur-xp"), $"+{report.XpEach}", "XP each", null, "results-xp");
+            if (comboTile)
+                Tile(row, Art.UiIcon("battle-perform"), $"{report.BestComboRank} · {report.BestComboScore}", "Best combo",
+                    report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good", "results-best-combo");
+            else if (report.TurnsLabel().Length > 0)
+                Tile(row, Art.UiIcon("battle-turn-start"), report.TurnsLabel(), "Battle length", null, "results-turns");
+        }
+
+        /// <summary>GG-T1969 (§28, GG-T1786): on the road, what the next battle starts with: the party's HP and the party
+        /// mana carried over (points, one pool), and the Medic Wagon's patch; wounds stay until camp.</summary>
+        private void CarriedBox(ContentDb c, VisualElement col)
+        {
+            var w = Ui.Panel(col, null, false, "results-carried");
+            Ui.Section("Carried to next battle", w);
+            var row = Ui.El("row", w);
+            int hp = 0, max = 0;
+            foreach (var id in App.Save.Party)
+            {
+                var h = App.Save.Hero(id);
+                if (h == null) continue;
+                int m = Progression.Preview(c, h).MaxHp;
+                max += m;
+                hp += h.Hp <= 0 ? m : Mathf.Min(h.Hp, m); // a full hero reads Hp 0 in the save
+            }
+            if (max > 0) Tile(row, Art.UiIcon("stat-hp"), $"{Ui.Count(hp)}/{Ui.Count(max)}", "Party HP", hp < max ? "warn" : "good", "travel-hp");
+            Tile(row, Art.UiIcon("stat-mana"), Ui.Count(report.CarriedMana), "Mana", report.CarriedMana > 0 ? null : "dim", "travel-orbs");
+            if (report.MedicHealed > 0) Tile(row, Art.UiIcon("station-caravan"), $"+{report.MedicHealed} HP", "Medic Wagon", "good", "travel-medic");
+            Ui.Para("Wounds carry to the next battle. Set up camp to rest.", w, "dim").style.whiteSpace = WhiteSpace.Normal;
+        }
+
+        /// <summary>A summary tile: the icon over the value (heavy, <paramref name="tone"/>) over a dim caption; tiles share
+        /// their row evenly.</summary>
+        private static void Tile(VisualElement row, Texture2D icon, string value, string caption, string tone, string name)
+        {
+            var t = Ui.El("col", row);
+            t.name = name;
+            t.style.flexGrow = 1; t.style.flexShrink = 1; t.style.flexBasis = 0; t.style.minWidth = 0;
+            t.style.alignItems = Align.Center;
+            var img = Ui.El("", t);
+            img.style.width = img.style.height = Size.Icon;
+            if (icon != null) img.style.backgroundImage = new StyleBackground(icon);
+            var v = Ui.Name(value, t, tone);
+            v.name = "value";
+            v.style.whiteSpace = WhiteSpace.Normal;
+            v.style.unityTextAlign = TextAnchor.MiddleCenter;
+            Ui.Caption(caption, t, "dim");
         }
 
         /// <summary>GG-T1786: the campaign stage after <paramref name="stageId"/> when it is unlocked, else null.</summary>
@@ -204,7 +262,7 @@ namespace GridGame.App
         }
 
         /// <summary>Crucible results (§22.10): waves survived, the record, and the whole haul, which a Crucible run
-        /// keeps however it ended. Again › starts the save's next gauntlet; Continue goes back to camp.</summary>
+        /// keeps however it ended. Again › starts the save's next gauntlet; To Camp goes back to camp.</summary>
         private void BuildCrucible(VisualElement root, VisualElement col, ContentDb c)
         {
             var title = Ui.Text("CRUCIBLE", "t-display shadow", col);
@@ -237,15 +295,14 @@ namespace GridGame.App
             Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).WithKindIcon(RowKind.Hero).name = "crucible-xp";
             NextAbilityRows(c, list);
             TurnsRow(list);
-            if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
             RevealItems(report.Items, c, list);
             if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list).KindIcon(RowKind.Bounty);
-            if (report.AutoSold > 0) Ui.MenuRow("Stack full — sold extras", SoldCount(report.AutoSold), null, list).KindIcon(RowKind.Shop);
+            if (report.AutoSold > 0) Ui.MenuRow("Stack full, extras sold", SoldCount(report.AutoSold), null, list).KindIcon(RowKind.Shop);
 
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
             onContinue = () => App.Router.ResetTo(new HubScreen());
-            var cont = RowIcon.IconButton("Continue", RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
+            var cont = RowIcon.IconButton("To Camp", RowKind.Station, () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
             cont.name = "continue";
             var again = RowIcon.IconButton("Again", RowKind.Crucible, () => CrucibleLauncher.Launch(true), null, row);
             again.name = "crucible-again";
@@ -261,7 +318,7 @@ namespace GridGame.App
             var title = Ui.Text("FALL BACK", "t-display shadow", col);
             title.name = "withdraw-title";
             Fonts.UseDisplay(title);
-            title.style.fontSize = TypeScale.Base * 1.6f;
+            title.style.fontSize = TypeScale.Celebration;
             title.style.unityTextAlign = TextAnchor.MiddleCenter;
             title.style.color = Palette.Gold;
             Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -360,7 +417,7 @@ namespace GridGame.App
                 RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
             }
             Ui.El("", col).style.height = Space.S48;
-            reveals.Add(App.StartCoroutine(DrillCue(title, report.Victory)));
+            reveals.Add(App.StartCoroutine(TitleCue(title, report.Victory)));
 
             void Go()
             {
@@ -378,9 +435,9 @@ namespace GridGame.App
             App.SaveSettings();
         }
 
-        /// <summary>The drill card's cue (Law 5): a chime and a pop on the title once the card is up; Reduce Motion keeps
+        /// <summary>The results title's cue (Law 5): a chime and a pop on the title once the card is up; Reduce Motion keeps
         /// the sound and drops the pop.</summary>
-        private IEnumerator DrillCue(VisualElement title, bool cleared)
+        private IEnumerator TitleCue(VisualElement title, bool cleared)
         {
             yield return Tween.Wait(Timing.Quick);
             App.Audio.Sfx(cleared ? "battle.powerup" : "ui.cancel");
@@ -410,13 +467,10 @@ namespace GridGame.App
 
         /// <summary>GG-T852 (§1.2.8): the battle's best combo (rank and score) and its top supporter (the hero with the most
         /// combo points earned supporting) and each hero's combo points (GG-T1828), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
-        private void ComboRows(ContentDb c, VisualElement list)
+        private void ComboRows(ContentDb c, VisualElement list, bool best = true)
         {
             if (report.BestComboRank == GridGame.Core.Battle.ComboRank.None) return;
-            var best = Ui.MenuRow("Best combo", $"{report.BestComboRank} · {report.BestComboScore} pts", null, list);
-            best.name = "results-best-combo";
-            best.KindIcon(RowKind.Hero);
-            best.Q<Label>("value")?.AddToClassList(report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good");
+            if (best) BestComboRow(list);
             if (report.TopSupporter != null && report.TopSupporterPoints > 0)
             {
                 string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
@@ -433,6 +487,15 @@ namespace GridGame.App
                 string split = atk > 0 && sup > 0 ? $"{atk} atk · {sup} sup" : sup > 0 ? $"{sup} sup" : $"{atk} atk";
                 Ui.MenuRow($"{name} combo", $"{atk + sup} pts · {split}", null, list).WithKindIcon(RowKind.Hero, id).name = "results-combo-hero";
             }
+        }
+
+        /// <summary>The best combo as a list row (where the summary row doesn't already show it, GG-T1969).</summary>
+        private void BestComboRow(VisualElement list)
+        {
+            var best = Ui.MenuRow("Best combo", $"{report.BestComboRank} · {report.BestComboScore} pts", null, list);
+            best.name = "results-best-combo";
+            best.KindIcon(RowKind.Hero, Art.UiIcon("battle-perform"));
+            best.Q<Label>("value")?.AddToClassList(report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good");
         }
 
         /// <summary>GG-T1556 (§22.8): each hero who leveled up this battle, with <see cref="NextAbility.Line"/> and a Learn button
@@ -534,27 +597,46 @@ namespace GridGame.App
             Ui.MenuRow(TicketText.Plural, "+" + report.TicketsEarned.ToString("N0"), null, list).WithKindIcon(RowKind.Item, Art.ItemIcon("mat_summon_ticket")).name = "results-tickets";
         }
 
-        private void RevealItems(Dictionary<string, int> items, ContentDb c, VisualElement list)
+        /// <summary>Loot per item in this grid row (GG-T1969).</summary>
+        private const int LootColumns = 5;
+
+        /// <summary>GG-T1969: the loot as a grid of item icons with their counts (hold or tap one to read it), popping in one
+        /// by one; then, with <paramref name="teach"/>, one Teach card per looted Tome (GG-T301) and an Open block per Chest.</summary>
+        private void RevealItems(Dictionary<string, int> items, ContentDb c, VisualElement list, bool teach = true)
         {
+            var drops = items.Select(kv => (it: c.TryItem(kv.Key), n: kv.Value)).Where(d => d.it != null).ToList();
+            if (drops.Count == 0) { Ui.Para("No items dropped.", list, "dim"); return; }
+            Ui.Section("Loot", list).name = "results-loot-head";
+            var grid = Ui.El("row", list);
+            grid.name = "results-loot";
+            grid.style.flexWrap = Wrap.Wrap;
             int i = 0;
-            // GG-T514: a Tome (with its "Teach to…" choice) or a Chest (with Open) heads the loot, above the plain drops.
-            bool Choice(string id) { var t = c.TryItem(id)?.Type; return t == ItemType.Tome || t == ItemType.Chest; }
-            foreach (var kv in items.OrderBy(kv => Choice(kv.Key) ? 0 : 1))
+            foreach (var (it, n) in drops)
             {
-                var it = c.TryItem(kv.Key);
-                if (it == null) continue;
-                var row = ItemUi.Row(it, $"×{kv.Value}", null, list);
-                row.style.opacity = 0f;
-                reveals.Add(App.StartCoroutine(RevealRow(row, i * 0.08f)));
-                // GG-T301: a looted Tome offers "Teach to…" right here; a Chest can be opened on the spot.
-                VisualElement extra = null;
-                if (it.Type == ItemType.Tome) extra = TomeUi.Offer(list, it);
-                else if (it.Type == ItemType.Chest) extra = ChestBlock(it, c, list);
-                if (extra != null)
-                {
-                    extra.style.opacity = 0f;
-                    reveals.Add(App.StartCoroutine(RevealRow(extra, i * 0.08f + 0.04f)));
-                }
+                var cell = Ui.El("col", grid);
+                cell.name = "loot-" + it.Id;
+                cell.style.width = Length.Percent(100f / LootColumns);
+                cell.style.minHeight = Size.Target;
+                cell.style.alignItems = Align.Center;
+                cell.style.justifyContent = Justify.Center;
+                Ui.Pad(cell, top: Space.S8, bottom: Space.S8);
+                cell.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)).style.marginRight = 0;
+                Ui.Caption($"×{n}", cell).AddToClassList(Ui.RarityClass(it.Rarity));
+                Ui.Pressable(cell);
+                var shown = it;
+                InspectCard.Attach(cell, b => { ItemUi.Detail(b, shown, c); return true; }, tap: true);
+                cell.style.opacity = 0f;
+                reveals.Add(App.StartCoroutine(RevealRow(cell, i * 0.08f)));
+                i++;
+            }
+            if (!teach) return;
+            foreach (var (it, _) in drops)
+            {
+                VisualElement extra = it.Type == ItemType.Tome ? TomeUi.TeachCard(list, it)
+                    : it.Type == ItemType.Chest ? ChestBlock(it, c, list) : null;
+                if (extra == null) continue;
+                extra.style.opacity = 0f;
+                reveals.Add(App.StartCoroutine(RevealRow(extra, i * 0.08f)));
                 i++;
             }
         }

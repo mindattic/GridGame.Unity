@@ -338,7 +338,7 @@ def next_stage(econ):
 
 def launch_stage(sid, decisions):
     if not H._goto("stages"):
-        call("clicktext", text="Adventure")
+        call("clicktext", text="Journey")
         time.sleep(0.8)
     theme = THEME_OF.get(sid)
     if call("names", prefix=f"expedition-{theme}"):

@@ -1731,6 +1731,7 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
+      "Boss",
       "Sentient"
     ],
     "Card": "The Captain's tithe-taker. His plate faces you and no blow dents it. Spells go around it; only a shattering blow takes it off.",
@@ -1829,7 +1830,7 @@
       "vengeance"
     ],
     "DefaultLoadout": [],
-    "DropTable": "soldier",
+    "DropTable": "collector",
     "MoveRange": 1,
     "Targeting": "Threat",
     "XpReward": 20,

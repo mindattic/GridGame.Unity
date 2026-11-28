@@ -137,7 +137,7 @@ namespace GridGame.App
             var cam = new GameObject("Camera").AddComponent<Camera>();
             cam.transform.SetParent(transform, false);
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = Color.black;
+            cam.backgroundColor = Palette.Black;
             cam.cullingMask = 0;
 
             Content = LoadContent();
@@ -223,7 +223,7 @@ namespace GridGame.App
             settings.referenceResolution = new Vector2Int(DesignWidth, DesignHeight);
             settings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
             settings.clearColor = true;
-            settings.colorClearValue = Color.black;
+            settings.colorClearValue = Palette.Black;
 
             var docGo = new GameObject("UI");
             docGo.transform.SetParent(transform, false);
@@ -235,7 +235,7 @@ namespace GridGame.App
             var root = Document.rootVisualElement;
             root.styleSheets.Add(Resources.Load<StyleSheet>("UI/Theme"));
             root.EnableInClassList("no-cursor", !Ui.ShowsCursor); // GG-T1923: touch menus reserve no cursor gutter
-            root.style.backgroundColor = Color.black;
+            root.style.backgroundColor = Palette.Black;
             Fonts.UseBody(root);
 
             letterbox = new VisualElement();
@@ -518,7 +518,7 @@ namespace GridGame.App
             t.style.opacity = 1;
             yield return new WaitForSecondsRealtime(seconds);
             t.style.opacity = 0;
-            yield return new WaitForSecondsRealtime(0.25f);
+            yield return new WaitForSecondsRealtime(Timing.Standard);
             t.RemoveFromHierarchy();
             liveToasts--;
         }

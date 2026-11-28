@@ -131,11 +131,11 @@ namespace GridGame.App
             col.Add(body);
             var page = body.contentContainer;
 
-            // Campaign card: Continue launches the next stage straight away; the Adventure row opens Stage select.
+            // Campaign card: Continue launches the next stage straight away; the Journey row opens Stage select.
             var campaign = Ui.Window(null, page);
             campaign.name = "camp-campaign";
             string next = NextStage(c, s);
-            var cont = Ui.Button(next != null ? "Continue" : "Adventure", () =>
+            var cont = Ui.Button(next != null ? "Continue" : "Journey", () =>
             {
                 if (next != null) StageLauncher.Launch(next, false);
                 else App.Router.Push(new StageSelectScreen());
@@ -150,7 +150,7 @@ namespace GridGame.App
             if (TravelRules.OnTheRoad(s)) // GG-T1786: travel (§28) replaces the expedition line
                 Ui.Caption(TravelLine(s), campaign, "dim").name = "camp-travel";
             var adv = Dest(CampMenu.Campaign);
-            var advRow = Ui.MenuRow(adv?.Label ?? "Adventure", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
+            var advRow = Ui.MenuRow(adv?.Label ?? "Journey", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
             advRow.name = "camp-adventure";
             advRow.KindIcon(RowKind.Place, ThemeFor(c, s));
             Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");

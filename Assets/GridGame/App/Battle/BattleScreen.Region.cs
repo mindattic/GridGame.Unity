@@ -80,7 +80,7 @@ namespace GridGame.App
             var glow = new Color(1f, 0.78f, 0.38f);
             Vector2 from = ViewCenter(caster), to = BoardView.CenterOf(anchor);
             App.Audio.Sfx("battle.cast", 0.6f, 1.3f);
-            yield return Tween.Run(0.42f, k =>
+            yield return Tween.Run(Timing.Emphasis, k =>
             {
                 board.Lines.ClearLines();
                 board.Lines.Dot(ProjectilePoint(ProjectileMotion.Bezier, from, to, k), 20f, glow);

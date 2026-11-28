@@ -23,8 +23,7 @@ namespace GridGame.App
         public const int Seed = 1337;
 
         public static readonly Color ManaBlue = Palette.OrbLit;
-        /// <summary>The base texture's average colour (104, 92, 132) x 0.5.</summary>
-        public static readonly Color RockColor = new Color32(0x34, 0x2E, 0x42, 0xFF);
+        public static readonly Color RockColor = Palette.ManalithRock;
 
         private static readonly Vector3 StartEuler = new Vector3(15f, 0f, 25f);
         private static readonly Vector3 TumbleRate = new Vector3(3f, 7f, 1.7f); // deg/s about local X, Y, Z
@@ -192,7 +191,7 @@ namespace GridGame.App
         private ParticleSystem SteadyDebris(Material mat, Mesh[] rocks)
         {
             var flag = new Gradient { mode = GradientMode.Fixed };
-            flag.SetKeys(new[] { new GradientColorKey(Color.black, 1f - GlowShare), new GradientColorKey(Palette.White, 1f) },
+            flag.SetKeys(new[] { new GradientColorKey(Palette.Black, 1f - GlowShare), new GradientColorKey(Palette.White, 1f) },
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
             var ps = Shards("Debris", mat, rocks, ShardMin, ShardMax,
                 new ParticleSystem.MinMaxGradient(flag) { mode = ParticleSystemGradientMode.RandomColor });
@@ -205,7 +204,7 @@ namespace GridGame.App
         /// go in as emission bursts (ParticleSystem.Emit from script stops a hand-simulated system's own emission).</summary>
         private ParticleSystem Chunks(Material mat, Mesh[] rocks)
         {
-            var ps = Shards("Chunks", mat, rocks, ChunkMin, ChunkMax, new ParticleSystem.MinMaxGradient(Color.black));
+            var ps = Shards("Chunks", mat, rocks, ChunkMin, ChunkMax, new ParticleSystem.MinMaxGradient(Palette.Black));
             var em = ps.emission;
             em.rateOverTime = 0f;
             var rnd = new System.Random(Seed);
@@ -220,7 +219,7 @@ namespace GridGame.App
         /// rate and its push along the wake (it starts as if far off, still in the wake's default direction).</summary>
         private ParticleSystem Dust(Material mat, Mesh[] rocks)
         {
-            var ps = Shards("Dust", mat, rocks, DustMin, DustMax, new ParticleSystem.MinMaxGradient(Color.black));
+            var ps = Shards("Dust", mat, rocks, DustMin, DustMax, new ParticleSystem.MinMaxGradient(Palette.Black));
             ps.randomSeed = DustSeed;
             var main = ps.main;
             main.maxParticles = DustMaxParticles;
