@@ -405,8 +405,10 @@ namespace GridGame.App
 
         /// <summary>The action row (named "abilitybar") under the board: Abilities, Info, GUARD (§9.0, GG-T1921).</summary>
         private VisualElement abilityBar;
-        /// <summary>The empty host the party mana bar (GG-T1928) draws into: a thin full-width strip above the action row.</summary>
+        /// <summary>The host of the party mana bar (GG-T1928): a thin full-width strip above the action row.</summary>
         private VisualElement partyManaHost;
+        /// <summary>The party's one mana bar (§3.1.0), filled by <see cref="SyncPartyMana"/>.</summary>
+        private PartyManaBar partyManaBar;
         /// <summary>A hero's bar slots, which the tutorial and automation still address by index (<see cref="TapSlot"/>).</summary>
         private const int BarSlots = Progression.MaxBarSlots;
 
@@ -446,6 +448,10 @@ namespace GridGame.App
             strip.pickingMode = PickingMode.Ignore;
             strip.style.position = Position.Absolute;
             strip.style.top = ManaStripTop; strip.style.height = ManaStripHeight; // left/right: ApplyStageLayout
+            partyManaBar = new PartyManaBar { name = "party-mana-bar" };
+            partyManaBar.style.position = Position.Absolute;
+            partyManaBar.style.left = partyManaBar.style.right = partyManaBar.style.top = partyManaBar.style.bottom = 0;
+            strip.Add(partyManaBar);
             var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
@@ -677,7 +683,7 @@ namespace GridGame.App
             e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c;
         }
 
-        private void SyncBar() => SyncAbilitiesButton();
+        private void SyncBar() { SyncAbilitiesButton(); SyncPartyMana(); }
 
         /// <summary>Fills one move's <see cref="Ui.AbilitySlot"/> face (an Abilities sheet row's or detail page's icon): the
         /// recharge sweep for a skill, the spell's readiness fill (<see cref="SpellFill"/>), an item's stack. Returns whether
@@ -713,7 +719,7 @@ namespace GridGame.App
                 border = Palette.Mana;
                 mana = SpellFill(hero, i);
             }
-            Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, mana: mana, ready: mana >= 1f && !silenced);
+            Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, ready: mana >= 1f && !silenced);
             return mana >= 0f && mana < 1f;
         }
 

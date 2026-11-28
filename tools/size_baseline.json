@@ -1,6 +1,5 @@
 {
  "long": [
-  "Assets/GridGame/App/Automation/AutomationServer.cs",
   "Assets/GridGame/App/Battle/BattleScreen.Playback.cs",
   "Assets/GridGame/App/Battle/BattleScreen.cs",
   "Assets/GridGame/App/Battle/BoardView.cs",

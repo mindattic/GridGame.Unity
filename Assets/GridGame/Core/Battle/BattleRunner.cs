@@ -153,6 +153,7 @@ namespace GridGame.Core.Battle
                 // GG-T944: count the party turn for the results (pure counters, read by nothing in the rules).
                 S.Results.TurnsEnded++;
                 S.Results.ActionsAtTurnEnd = S.Results.ActionsTaken;
+                CheckWithdraw(); // GG-T2070: AfterTurns counts ended turns
             }
             if (!S.IsOver) ReturnControl(newWindow, roundStarted);
             // GG-T1075 (§2.13.3): the active hero fell as its turn opened (a TurnEnd/TurnStart hook, a burn) — the
@@ -540,6 +541,7 @@ namespace GridGame.Core.Battle
                 Emit(new BattleEndedEvent { Victory = false });
                 return true;
             }
+            if (CheckWithdraw()) return true;
             // GG-T512: the board just went clear but a reinforcement is queued for this wave (§14.8): it lands now instead
             // of holding the wave open on an empty board. One that can't be placed anywhere is dropped (the wave ends).
             if (!enemiesAlive) { BringReinforcementsForward(); enemiesAlive = AnyFoeOnBoard(); }
@@ -562,6 +564,21 @@ namespace GridGame.Core.Battle
                 return true;
             }
             return false;
+        }
+
+        /// <summary>GG-T2070: the stage's scripted withdrawal, once its plate clangs or ended party turns are reached: the
+        /// battle ends as <see cref="BattlePhase.Withdrawn"/> with the party's line to the Commander. Returns true if it ended.</summary>
+        private bool CheckWithdraw()
+        {
+            var w = S.Stage?.Withdraw;
+            if (S.IsOver || w == null) return S.IsOver;
+            bool due = (w.AfterPlateClangs > 0 && S.Results.PlateClangs >= w.AfterPlateClangs)
+                || (w.AfterTurns > 0 && S.Results.TurnsEnded >= w.AfterTurns);
+            if (!due) return false;
+            S.Phase = BattlePhase.Withdrawn;
+            Announce(w.Line);
+            Emit(new BattleEndedEvent { Victory = false, Withdrawn = true, Line = w.Line });
+            return true;
         }
 
         // ─────────────────────────────────────────────────────────────────────────────

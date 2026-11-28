@@ -138,6 +138,7 @@ namespace GridGame.Core.Battle
                 ["itemsUsed"] = JObject.FromObject(r.ItemsConsumed),
                 ["heroesStanding"] = s.Units.Count(u => u.IsHero && u.Alive),
             };
+            if (r.PlateClangs > 0) ((JObject)root["outcome"])["plateClangs"] = r.PlateClangs; // GG-T2070
             return root;
         }
 

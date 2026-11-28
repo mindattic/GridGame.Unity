@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Icon Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Icon Set</h1>
+    <p class="sub">One style for every icon (GG-T2046): game-icons.net silhouettes through the make_icons.py pixel recipe, in the Manapunk palette, UI chrome included. Each preview below is the recipe's real 22-pixel output. docs/ICONS.md holds the same tables and the rules. GG-T2050 generates the set.</p>
+  </header>
+
+  <section>
+    <h2>Sizes per role</h2>
+    <p class="sub">Design px. Every icon has one master on the 22-px grid, drawn at the size of its role.</p>
+    <div class="roles" id="roles"></div>
+  </section>
+
+  <section>
+    <h2>Palettes</h2>
+    <p class="sub">The three new chrome palettes come first, then every content palette the inventory uses.</p>
+    <div class="pals" id="pals"></div>
+  </section>
+
+  <section>
+    <div class="bar">
+      <h2>Inventory</h2>
+      <input id="q" type="search" placeholder="Filter: concept, id or source" aria-label="Filter the inventory">
+      <span id="count" class="m mono"></span>
+    </div>
+    <div class="sheet" id="sheet"></div>
+    <div id="groups"></div>
+  </section>
+
+  <section>
+    <h2>KindEmblem kinds to migrate</h2>
+    <p class="sub">Every RowKind that draws a code emblem today, and the icon that replaces it.</p>
+    <div class="emblems" id="emblems"></div>
+  </section>
+
+  <section>
+    <h2>Unicode glyph icons to migrate</h2>
+    <div class="card scroll"><table id="glyphs"></table></div>
+    <p class="sub" id="keep"></p>
+  </section>
+
+  <section>
+    <h2>Board-cell glyphs</h2>
+    <p class="sub">The Glyph field in regionrules.json and vfxstyle.json, drawn in a region cell at inline size.</p>
+    <div class="emblems" id="board"></div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
