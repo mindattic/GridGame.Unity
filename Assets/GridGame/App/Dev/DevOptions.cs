@@ -14,6 +14,7 @@ namespace GridGame.App.Dev
     {
         private const string UnlockedKey = "dev.options";
         private const string CheatsKey = "gridgame.dev.cheats";
+        private const string InstantTurnsKey = "gridgame.dev.instant-turns";
         public const int TapsToUnlock = 7;
         /// <summary>A pause longer than this between taps starts the count again.</summary>
         private const float TapGapSeconds = 2f;
@@ -28,6 +29,8 @@ namespace GridGame.App.Dev
         /// <summary>Developer options are on (unlocked); GG-T1939's name for <see cref="Unlocked"/>.</summary>
         public static bool Enabled => Unlocked;
         public static bool Cheats => Unlocked && PlayerPrefs.GetInt(CheatsKey, 0) == 1;
+        /// <summary>GG-T1967: battle playback skips its animations (the pause menu's Instant turns), only while Cheats are on.</summary>
+        public static bool InstantTurns => Cheats && PlayerPrefs.GetInt(InstantTurnsKey, 0) == 1;
         /// <summary>The pause menu's battle speed for this run (0 = follow Settings); never saved.</summary>
         public static float CheatSpeed;
 
@@ -55,6 +58,12 @@ namespace GridGame.App.Dev
             PlayerPrefs.Save();
             if (!on) CheatSpeed = 0f;
             SyncBadge();
+        }
+
+        public static void SetInstantTurns(bool on)
+        {
+            PlayerPrefs.SetInt(InstantTurnsKey, on ? 1 : 0);
+            PlayerPrefs.Save();
         }
 
         /// <summary>Makes the version line <paramref name="label"/> count taps toward the unlock.</summary>

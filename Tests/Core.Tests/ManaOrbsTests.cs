@@ -7,7 +7,7 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>Mana Orbs retired as progression (GG-T1811, BIBLE §3.1.0) and full spell meters settling into Mana Dust
+    /// <summary>Mana Orbs retired as progression (GG-T1811, BIBLE §3.1.0) and the unspent party pool settling into Mana Dust
     /// (GG-T676, §3.1.4.2).</summary>
     public class ManaOrbsTests
     {

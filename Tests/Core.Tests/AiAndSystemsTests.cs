@@ -136,8 +136,7 @@ namespace GridGame.Tests
             setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(4, 7) });
             setup.Party[0].Bar.Add("fireball");
             var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
-            var k = Hero(s, "knight");
-            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), 2 * BattleConfig.ManaPointsPerOrb)));
+            Assert.That(ManaIn(s), Is.EqualTo(2 * BattleConfig.ManaPointsPerOrb), "each start orb is 100 points in the party pool");
             Assert.That(Hero(s, "knight").ResistanceMultiplier(DamageType.Fire), Is.EqualTo(0.5f).Within(1e-3));
         }
 

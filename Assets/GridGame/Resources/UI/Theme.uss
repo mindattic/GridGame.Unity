@@ -413,16 +413,16 @@
 .kit-navtab-badge { position: absolute; top: var(--space-8); right: var(--space-16); }
 .kit-navtab--active { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
 .kit-navtab--active > .kit-navtab-label { color: var(--color-mana); }
-.kit-navtab--locked { opacity: 0.4; }
+.kit-navtab--locked > .menu-icon { opacity: 0.6; } /* the padlock marks it; the label keeps its contrast (GG-T2085) */
 
 /* ── Camp hub tiles (GG-T1612): a wrapping grid of destination tiles, styled like the nav tabs ── */
 .kit-pillar { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; padding: 0 var(--space-12); }
-.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; min-height: 160px; padding: var(--space-8) var(--space-4); margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
+.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; min-height: 160px; padding: var(--space-8) var(--space-4); margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-chrome); } /* a chrome pane, so its label reads over any backdrop (GG-T2085) */
 .kit-tile > .menu-icon { width: var(--size-icon); height: var(--size-icon); margin: 0; } /* row role, docs/ICONS.md (GG-T2085) */
 .kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
 .kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
-.kit-tile--locked { opacity: 0.4; }
+.kit-tile--locked > .menu-icon { opacity: 0.6; } /* the padlock marks it; the label keeps its contrast (GG-T2085) */
 /* GG-T1972: the Equip tab's slot grid, four thumbnails a row; names wrap, never cut off */
 .equip-tile { flex-basis: 21%; height: auto; min-height: 160px; padding: var(--space-8) var(--space-4); justify-content: flex-start; }
 .equip-tile > .kit-tile-label, .equip-tile > .kit-tile-value { white-space: normal; }

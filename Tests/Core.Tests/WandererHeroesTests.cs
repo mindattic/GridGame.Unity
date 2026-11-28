@@ -152,11 +152,11 @@ namespace GridGame.Tests
             var caster = Hero(s, "knight");
             var cleric = Hero(s, "cleric");
             cleric.Hp = 5;
-            int points = s.ManaIn(caster.Id, 1);
+            int points = ManaIn(s);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = cleric.Pos });
             Assert.That(cleric.Hp, Is.GreaterThan(5), "the ally is mended");
             Assert.That(ev.OfType<ManaGainedEvent>().Where(g => g.Reason == "aether").Sum(g => g.Orbs), Is.EqualTo(1));
-            Assert.That(s.ManaIn(caster.Id, 1), Is.EqualTo(System.Math.Min(s.ManaFull(caster, 1), points + BattleConfig.ManaPointsPerOrb)));
+            Assert.That(ManaIn(s), Is.EqualTo(System.Math.Min(BattleConfig.PartyManaCapacity, points + BattleConfig.ManaPointsPerOrb)));
             Assert.That(caster.Cooldowns["aetherist_aetherpour"], Is.GreaterThan(0), "a Skill on a cooldown, not a free orb every action");
             AssertEventInvariants(ev);
         }
@@ -169,9 +169,9 @@ namespace GridGame.Tests
             var db = WithReal("meditate");
             var s = Board(db, "meditate", "fireball");
             var knight = Hero(s, "knight");
-            int points = s.ManaIn(knight.Id, 1);
+            int points = ManaIn(s);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = knight.Pos });
-            Assert.That(s.ManaIn(knight.Id, 1), Is.EqualTo(System.Math.Min(s.ManaFull(knight, 1), points + BattleConfig.ManaPointsPerOrb)));
+            Assert.That(ManaIn(s), Is.EqualTo(System.Math.Min(BattleConfig.PartyManaCapacity, points + BattleConfig.ManaPointsPerOrb)));
             Assert.That(ev.OfType<ManaGainedEvent>().Where(g => g.Kind == ManaGainKind.Grant).Sum(g => g.Orbs), Is.EqualTo(1));
         }
 

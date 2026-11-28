@@ -326,37 +326,37 @@ A row's logical size is design px x stage scale / unit.
 
 | Device | App px wide | Unit | Stage scale | Before: 132-px row | After: target px | After: row | Battle HUD (fixed): bottom row 132 / top bar 110 |
 |---|---|---|---|---|---|---|---|
-| iPhone 15 Pro | 1179 | pt 3 | 1.008 | 44.3 pt | 132 | 44.3 pt | 44.3 / 36.9 pt |
+| iPhone 15 Pro | 1179 | pt 3 | 1.008 | 44.3 pt | 136 | 45.7 pt | 44.3 / 36.9 pt |
 | iPhone 15 Pro Max | 1290 | pt 3 | 1.103 | 48.5 pt | 132 | 48.5 pt | 48.5 / 40.4 pt |
-| iPhone 16 | 1179 | pt 3 | 1.008 | 44.3 pt | 132 | 44.3 pt | 44.3 / 36.9 pt |
+| iPhone 16 | 1179 | pt 3 | 1.008 | 44.3 pt | 136 | 45.7 pt | 44.3 / 36.9 pt |
 | iPhone 16 Plus | 1290 | pt 3 | 1.103 | 48.5 pt | 132 | 48.5 pt | 48.5 / 40.4 pt |
 | iPhone 16 Pro | 1206 | pt 3 | 1.031 | 45.4 pt | 132 | 45.4 pt | 45.4 / 37.8 pt |
 | iPhone 16 Pro Max | 1320 | pt 3 | 1.128 | 49.6 pt | 132 | 49.6 pt | 49.6 / 41.4 pt |
-| iPhone 16e | 1170 | pt 3 | 1.000 | 44.0 pt | 132 | 44.0 pt | 44.0 / 36.7 pt |
+| iPhone 16e | 1170 | pt 3 | 1.000 | 44.0 pt | 136 | 45.3 pt | 44.0 / 36.7 pt |
 | iPhone 17 | 1206 | pt 3 | 1.031 | 45.4 pt | 132 | 45.4 pt | 45.4 / 37.8 pt |
 | iPhone 17 Pro | 1206 | pt 3 | 1.031 | 45.4 pt | 132 | 45.4 pt | 45.4 / 37.8 pt |
 | iPhone 17 Pro Max | 1320 | pt 3 | 1.128 | 49.6 pt | 132 | 49.6 pt | 49.6 / 41.4 pt |
 | iPhone Air | 1260 | pt 3 | 1.077 | 47.4 pt | 132 | 47.4 pt | 47.4 / 39.5 pt |
-| Galaxy S23 | 1080 | dp 3 | 0.923 | 40.6 dp | 156 | 48.0 dp | 40.6 / 33.8 dp |
-| Galaxy S23+ | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 148 | 48.6 dp | 43.3 / 36.1 dp |
-| Galaxy S23 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 140 | 49.2 dp | 46.4 / 38.7 dp |
-| Galaxy S23 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 148 | 48.6 dp | 43.3 / 36.1 dp |
-| Galaxy S24 | 1080 | dp 3 | 0.923 | 40.6 dp | 156 | 48.0 dp | 40.6 / 33.8 dp |
-| Galaxy S24+ | 1080 | dp 2.625 | 0.923 | 46.4 dp | 140 | 49.2 dp | 46.4 / 38.7 dp |
-| Galaxy S24 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 140 | 49.2 dp | 46.4 / 38.7 dp |
-| Galaxy S24 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 148 | 48.6 dp | 43.3 / 36.1 dp |
-| Galaxy S25 | 1080 | dp 3 | 0.923 | 40.6 dp | 156 | 48.0 dp | 40.6 / 33.8 dp |
-| Galaxy S25+ | 1080 | dp 2.625 | 0.923 | 46.4 dp | 140 | 49.2 dp | 46.4 / 38.7 dp |
-| Galaxy S25 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 140 | 49.2 dp | 46.4 / 38.7 dp |
-| Galaxy S25 Edge | 1080 | dp 2.625 | 0.923 | 46.4 dp | 140 | 49.2 dp | 46.4 / 38.7 dp |
-| Galaxy S25 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 148 | 48.6 dp | 43.3 / 36.1 dp |
-| Galaxy Z Flip5 (main) | 1080 | dp 2.75 | 0.923 | 44.3 dp | 144 | 48.3 dp | 44.3 / 36.9 dp |
-| Galaxy Z Flip6 (main) | 1080 | dp 2.75 | 0.923 | 44.3 dp | 144 | 48.3 dp | 44.3 / 36.9 dp |
-| Galaxy Z Fold5 (cover) | 904 | dp 3 | 0.773 | 34.0 dp | 188 | 48.4 dp | 34.0 / 28.3 dp |
-| Galaxy Z Fold6 (cover) | 968 | dp 3 | 0.827 | 36.4 dp | 176 | 48.5 dp | 36.4 / 30.3 dp |
+| Galaxy S23 | 1080 | dp 3 | 0.923 | 40.6 dp | 164 | 50.5 dp | 40.6 / 33.8 dp |
+| Galaxy S23+ | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy S23 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S23 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy S24 | 1080 | dp 3 | 0.923 | 40.6 dp | 164 | 50.5 dp | 40.6 / 33.8 dp |
+| Galaxy S24+ | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S24 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S24 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy S25 | 1080 | dp 3 | 0.923 | 40.6 dp | 164 | 50.5 dp | 40.6 / 33.8 dp |
+| Galaxy S25+ | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S25 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S25 Edge | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S25 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy Z Flip5 (main) | 1080 | dp 2.75 | 0.923 | 44.3 dp | 148 | 49.7 dp | 44.3 / 36.9 dp |
+| Galaxy Z Flip6 (main) | 1080 | dp 2.75 | 0.923 | 44.3 dp | 148 | 49.7 dp | 44.3 / 36.9 dp |
+| Galaxy Z Fold5 (cover) | 904 | dp 3 | 0.773 | 34.0 dp | 192 | 49.4 dp | 34.0 / 28.3 dp |
+| Galaxy Z Fold6 (cover) | 968 | dp 3 | 0.827 | 36.4 dp | 180 | 49.6 dp | 36.4 / 30.3 dp |
 
 Every interactive kit row is now at least 48 dp on every in-target Galaxy and at least 44 pt on every in-target iPhone;
-no iPhone row changes (the narrowest, the iPhone 16e, is 44.0 pt at 132). Rows grow by at most 56 px (Z Fold5 cover),
+the target aims 3 % over the minimum (`TapTarget.Margin`), because the audit measured a 132-px row at 43.7 pt on the iPhone 15 Pro and 43.0 pt on the 16e, just under 44 (GG-T2122), so the iPhones grow from 132 to 136 px. Rows grow by at most 60 px (Z Fold5 cover),
 and the narrow screens that grow most are also the tallest stages (the Fold5 cover's is 1170 x 2998, the Galaxy S25's
 1170 x 2535 against the iPhone 15 Pro's 2556), so fixed-count pages (the title, Continue / Start Campaign) keep their
 room; lists already scroll inside their windows.

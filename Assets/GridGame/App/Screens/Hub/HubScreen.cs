@@ -26,7 +26,7 @@ namespace GridGame.App
                 foreach (var done in Paywall.FinishReady(c, s, DateTime.UtcNow)) { App.Toast(done.Message ?? "Done"); App.Persist(); }
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, ThemeFor(c, s), 2);
-            bg.style.unityBackgroundImageTintColor = Palette.TextDim;
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Hub; // the hub pages' tint: gold and captions on the backdrop keep 4.5:1 (GG-T2085)
 
             var frame = Ui.El("fill col", root);
             var col = Ui.El("col grow", frame);
@@ -198,7 +198,6 @@ namespace GridGame.App
                 marker.style.visibility = Visibility.Hidden;
                 marker.pickingMode = PickingMode.Ignore;
             }
-            Ui.Select(cont);
 
             // GG-T518: a closed destination's hint sits whole, wrapping if it must, in small type under the row's name.
             void Subline(VisualElement row, string text)
