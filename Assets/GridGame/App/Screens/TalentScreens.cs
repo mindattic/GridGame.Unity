@@ -28,10 +28,11 @@ namespace GridGame.App
             {
                 var hero = h;
                 int nodes = SkillHexProgress.Refundable(C, hero).Count;
+                int owned = HeroBoard.Owned(C, hero).Count;
                 int refund = SkillHexProgress.RefundPoints(C, hero);
                 int cost = SkillHexProgress.RespecCost(hero);
                 string name = C.TryClass(hero.ClassId)?.Name ?? hero.ClassId;
-                string value = nodes == 0 ? "No board nodes bought" : $"{refund} SP · {Ui.Gold(cost)}";
+                string value = nodes == 0 ? $"Owns {owned} node{(owned == 1 ? "" : "s")}, none bought" : $"{refund} SP · {Ui.Gold(cost)}";
                 bool ok = closed == null && nodes > 0 && S.Gold >= cost;
                 // GG-T698: a card (portrait, name, level, status and the class blurb) rather than a bare menu row.
                 var card = Ui.Card(list, hero.ClassId, null, out var col, "respec-" + hero.ClassId);
