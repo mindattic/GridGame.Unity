@@ -385,10 +385,22 @@ namespace GridGame.App
             v.SetPlate(u.Facing, e.Left > 0 ? e.Left : 1, e.Max);
             v.Plate.style.backgroundColor = Palette.White;
             App.StartCoroutine(Tween.Shake(v.Plate, 8f * Fx, Timing.Quick));
-            Text.Show(at + new Vector2(0, -30), CombatTextKind.Resist, $"CLANG! −{e.Amount}", 0f, Palette.Info);
+            Text.Show(at + new Vector2(0, -30), CombatTextKind.Resist, e.Amount > 0 ? $"CLANG! −{e.Amount}" : "CLANG!", 0f, Palette.Info); // GG-T2069: an unyielding plate
             yield return Tween.Wait(Timing.Quick);
             v.Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
             v.SetPlate(u.Facing, e.Left, e.Max);
+        }
+
+        /// <summary>GG-T2069 (§13.5): a ShattersPlate ability broke the plate outright: a heavy crack and SHATTERED as a
+        /// callout at the plate; the PlateBrokenEvent that follows throws the shards.</summary>
+        private IEnumerator PlateShatteredAnim(PlateShatteredEvent e)
+        {
+            var u = State.UnitById(e.UnitId);
+            if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
+            App.Audio.Sfx("battle.shatter", 1f, 0.65f);
+            if (!ReduceMotion) Sparks(PlateEdge(v, u.Facing), 16, new Color(1f, 0.95f, 0.75f));
+            Text.Show(PlateEdge(v, u.Facing) + new Vector2(0, -30), CombatTextKind.Callout, "SHATTERED", 0.8f, new Color(1f, 0.85f, 0.5f));
+            yield return Tween.Wait(Timing.Quick);
         }
 
         private IEnumerator PlateBrokenAnim(PlateBrokenEvent e)
