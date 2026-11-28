@@ -49,7 +49,7 @@ namespace GridGame.App
             "Hold any hero, foe or icon to read it without Info",
         };
 
-        /// <summary>The confirm button's word for <paramref name="a"/>.</summary>
+        /// <summary>The commit button's word, on the aim card and the Abilities sheet alike: Use for a consumable, Cast for a spell, Perform for a skill or a weapon move.</summary>
         private static string CommitVerb(AbilityDef a) => a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
     }
 }

@@ -24,14 +24,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0ec0e38454e647b2b82e03970c1ece04b3ef06b704bbf35a5d2643d5c1c1d563",
+      "hash": "sha256:8894596dd4c8e0e83b4a34486a4dc78e622e40e0e4753053417b15bbbe1598b5",
       "about": [
         "concept-active"
       ],
       "speakers": [],
       "payload": {
         "term": "Active",
-        "definition": "Used from the ability bar on your turn, paying its mana or cooldown.",
+        "definition": "Used from Abilities on your turn. A spell spends its cost from the party mana bar; a skill costs no mana and recharges over a few turns; an item spends one from its stack.",
         "aliases": [
           "Actives"
         ]
@@ -79,12 +79,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e0ee9685ef6c07da64595217f673c70de3bbccd5308481f6270d1b860ef702f6",
+      "hash": "sha256:910e6272bd517a0b6eba46c733bcff5f5351b8b0a5c513d2c317d3c9de8dad78",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Mana",
-        "definition": "The Manalith's energy and the life in every person: one thing. The party's orbs, every spell, a healer's touch and Halcyon's old machines all run on it.",
+        "definition": "The Manalith's energy and the life in every person: one thing. Every spell, a healer's touch and Halcyon's old machines all run on it. In battle it fills the party's one mana bar.",
         "aliases": []
       }
     },
@@ -94,14 +94,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1b533943609f705ae33d2dec5a2f1286febb368b6e1251e95d7ca5598c78429f",
+      "hash": "sha256:974de8b0fdd0964d9660b1a553a87495b43c099ab297c47d2934273d59ff7d53",
       "about": [
         "concept-aether-siphon"
       ],
       "speakers": [],
       "payload": {
         "term": "Mana Siphon",
-        "definition": "A Bulwark Siphoner's charge: it hits one hero, and an orb leaves the party's bank when it lands. Spend your orbs first, or [Interrupt] it."
+        "definition": "A Bulwark Siphoner's charge: it hits one hero, and mana drains out of the party bar when it lands. Spend your mana on spells first, or [Interrupt] it."
       }
     },
     "glossary:aetherain": {
@@ -179,7 +179,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:33c3aa3ffd8f83410674ef32e33f1b0d719139f780629a7079009a2143d2f133",
+      "hash": "sha256:409d860a1856052dd1567bd2af0e423439f44a8a1ec7802f3281871077a81f93",
       "about": [],
       "speakers": [],
       "payload": {
@@ -1202,14 +1202,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:001e7e1fe2d1d15e465c74d8c66780a5c029231f6d1638c6be690bf69eb00671",
+      "hash": "sha256:09df6291c7aa1867b010c746e67d0b4d647cb0cfb6196fb2db5ec0a7d0e61e59",
       "about": [
         "concept-guard"
       ],
       "speakers": [],
       "payload": {
         "term": "Guard",
-        "definition": "Ends your turn early; the turn time you didn't use fills the mana bubble.",
+        "definition": "Defends and adds mana: ends your turn early with your heroes shielded, and the turn time you didn't use flows into the party mana bar.",
         "aliases": [
           "Guards",
           "Guarding"
@@ -1477,20 +1477,38 @@
         "aliases": []
       }
     },
+    "glossary:mana_bar": {
+      "key": "glossary:mana_bar",
+      "id": "glossary-mana-bar",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b7a5c894bd64c931e12221e5ebc35ca3193729bbaa8c281a13c0ee31c630fdfd",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Mana bar",
+        "definition": "The one thin bar the whole party shares, just above Abilities, Info and GUARD. Every action fills it, GUARD adds the turn time you leave, and a spell spends its cost from it: 100 mana for each point of cost. Skills recharge instead, and items come in stacks.",
+        "aliases": [
+          "Party mana bar",
+          "Party bar"
+        ]
+      }
+    },
     "glossary:mana_charge": {
       "key": "glossary:mana_charge",
       "id": "glossary-mana-charge",
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d9325c2b4906bf026871e2487be06205a0f923bc25d802d9bbb93373b7d948ea",
+      "hash": "sha256:07f426549b8f8c983ec2291a773554abc0f78b7eefdbdf6193f5b2ff4cde2287",
       "about": [
         "concept-mana-charge"
       ],
       "speakers": [],
       "payload": {
         "term": "mana charge",
-        "definition": "Fills every spell's mana bar by the same amount. A spell is ready when its own bar is full, so a cheap spell fills faster."
+        "definition": "The mana your actions earn: pincers, chain links, kills, breaking a cast, GUARD and more. It fills the party mana bar, a little less as the bar nears full, and stops when the bar is full."
       }
     },
     "glossary:mana_dust": {
@@ -1499,7 +1517,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ed76f0750eee6be0313a9066f7b138e7a0f4d2803ec34ec3e295f2af39cf6dfd",
+      "hash": "sha256:d0ae43a8e4cbf184b1176e4b6cfd9730f53adb9212dfb6acba5e0bdc905fcb75",
       "about": [],
       "speakers": [],
       "payload": {
@@ -1514,12 +1532,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3772fabe4dcc767e2cb03a35de857ac7ee574a2fd7b6fca3ded24d87557b96c9",
+      "hash": "sha256:9d4daf7461e4540e034f432cb87b2c12a7103be5a45064f7150c85408b55ca0b",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Mana Orb",
-        "definition": "Halcyon's old batteries, retired as something to collect. Mana now lives in each spell's own mana bar: every gain fills every spell's bar, a cheap spell fills faster than a dear one, and casting empties only that spell's bar. Where text says an orb, it means 100 mana to every spell.",
+        "definition": "Halcyon's old batteries, retired as something to collect. In battle the party shares one thin mana bar instead: every action fills it and spells spend from it. Where old text says an orb, it means 100 mana.",
         "aliases": [
           "Mana Orbs"
         ]
@@ -1806,7 +1824,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:65e7af60dc722cb2346de17d7a8ede9de72ba64a9a5015963c0a2b9e00698294",
+      "hash": "sha256:adecc18fc284610fd3c3ebdc538c1e66b525b1ea48fdc54840260db5b7f0800e",
       "about": [],
       "speakers": [],
       "payload": {

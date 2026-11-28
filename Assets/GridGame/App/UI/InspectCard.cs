@@ -248,7 +248,7 @@ namespace GridGame.App
             var head = Header(body, itemTex ?? Art.AbilityIcon(a), a.Name, kind, Palette.Gold);
             // Mana in points (§3.1.0): the live meter when the slot gives one, else how many points fill it.
             string meter = !string.IsNullOrEmpty(state) ? state
-                : a.Cost > 0 && a.Kind == AbilityKind.Spell ? $"{a.Cost * BattleConfig.ManaPointsPerOrb} mana to fill its meter" : null;
+                : a.Cost > 0 && a.Kind == AbilityKind.Spell ? $"{a.Cost * BattleConfig.ManaPointsPerOrb} mana from the party bar" : null;
             if (meter != null) { var m = Line(head, meter, "t-caption", a.Kind == AbilityKind.Spell ? Palette.Mana : Palette.Gold); m.name = "ability-state"; }
 
             var does = new List<string>();
