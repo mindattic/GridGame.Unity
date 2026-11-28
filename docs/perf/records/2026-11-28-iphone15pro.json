@@ -1,0 +1,187 @@
+{
+  "ticket": "GG-T2101",
+  "device": "iphone15pro",
+  "device_px": [
+    1179,
+    2556
+  ],
+  "when": "2026-11-28T06:31:44",
+  "host": "Windows dev player (a desktop proxy, not the phone)",
+  "budget": {
+    "fps": 60,
+    "frame_p95_ms": 16.666666666666668,
+    "ui_ms": 8,
+    "texture_mb": 512,
+    "allocated_mb": 1024,
+    "mono_heap_mb": 128,
+    "gc_bytes_per_frame": 1024,
+    "cold_start_s": 5
+  },
+  "flows": {
+    "battle": {
+      "preset": "first-boss",
+      "perf": {
+        "frames": 2365,
+        "seconds": 40.72,
+        "fps_avg": 58.1,
+        "frame_ms": {
+          "avg": 17.22,
+          "p50": 16.67,
+          "p95": 16.7,
+          "p99": 39.63,
+          "max": 93.71
+        },
+        "over_16ms_pct": 2.8,
+        "over_33ms_pct": 1.3,
+        "gc_source": "profiler",
+        "gc_alloc_kb_total": 108897.9,
+        "gc_alloc_bytes_per_frame": 47150,
+        "gc_alloc_frames_pct": 100.0,
+        "texture_mb": 378.0,
+        "allocated_mb": 144.3,
+        "reserved_mb": 264.3,
+        "mono_heap_mb": 42.1,
+        "cold_start_s": 7.79,
+        "target_fps": 60,
+        "render_interval": 1,
+        "dev_build": true,
+        "system_used_mb": 726.6,
+        "main_thread_ms_last": 16.67,
+        "ui_ms": {
+          "avg": 1.92,
+          "p95": 3.37,
+          "max": 66.41
+        },
+        "screen": "battle",
+        "screen_size": [
+          604,
+          1312
+        ]
+      },
+      "verdict": {
+        "fps_avg": {
+          "measured": 58.1,
+          "budget": 60,
+          "ok": false
+        },
+        "frame_p95_ms": {
+          "measured": 16.7,
+          "budget": 16.67,
+          "ok": true
+        },
+        "texture_mb": {
+          "measured": 378.0,
+          "budget": 512,
+          "ok": true
+        },
+        "allocated_mb": {
+          "measured": 144.3,
+          "budget": 1024,
+          "ok": true
+        },
+        "mono_heap_mb": {
+          "measured": 42.1,
+          "budget": 128,
+          "ok": true
+        },
+        "gc_bytes_per_frame": {
+          "measured": 47150,
+          "budget": 1024,
+          "ok": false
+        },
+        "ui_ms_p95": {
+          "measured": 3.37,
+          "budget": 8,
+          "ok": true
+        }
+      }
+    },
+    "map": {
+      "preset": "overworld",
+      "screen": "hub",
+      "swipes": 20,
+      "perf": {
+        "frames": 1246,
+        "seconds": 20.78,
+        "fps_avg": 60.0,
+        "frame_ms": {
+          "avg": 16.68,
+          "p50": 16.67,
+          "p95": 16.67,
+          "p99": 16.75,
+          "max": 26.9
+        },
+        "over_16ms_pct": 0.1,
+        "over_33ms_pct": 0.0,
+        "gc_source": "profiler",
+        "gc_alloc_kb_total": 2216.8,
+        "gc_alloc_bytes_per_frame": 1821,
+        "gc_alloc_frames_pct": 100.0,
+        "texture_mb": 304.8,
+        "allocated_mb": 119.5,
+        "reserved_mb": 248.3,
+        "mono_heap_mb": 22.3,
+        "cold_start_s": 3.57,
+        "target_fps": 60,
+        "render_interval": 1,
+        "dev_build": true,
+        "system_used_mb": 611.3,
+        "main_thread_ms_last": 16.67,
+        "ui_ms": {
+          "avg": 0.21,
+          "p95": 0.51,
+          "max": 10.15
+        },
+        "screen": "hub",
+        "screen_size": [
+          604,
+          1312
+        ]
+      },
+      "verdict": {
+        "fps_avg": {
+          "measured": 60.0,
+          "budget": 60,
+          "ok": true
+        },
+        "frame_p95_ms": {
+          "measured": 16.67,
+          "budget": 16.67,
+          "ok": true
+        },
+        "texture_mb": {
+          "measured": 304.8,
+          "budget": 512,
+          "ok": true
+        },
+        "allocated_mb": {
+          "measured": 119.5,
+          "budget": 1024,
+          "ok": true
+        },
+        "mono_heap_mb": {
+          "measured": 22.3,
+          "budget": 128,
+          "ok": true
+        },
+        "gc_bytes_per_frame": {
+          "measured": 1821,
+          "budget": 1024,
+          "ok": false
+        },
+        "ui_ms_p95": {
+          "measured": 0.51,
+          "budget": 8,
+          "ok": true
+        }
+      },
+      "note": "no map screen exists yet; the camp scroll stands in for the map scroll"
+    }
+  },
+  "cold_start_s": 7.79,
+  "cold_start": {
+    "measured": 7.79,
+    "budget": 5,
+    "ok": false
+  }
+}

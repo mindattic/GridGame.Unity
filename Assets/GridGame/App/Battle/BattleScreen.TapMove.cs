@@ -47,7 +47,7 @@ namespace GridGame.App
             ClearTapMove();
             if (!TapMoveAllowed(tile)) return false;
             var hero = State.UnitById(SelectedHeroId);
-            var path = TapMoveRoute(State, hero.Id, tile, BattleEngine.MaxDragSteps(State));
+            var path = MoveReach.Route(State, hero.Id, tile, BattleEngine.MaxDragSteps(State));
             if (path == null)
             {
                 App.Audio.Sfx("ui.error", 0.5f);
@@ -65,35 +65,6 @@ namespace GridGame.App
             var btn = panel.Q<Button>("move-confirm-action");
             if (btn != null) App.StartCoroutine(Tween.Pop(btn, 1.08f, 0.25f));
             return true;
-        }
-
-        /// <summary>
-        /// The shortest cardinal route (one tile at a time, §1.1) from the hero to <paramref name="dest"/> that the move
-        /// rules let it walk in full, within <paramref name="maxSteps"/>; null when there is none. Neighbours are tried in a
-        /// fixed order, so the same board always gives the same route.
-        /// </summary>
-        private static List<Coord> TapMoveRoute(BattleState s, int heroId, Coord dest, int maxSteps)
-        {
-            var hero = s.UnitById(heroId);
-            if (hero == null || hero.Pos == dest || maxSteps <= 0) return null;
-            var seen = new HashSet<Coord> { hero.Pos };
-            var frontier = new Queue<List<Coord>>();
-            frontier.Enqueue(new List<Coord>());
-            while (frontier.Count > 0)
-            {
-                var path = frontier.Dequeue();
-                if (path.Count >= maxSteps) continue;
-                var at = path.Count > 0 ? path[path.Count - 1] : hero.Pos;
-                foreach (var step in new[] { new Coord(at.X, at.Y - 1), new Coord(at.X + 1, at.Y), new Coord(at.X, at.Y + 1), new Coord(at.X - 1, at.Y) })
-                {
-                    if (step.X < 0 || step.Y < 0 || step.X >= BattleConfig.Cols || step.Y >= BattleConfig.Rows || !seen.Add(step)) continue;
-                    var next = new List<Coord>(path) { step };
-                    if (BattleEngine.PreviewMove(s, heroId, next).StepsTaken.Count < next.Count) continue;
-                    if (step == dest) return next;
-                    frontier.Enqueue(next);
-                }
-            }
-            return null;
         }
 
         /// <summary>The picked route as a path arrow from the hero to the tile, the tile itself in gold, and the drop's

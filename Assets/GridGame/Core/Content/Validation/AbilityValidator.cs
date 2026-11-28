@@ -75,8 +75,17 @@ namespace GridGame.Core.Content
                                      || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Swipe Boon (StealsBoon) is a Skill or Spell that picks one foe (SingleActor, PickActor, EnemyOnly)");
                 // GG-T865: a range limit only means something on a pick of one unit.
-                if (a.MaxRange < 0 || (a.MaxRange > 0 && a.Mode != TargetMode.PickActor))
-                    p.Add($"ability {a.Id}: MaxRange is 0 (anywhere) or a positive reach on a PickActor ability");
+                if (a.MaxRange < 0 || (a.MaxRange > 0 && !Rules.TargetResolver.PicksUnit(a)))
+                    p.Add($"ability {a.Id}: MaxRange is 0 (anywhere) or a positive reach on a PickActor or PickMulti ability");
+                // GG-T2141: a multi-pick taps 2 or more units, one at a time, and resolves at once (a timed cast carries one target).
+                if (a.Mode == TargetMode.PickMulti && (a.MaxPicks < 2 || a.Shape != TargetShape.SingleActor || a.Filter == TargetFilter.EmptyOnly || a.CastTime > 0f))
+                    p.Add($"ability {a.Id}: a PickMulti picks 2 or more units (MaxPicks >= 2, SingleActor, not EmptyOnly) with no CastTime");
+                if (a.Mode != TargetMode.PickMulti && a.MaxPicks != 0)
+                    p.Add($"ability {a.Id}: MaxPicks only means something on a PickMulti ability");
+                // GG-T2141: a direction pick anchors a board shape on the caster's neighbour tile.
+                if (a.Mode == TargetMode.PickDirection && (a.Shape == TargetShape.Self || a.Shape == TargetShape.SingleActor
+                                                           || a.Shape == TargetShape.AllEnemies || a.Shape == TargetShape.AllAllies))
+                    p.Add($"ability {a.Id}: a PickDirection anchors a tile shape (Row, Column, Wall, an area or SingleTile) beside the caster");
                 // GG-T861: a Smoke Vanish leaves from the caster's own tile (its smoke goes there) to a random one, never a teleport too.
                 if (a.Vanishes && (a.Shape != TargetShape.Self || a.Mode != TargetMode.Auto || a.IsTeleport || a.Kind != AbilityKind.Skill))
                     p.Add($"ability {a.Id}: a Smoke Vanish (Vanishes) is a Self / Auto Skill and not also a Teleport");

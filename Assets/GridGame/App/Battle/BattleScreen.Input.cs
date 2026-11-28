@@ -236,7 +236,8 @@ namespace GridGame.App
                 var hero = State.UnitById(SelectedHeroId);
                 var a = hero == null ? null : BattleEngine.SlotAbility(State, hero, TargetingSlot);
                 bool legal = hero != null && a != null && a.Mode != TargetMode.Auto && TargetResolver.IsValidPick(State, a, hero, t);
-                if (legal && (!ConfirmActions || AutoPlay)) Commit(new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = t });
+                if (legal && a.Mode == TargetMode.PickMulti) ToggleMultiPick(hero, a, t);
+                else if (legal && (!ConfirmActions || AutoPlay)) Commit(new UseSlotCommand { HeroId = hero.Id, Slot = TargetingSlot, Target = t });
                 else if (legal && PendingTarget == t) ConfirmPending(); // a second tap on the same pick confirms
                 else if (legal) SetPending(t);
                 else
