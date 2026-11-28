@@ -55,7 +55,7 @@ namespace GridGame.Meta
         public TurnMode TurnMode = TurnMode.PartyWindow;
         /// <summary>Graphics → Quality (GG-T1221): a QualitySettings level index; -1 (default) leaves the project's own level.</summary>
         public int QualityLevel = -1;
-        /// <summary>Graphics → Frame rate cap (GG-T1221): 30, 60 (default) or -1 for uncapped; anything else reads as 60.</summary>
+        /// <summary>Display → Frame rate (GG-T2102): 60 (default) or 120 where the display supports it; anything else reads as 60.</summary>
         public int FrameRateCap = 60;
         /// <summary>Graphics → VSync (GG-T1221): off by default; on, it paces frames and the cap is not used.</summary>
         public bool VSync;

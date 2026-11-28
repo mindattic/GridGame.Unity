@@ -113,15 +113,17 @@ namespace GridGame.App
 
         private static int liveToasts;
 
-        /// <summary>The kit's toast (§4): a small pane above the nav, named <c>toast</c>, for <paramref name="seconds"/>; a
-        /// second one stacks above the first, never over it (GG-T1867).</summary>
+        /// <summary>The kit's toast (§4): a small pane named <c>toast</c>, for <paramref name="seconds"/>, in the band just under
+        /// the header (below the safe top), out of the thumb zone so it never covers a page's actions (GG-T2156); it lets
+        /// taps through. A second one stacks under the first, never over it (GG-T1867).</summary>
         public static void Toast(string text, float seconds = 1.8f) => GameApp.I.StartCoroutine(ToastRoutine(text, seconds));
 
         private static IEnumerator ToastRoutine(string text, float seconds)
         {
             var t = Text(text, "toast shadow", GameApp.I.Overlay);
             t.name = "toast";
-            t.style.bottom = Size.ToastLift + liveToasts * Size.ToastStack;
+            t.pickingMode = PickingMode.Ignore;
+            t.style.top = GameApp.SafeTop + Size.ToastTop + liveToasts * Size.ToastStack;
             liveToasts++;
             t.style.opacity = 0;
             yield return null;

@@ -3,7 +3,7 @@
  "device": "iphone15pro",
  "name": "iPhone 15 Pro",
  "shape": "iphone-island-393",
- "captured": "2026-11-28T09:37:44",
+ "captured": "2026-11-28T09:16:12",
  "frame": {
   "type": "island",
   "corner": 165,
@@ -14,26 +14,31 @@
   "top": 34,
   "r": 56
  },
- "screens": 41,
+ "screens": 46,
  "errors": {
-  "components": "not captured",
-  "results-defeat": "not captured",
-  "results-drill": "not captured",
-  "levelup": "not captured"
+  "drill-picker": "not captured",
+  "overlay-dialogue": "not captured",
+  "overlay-coach": "not captured",
+  "overlay-inspect": "not captured",
+  "overlay-confirm": "not captured",
+  "overlay-toast": "not captured"
  },
  "totals": {
-  "overflow": 0,
+  "overflow": 1,
   "clipped": 0,
   "overlap": 0,
   "offStage": 0,
   "underCutout": 0,
   "topInset": 0,
-  "homeIndicator": 46,
-  "targetsUnder44pt": 4,
-  "contrastFails": 27,
+  "homeIndicator": 47,
+  "targetsUnder44pt": 7,
+  "contrastFails": 24,
   "contrastUnderCutout": 0,
+  "coveredText": 116,
   "screensWith": {
-   "overflow": [],
+   "overflow": [
+    "components"
+   ],
    "clipped": [],
    "overlap": [],
    "offStage": [],
@@ -45,6 +50,7 @@
     "battle",
     "battle-boss",
     "caravan",
+    "components",
     "credits",
     "enchantress",
     "quests",
@@ -54,6 +60,7 @@
     "windows"
    ],
    "targetsUnder44pt": [
+    "components",
     "enchantress",
     "items",
     "profiles",
@@ -63,16 +70,21 @@
     "battle",
     "battle-boss",
     "blacksmith",
-    "camp",
+    "components",
     "crucible",
     "diamonds",
     "enchantress",
+    "levelup",
     "newprofile",
     "shop",
     "summon",
     "windows"
    ],
-   "contrastUnderCutout": []
+   "contrastUnderCutout": [],
+   "coveredText": [
+    "codex",
+    "components"
+   ]
   }
  },
  "findings": {
@@ -98,6 +110,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 10,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -116,7 +129,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 29,
+   "coveredText": [],
+   "contrastSamples": 27,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -134,6 +148,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -160,6 +175,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 27,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -180,6 +196,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 83,
    "minTextPt": 12.8,
    "layoutProblems": []
@@ -198,6 +215,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 61,
    "minTextPt": 10.4,
    "layoutProblems": []
@@ -218,6 +236,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 79,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -236,6 +255,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.1,
    "layoutProblems": []
@@ -254,6 +274,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -272,6 +293,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 68,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -304,6 +326,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -330,6 +353,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -351,6 +375,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 38,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -388,6 +413,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 62,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -406,6 +432,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -424,6 +451,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.1,
    "layoutProblems": []
@@ -457,6 +485,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -475,6 +504,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 13,
    "minTextPt": 10.4,
    "layoutProblems": []
@@ -497,6 +527,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 40,
    "minTextPt": 10.1,
    "layoutProblems": []
@@ -527,6 +558,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 49,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -547,6 +579,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 2,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -565,6 +598,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 7,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -583,6 +617,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 5,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -609,6 +644,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 8,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -635,6 +671,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 4,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -653,6 +690,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 6,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -671,6 +709,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 6,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -697,6 +736,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 37,
    "minTextPt": 12.4,
    "layoutProblems": []
@@ -715,6 +755,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 22,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -733,6 +774,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -754,6 +796,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -772,7 +815,563 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
+   "minTextPt": 13.4,
+   "layoutProblems": []
+  },
+  "components": {
+   "landedOn": "components",
+   "png": "docs/design/ui-audit/captures/iphone15pro/components.png",
+   "overflow": [
+    {
+     "subject": "Saved",
+     "detail": "wrapped text cut off (58>0)"
+    }
+   ],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Disabled"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Pressed",
+     "pt": [
+      83.3,
+      43.3
+     ]
+    },
+    {
+     "target": "Pressed",
+     "pt": [
+      83.3,
+      43.3
+     ]
+    },
+    {
+     "target": "Pressed",
+     "pt": [
+      83.3,
+      43.3
+     ]
+    }
+   ],
+   "contrastFails": [
+    {
+     "text": "Pressed",
+     "ratio": 3.47,
+     "need": 4.5,
+     "fg": "#0c0c16",
+     "bg": "#5463aa"
+    },
+    {
+     "text": "Disabled",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e44",
+     "bg": "#506088"
+    },
+    {
+     "text": "Disabled",
+     "ratio": 4.34,
+     "need": 4.5,
+     "fg": "#ab737d",
+     "bg": "#2c1824"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "coveredText": [
+    {
+     "text": "btn--small",
+     "by": "clipped"
+    },
+    {
+     "text": "Default",
+     "by": "clipped"
+    },
+    {
+     "text": "Pressed",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "Disabled",
+     "by": "clipped"
+    },
+    {
+     "text": "Icon buttons",
+     "by": "clipped"
+    },
+    {
+     "text": "Icon sizes in a button: inline, button, \u2026",
+     "by": "clipped"
+    },
+    {
+     "text": "Icons",
+     "by": "clipped"
+    },
+    {
+     "text": "Inline 32",
+     "by": "clipped"
+    },
+    {
+     "text": "Button 48",
+     "by": "clipped"
+    },
+    {
+     "text": "Row 64",
+     "by": "clipped"
+    },
+    {
+     "text": "Nav 72",
+     "by": "clipped"
+    },
+    {
+     "text": "Set icons (Art.UiIcon), one per row kind",
+     "by": "clipped"
+    },
+    {
+     "text": "RowIcon.Line: an inline icon before wrap\u2026",
+     "by": "clipped"
+    },
+    {
+     "text": "Have: 3 / 3",
+     "by": "clipped"
+    },
+    {
+     "text": "Need: 1 / 4",
+     "by": "clipped"
+    },
+    {
+     "text": "Menu rows",
+     "by": "clipped"
+    },
+    {
+     "text": "Default",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Pressed",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Disabled",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Compact",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Prefixed label",
+     "by": "clipped"
+    },
+    {
+     "text": "Tabs",
+     "by": "clipped"
+    },
+    {
+     "text": "Active",
+     "by": "clipped"
+    },
+    {
+     "text": "Tab",
+     "by": "clipped"
+    },
+    {
+     "text": "Locked",
+     "by": "clipped"
+    },
+    {
+     "text": "Segmented",
+     "by": "clipped"
+    },
+    {
+     "text": "One",
+     "by": "clipped"
+    },
+    {
+     "text": "Two",
+     "by": "clipped"
+    },
+    {
+     "text": "Three",
+     "by": "clipped"
+    },
+    {
+     "text": "Chips",
+     "by": "clipped"
+    },
+    {
+     "text": "Plain",
+     "by": "clipped"
+    },
+    {
+     "text": "Icon",
+     "by": "clipped"
+    },
+    {
+     "text": "Tap",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "Gold",
+     "by": "clipped"
+    },
+    {
+     "text": "Stepper",
+     "by": "clipped"
+    },
+    {
+     "text": "\u2212",
+     "by": "clipped"
+    },
+    {
+     "text": "5",
+     "by": "clipped"
+    },
+    {
+     "text": "+",
+     "by": "clipped"
+    },
+    {
+     "text": "\u2212",
+     "by": "clipped"
+    },
+    {
+     "text": "1",
+     "by": "clipped"
+    },
+    {
+     "text": "+",
+     "by": "clipped"
+    },
+    {
+     "text": "Badges",
+     "by": "clipped"
+    },
+    {
+     "text": "3",
+     "by": "clipped"
+    },
+    {
+     "text": "New",
+     "by": "clipped"
+    },
+    {
+     "text": "99+",
+     "by": "clipped"
+    },
+    {
+     "text": "Progress bars",
+     "by": "clipped"
+    },
+    {
+     "text": "7 / 20",
+     "by": "clipped"
+    },
+    {
+     "text": "20 / 20",
+     "by": "clipped"
+    },
+    {
+     "text": "Gauges",
+     "by": "clipped"
+    },
+    {
+     "text": "Party mana bar: empty, part, priced, sho\u2026",
+     "by": "clipped"
+    },
+    {
+     "text": "Cards",
+     "by": "clipped"
+    },
+    {
+     "text": "Default",
+     "by": "clipped"
+    },
+    {
+     "text": "HEALER",
+     "by": "clipped"
+    },
+    {
+     "text": "Alchemist",
+     "by": "clipped"
+    },
+    {
+     "text": "Pressed",
+     "by": "clipped"
+    },
+    {
+     "text": "HEALER",
+     "by": "clipped"
+    },
+    {
+     "text": "Alchemist",
+     "by": "clipped"
+    },
+    {
+     "text": "Selected",
+     "by": "clipped"
+    },
+    {
+     "text": "HEALER",
+     "by": "clipped"
+    },
+    {
+     "text": "Alchemist",
+     "by": "clipped"
+    },
+    {
+     "text": "Empty state",
+     "by": "clipped"
+    },
+    {
+     "text": "Nothing here yet.",
+     "by": "clipped"
+    },
+    {
+     "text": "Next step",
+     "by": "clipped"
+    },
+    {
+     "text": "Modal",
+     "by": "clipped"
+    },
+    {
+     "text": "A question for the player?",
+     "by": "clipped"
+    },
+    {
+     "text": "Cancel",
+     "by": "clipped"
+    },
+    {
+     "text": "Yes",
+     "by": "clipped"
+    },
+    {
+     "text": "Sheet",
+     "by": "clipped"
+    },
+    {
+     "text": "Sheet",
+     "by": "clipped"
+    },
+    {
+     "text": "Row",
+     "by": "clipped"
+    },
+    {
+     "text": "Value",
+     "by": "clipped"
+    },
+    {
+     "text": "Toast",
+     "by": "clipped"
+    },
+    {
+     "text": "Saved",
+     "by": "clipped"
+    },
+    {
+     "text": "Shapes",
+     "by": "clipped"
+    },
+    {
+     "text": "Arrow",
+     "by": "clipped"
+    },
+    {
+     "text": "BezierArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "OrthoArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "OrthoPathArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "DashedArrow",
+     "by": "clipped"
+    },
+    {
+     "text": "Chevron",
+     "by": "clipped"
+    },
+    {
+     "text": "Bar",
+     "by": "clipped"
+    },
+    {
+     "text": "Dot",
+     "by": "clipped"
+    },
+    {
+     "text": "Ring",
+     "by": "clipped"
+    },
+    {
+     "text": "Pie",
+     "by": "clipped"
+    },
+    {
+     "text": "RoundedRect",
+     "by": "clipped"
+    },
+    {
+     "text": "Filled rect",
+     "by": "clipped"
+    },
+    {
+     "text": "Dashed rect",
+     "by": "clipped"
+    },
+    {
+     "text": "Progress frame",
+     "by": "clipped"
+    }
+   ],
+   "contrastSamples": 32,
+   "minTextPt": 13.4,
+   "layoutProblems": []
+  },
+  "codex": {
+   "landedOn": "codex",
+   "png": "docs/design/ui-audit/captures/iphone15pro/codex.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [
+    {
+     "text": "Places 15/26",
+     "by": "covered"
+    },
+    {
+     "text": "Factions 2/6",
+     "by": "covered"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "???",
+     "by": "clipped"
+    },
+    {
+     "text": "The Arkgrave I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Arkgrave II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Lantern Road I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Lantern Road II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Lantern Road III",
+     "by": "clipped"
+    },
+    {
+     "text": "The Shardfall I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Shardfall II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Shardfall III",
+     "by": "clipped"
+    },
+    {
+     "text": "The Tithe Moors I",
+     "by": "clipped"
+    },
+    {
+     "text": "The Tithe Moors II",
+     "by": "clipped"
+    },
+    {
+     "text": "The Tithe Moors III",
+     "by": "clipped"
+    }
+   ],
+   "contrastSamples": 26,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -790,6 +1389,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 39,
    "minTextPt": 12.1,
    "layoutProblems": []
@@ -808,8 +1408,74 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 45,
    "minTextPt": 12.1,
+   "layoutProblems": []
+  },
+  "results-defeat": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone15pro/results-defeat.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 14,
+   "minTextPt": 12.8,
+   "layoutProblems": []
+  },
+  "results-drill": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone15pro/results-drill.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 12,
+   "minTextPt": 13.4,
+   "layoutProblems": []
+  },
+  "levelup": {
+   "landedOn": "levelup",
+   "png": "docs/design/ui-audit/captures/iphone15pro/levelup.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "TANK",
+     "ratio": 2.8,
+     "need": 4.5,
+     "fg": "#f25c4c",
+     "bg": "#404952"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 21,
+   "minTextPt": 13.4,
    "layoutProblems": []
   },
   "battle": {
@@ -847,6 +1513,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -949,6 +1616,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 8.7,
    "layoutProblems": []
@@ -967,6 +1635,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -983,59 +1652,10 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "200 G",
-     "ratio": 3.78,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#616f79"
-    },
-    {
-     "text": "Lv 1",
-     "ratio": 4.26,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#566776"
-    },
-    {
-     "text": "Lv 1",
-     "ratio": 4.17,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#5a6876"
-    },
-    {
-     "text": "Craft",
-     "ratio": 1.73,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#889178"
-    },
-    {
-     "text": "Journal",
-     "ratio": 2.45,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#6a7584"
-    },
-    {
-     "text": "Recruit",
-     "ratio": 2.21,
-     "need": 4.5,
-     "fg": "#4c4b5d",
-     "bg": "#11101d"
-    },
-    {
-     "text": "Shop",
-     "ratio": 2.21,
-     "need": 4.5,
-     "fg": "#4c4b5d",
-     "bg": "#11101d"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 24,
+   "coveredText": [],
+   "contrastSamples": 22,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -1053,6 +1673,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.1,
    "layoutProblems": []
@@ -1079,7 +1700,8 @@
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 24,
+   "coveredText": [],
+   "contrastSamples": 25,
    "minTextPt": 13.4,
    "layoutProblems": []
   },
@@ -1100,6 +1722,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 32,
    "minTextPt": 13.4,
    "layoutProblems": []

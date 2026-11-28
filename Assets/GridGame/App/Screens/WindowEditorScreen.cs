@@ -637,6 +637,26 @@ namespace GridGame.App
             Slider(c, "B", "window-b", 0, 255, Channel(0), v => v.ToString(), v => SetChannel(0, v), Palette.Hero);
         }
 
+        private static Texture2D stepMinus, stepPlus;
+
+        /// <summary>The slider steppers' bar and cross, drawn once in the text colour: the kit has no minus/plus icon.</summary>
+        private static Texture2D StepGlyph(bool plus)
+        {
+            if (plus ? stepPlus != null : stepMinus != null) return plus ? stepPlus : stepMinus;
+            const int n = 64, half = 6;
+            var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { name = plus ? "step-plus" : "step-minus", wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.DontSave };
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    bool bar = Mathf.Abs(y - n / 2) < half && x >= 12 && x < n - 12;
+                    bool stem = plus && Mathf.Abs(x - n / 2) < half && y >= 12 && y < n - 12;
+                    t.SetPixel(x, y, bar || stem ? Color.white : Color.clear);
+                }
+            t.Apply();
+            if (plus) stepPlus = t; else stepMinus = t;
+            return t;
+        }
+
         /// <summary>A labelled slider: − and + buttons (one step) either side of a track that follows a drag or a tap.
         /// <paramref name="mark"/> draws a tick at that value (the neutral centre of a two-way bar, GG-T563).</summary>
         private void Slider(VisualElement c, string label, string name, int min, int max, int value, Func<int, string> fmt, Action<int> onChange, Color? tint = null, int? mark = null)
@@ -661,7 +681,7 @@ namespace GridGame.App
                 fill.style.width = Length.Percent(max > min ? (v - min) * 100f / (max - min) : 100f);
                 if (notify) onChange(v);
             }
-            var minus = Ui.Button("−", () => Set(cur - 1, true), "btn--small btn--icon", row);
+            var minus = Ui.IconButton(RowKind.Window, () => Set(cur - 1, true), row, classes: "btn--small", tex: StepGlyph(false));
             minus.name = name + "-down";
             var track = Ui.El(null, row);
             track.name = name + "-track";
@@ -700,7 +720,7 @@ namespace GridGame.App
             track.RegisterCallback<PointerDownEvent>(e => { track.CapturePointer(e.pointerId); FromPointer(e.localPosition); e.StopPropagation(); });
             track.RegisterCallback<PointerMoveEvent>(e => { if (track.HasPointerCapture(e.pointerId)) { FromPointer(e.localPosition); e.StopPropagation(); } });
             track.RegisterCallback<PointerUpEvent>(e => { if (track.HasPointerCapture(e.pointerId)) track.ReleasePointer(e.pointerId); });
-            var plus = Ui.Button("+", () => Set(cur + 1, true), "btn--small btn--icon", row);
+            var plus = Ui.IconButton(RowKind.Window, () => Set(cur + 1, true), row, classes: "btn--small", tex: StepGlyph(true));
             plus.name = name + "-up";
             row.Add(valueLabel);
             valueLabel.style.width = Size.Label;

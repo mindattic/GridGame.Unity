@@ -20,6 +20,8 @@ namespace GridGame.App
         public readonly VisualElement HpFill;
         public readonly VisualElement Buffs;
         public readonly VisualElement Glow;
+        /// <summary>GG-T1948: the base plate the token stands on, by side.</summary>
+        public readonly Plinth Base;
         /// <summary>The armor plate (§13.5): a riveted steel bar on the edge the unit faces.</summary>
         public readonly VisualElement Plate;
         /// <summary>Cracked-weapon badge (GG-T39, GG-T1949): shows once the weapon is on its last (x1.5, then shatter) point; the only gear telegraph on the token.</summary>
@@ -170,6 +172,10 @@ namespace GridGame.App
                 FloatShadow.style.borderBottomLeftRadius = FloatShadow.style.borderBottomRightRadius = tile * 0.1f;
             FloatShadow.style.display = DisplayStyle.None;
             Root.Insert(0, FloatShadow);
+            Base = new Plinth { name = "plinth-" + u.Id };
+            Root.Insert(0, Base);
+            SetPlinth(u);
+            Root.schedule.Execute(StepLift).Every(33);
             floatPhase = u.Id * 1.37f; // floaters bob out of step with each other
             Root.schedule.Execute(StepFloat).Every(33);
 
@@ -190,6 +196,7 @@ namespace GridGame.App
             foreach (var cls in new[] { "unit-keyline--guest", "unit-keyline--hero", "unit-keyline--boss", "unit-keyline--foe", "unit-keyline--neutral", "unit-keyline--tamed", "unit-keyline--wanderer" })
                 Keyline.RemoveFromClassList(cls);
             Keyline.AddToClassList(u.IsNeutral ? "unit-keyline--neutral" : wanderer ? "unit-keyline--wanderer" : tamed ? "unit-keyline--tamed" : u.IsGuest ? "unit-keyline--guest" : independent == false || !u.IsHero ? ((u.IsBossLike || u.IsMultiTile) ? "unit-keyline--boss" : "unit-keyline--foe") : "unit-keyline--hero");
+            SetPlinth(u, independent);
             Frame.Q<Label>("guest-" + u.Id)?.RemoveFromHierarchy();
             if (!u.IsGuest && !u.IsNeutral && !tamed) return;
             var tag = new Label(u.IsNeutral ? "TALK" : wanderer ? "WANDERER" : tamed ? "TAMED" : "GUEST") { name = "guest-" + u.Id, pickingMode = PickingMode.Ignore };
@@ -198,6 +205,16 @@ namespace GridGame.App
             tag.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(tag);
             tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : Palette.Vfx.Ally;
             Frame.Add(tag);
+        }
+
+        /// <summary>GG-T1948: heroes and guests stand on the hero plate, foes on the notched foe plate and a boss
+        /// (<see cref="Unit.IsBossLike"/>, GG-T2128) on the notched boss plate; a neutral, a tamed monster, a wanderer and a
+        /// corpse keep their own keyline and stand on none. Base is null until the ctor builds it.</summary>
+        private void SetPlinth(Unit u, bool? independent = null)
+        {
+            if (Base == null) return;
+            bool tamed = independent ?? u.IsIndependent;
+            Base.Set(u.IsCorpse || u.IsNeutral || tamed ? Plinth.Side.None : u.IsHero && independent != false ? Plinth.Side.Hero : u.IsBossLike ? Plinth.Side.Boss : Plinth.Side.Foe);
         }
 
         private VisualElement cardBack;
@@ -338,6 +355,38 @@ namespace GridGame.App
         private bool floating;
         private float floatPhase, settleStart = -1f;
         private const float FloatLift = 16f, FloatBob = 4f, FloatWobble = 1.2f, SettleTime = 0.35f;
+        private float floatY, floatTilt, lift, liftTarget;
+        private const float SelectLift = 8f, SelectLiftTime = 0.12f;
+
+        /// <summary>
+        /// GG-T1948: the selected token lifts off its base plate (the plate stays, its front edge showing under the card);
+        /// Reduce Motion sets the lift at once instead of easing it.
+        /// </summary>
+        public void SetLifted(bool on)
+        {
+            float target = on ? SelectLift : 0f;
+            if (Mathf.Approximately(target, liftTarget)) return;
+            liftTarget = target;
+            if (GameApp.I?.Settings?.ReduceMotion == true) { lift = target; Pose(); }
+        }
+
+        private void StepLift()
+        {
+            if (Mathf.Approximately(lift, liftTarget)) return;
+            lift = Mathf.MoveTowards(lift, liftTarget, SelectLift * 0.033f / SelectLiftTime);
+            Pose();
+        }
+
+        /// <summary>Raises everything but the plate and the float shadow by the float and selection lifts.</summary>
+        private void Pose()
+        {
+            foreach (var child in Root.Children())
+            {
+                if (child == FloatShadow || child == Base) continue;
+                child.style.translate = new Translate(0, floatY - lift);
+                if (child == Frame || child == Glow) child.style.rotate = new Rotate(floatTilt);
+            }
+        }
 
         /// <summary>
         /// GG-T951 (owner 2026-11-24): a Floating unit's card hovers a little above its tile over a soft shadow, bobbing
@@ -375,12 +424,9 @@ namespace GridGame.App
             }
             FloatShadow.style.opacity = Mathf.Clamp01(shadow);
             FloatShadow.style.scale = new Scale(new Vector2(shadow, 1f));
-            foreach (var child in Root.Children())
-            {
-                if (child == FloatShadow) continue;
-                child.style.translate = new Translate(0, y);
-                if (child == Frame || child == Glow) child.style.rotate = new Rotate(tilt);
-            }
+            floatY = y;
+            floatTilt = tilt;
+            Pose();
         }
 
         /// <summary>
@@ -501,6 +547,8 @@ namespace GridGame.App
             scrim.style.backgroundColor = Palette.Ink.WithA(0f);
             // Order matters: highlights and lines draw OVER the units so targets and pincer previews read clearly.
             TileLayer = Layer("tiles");
+            // GG-T1950: the grid over the tile art, a light core on a dark keyline so it holds 3:1 on every theme's art.
+            GridLayer = Layer("grid");
             // Under the units: the streak trails behind the moving token (GG-T219).
             Trail = new TrailLayer { name = "trail" };
             Trail.style.position = Position.Absolute;
@@ -541,6 +589,26 @@ namespace GridGame.App
                     MarkLayer.Add(m);
                     marks[x, y] = m;
                 }
+            for (int x = 0; x <= BattleConfig.Cols; x++) GridLine(x * Tile, 0f, true);
+            for (int y = 0; y <= BattleConfig.Rows; y++) GridLine(0f, y * Tile, false);
+        }
+
+        public readonly VisualElement GridLayer;
+
+        /// <summary>GG-T1950: one grid line through (<paramref name="x"/>, <paramref name="y"/>) across the whole board.</summary>
+        private void GridLine(float x, float y, bool vertical)
+        {
+            foreach (var (width, color) in new[] { (Size.Hairline + 2 * Size.Underline, Palette.Ink), (Size.Hairline, Palette.Vfx.GridLine) })
+            {
+                var l = new VisualElement { pickingMode = PickingMode.Ignore };
+                l.style.position = Position.Absolute;
+                l.style.backgroundColor = color;
+                l.style.left = vertical ? x - width / 2f : x;
+                l.style.top = vertical ? y : y - width / 2f;
+                l.style.width = vertical ? width : Tile * BattleConfig.Cols;
+                l.style.height = vertical ? Tile * BattleConfig.Rows : width;
+                GridLayer.Add(l);
+            }
         }
 
         private readonly VisualElement scrim;
@@ -1120,6 +1188,58 @@ namespace GridGame.App
                 if (this.frac <= 0f || radius <= 0f) return;
                 Shapes.Ring(ctx.painter2D, r.center, radius, st, -90f, 360f * this.frac);
             };
+        }
+    }
+
+    /// <summary>
+    /// GG-T1948 (UX review §1.4 #5): the base plate under a token, so side reads by shape as well as colour. A hero stands
+    /// on a rounded plate in the hero blue, a foe on a plate in the foe red with two corners notched off (both follow the
+    /// Colorblind palette); a boss (GG-T2128) keeps the foe's notches on a plate in the boss purple. Each is a filled,
+    /// outlined slab whose darker front edge shows under the card, more of it while the token is lifted.
+    /// </summary>
+    public sealed class Plinth : VisualElement
+    {
+        public enum Side { None, Hero, Foe, Boss }
+        private const float Inset = 3f, Depth = 6f, HeroRadius = 24f, FoeRadius = 10f, Notch = 28f, EdgeShade = 0.55f;
+        private Side side;
+        private bool drawnColorblind;
+
+        public Plinth()
+        {
+            pickingMode = PickingMode.Ignore;
+            style.position = Position.Absolute;
+            style.left = style.top = style.right = style.bottom = Space.S0;
+            generateVisualContent += ctx =>
+            {
+                var r = contentRect;
+                if (side == Side.None || r.width <= 0f) return;
+                var p = ctx.painter2D;
+                drawnColorblind = Palette.Colorblind;
+                var c = side == Side.Hero ? Palette.TeamHero : side == Side.Boss ? Palette.TeamBoss : Palette.TeamFoe;
+                var edge = new Color(c.r * EdgeShade, c.g * EdgeShade, c.b * EdgeShade);
+                var top = new Rect(r.xMin + Inset, r.yMin + Inset, r.width - Inset * 2f, r.height - Inset * 2f - Depth);
+                var front = new Rect(top.x, top.y + Depth, top.width, top.height);
+                var st = ShapeStyle.Small;
+                if (side == Side.Hero)
+                {
+                    Shapes.RoundedRect(p, front, HeroRadius, st.Tint(edge), filled: true);
+                    Shapes.RoundedRect(p, top, HeroRadius, st.Tint(c), filled: true);
+                }
+                else
+                {
+                    Shapes.NotchedRect(p, front, FoeRadius, Notch, st.Tint(edge));
+                    Shapes.NotchedRect(p, top, FoeRadius, Notch, st.Tint(c));
+                }
+            };
+            // The Colorblind palette can change mid-battle (Settings from the pause menu): redraw in the new side colours.
+            schedule.Execute(() => { if (side != Side.None && drawnColorblind != Palette.Colorblind) MarkDirtyRepaint(); }).Every(250);
+        }
+
+        public void Set(Side s)
+        {
+            side = s;
+            style.display = s == Side.None ? DisplayStyle.None : DisplayStyle.Flex;
+            MarkDirtyRepaint();
         }
     }
 

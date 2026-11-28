@@ -107,6 +107,9 @@ namespace GridGame.App
         /// <summary>Party levels the Developer section cycles through.</summary>
         private static readonly int[] DevLevels = { 1, 5, 10, 20, 30, 40, 50 };
 
+        /// <summary>Shards one tap of the Developer section's Give shards adds (a dev grant, GG-T1965).</summary>
+        private static int DevShards = 1000;
+
         /// <summary>Settings &gt; Developer (GG-T1938): shown only once the version line was tapped seven times on this device.
         /// The Cheats switch adds the pause menu's cheat rows and the DEV badge; with it on, the save cheats below run the
         /// dev automation's own code paths (<see cref="Dev.DevCheats"/>) on the loaded save.</summary>
@@ -126,7 +129,7 @@ namespace GridGame.App
             gallery.KindIcon(RowKind.Settings);
             if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
             var s = App.Save;
-            if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }
+            if (s == null) { Ui.Note("Load a save to give gold, items, shards, stages, levels and story skips.", w); return; }
             var c = App.Content;
             void Cheat(string label, string value, string name, Action act, string done)
             {
@@ -146,6 +149,9 @@ namespace GridGame.App
             int next = DevLevels.FirstOrDefault(l => l > level);
             if (next == 0) next = DevLevels[0];
             Cheat("Party level", $"{level} → {next}", "settings-dev-level", () => Dev.DevCheats.SetLevel(s.Roster, next), $"Party level {next}");
+            Cheat("Give shards", $"+{DevShards:N0}", "settings-dev-shards", () => Dev.DevCheats.GiveShards(c, s, DevShards),
+                $"+{ShardText.Of(DevShards)} (dev)");
+            Cheat("Skip story beats", "", "settings-dev-story", () => Dev.DevCheats.SkipStoryBeats(c, s), "Pending story marked seen");
         }
 
         protected override void BuildBody(VisualElement body)
@@ -225,18 +231,20 @@ namespace GridGame.App
             Toggle(RowKind.SpeakerOff, "Mute sound", st.MuteSfx, v => st.MuteSfx = v);
             Toggle(RowKind.WindowOff, "Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
 
-            // GG-T1221: quality (-1 = the project's own), frame-rate cap, vsync, shake and effects amount.
+            // GG-T1221: quality (-1 = the project's own), vsync, shake and effects amount.
             Section("Graphics");
             var qualities = QualitySettings.names;
             CycleInt(RowKind.Quality, "Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
                 Enumerable.Range(-1, qualities.Length + 1).ToArray(), q => q < 0 ? "Default" : qualities[q], v => st.QualityLevel = v, "settings-quality");
-            CycleInt(RowKind.Gauge, "Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
-                f => f < 0 ? "Uncapped" : $"{f} fps", v => st.FrameRateCap = v, "settings-frame-cap");
             if (!mobile) Toggle(RowKind.Sync, "VSync", st.VSync, v => st.VSync = v, "settings-vsync"); // GG-T1240: mobile ignores vsync
             Cycle(RowKind.Shake, "Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
             Cycle(RowKind.Effects, "Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
 
             Section("Display");
+            // GG-T2102: 120 Hz only where the display draws it (ProMotion iPhones, 120 Hz Galaxies); elsewhere the game runs at 60.
+            if (ThermalStepDown.HighRefreshSupported)
+                CycleInt(RowKind.Gauge, "Frame rate", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 60, ThermalStepDown.HighFrameRate },
+                    f => $"{f} Hz", v => st.FrameRateCap = v, "settings-frame-rate");
             if (desktop)
             {
                 CycleInt(RowKind.Window, "Window mode", GameSettings.ClampFullScreen(st.FullScreen), new[] { -1, 0, 1 },
@@ -292,11 +300,12 @@ namespace GridGame.App
                 "• Moving never hurts. Only pincers and spells deal damage.\n" +
                 "• Time moves only when you act. Icons flow left; whoever reaches the left edge acts, and speed decides who gets there first.\n" +
                 "• Pincer an enemy to push its icon back on the timeline.\n" +
-                "• Every spell has its own mana bar. Pincers and every other mana gain fill every spell's bar, cheap spells faster. Casting empties only that spell's bar. Skills and items cost a turn.\n" +
-                "• Tap a hero, a slot, a target, then Cast. Spells charge on the timeline before they land.\n" +
+                "• Your party shares one thin mana bar, just above Abilities, Info and GUARD. Every action fills it: pincers, chain links, kills, breaking a cast and GUARD.\n" +
+                "• Spells cost mana from that bar, 100 for each point of cost. Skills cost no mana and recharge over a few turns. Items come in stacks, and each use spends one.\n" +
+                "• Tap a hero, then Abilities, a move and a target, then Cast. Spells charge on the timeline before they land.\n" +
                 "• Roles need each other: Tanks Taunt so enemies leave your casters alone, Healers mend (WIS), Mages hit hardest with spells (INT), Strikers swing Cleave and War Cry (STR).\n" +
                 "• Fallen enemies sometimes drop a pickup. Walk a hero over it before it fades.\n" +
-                "• GUARD skips to the next enemy turn, shields everyone and banks the unused time as mana.", help);
+                "• GUARD defends and adds mana: it skips to the next enemy turn, shields everyone and pours the unused time into the mana bar.", help);
             if (S != null)
             {
                 // GG-T539: one button brings back every lesson: the first battle's (on The Tithe Moors I), each battle system's

@@ -67,7 +67,7 @@ namespace GridGame.App
             clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
             // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).
-            clip.style.bottom = Space.S48 + Size.Target + Space.S24;
+            clip.style.bottom = Space.S48 + Kit.Row + Space.S24;
             page = -1;
             TurnPage();
             // Hold anywhere to fast-forward (as the credits roll does); only Skip ends it.
@@ -104,8 +104,7 @@ namespace GridGame.App
             text.style.left = text.style.right = Fit.Inset + Space.S96;
             if (page == 0 && !string.IsNullOrEmpty(title)) Ui.Display(title, text, "shadow gold crawl-title", false);
             else if (page > 0) App.Audio.Sfx("ui.select", 0.5f);
-            var body = Ui.Text(p.Text ?? "", "h2 shadow", text);
-            body.style.whiteSpace = WhiteSpace.Normal;
+            var body = Ui.Para(p.Text ?? "", text, "shadow");
             body.style.unityTextAlign = TextAnchor.UpperCenter;
             y = GameApp.StageHeight;
             text.style.top = y;

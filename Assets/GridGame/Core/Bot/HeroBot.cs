@@ -565,7 +565,7 @@ namespace GridGame.Core.Bot
                 if (TimelineAware && pincerEnds == null) pincerEnds = EnemyPincerEnds(s);
                 return BarricadeValue(s, anchor, TimelineAware ? pincerEnds : null);
             }
-            if (a.Vanishes) return SmokeVanish.Value(s, caster); // GG-T861: slip a threat, or roll for a pincer landing
+            if (a.Vanishes) return SmokeVanish.Value(s, caster); // GG-T861, GG-T1916: slip a threat for a turn, or roll for a pincer landing
             if (a.Vaults) return PoleVault.Value(s, caster, anchor); // GG-T868: vault out of a box or onto a pincer square
             if (a.IsTeleport)
             {

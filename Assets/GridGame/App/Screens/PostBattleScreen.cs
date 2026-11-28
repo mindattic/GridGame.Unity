@@ -227,11 +227,11 @@ namespace GridGame.App
             return title;
         }
 
-        /// <summary>The line under the title (the stage, the drill count, the waves): a heading, centred, dim unless
-        /// <paramref name="tone"/> says otherwise.</summary>
-        private static Label Subhead(string text, VisualElement col, string tone = "dim")
+        /// <summary>The line under the title (the stage, the drill count, the waves): a heading, centred, in body text
+        /// colour unless <paramref name="tone"/> says otherwise (dim read 4.4:1 over the brighter backdrops).</summary>
+        private static Label Subhead(string text, VisualElement col, string tone = null)
         {
-            var l = Ui.Heading(text, col, "shadow " + tone);
+            var l = Ui.Heading(text, col, "shadow " + (tone ?? ""));
             l.style.unityTextAlign = TextAnchor.MiddleCenter;
             return l;
         }
@@ -314,7 +314,7 @@ namespace GridGame.App
         {
             Headline("CRUCIBLE", Palette.Vfx.Crucible, "results-title", col);
             Subhead($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", col, "gold").name = "crucible-waves";
-            var best = Subhead(report.CrucibleNewBest ? "New best" : $"Best: {report.CrucibleBest} waves", col, report.CrucibleNewBest ? "good" : "dim");
+            var best = Subhead(report.CrucibleNewBest ? "New best" : $"Best: {report.CrucibleBest} waves", col, report.CrucibleNewBest ? "good" : null);
             best.name = "crucible-best";
             if (report.CrucibleNewBest)
             {
@@ -643,7 +643,7 @@ namespace GridGame.App
                 var cell = Ui.El("col", grid);
                 cell.name = "loot-" + it.Id;
                 cell.style.width = Length.Percent(100f / LootColumns);
-                cell.style.minHeight = Size.Target;
+                cell.style.minHeight = Kit.Row;
                 cell.style.alignItems = Align.Center;
                 cell.style.justifyContent = Justify.Center;
                 Ui.Pad(cell, top: Space.S8, bottom: Space.S8);

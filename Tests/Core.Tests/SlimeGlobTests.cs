@@ -177,14 +177,14 @@ namespace GridGame.Tests
             var s = Setup(Db(GlobOn(1, 6)), st, ("knight", 1, 7, "fireball"), ("cleric", 4, 7, null));
             Assert.That(s.Region.At(new Coord(1, 6))?.State, Is.EqualTo("slime_glob"));
             var knight = Hero(s, "knight");
-            int before = s.ManaIn(knight.Id, 0);
+            int before = ManaIn(s);
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((1, 6)) });
             Assert.That(ev.OfType<SquishedEvent>().Single().UnitId, Is.EqualTo(knight.Id));
             Assert.That(s.Region.At(new Coord(1, 6)), Is.Null, "squished");
             var charged = ev.OfType<ManaGainedEvent>().Single(c => c.Kind == ManaGainKind.Earned && c.Reason == "rule:slime_glob");
             Assert.That(charged.Amount, Is.EqualTo(Real.TryTileState("slime_glob").OnSquish.Single().Amount));
             Assert.That(charged.SourceId, Is.EqualTo(knight.Id));
-            Assert.That(s.ManaIn(knight.Id, 0), Is.GreaterThanOrEqualTo(System.Math.Min(s.ManaFull(knight, 0), before + charged.Amount)));
+            Assert.That(ManaIn(s), Is.GreaterThanOrEqualTo(before + charged.Amount), "the squish lands in the party pool");
             var later = GuardUntil(s, () => false, 12);
             Assert.That(later.OfType<ReinforcementsArrivedEvent>().Any(), Is.False, "a squished glob never hatches");
             AssertInvariants(s);

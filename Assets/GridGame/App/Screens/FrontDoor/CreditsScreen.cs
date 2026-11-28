@@ -32,7 +32,7 @@ namespace GridGame.App
             var col = Ui.El("fill col", root);
             Ui.Header("Credits", () => App.Router.Back(), col, out _);
             var list = Ui.ListPanel(Ui.PageBody(col), null, "credits-list");
-            Ui.Para(Resources.Load<TextAsset>("Credits")?.text ?? $"{GameApp.Title} — MindAttic", list);
+            Ui.Para(Resources.Load<TextAsset>("Credits")?.text ?? $"{GameApp.Title} by MindAttic", list);
         }
 
         private void BuildRoll(VisualElement root)
@@ -43,26 +43,23 @@ namespace GridGame.App
             var clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
             // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).
-            clip.style.bottom = Space.S48 + Size.Target + Space.S24;
+            clip.style.bottom = Space.S48 + Kit.Row + Space.S24;
             roll = Ui.El("col", clip);
             roll.name = "credits-roll";
             roll.style.position = Position.Absolute;
             roll.style.left = roll.style.right = Fit.Inset + Space.S96;
-            var title = Ui.Text(GameApp.Title, "h1 shadow gold", roll);
-            Fonts.UseDisplay(title);
+            var title = Ui.Display(GameApp.Title, roll, "shadow gold", false);
             title.style.whiteSpace = WhiteSpace.Normal;
             title.style.unityTextAlign = TextAnchor.MiddleCenter;
             title.style.marginBottom = Space.S96;
-            var text = Resources.Load<TextAsset>("Credits")?.text ?? $"{GameApp.Title} — MindAttic";
+            var text = Resources.Load<TextAsset>("Credits")?.text ?? $"{GameApp.Title} by MindAttic";
             // Credits.txt opens with the game's name; the display title above already says it.
             var lines = text.Replace("\r", "").Split('\n');
             if (lines.Length > 1 && lines[0].Trim().Equals(GameApp.Title, StringComparison.OrdinalIgnoreCase))
                 text = string.Join("\n", lines.Skip(1)).TrimStart('\n');
-            var body = Ui.Text(text, "h2 shadow", roll);
-            body.style.whiteSpace = WhiteSpace.Normal;
+            var body = Ui.Para(text, roll, "shadow");
             body.style.unityTextAlign = TextAnchor.UpperCenter;
-            var coda = Ui.Text("Thank you for playing.", "h2 shadow dim", roll);
-            coda.style.whiteSpace = WhiteSpace.Normal;
+            var coda = Ui.Para("Thank you for playing.", roll, "shadow dim");
             coda.style.unityTextAlign = TextAnchor.MiddleCenter;
             coda.style.marginTop = Fit.H(8.7f);
             rollY = GameApp.StageHeight;

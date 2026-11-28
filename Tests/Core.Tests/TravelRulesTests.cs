@@ -8,7 +8,7 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>GG-T1785: travel rules (orbs and wounds carry on the road, a loss camps, camp rest heals free, Medic Wagon).</summary>
+    /// <summary>GG-T1785: travel rules (mana as pool points and wounds carry on the road, a loss camps, camp rest heals free, Medic Wagon).</summary>
     public class TravelRulesTests
     {
         static SaveData Camped()
@@ -61,11 +61,9 @@ namespace GridGame.Tests
             var k = Hero(b, "knight");
             var c = Hero(b, "cleric");
             Assert.That(b.PartyMana, Is.EqualTo(points));
-            Assert.That(b.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(points, b.ManaFull(k, 0))));
-            Assert.That(b.ManaIn(k.Id, 1), Is.EqualTo(System.Math.Min(points, b.ManaFull(k, 1))));
-            Assert.That(b.ManaIn(c.Id, 0), Is.EqualTo(System.Math.Min(points, b.ManaFull(c, 0))));
-            Assert.That(b.ManaIn(k.Id, 0), Is.LessThan(b.ManaFull(k, 0)), "a 2-cost Fireball is half full from one orb");
-            Assert.That(b.SpellReady(c, 0), Is.True, "a 1-cost Heal is full from one orb");
+            Assert.That(b.SpellPrice(k, 0), Is.EqualTo(2 * BattleConfig.ManaPointsPerOrb));
+            Assert.That(b.SpellReady(k, 0), Is.False, "a 2-cost Fireball can't be paid from one orb's points");
+            Assert.That(b.SpellReady(c, 0), Is.True, "a 1-cost Heal is paid from one orb's points");
         }
 
         [Test]

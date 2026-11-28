@@ -3,7 +3,7 @@
  "device": "galaxys25",
  "name": "Galaxy S25",
  "shape": "galaxy-fhd",
- "captured": "2026-11-28T09:37:01",
+ "captured": "2026-11-28T08:30:09",
  "frame": {
   "type": "punch",
   "corner": 90,
@@ -14,12 +14,16 @@
   "top": 33,
   "r": 27
  },
- "screens": 41,
+ "screens": 44,
  "errors": {
   "components": "not captured",
-  "results-defeat": "not captured",
-  "results-drill": "not captured",
-  "levelup": "not captured"
+  "drill-picker": "not captured",
+  "codex": "not captured",
+  "overlay-dialogue": "not captured",
+  "overlay-coach": "not captured",
+  "overlay-inspect": "not captured",
+  "overlay-confirm": "not captured",
+  "overlay-toast": "not captured"
  },
  "totals": {
   "overflow": 0,
@@ -29,9 +33,10 @@
   "underCutout": 0,
   "topInset": 0,
   "homeIndicator": 51,
-  "targetsUnder44pt": 8,
-  "contrastFails": 30,
+  "targetsUnder44pt": 6,
+  "contrastFails": 25,
   "contrastUnderCutout": 0,
+  "coveredText": 0,
   "screensWith": {
    "overflow": [],
    "clipped": [],
@@ -52,9 +57,7 @@
     "status"
    ],
    "targetsUnder44pt": [
-    "camp",
     "enchantress",
-    "hub",
     "items",
     "overworld",
     "profiles",
@@ -64,16 +67,17 @@
     "battle",
     "battle-boss",
     "blacksmith",
-    "camp",
     "crucible",
     "enchantress",
+    "levelup",
     "newprofile",
     "settings",
     "shop",
     "summon",
     "windows"
    ],
-   "contrastUnderCutout": []
+   "contrastUnderCutout": [],
+   "coveredText": []
   }
  },
  "findings": {
@@ -99,6 +103,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 10,
    "minTextPt": null,
    "layoutProblems": []
@@ -114,18 +119,11 @@
    "topInset": [],
    "homeIndicator": [],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [
-    {
-     "target": "Fight",
-     "pt": [
-      318.2,
-      40.0
-     ]
-    }
-   ],
+   "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 29,
+   "coveredText": [],
+   "contrastSamples": 27,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -143,6 +141,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": null,
    "layoutProblems": []
@@ -169,6 +168,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 27,
    "minTextPt": null,
    "layoutProblems": []
@@ -189,6 +189,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 83,
    "minTextPt": null,
    "layoutProblems": []
@@ -207,6 +208,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 61,
    "minTextPt": null,
    "layoutProblems": []
@@ -228,6 +230,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 81,
    "minTextPt": null,
    "layoutProblems": []
@@ -246,6 +249,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": null,
    "layoutProblems": []
@@ -264,6 +268,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": null,
    "layoutProblems": []
@@ -282,6 +287,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 68,
    "minTextPt": null,
    "layoutProblems": []
@@ -310,6 +316,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 60,
    "minTextPt": null,
    "layoutProblems": []
@@ -336,6 +343,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": null,
    "layoutProblems": []
@@ -357,6 +365,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 38,
    "minTextPt": null,
    "layoutProblems": []
@@ -398,6 +407,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 62,
    "minTextPt": null,
    "layoutProblems": []
@@ -416,6 +426,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": null,
    "layoutProblems": []
@@ -434,6 +445,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 45,
    "minTextPt": null,
    "layoutProblems": []
@@ -467,6 +479,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": null,
    "layoutProblems": []
@@ -485,6 +498,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 13,
    "minTextPt": null,
    "layoutProblems": []
@@ -513,6 +527,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 40,
    "minTextPt": null,
    "layoutProblems": []
@@ -546,6 +561,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 49,
    "minTextPt": null,
    "layoutProblems": []
@@ -566,6 +582,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 2,
    "minTextPt": null,
    "layoutProblems": []
@@ -584,6 +601,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 7,
    "minTextPt": null,
    "layoutProblems": []
@@ -602,6 +620,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 5,
    "minTextPt": null,
    "layoutProblems": []
@@ -628,6 +647,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 8,
    "minTextPt": null,
    "layoutProblems": []
@@ -654,6 +674,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 4,
    "minTextPt": null,
    "layoutProblems": []
@@ -672,6 +693,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 6,
    "minTextPt": null,
    "layoutProblems": []
@@ -690,6 +712,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 6,
    "minTextPt": null,
    "layoutProblems": []
@@ -708,6 +731,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 37,
    "minTextPt": null,
    "layoutProblems": []
@@ -726,6 +750,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 22,
    "minTextPt": null,
    "layoutProblems": []
@@ -744,6 +769,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": null,
    "layoutProblems": []
@@ -765,6 +791,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": null,
    "layoutProblems": []
@@ -783,6 +810,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": null,
    "layoutProblems": []
@@ -801,6 +829,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 39,
    "minTextPt": null,
    "layoutProblems": []
@@ -819,7 +848,73 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 45,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "results-defeat": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/galaxys25/results-defeat.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 14,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "results-drill": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/galaxys25/results-drill.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 12,
+   "minTextPt": null,
+   "layoutProblems": []
+  },
+  "levelup": {
+   "landedOn": "levelup",
+   "png": "docs/design/ui-audit/captures/galaxys25/levelup.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "TANK",
+     "ratio": 2.89,
+     "need": 4.5,
+     "fg": "#f25c4c",
+     "bg": "#3e474e"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 21,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -866,6 +961,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 41,
    "minTextPt": null,
    "layoutProblems": []
@@ -997,6 +1093,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 44,
    "minTextPt": null,
    "layoutProblems": []
@@ -1023,6 +1120,7 @@
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": null,
    "layoutProblems": []
@@ -1038,61 +1136,11 @@
    "topInset": [],
    "homeIndicator": [],
    "engineUnsafeArea": [],
-   "targetsUnder44pt": [
-    {
-     "target": "Fight",
-     "pt": [
-      318.2,
-      40.0
-     ]
-    }
-   ],
-   "contrastFails": [
-    {
-     "text": "Lv 1",
-     "ratio": 4.32,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#556676"
-    },
-    {
-     "text": "Lv 1",
-     "ratio": 3.93,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#5e6c79"
-    },
-    {
-     "text": "Craft",
-     "ratio": 1.76,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#879070"
-    },
-    {
-     "text": "Journal",
-     "ratio": 2.83,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#626b79"
-    },
-    {
-     "text": "Recruit",
-     "ratio": 2.21,
-     "need": 4.5,
-     "fg": "#4c4b5d",
-     "bg": "#11101d"
-    },
-    {
-     "text": "Shop",
-     "ratio": 2.21,
-     "need": 4.5,
-     "fg": "#4c4b5d",
-     "bg": "#12111d"
-    }
-   ],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 24,
+   "coveredText": [],
+   "contrastSamples": 22,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -1110,6 +1158,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": null,
    "layoutProblems": []
@@ -1136,7 +1185,8 @@
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 24,
+   "coveredText": [],
+   "contrastSamples": 25,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -1156,6 +1206,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 32,
    "minTextPt": null,
    "layoutProblems": []

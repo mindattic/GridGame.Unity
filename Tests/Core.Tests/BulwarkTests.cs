@@ -39,7 +39,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_siphon_drains_an_orb_from_every_meter_when_it_lands()
+        public void The_siphon_drains_an_orb_from_the_party_pool_when_it_lands()
         {
             var (s, _) = Battle(Real, Stage(("heavytrooper03", 2, 0)), ("paladin", 2, 6), ("redmage", 4, 7));
             var siphoner = s.Units.Single(u => u.Def.Id == "heavytrooper03");
@@ -53,22 +53,44 @@ namespace GridGame.Tests
             var drained = seen.OfType<ManaGainedEvent>().Where(e => e.Kind == ManaGainKind.Siphon).ToList();
             Assert.That(drained.Count, Is.EqualTo(1));
             Assert.That(drained[0].Orbs, Is.EqualTo(1));
+            Assert.That(drained[0].Amount, Is.EqualTo(-BattleConfig.ManaPointsPerOrb), "an orb's worth of points leaves the pool");
+            Assert.That(drained[0].After, Is.EqualTo(drained[0].Before - BattleConfig.ManaPointsPerOrb));
             Assert.That(drained[0].SourceId, Is.EqualTo(siphoner.Id));
             Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text.StartsWith("Siphoned")), Is.True);
         }
 
         [Test]
-        public void A_party_with_no_mana_has_nothing_to_siphon()
+        public void A_siphon_takes_no_more_than_the_pool_holds()
         {
+            // §3.1.0: Guard and regen earn into the party pool whatever the bar holds, so the pool is emptied before every
+            // turn and Guard is held to the end of its window (no bank). Whatever earned mana lands in the siphon's own
+            // turn before it is all it can take; an empty pool has nothing to siphon.
             var (s, _) = Battle(Real, Stage(("heavytrooper03", 2, 0)), ("paladin", 2, 6), ("redmage", 4, 7));
-            foreach (var h in s.Units.Where(u => u.IsHero)) h.UnlockedSlots = 0; // no spell slot, no meter: Guard and regen fill nothing
-            s.PartyMana = 0;
-            var seen = new List<BattleEvent>();
-            for (int i = 0; i < 16 && !seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon") && !s.IsOver; i++)
-                seen.AddRange(Turn(s, new ShieldCommand()));
-            Assert.That(seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon"), Is.True);
-            Assert.That(seen.OfType<ManaGainedEvent>().Any(e => e.Kind == ManaGainKind.Siphon), Is.False);
-            Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text == "No mana to take"), Is.True);
+            var siphoner = s.Units.Single(u => u.Def.Id == "heavytrooper03");
+            List<BattleEvent> turn = null;
+            for (int i = 0; i < 16 && !s.IsOver; i++)
+            {
+                s.SetPartyMana(0);
+                turn = Turn(s, new ShieldCommand { HeldSeconds = 999f });
+                if (turn.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon")) break;
+                turn = null;
+            }
+            Assert.That(turn, Is.Not.Null, "the siphoner charges and lands its siphon");
+            int landed = turn.FindIndex(e => e is AnnounceEvent a && a.UnitId == siphoner.Id && (a.Text == "No mana to take" || a.Text.StartsWith("Siphoned")));
+            Assert.That(landed, Is.GreaterThanOrEqualTo(0));
+            var siphon = turn.OfType<ManaGainedEvent>().Where(e => e.Kind == ManaGainKind.Siphon).ToList();
+            int held = turn.Take(landed).OfType<ManaGainedEvent>().Where(e => e.Kind != ManaGainKind.Siphon).Sum(e => e.Amount);
+            if (held == 0)
+            {
+                Assert.That(siphon, Is.Empty);
+                Assert.That(((AnnounceEvent)turn[landed]).Text, Is.EqualTo("No mana to take"));
+            }
+            else
+            {
+                Assert.That(siphon.Count, Is.EqualTo(1));
+                Assert.That(siphon[0].Amount, Is.EqualTo(-System.Math.Min(held, BattleConfig.ManaPointsPerOrb)));
+                Assert.That(siphon[0].After, Is.EqualTo(System.Math.Max(0, held - BattleConfig.ManaPointsPerOrb)), "floored at 0");
+            }
         }
 
         [Test]

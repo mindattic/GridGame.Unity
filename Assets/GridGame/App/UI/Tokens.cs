@@ -98,8 +98,19 @@ namespace GridGame.App
         public static readonly Color CbBoss = new Color(0.75f, 0.3f, 0.02f);
         /// <summary>A foe's mark (keyline, timeline icon): enemy red, or the colourblind orange.</summary>
         public static Color TeamFoe => Colorblind ? CbFoe : Enemy;
+        /// <summary>A boss's mark (keyline, timeline icon, the notched base plate of GG-T2128): boss purple, or the colourblind
+        /// burnt orange. Apart from the next actor ring (aqua, or reddish purple under Colorblind palette) and the enemy
+        /// intent red.</summary>
         public static Color TeamBoss => Colorblind ? CbBoss : Boss;
         public static Color TeamCast(bool hero) => Colorblind ? (hero ? CbHero : CbFoe) : hero ? CastHero : CastEnemy;
+        /// <summary>A hero's mark (base plate, turn ring): hero blue, or the colourblind sky blue.</summary>
+        public static Color TeamHero => Colorblind ? CbHero : Hero;
+        /// <summary>GG-T1948: the next actor's ring on the board. Never gold (gold marks pincer spots, the timeline's next foe
+        /// and the Abilities preview) and never a team colour: an aqua, or under Colorblind palette Okabe-Ito's reddish
+        /// purple, which stays apart from the sky blue and orange sides (the boss is burnt orange there).</summary>
+        public static readonly Color NextActor = new Color(0.25f, 0.93f, 0.88f);
+        public static readonly Color CbNextActor = new Color(0.8f, 0.47f, 0.65f);
+        public static Color NextActorRing => Colorblind ? CbNextActor : NextActor;
 
         /// <summary>The lightest stop of the Classic blue window (#2C46AA), the background text contrast is checked against
         /// (GG-T495).</summary>
@@ -163,7 +174,7 @@ namespace GridGame.App
         {
             switch (role)
             {
-                case "Tank": return new Color(0.95f, 0.36f, 0.3f);
+                case "Tank": return new Color(1f, 0.45f, 0.38f); // GG-T2154: 4.5:1+ on the badge plate even over bright art
                 case "Healer": return new Color(0.4f, 0.9f, 0.5f);
                 case "Mage": return new Color(0.55f, 0.6f, 1f);
                 case "Striker": return new Color(1f, 0.66f, 0.25f);
@@ -255,6 +266,10 @@ namespace GridGame.App
             public static readonly Color Steel = new Color(0.72f, 0.76f, 0.84f);
             public static readonly Color Shatter = new Color(1f, 0.85f, 0.5f);
             public static readonly Color Shard = new Color(0.78f, 0.82f, 0.9f);
+            /// <summary>GG-T1950: the board's grid line, drawn over a <see cref="Palette.Ink"/> keyline on each side. Over the
+            /// battle art dimmed by the board scrim (sky.json BoardScrim, 0.35) the light core alone is 3.8:1 or better against
+            /// every campaign theme's median art, and core or keyline is 3.5:1 or better against any of it.</summary>
+            public static readonly Color GridLine = new Color(0.8f, 0.82f, 0.88f);
             public static readonly Color Well = new Color(0.55f, 0.30f, 0.95f);
             public static readonly Color WellEye = new Color(0.12f, 0.04f, 0.2f, 0.9f);
             public static readonly Color Burning = new Color(1f, 0.45f, 0.1f);
@@ -563,6 +578,89 @@ namespace GridGame.App
         }
     }
 
+    /// <summary>
+    /// GG-T2144: the live tap-target height in design px. <see cref="Size.Target"/> (132) is 44 pt on the iPhone 15 Pro,
+    /// but the stage scales down on a narrower logical width, so on a 360-dp Galaxy a 132-px row is 40 dp and on a Z Fold
+    /// cover 34-36 dp. <see cref="Current"/> is the design height that reaches <see cref="MinDp"/> dp on Android or
+    /// <see cref="MinPt"/> pt on iOS on this screen, never under <see cref="Size.Target"/>, rounded up to <see cref="Step"/>
+    /// for the USS bucket. The UI root takes the matching <c>tap-target-N</c> class (Theme.uss), so every row, button, tab
+    /// and nav tab sized by <c>--size-target</c> follows; code reads <see cref="Kit.Row"/>. The battle HUD action row follows it too (BIBLE 9.0, GG-T2158).
+    /// </summary>
+    public static class TapTarget
+    {
+        /// <summary>The platform minimums: Android 48 dp, iOS 44 pt.</summary>
+        public const float MinDp = 48f, MinPt = 44f;
+        /// <summary>Panel ppi per iOS point scale (an @3x iPhone is about 460 ppi, an @2x iPad about 264-326).</summary>
+        public const float IosPpiPerScale = 163f;
+        /// <summary>The bucket step and the range Theme.uss has <c>tap-target-N</c> classes for.</summary>
+        public const int Step = 4, Highest = 200;
+        /// <summary>Headroom over the platform minimum: the audit measures a 132-px row 1-2 % under the exact maths (43.7 pt on
+        /// the iPhone 15 Pro, 43.0 on the 16e), so the target aims at 3 % over and the rendered row clears 44 pt / 48 dp.</summary>
+        public const float Margin = 1.03f;
+        /// <summary>Debug launch option: screen px the minimum target must span (tools/scenario.py passes the device's
+        /// 48 dp / 44 pt at the window's size, since a desktop player's dpi is the monitor's).</summary>
+        public const string ForceFlag = "-tapPx";
+
+        private static UnityEngine.UIElements.VisualElement root;
+
+        /// <summary>The live target height in design px; set by <see cref="SetScreen"/>.</summary>
+        public static int Current { get; private set; } = (int)Size.Target;
+
+        /// <summary>The target for a stage drawn at <paramref name="screenPxPerDesignPx"/> when the minimum spans
+        /// <paramref name="minScreenPx"/> screen px.</summary>
+        public static int Compute(float screenPxPerDesignPx, float minScreenPx)
+        {
+            if (screenPxPerDesignPx <= 0f || minScreenPx <= 0f) return (int)Size.Target;
+            int need = Mathf.CeilToInt(minScreenPx * Margin / screenPxPerDesignPx / Step - 0.001f) * Step;
+            return Mathf.Clamp(need, (int)Size.Target, Highest);
+        }
+
+        /// <summary>Screen px of the platform minimum on a screen of <paramref name="screenDpi"/> (0 = unknown, read as 160):
+        /// 48 dp at Android's own display density, 44 pt at the iPhone's point scale, else 48 dp of the reported dpi.</summary>
+        public static float MinScreenPx(float screenDpi)
+        {
+            var forced = CommandLine.Value(ForceFlag);
+            if (forced != null && float.TryParse(forced, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var px) && px > 0f)
+                return px;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            float density = AndroidDensity();
+            if (density > 0f) return MinDp * density;
+#elif UNITY_IOS && !UNITY_EDITOR
+            if (screenDpi > 0f) return MinPt * Mathf.Max(2f, Mathf.Round(screenDpi / IosPpiPerScale));
+#endif
+            return MinDp * (screenDpi > 0f ? screenDpi : 160f) / 160f;
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        /// <summary>DisplayMetrics.density: Android's px per dp at the current display size, which is what 48 dp means.</summary>
+        private static float AndroidDensity()
+        {
+            try
+            {
+                using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+                using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
+                using (var res = activity.Call<AndroidJavaObject>("getResources"))
+                using (var metrics = res.Call<AndroidJavaObject>("getDisplayMetrics"))
+                    return metrics.Get<float>("density");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[TapTarget] display density unavailable: " + e.Message);
+                return 0f;
+            }
+        }
+#endif
+
+        /// <summary>The screen changed (resize, rotation, dpi): re-derive the target. Called from the stage layout.</summary>
+        public static void SetScreen(UnityEngine.UIElements.VisualElement uiRoot, float screenPxPerDesignPx, float screenDpi)
+        {
+            if (uiRoot != null) root = uiRoot;
+            Current = Compute(screenPxPerDesignPx, MinScreenPx(screenDpi));
+            if (root == null) return;
+            for (int s = (int)Size.Target; s <= Highest; s += Step) root.EnableInClassList("tap-target-" + s, s == Current);
+        }
+    }
+
     /// <summary>8-px spacing scale (POL-C1); S2 and S4 are the half steps for hairline insets inside small widgets.</summary>
     public static class Space
     {
@@ -588,8 +686,9 @@ namespace GridGame.App
         public const float Underline = 2, Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
         // How far a board tile's glow ring sits outside the tile.
         public const float GlowRing = 5;
-        // A toast's height above the stage bottom, and how much higher each one already showing pushes the next.
-        public const float ToastLift = 260, ToastStack = 170;
+        // A toast's top below the safe top (just under the header, GG-T2156), and how much lower each one already showing
+        // pushes the next.
+        public const float ToastTop = Kit.HeaderHeight + Kit.Gap, ToastStack = 170;
         // Icons and pictures. The menu icon set's roles (docs/ICONS.md): IconInline in text and chips, IconButton in
         // header and dialog buttons, Icon leading a row or tile, IconNav on the bottom nav tabs.
         public const float IconInline = 32, IconButton = 48, IconNav = 72;
@@ -631,15 +730,15 @@ namespace GridGame.App
         public const float HeaderHeight = 150f;
         /// <summary>The hub's bottom nav bar height (USS <c>.kit-navbar</c>, GG-T1590): one tap target; under a gesture bar
         /// it grows by the inset.</summary>
-        public const float NavHeight = Size.Target;
+        public static float NavHeight => TapTarget.Current;
         /// <summary>Stage edge to window edge, left and right (= <see cref="Fit.Edge"/>).</summary>
         public const float Gutter = Fit.Edge;
         /// <summary>Between stacked windows, and between the header and the first window (each window's S8 margin, twice).</summary>
         public const float Gap = Space.S16;
         /// <summary>A window's inner padding: <see cref="PadY"/> top and bottom, <see cref="PadX"/> left and right.</summary>
         public const float PadY = Space.S16, PadX = Space.S24;
-        /// <summary>A menu row's height: one tap target (POL-C2).</summary>
-        public const float Row = Size.Target;
+        /// <summary>A menu row's height: one tap target (POL-C2), at least 48 dp / 44 pt on this screen (GG-T2144).</summary>
+        public static float Row => TapTarget.Current;
         /// <summary>Where a row's label starts inside it (row padding 8, then on PC the cursor 56 + 8): a row's note and a
         /// section header line up with it. Without a cursor there is no gutter for one (GG-T1923).</summary>
         public static float Indent => Ui.ShowsCursor ? Space.S8 + Size.IconM + Space.S8 : Space.S8;

@@ -59,6 +59,7 @@ namespace GridGame.App
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; ResumeBattle(); }
             CloseAbilities(false);
             awayOnSettings = false;
+            Tween.Instant = false; // GG-T1967: a playback cut short never leaves the next screen instant
             // The billboard lives on the Overlay too; without this, each battle left one behind (lines from the
             // last ~1.6 s showing over the PostBattle screen) and they piled up battle after battle (GG-T70).
             billboard?.RemoveFromHierarchy();
@@ -133,7 +134,7 @@ namespace GridGame.App
             boardHost.style.position = Position.Absolute;
             boardHost.style.top = BoardTop;
             board = new BoardView(boardHost, State.Stage.Theme);
-            board.SetScrim(App.Content.Sky?.RegionFor(State.Stage.Theme)?.BoardScrim ?? 0f); // GG-T665
+            board.SetScrim(Mathf.Max(App.Content.Sky?.BoardScrim ?? 0f, App.Content.Sky?.RegionFor(State.Stage.Theme)?.BoardScrim ?? 0f)); // GG-T665, GG-T1950
             CreatePrefabFx();
             board.Root.pickingMode = PickingMode.Position;
             // The pincer outline (board.Lines) stays inside the board, so it inherits every camera twist, zoom,
@@ -170,7 +171,7 @@ namespace GridGame.App
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
-                panel.schedule.Execute(() => Advise("Tip: tap or hold any hero, foe or icon to read it; Abilities lists every move")).StartingIn(2500);
+                panel.schedule.Execute(() => Advise(PanelCopy(PanelState.InfoTip))).StartingIn(2500);
             }
             CaptureUnity.Raise("battle-start", new CaptureData { ["stage"] = State.Stage.Id });
         }

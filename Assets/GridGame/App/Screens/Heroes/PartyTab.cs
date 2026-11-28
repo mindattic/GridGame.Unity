@@ -38,7 +38,12 @@ namespace GridGame.App
             Ui.Name(C.Class(h.ClassId).Name, nameRow);
             Ui.RoleBadge(Ui.RoleOf(h, C.Class(h.ClassId)), nameRow);
             MercenaryCamp.Tag(S, h.ClassId, nameRow);
-            Ui.Caption($"Lv {u.Level} · HP {u.MaxHp}", col);
+            var facts = Ui.El("row", col);
+            facts.name = "party-facts";
+            var lv = RowIcon.Line("stat-level", facts);
+            Ui.Caption($"Lv {u.Level}", lv);
+            Ui.Margin(lv, right: Space.S24);
+            Ui.Caption($"HP {u.MaxHp}", RowIcon.Line("stat-hp", facts));
             GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
             if (active) PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
             card.AddToClassList("card-tap");

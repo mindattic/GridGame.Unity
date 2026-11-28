@@ -44,6 +44,18 @@ namespace GridGame.App.Automation
 
             var heavy = Fonts.Heavy;
             var texts = new List<object>();
+            // GG-T2155: text whose rect a scroll viewport clips or a later-drawn, mostly opaque element covers can't be read
+            // from the screenshot (the pixels behind its rect belong to something else), so each text reports how much of
+            // it survives and the audit reports covered text on its own instead of as a contrast failure.
+            var order = new Dictionary<VisualElement, int>();
+            var plates = new List<(int idx, Rect wb)>();
+            foreach (var e in stage.Query<VisualElement>().ToList())
+            {
+                int i = order.Count;
+                order[e] = i;
+                if (e.resolvedStyle.backgroundColor.a * Opacity(e) >= 0.6f && e.worldBound.width >= 1 && e.worldBound.height >= 1 && Shown(e))
+                    plates.Add((i, e.worldBound));
+            }
             foreach (var t in stage.Query<TextElement>().ToList())
             {
                 if (string.IsNullOrWhiteSpace(t.text) || !Shown(t)) continue;
@@ -92,12 +104,26 @@ namespace GridGame.App.Automation
                 Tally("POL-C5", why.Count == 0, subj, string.Join("; ", why));
 
                 var c = t.resolvedStyle.color;
+                float clipped = 0f, covered = 0f;
+                float area = wb.width * wb.height;
+                var vis = TappableBound(t);
+                clipped = 1f - Mathf.Clamp01(vis.width * vis.height / area);
+                if (vis.width >= 1 && vis.height >= 1 && order.TryGetValue(t, out int ti))
+                    foreach (var (idx, pb) in plates)
+                    {
+                        if (idx <= ti) continue;
+                        float ox = Mathf.Min(vis.xMax, pb.xMax) - Mathf.Max(vis.xMin, pb.xMin);
+                        float oy = Mathf.Min(vis.yMax, pb.yMax) - Mathf.Max(vis.yMin, pb.yMin);
+                        if (ox > 0 && oy > 0) covered = Mathf.Max(covered, ox * oy / area);
+                    }
                 texts.Add(new
                 {
+                    clipped = Round3(clipped), covered = Round3(covered),
                     t = subj,
                     x = Mathf.Round(r.x), y = Mathf.Round(r.y), w = Mathf.Round(r.width), h = Mathf.Round(r.height),
                     size = Mathf.Round(size),
                     color = new[] { Round3(c.r), Round3(c.g), Round3(c.b), Round3(c.a * Opacity(t)) },
+                    fading = Opacity(t) > 0.02f && Opacity(t) < 0.98f,
                     large = size >= 54f || (isHeavy && size >= 42f),
                 });
             }
@@ -113,6 +139,8 @@ namespace GridGame.App.Automation
             {
                 if (!visibleOf.TryGetValue(e, out var r)) continue; // scrolled fully out of view: nothing to tap
                 var rFull = full;
+                // GG-T2161: a pressed or selected control scales itself down (.is-pressed 0.95); that is a look, not a smaller target.
+                if (e.layout.width >= 1 && e.layout.height >= 1) { float sl = LayoutScale(e) * k; rFull = new Rect(full.x, full.y, e.layout.width * sl, e.layout.height * sl); }
                 string subj = TargetName(e);
                 // GG-T655: the same pixel-snap tolerance as the gaps (GG-T284): a Size.Target (132) control drawn at a
                 // non-integer scale reads 130-131 design px, which isn't a smaller target. Every listed failure was that.

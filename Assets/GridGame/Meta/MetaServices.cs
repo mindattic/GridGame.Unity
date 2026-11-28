@@ -564,7 +564,7 @@ namespace GridGame.Meta
             if (c.TryClass(classId) == null || s.Hero(classId) != null) return Result.Fail("The summoning fizzles");
             s.Recruits++;
             Join(c, s, classId);
-            return Result.Success($"{c.Class(classId).Name} joins you!");
+            return Result.Success($"{c.Class(classId).Name} joins you");
         }
 
         /// <summary>Adds a hero to the roster (and the party, if there's room) at the roster's average experience —

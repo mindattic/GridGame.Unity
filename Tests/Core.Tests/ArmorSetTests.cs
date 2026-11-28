@@ -194,11 +194,9 @@ namespace GridGame.Tests
             var db = WithSet(new SetBonusDef { Pieces = 5, BattleStartManaOrbs = 2, StartsProtected = true });
             var bare = BattleWith(db);
             var s = BattleWith(db, Pieces(5));
-            var kb = Hero(bare, "knight");
-            var ks = Hero(s, "knight");
             Assert.That(Hero(s, "knight").HasBuff("protection"), Is.True);
             Assert.That(Hero(bare, "knight").HasBuff("protection"), Is.False);
-            Assert.That(s.ManaIn(ks.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(ks, 0), bare.ManaIn(kb.Id, 0) + 2 * BattleConfig.ManaPointsPerOrb)));
+            Assert.That(ManaIn(s), Is.EqualTo(System.Math.Min(BattleConfig.PartyManaCapacity, ManaIn(bare) + 2 * BattleConfig.ManaPointsPerOrb)));
         }
 
         [Test]

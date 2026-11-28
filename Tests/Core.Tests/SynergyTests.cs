@@ -123,10 +123,10 @@ namespace GridGame.Tests
             var k = Hero(s, "knight");
             s.Pickups.Add(new Pickup { Id = 1, PickupId = "pk", At = new Coord(3, 5), ActionsLeft = 4 });
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            int before = s.ManaIn(k.Id, 0);
+            int before = ManaIn(s);
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = k.Id, Path = P((3, 5), (3, 6)) });
             Assert.That(ev.Any(e => e is AbilityRefusedEvent), Is.False);
-            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), before + 2 * BattleConfig.ManaPointsPerOrb)));
+            Assert.That(ManaIn(s), Is.EqualTo(System.Math.Min(BattleConfig.PartyManaCapacity, before + 2 * BattleConfig.ManaPointsPerOrb)));
         }
 
         [Test]
@@ -222,17 +222,17 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_pincer_charge_goes_straight_into_the_spell_meters()
+        public void A_pincer_charge_goes_straight_into_the_party_pool()
         {
             var db = Mini();
             var (s, _) = Battle(db, Stage(("goblin", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
-            var k = Hero(s, "knight");
-            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            Hero(s, "knight").Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            int before = ManaIn(s);
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
             int earned = ev.OfType<ManaGainedEvent>().Where(x => x.Reason == "pincer").Sum(x => x.Amount);
             Assert.That(earned, Is.GreaterThan(0));
             Assert.That(ev.OfType<ManaGainedEvent>().Any(g => g.Reason == "pincer"), Is.True);
-            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), earned)));
+            Assert.That(ManaIn(s), Is.EqualTo(before + earned));
         }
 
         [Test]
@@ -248,22 +248,22 @@ namespace GridGame.Tests
             Assert.That(ev.OfType<ManaGainedEvent>().Count(g => g.Reason == "pincer"), Is.EqualTo(1)); // one gain, not one per hero
         }
 
-        [Test] // §3.1.0: one gain reaches every hero's meters, each in its own slot
-        public void An_earned_gain_lists_every_meter_it_filled()
+        [Test] // §3.1.0: one gain lands once in the shared party pool, whoever's spells it pays for
+        public void An_earned_gain_reports_the_party_pool_before_and_after()
         {
             var db = Mini();
             var (s, _) = Battle(db, Stage(("goblin", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
-            var k = Hero(s, "knight"); var c = Hero(s, "cleric");
-            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            var c = Hero(s, "cleric");
+            Hero(s, "knight").Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             c.Bar[1] = new AbilitySlot { AbilityId = "heal" };
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = c.Id, Path = P((3, 3)) });
             var gain = ev.OfType<ManaGainedEvent>().First(g => g.Reason == "pincer");
-            Assert.That(gain.Meters.Any(m => m.UnitId == k.Id && m.Slot == 0), Is.True);
-            Assert.That(gain.Meters.Any(m => m.UnitId == c.Id && m.Slot == 1), Is.True);
+            Assert.That(gain.After - gain.Before, Is.EqualTo(gain.Amount));
+            Assert.That(gain.Capacity, Is.EqualTo(BattleConfig.PartyManaCapacity));
         }
 
-        [Test] // a whole grant stops at each meter's full
-        public void A_whole_grant_stops_at_the_meters_full()
+        [Test] // a whole grant stops at the pool's capacity
+        public void A_whole_grant_stops_at_the_pools_capacity()
         {
             var db = Mini();
             // Two whole orbs at once. An explicit grant, so fullness damping (§3.1.9, GG-T247) can't shrink it.
@@ -273,11 +273,12 @@ namespace GridGame.Tests
             k.Bar[0] = new AbilitySlot { AbilityId = "test_two_orbs" };
             k.Bar[1] = new AbilitySlot { AbilityId = "fireball" };
             const int shortBy = 50;
-            s.SetMana(k.Id, 1, s.ManaFull(k, 1) - shortBy);
+            s.SetPartyMana(BattleConfig.PartyManaCapacity - shortBy);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = k.Pos });
-            Assert.That(s.ManaIn(k.Id, 1), Is.EqualTo(s.ManaFull(k, 1)));
-            var delta = ev.OfType<ManaGainedEvent>().SelectMany(g => g.Meters).First(m => m.UnitId == k.Id && m.Slot == 1);
-            Assert.That(delta.Delta, Is.EqualTo(shortBy));
+            Assert.That(ManaIn(s), Is.EqualTo(BattleConfig.PartyManaCapacity));
+            var grant = ev.OfType<ManaGainedEvent>().First(g => g.Kind == ManaGainKind.Grant);
+            Assert.That(grant.Amount, Is.EqualTo(shortBy));
+            Assert.That(grant.Wasted, Is.EqualTo(2 * BattleConfig.ManaPointsPerOrb - shortBy));
         }
 
         [Test] // owner direction 2026-10-11: "more combos more xp and mana get generated" — chain depth already paid mana, now XP too
