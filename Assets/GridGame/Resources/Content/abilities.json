@@ -422,7 +422,7 @@
  {
   "Id": "steal",
   "Name": "Steal",
-  "Description": "LCK+AGI roll per adjacent enemy -> fills every spell's mana bar by 100",
+  "Description": "LCK+AGI roll per adjacent enemy -> fills the party mana by 100",
   "Kind": "Skill",
   "Requires": { "Agility": 2 },
   "Cost": 0,
@@ -1679,7 +1679,7 @@
  {
   "Id": "arcane_harvest",
   "Name": "Arcane Harvest",
-  "Description": "Felling a foe adds 10 [mana charge] to the party's meter.",
+  "Description": "Felling a foe adds 10 [mana charge] to the party mana bar.",
   "Kind": "Passive",
   "Cost": 0,
   "CastTime": 0.0,
@@ -3083,7 +3083,7 @@
  {
   "Id": "mana_siphon",
   "Name": "Mana Siphon",
-  "Description": "Every hit it lands adds a little charge to the mana meter.",
+  "Description": "Every hit it lands adds a little mana to the party bar.",
   "Kind": "Passive",
   "Cost": 0,
   "CastTime": 0.0,
@@ -7708,7 +7708,7 @@
  {
   "Id": "meditate",
   "Name": "Meditate",
-  "Description": "Still the breath and gather the field's scattered mana: every spell's mana bar fills by 100.",
+  "Description": "Still the breath and gather the field's scattered mana: +100 mana to the party bar.",
   "Kind": "Skill",
   "Requires": { "Vitality": 4, "Wisdom": 5 },
   "Cost": 0,
@@ -8521,7 +8521,7 @@
  {
   "Id": "charge_aether_siphon",
   "Name": "Mana Siphon",
-  "Description": "Charges, then draws the mana out of one hero: 4 Arcane, and every spell's mana bar loses 100. Cast what you can before it lands, or [Interrupt] it.",
+  "Description": "Charges, then draws the mana out of one hero: 4 Arcane, and the party bar loses 100 mana. Spend it before it lands, or [Interrupt] it.",
   "Kind": "Spell",
   "Cost": 0,
   "CastTime": 2.0,
@@ -9217,7 +9217,7 @@
   "Sfx": null,
   "Id": "aetherist_aetherpour",
   "Name": "Mana Pour",
-  "Description": "Pours mana in instead of drawing it out: an ally mends 15 HP and every spell's mana bar fills by 100.",
+  "Description": "Pours mana in instead of drawing it out: an ally mends 15 HP and the party bar gains 100 mana.",
   "GrantsOrbs": 1
  },
  {
@@ -9839,7 +9839,7 @@
  {
   "Id": "echo_encore",
   "Name": "Encore",
-  "Description": "Repeats the last skill or spell an ally used this battle, cast from where you stand: at the same target when you can reach it, else the nearest one. A copied spell still costs its mana: the copy empties the fullest of your own spell bars.",
+  "Description": "Repeats the last skill or spell an ally used this battle, cast from where you stand: at the same target when you can reach it, else the nearest one. A copied spell still costs its mana from the party bar.",
   "Kind": "Skill",
   "Requires": { "Intelligence": 4, "Wisdom": 2 },
   "Cost": 0,
