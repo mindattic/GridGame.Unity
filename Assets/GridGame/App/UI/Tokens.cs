@@ -196,6 +196,9 @@ namespace GridGame.App
 
         /// <summary>The one GUI text size in design px for this screen and Text size; see <see cref="GuiType"/>.</summary>
         public static float Base => GuiType.Base;
+
+        /// <summary>GG-T1969: a celebration title in the display face (the results' VICTORY): the one size above the GUI size.</summary>
+        public static float Celebration => Base * 2f;
     }
 
     /// <summary>

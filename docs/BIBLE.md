@@ -5119,6 +5119,8 @@ meaningful but optional share for facilities and summons. A piece repaired over 
 
 `PartyScreen`: every roster hero as a card (thumb, name, level, MaxHP, Active/Reserve, class card text); tap toggles ([§23.4](#234-roster--party-composition)).
 
+**Amended 2026-11-28 (GG-T1970, UX review):** one list (`party-list`, titled "Active party N/M"): the active party first in party order (each card with its bar row, `party-bar-<classId>`), then a **Reserve** section (`party-reserve`), then a **Cohesion** section (`party-cohesion`) of one line per party pair above tier 0 (`party-pair-<a|b>`: "Knight + Cleric · tier 2 of 5", gold from the Duo tier), left out while every pair is at tier 0. The cohesion grid is gone. A card is select-then-confirm (R3): the first tap selects it pressed in, the second swaps the hero in or out.
+
 ### 25.6 Abilities
 
 **Amended 2026-11-19 (GG-T435):** now the **Abilities** tab of the Hero screen (§25.0), with a sixth sub-tab, **Talents** (§25.6.3). The Status sheet below (GG-T48) is likewise the Hero screen's **Status** tab; `AbilitiesScreen` and `StatusScreen` open the Hero screen on their tab.

@@ -974,7 +974,7 @@
   },
   {
     "Id": "skill_board",
-    "Term": "Skill Board",
-    "Aliases": ["Skill Boards"]
+    "Term": "Talents",
+    "Aliases": ["Skill Board", "Skill Boards"]
   }
 ]
