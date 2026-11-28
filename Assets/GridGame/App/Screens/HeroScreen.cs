@@ -136,18 +136,8 @@ namespace GridGame.App
                 // A compact card (kit, GG-T454): name and meta both caption size, the name heavy.
                 var name = Ui.Caption(C.TryClass(id)?.Name ?? id, info, "t-heavy");
                 Ui.Marquee(name);
-                var meta = Ui.El("row", info);
-                meta.style.alignItems = Align.Center;
-                Ui.Caption($"Lv {Progression.Level(h)}", meta, "gold");
-                var tag = Ui.Caption(inParty ? "Party" : "Reserve", meta, inParty ? "good" : "dim");
-                Ui.Margin(tag, left: Space.S8);
-                Ui.Marquee(tag);
-                if (ready)
-                {
-                    var badge = Ui.Caption(NextAbility.ReadyLabel, info, "gold");
-                    badge.name = "hero-ability-ready";
-                    Ui.Marquee(badge);
-                }
+                Ui.Caption($"Lv {Progression.Level(h)}", info, "gold");
+                Ui.Caption(inParty ? "Party" : "Reserve", info, inParty ? "good" : "dim");
                 card.AddToClassList("card-tap");
                 Ui.Tappable(card, () =>
                 {
