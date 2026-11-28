@@ -15,6 +15,7 @@ namespace GridGame.App
             Examine, ExamineCard,
             HintUse, HintGuard, HintDrag, HintTrap, InfoTip,
             RestingChip, Resting, RestingRow,
+            Vanished, VanishedRow,
         }
 
         /// <summary>The panel's instruction for <paramref name="s"/>. <paramref name="hero"/> and <paramref name="a"/> fill
@@ -41,6 +42,8 @@ namespace GridGame.App
                 case PanelState.RestingChip: return $"+{n} resting";
                 case PanelState.Resting: return "Resting after acting: each rejoins the timeline when its time runs out";
                 case PanelState.RestingRow: return $"{hero} · back in {extra}s";
+                case PanelState.Vanished: return "Hidden in the smoke: off the board, out of reach, and back on a free tile when your next turn starts";
+                case PanelState.VanishedRow: return $"{hero} · in the smoke until your next turn";
                 default: return "";
             }
         }
