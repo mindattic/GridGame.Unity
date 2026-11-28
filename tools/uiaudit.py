@@ -57,7 +57,7 @@ def goto_screens():
 
 
 def plan(screens_filter):
-    items = [(s, "goto", s) for s in goto_screens()] + [(n, "scenario", p) for n, p in SCENARIO_SCREENS]
+    items = [(s, "goto", s) for s in goto_screens()] + [(n, "scenario", os.path.join(ROOT, "tools", "scenarios", p + ".json")) for n, p in SCENARIO_SCREENS]
     if screens_filter:
         want = set(screens_filter)
         unknown = want - {n for n, _, _ in items}
