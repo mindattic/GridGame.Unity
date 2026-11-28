@@ -31,6 +31,10 @@ namespace GridGame.App.Dev
         public int? CarriedOrbs;
         /// <summary>Every Camp NPC joined, so every station is open.</summary>
         public bool AllFeatures;
+        /// <summary>Battle items put on a hero's bar (GG-T2076), as class id → item id → how many: each stack goes into the bag and
+        /// into the hero's first empty bar slot (else its last), the way Heroes > Abilities > Items equips one, so the battle
+        /// Abilities sheet lists it under Consumables.</summary>
+        public Dictionary<string, Dictionary<string, int>> Consumables;
         /// <summary>Profile settings by automation <c>setting</c> key (cutins, reducemotion, colorblind, ...): 0/1 or a value.</summary>
         public Dictionary<string, JToken> Settings;
         /// <summary>Battle targets: play every wave from the target wave on, not just the target wave.</summary>

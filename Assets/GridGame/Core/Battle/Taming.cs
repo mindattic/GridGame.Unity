@@ -56,7 +56,7 @@ namespace GridGame.Core.Battle
             if (u == null || !u.Alive) return "Nothing to tame";
             if (u.Team != Team.Enemy) return "Not a foe";
             if (u.IsRemains || u.IsEgg || u.IsCorpse) return "Nothing to tame";
-            if (u.Def.HasTag("Boss") || u.RuleBreak != RuleBreak.None || (u.Def.BossPhases != null && u.Def.BossPhases.Count > 0)) return "Too mighty to tame";
+            if (u.IsBossLike) return "Too mighty to tame";
             if (u.Def.HasTag("Sentient")) return "Too clever to tame";
             if (u.IsMultiTile || u.IsSnakeMember) return "Too big to tame";
             if (u.Def.HasTag("Untameable")) return "Can't be tamed";

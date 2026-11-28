@@ -1,0 +1,20 @@
+dialogue boss_intro_greenvalley
+title: The Captain's Field
+trigger: StageStart greenvalley-03
+speaker boss moorcaptain
+speaker commander $commander
+
+node a boss
+  So you're the ones who broke my Collector's plate and drove off in my tithe wagon. Tithe paid its colour every month without a word until you came.
+  -> b
+
+node b commander
+  Tithe paid because your man stood on the bridge with a prisoner. You sold the holds' tithe to the Choir. Your own people's.
+  -> c
+
+node c boss
+  I sold it at quota. Without me the Choir takes three times that and nobody keeps the count. Give me room on my own moor and I strike twice.
+  -> d
+
+node d commander
+  Then no room. Stay close to him, everyone. Never let the Captain end a turn alone.

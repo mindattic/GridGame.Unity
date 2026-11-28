@@ -2534,6 +2534,22 @@
         "long": "Grew up among the pack, and understands every snarl as a word."
       }
     },
+    "class:moorcaptain": {
+      "key": "class:moorcaptain",
+      "id": "description-class-moorcaptain",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9e11ca45a07f26b9769b2ff4ea45f9557a2af7362b25c9bd4024c421b5accb94",
+      "about": [
+        "class-moorcaptain"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "The Captain himself: a tall knight in black-and-steel plate under the Choir's white surcoat crossed with red straps, closed helm, a sword at the hip.",
+        "long": "The Free Holds' militia captain, who sold the holds' tithe to the Choir and sent his Collector to bleed Tithe dry. He calls it keeping the quota. He holds the last stretch of the moor and strikes twice when no one stands beside him."
+      }
+    },
     "class:mountaintroll": {
       "key": "class:mountaintroll",
       "id": "description-class-mountaintroll",

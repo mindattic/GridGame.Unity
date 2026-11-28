@@ -320,7 +320,7 @@ namespace GridGame.App
                 if (mc.Chain > 1) why += $" · chain ×{1f + BattleConfig.ChargeChainBonus * (mc.Chain - 1):0.##}";
                 Billboard($"Mana +{mc.Amount}{why}", null, Palette.Mana); // GG-T408
             }
-            else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into every spell
+            else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into the party bar
             {
                 float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
                 Billboard($"Guard · Mana +{mc.Amount} · {secs:0.#}s banked", null, Palette.Mana); // §2.5
