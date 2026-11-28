@@ -100,16 +100,12 @@ namespace GridGame.App
             if (layer == null || anchor == null) return false;
             HideNow();
 
-            var c = new VisualElement { name = "inspect-card", pickingMode = PickingMode.Ignore };
+            // The kit's window (§2.5 level 4: rail rim, mana top edge).
+            var c = Ui.Window(null, null, "inspect-card");
+            c.name = "inspect-card";
+            c.pickingMode = PickingMode.Ignore;
             c.style.position = Position.Absolute;
             c.style.width = Mathf.Min(GameApp.StageWidth - Space.S32 * 2f, 860f);
-            c.style.paddingLeft = c.style.paddingRight = Space.S24;
-            c.style.paddingTop = c.style.paddingBottom = Space.S24;
-            c.style.backgroundColor = Palette.Panel;
-            c.style.borderTopWidth = c.style.borderBottomWidth = c.style.borderLeftWidth = c.style.borderRightWidth = 4;
-            var frame = Art.ThemeAccent;
-            c.style.borderTopColor = c.style.borderBottomColor = c.style.borderLeftColor = c.style.borderRightColor = frame;
-            c.style.borderTopLeftRadius = c.style.borderTopRightRadius = c.style.borderBottomLeftRadius = c.style.borderBottomRightRadius = Space.S24;
             c.style.opacity = 0f;
             c.style.visibility = Visibility.Hidden;
             if (!build(c)) return false;

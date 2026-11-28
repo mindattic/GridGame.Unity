@@ -25,13 +25,18 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Move {HeroId} [{string.Join(" ", Path)}]";
     }
 
-    /// <summary>Use the ability/item in a bar slot. Target is the picked tile (actor or tile picks); ignored for Auto.</summary>
+    /// <summary>Use the ability/item in a bar slot. Target is the picked tile (actor, tile or direction picks); ignored for
+    /// Auto. A PickMulti (GG-T2141) lists every pick in <see cref="Targets"/>, in pick order, Target being the first.</summary>
     public sealed class UseSlotCommand : BattleCommand
     {
         public int HeroId;
         public int Slot;
         public Coord Target;
-        public override string ToString() => $"Use {HeroId} slot{Slot} @{Target}";
+        /// <summary>GG-T2141: a PickMulti's picks in the order they resolve; empty for every other mode.</summary>
+        public List<Coord> Targets = new List<Coord>();
+        /// <summary>The picks to resolve: <see cref="Targets"/>, or <see cref="Target"/> alone.</summary>
+        public IReadOnlyList<Coord> Picks => Targets.Count > 0 ? (IReadOnlyList<Coord>)Targets : new[] { Target };
+        public override string ToString() => Targets.Count > 0 ? $"Use {HeroId} slot{Slot} @[{string.Join(" ", Targets)}]" : $"Use {HeroId} slot{Slot} @{Target}";
     }
 
     /// <summary>Raise shields (Guard): every hero gains Protection, the unused turn time fills the mana bubble
