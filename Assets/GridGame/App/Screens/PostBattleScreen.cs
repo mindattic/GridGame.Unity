@@ -293,7 +293,7 @@ namespace GridGame.App
         /// escape offers Retry, which replays the drill from its start at no cost; Back does the same.</summary>
         private void BuildDrill(VisualElement col, ContentDb c)
         {
-            var drills = c.Campaign?.Tutorial ?? new List<string>();
+            var drills = Drills.OrderOf(c, stageId);
             int idx = drills.IndexOf(stageId);
             string nextId = idx >= 0 && idx + 1 < drills.Count && c.TryStage(drills[idx + 1]) != null ? drills[idx + 1] : null;
 

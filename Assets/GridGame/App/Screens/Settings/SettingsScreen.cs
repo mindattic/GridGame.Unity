@@ -293,4 +293,5 @@ namespace GridGame.App
                     RowIcon.IconButton("Play a drill", RowKind.Stage, () => App.Router.Push(new DrillPickerScreen()), "btn--small", replay.parent).name = "settings-play-drill";
             }
         }
+    }
 }

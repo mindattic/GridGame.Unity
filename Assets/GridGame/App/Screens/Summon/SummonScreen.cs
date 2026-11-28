@@ -45,8 +45,8 @@ namespace GridGame.App
             : t.TotalHours >= 1 ? $"{(int)t.TotalHours}h {t.Minutes}m"
             : $"{Math.Max(0, t.Minutes)}m {Math.Max(0, t.Seconds)}s";
 
-        /// <summary>A banner's tab (§25.10.3, GG-T1428): the featured portraits and the countdown to its close, the pity
-        /// meters, the Rates list, the wallet, and the x1 and x<see cref="BannerDef.MultiCount"/> pulls naming what they take.</summary>
+        /// <summary>A banner's tab (§25.10.3, GG-T1428): the featured portraits and the countdown to its close, the
+        /// Rates list, the wallet, and the x1 and x<see cref="BannerDef.MultiCount"/> pulls naming what they take.</summary>
         private void Banner(VisualElement body, BannerDef b, bool busy)
         {
             var w = Ui.Panel(body, b.Name, false, "summon-banner-" + b.Id);
@@ -72,7 +72,6 @@ namespace GridGame.App
                     if (left <= TimeSpan.Zero) { Refresh(); return; }
                     ends.text = "Ends in " + Left(left);
                 }).Every(1000);
-            Pity(w, b);
             RatesRow(w, b);
 
             int diamonds = DiamondExchange.Have(S), tickets = SummonTickets.Have(S);
@@ -91,29 +90,6 @@ namespace GridGame.App
                 Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate.", w, "dim");
                 RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store"; // GG-T750
             }
-        }
-
-        /// <summary>The pity meters: pulls toward a guaranteed new hero and, on a Featured banner, a guaranteed featured one.</summary>
-        private void Pity(VisualElement w, BannerDef b)
-        {
-            var box = Ui.El("col", w);
-            box.name = "summon-pity";
-            if (b.NewHeroPity > 0) Meter(box, "New hero", Gacha.NewHeroMiss(S, b.Kind), b.NewHeroPity, "summon-pity-new");
-            if (b.Kind == BannerKind.Featured && b.FeaturedPity > 0) Meter(box, "Featured", S.Summon?.FeaturedMiss ?? 0, b.FeaturedPity, "summon-pity-featured");
-            var due = Gacha.DueLine(Gacha.Due(S, b, Gacha.Pool(C, S, b)));
-            if (due != null) Ui.Para(due, box, "good");
-        }
-
-        private static void Meter(VisualElement parent, string label, int miss, int pity, string name)
-        {
-            var row = Ui.El("row", parent);
-            row.name = name;
-            Ui.Caption(label, row);
-            var g = Ui.Gauge(miss / (float)pity, row);
-            g.style.flexGrow = 1;
-            g.style.marginLeft = g.style.marginRight = Space.S8;
-            int left = Math.Max(1, pity - miss);
-            Ui.Caption(left == 1 ? "Next pull" : $"Within {left} pulls", row, "dim");
         }
 
         /// <summary>What a pull takes, as its button names it: "1 Summon Ticket", "1,000 Mana Shards", "40 Mana Shards + 360 G".</summary>
@@ -166,11 +142,9 @@ namespace GridGame.App
             });
         }
 
-        /// <summary>The next pull's odds in a line: the pity due, the featured share, or the even chance of each hero.</summary>
+        /// <summary>The next pull's odds in a line: the featured share, or the even chance of each hero.</summary>
         private string RatesLine(BannerDef b, List<DrawOdds> odds)
         {
-            var due = Gacha.DueLine(Gacha.Due(S, b, Gacha.Pool(C, S, b)));
-            if (due != null) return due.TrimEnd('.');
             if (odds.Count == 0) return "No one is left to answer";
             if (b.Kind == BannerKind.Featured && b.Featured.Count > 0)
                 return $"Featured: {OddsText.Percent(b.FeaturedShare)} together; each other hero {odds[odds.Count - 1].Label}";
