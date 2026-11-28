@@ -162,7 +162,7 @@ def main():
         track = h.call("music")["track"]
         check("camp music", track in CAMPAIGN.get("HubMusic", []), f"{track} not in HubMusic {CAMPAIGN.get('HubMusic')}")
         # GG-T435 folded Status / Equip / Abilities / Party into one Heroes row (GG-T546 updated this list).
-        for item in ["Adventure", "Items", "Heroes", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
+        for item in ["Journey", "Items", "Heroes", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
             if not has_text(item):
                 check(f"camp menu has {item}", False)
                 break
@@ -191,7 +191,7 @@ def main():
         check("continue resumes the save", until(lambda: h.call("state")["screen"] == "hub"))
 
     with section('Adventure ordering'):
-        h.call("clicktext", text="Adventure"); time.sleep(0.8)
+        h.call("clicktext", text="Journey"); time.sleep(0.8)
         t = texts()
         check("adventure lists the first stage", any("The Tithe Moors I" in x for x in t))
         # GG-T1797: expeditions became travel (GG-T1786), so the region header is just the region name.

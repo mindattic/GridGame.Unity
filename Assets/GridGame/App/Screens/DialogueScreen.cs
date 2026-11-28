@@ -287,11 +287,11 @@ namespace GridGame.App
             s.Plate.style.scale = new Scale(Vector2.one * Mathf.Lerp(0.9f, 1.06f, lit));
             s.Plate.style.translate = new Translate(0, Mathf.Lerp(8f, 0f, lit));
             var dimBg = Palette.Ink.WithA(0.92f);
-            var litBg = Color.Lerp(accent, Color.black, 0.3f); litBg.a = 0.98f;
+            var litBg = Color.Lerp(accent, Palette.Black, 0.3f); litBg.a = 0.98f;
             s.Plate.style.backgroundColor = Color.Lerp(dimBg, litBg, lit);
-            var border = Color.Lerp(new Color(0.42f, 0.46f, 0.62f), Color.Lerp(accent, Color.white, 0.55f), lit);
+            var border = Color.Lerp(Palette.PlateRim, Color.Lerp(accent, Palette.White, 0.55f), lit);
             s.Plate.style.borderTopColor = s.Plate.style.borderBottomColor = s.Plate.style.borderLeftColor = s.Plate.style.borderRightColor = border;
-            s.NameLabel.style.color = Color.Lerp(Palette.TextDim, Color.white, lit);
+            s.NameLabel.style.color = Color.Lerp(Palette.TextDim, Palette.White, lit);
             foreach (var g in new[] { s.GlowNear, s.GlowFar })
             {
                 var c = accent; c.a = (float)g.userData;

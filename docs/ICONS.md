@@ -38,10 +38,10 @@ already work this way at row size. Keeping one grid keeps the pixel density the 
 
 | Role | Size | Where | Kit token (GG-T2050 adds the new ones) |
 |---|---|---|---|
-| inline | 32 | in text, prices, the wallet, stat and element chips, badges, battle feed, board cells | `Size.IconInline` (new) |
-| button | 48 | header buttons (Hamburger, Back, Home), battle action cells, Continue, dialog buttons | `Size.IconButton` (new) |
+| inline | 32 | in text, prices, the wallet, stat and element chips, badges, battle feed, board cells | `Size.IconInline`, `--size-icon-inline` |
+| button | 48 | header buttons (Hamburger, Back, Home), battle action cells, Continue, dialog buttons | `Size.IconButton`, `--size-icon-button` |
 | row | 64 | leading icon of every menu row, hub tile, settings row, list entry, map marker | `Size.Icon` (exists, 64) |
-| nav | 72 | bottom nav tabs | `Size.IconNav` (new) |
+| nav | 72 | bottom nav tabs | `Size.IconNav`, `--size-icon-nav` |
 
 The tokens that already exist (`IconS` 40, `IconM` 56, `IconL` 76) keep their present uses until GG-T2050 moves each
 icon onto its role.
@@ -65,8 +65,8 @@ Every palette in `tools/icons.json` stays. GG-T2050 adds three for chrome:
 - Add two options. `rot<deg>` rotates the source (the recipe already takes `rot`): Back is `plain-arrow` turned 90
   degrees and Enter is the same arrow turned 270. `strike` draws a 1 px light diagonal over a 3 px outline, for the
   mute rows.
-- `RowIcon.KindIcon` loads the kind's kit icon before it falls back to `KindEmblem`. Once every kind has art, delete
-  `KindEmblem`.
+- `RowIcon.KindIcon` falls back to the kind's set icon (`RowIcon.IconId`, `Art.UiIcon`); `KindEmblem` is gone
+  (GG-T2051).
 - Every new source is downloaded into `tools/icon_src/` and credited in `SOURCES.md` and on the Credits screen, as now.
 
 Every source named below was checked against game-icons.net on 2026-11-28, or is already in `tools/icon_src/`.

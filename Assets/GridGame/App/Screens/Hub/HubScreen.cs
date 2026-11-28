@@ -15,6 +15,8 @@ namespace GridGame.App
         public override string Id => "hub";
         /// <summary>GG-T456: the Camp's peaceful track, redrawn after each trip to the field.</summary>
         public override string Music => App.Playlist.Hub(App.Content.Campaign) ?? "minstrel-guild-00";
+        /// <summary>The bottom nav shows on the hub root too, Home lit (BIBLE §11.3, GG-T1963).</summary>
+        public override bool ShowsNav => true;
 
         protected override void Build(VisualElement root)
         {
@@ -26,7 +28,8 @@ namespace GridGame.App
             LivingBackdrop.Show(bg, ThemeFor(c, s), 2);
             bg.style.unityBackgroundImageTintColor = Palette.TextDim;
 
-            var col = Ui.El("fill col", root);
+            var frame = Ui.El("fill col", root);
+            var col = Ui.El("col grow", frame);
             // Camp's header is a corner bar, not a title bar: the hamburger top-left, gold (and shards) top-right (GG-T1845);
             // its windows keep the kit's gutters (Kit.Gutter at the sides, Kit.Gap at the bottom).
             col.style.paddingTop = Space.S8; col.style.paddingLeft = col.style.paddingRight = Kit.Gutter - Space.S8; col.style.paddingBottom = Kit.Gap - Space.S8;
@@ -39,7 +42,7 @@ namespace GridGame.App
             RowIcon.HamburgerButton(() => OpenMenu(), corners);
             var currencies = Ui.El("header-currencies", corners);
             currencies.name = "header-currencies";
-            Ui.Currencies(currencies, s, () => App.Router.PushOrReturn(new DiamondStoreScreen()));
+            Ui.Currencies(currencies, s, () => App.Router.PushOrReturn(ShopHubScreen.OnShards()));
 
             // Party strip (UX review §2.2, GG-T1962): one row of hero thumbnails with an HP ring each; a tap opens that hero's
             // Status. Full art waits for a tap there (R9), so the strip stays a single short row at any party size.
@@ -57,12 +60,12 @@ namespace GridGame.App
                 var slot = Ui.El("col", party);
                 slot.name = "camp-hero-" + id;
                 slot.style.alignItems = Align.Center;
-                var frame = Ui.El(null, slot);
-                frame.style.width = frame.style.height = Size.Thumb + 2 * Space.S16;
-                var thumb = Ui.Thumb(id, frame, Size.Thumb);
+                var ring = Ui.El(null, slot);
+                ring.style.width = ring.style.height = Size.Thumb + 2 * Space.S16;
+                var thumb = Ui.Thumb(id, ring, Size.Thumb);
                 thumb.style.position = Position.Absolute;
                 thumb.style.left = thumb.style.top = Space.S16;
-                frame.Add(new HpRing(hp / (float)u.MaxHp));
+                ring.Add(new HpRing(hp / (float)u.MaxHp));
                 Ui.Caption($"Lv {u.Level}", slot, "gold");
                 MercenaryCamp.Tag(s, id, slot);
                 Ui.Tappable(slot, () => App.Router.Push(new StatusScreen(id)), "ui.select");
@@ -123,7 +126,7 @@ namespace GridGame.App
                 title.name = "camp-next";
                 Ui.Caption($"Recommended Lv {Progression.StageRecommendedLevel(c, s, st)}", campaign, "dim");
             }
-            var cont = Ui.Button(next != null ? "Fight" : adv?.Label ?? "Adventure", () =>
+            var cont = Ui.Button(next != null ? "Fight" : adv?.Label ?? "Journey", () =>
             {
                 if (next != null) StageLauncher.Launch(next, false);
                 else App.Router.Push(new StageSelectScreen());
@@ -134,7 +137,7 @@ namespace GridGame.App
                 Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", campaign, "dim").name = "camp-fight-cost";
             // Rested shows here only while it gates: below full, its meter, timer and refills (§25.18).
             if (!RestedPool.Exempt(s) && RestedPool.Points(s, DateTime.UtcNow) < RestedPool.Max) RestedGate.PanelIn(campaign, Refresh);
-            var advRow = Ui.MenuRow(adv?.Label ?? "Adventure", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
+            var advRow = Ui.MenuRow(adv?.Label ?? "Journey", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
             advRow.name = "camp-adventure";
             advRow.KindIcon(RowKind.Place, ThemeFor(c, s));
             Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");
@@ -163,34 +166,36 @@ namespace GridGame.App
                 if (!crucible.Open) Subline(row, crucible.Hint);
             }
 
-            // Every other destination is a tile, named for its old Camp row. Craft and Journal collapse into one group tile
-            // each (camp-craft / camp-journal, locked-* when nothing in the group is open) that opens a CampGroupScreen of
-            // their members (GG-T1613). The members' old names live on as hidden full-size markers inside the group tile, so
-            // camp tips, the coach and the harness still find them on the hub:
+            // The tiles are the two groups the nav has no tab for (GG-T1963): Craft and Journal, each opening a CampGroupScreen of
+            // its members (GG-T1613). Every destination keeps its old Camp row name as a hidden full-size marker, so camp tips,
+            // the coach and the harness still find it on the hub: inside its group tile, or over the nav tab that now opens it.
             //   camp-craft:   camp-items, camp-blacksmith, camp-alchemist, camp-manasmith, camp-enchantress, camp-caravan
-            //   camp-journal: camp-quests, camp-bounties, camp-mercenaries, camp-talk, camp-codex, camp-bestiary
+            //   camp-journal: camp-quests, camp-bounties, camp-talk, camp-codex, camp-bestiary
+            //   nav-heroes:   camp-heroes;  nav-summon: camp-summon-circle, camp-mercenaries;  nav-shop: camp-merchant, camp-diamonds
             // (each locked-<name> while that member is closed).
             var grid = Ui.El("kit-pillar", page);
             grid.name = "camp-tiles";
+            var nav = Ui.NavBar(frame, this);
             var groups = new Dictionary<CampGroup, VisualElement>();
             foreach (var d in dests)
             {
-                switch (d.Id)
-                {
-                    case CampMenu.Campaign: case CampMenu.Crucible: case CampMenu.Inn: case CampMenu.Respec: case CampMenu.NewGamePlus: case CampMenu.Quit: case CampMenu.Settings: continue;
-                }
+                VisualElement host;
                 if (d.Group == CampGroup.Craft || d.Group == CampGroup.Journal)
                 {
-                    if (!groups.TryGetValue(d.Group, out var groupTile)) groups[d.Group] = groupTile = GroupTile(grid, dests, d.Group);
-                    var marker = Ui.El(null, groupTile);
-                    marker.name = TileName(d);
-                    marker.style.position = Position.Absolute;
-                    marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = Space.S0;
-                    marker.style.visibility = Visibility.Hidden;
-                    marker.pickingMode = PickingMode.Ignore;
-                    continue;
+                    if (!groups.TryGetValue(d.Group, out host)) groups[d.Group] = host = GroupTile(grid, dests, d.Group);
                 }
-                Tile(grid, d);
+                else
+                {
+                    string tab = d.Id == CampMenu.Heroes ? CampMenu.Heroes : d.Group == CampGroup.Summon ? CampMenu.Summon : d.Group == CampGroup.Shop ? CampMenu.Shop : null;
+                    host = tab != null ? nav.Q("nav-" + tab) : null;
+                    if (host == null) continue;
+                }
+                var marker = Ui.El(null, host);
+                marker.name = TileName(d);
+                marker.style.position = Position.Absolute;
+                marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = Space.S0;
+                marker.style.visibility = Visibility.Hidden;
+                marker.pickingMode = PickingMode.Ignore;
             }
             Ui.Select(cont);
 
@@ -295,7 +300,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = TileName(d);
             tile.EnableInClassList("kit-tile--locked", !d.Open);
-            var icon = d.Id == CampMenu.Shop ? tile.KindIcon(RowKind.Shop) : d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
+            var icon = d.Id != CampMenu.Shop && d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id), Art.UiIcon(TileIcon(d.Id)));
             if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
             else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
@@ -316,7 +321,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = (open ? "camp-" : "locked-") + label.ToLowerInvariant();
             tile.EnableInClassList("kit-tile--locked", !open);
-            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex);
+            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex, Art.UiIcon(group == CampGroup.Craft ? "hub-craft" : "hub-journal"));
             if (!open) RowIcon.Badge(icon, RowKind.Locked);
             else if (CampMenu.GroupBadge(dests, group)) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(label, "kit-tile-label", tile));
@@ -326,10 +331,26 @@ namespace GridGame.App
             return tile;
         }
 
+        /// <summary>A destination's icon in the menu set (docs/ICONS.md, hub tiles and stations).</summary>
+        internal static string TileIcon(string id)
+        {
+            switch (id)
+            {
+                case CampMenu.Campaign: return "hub-stage-select";
+                case CampMenu.Diamonds: return "hub-diamond-store";
+                case CampMenu.NewGamePlus: return "hub-new-game-plus";
+                case CampMenu.Quit: return "hub-quit-to-title";
+                case CampMenu.Blacksmith: case CampMenu.Alchemist: case CampMenu.Enchantress: case CampMenu.Aetherist: case CampMenu.Caravan:
+                    return "station-" + id;
+                default: return "hub-" + id;
+            }
+        }
+
         private static RowKind TileKind(string id)
         {
             switch (id)
             {
+                case CampMenu.Shop: return RowKind.Shop;
                 case CampMenu.Heroes: case CampMenu.Mercenaries: return RowKind.Hero;
                 case CampMenu.Items: return RowKind.Item;
                 case CampMenu.Talk: return RowKind.Talk;

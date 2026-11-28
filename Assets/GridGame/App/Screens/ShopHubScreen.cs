@@ -21,6 +21,9 @@ namespace GridGame.App
         internal readonly DiamondStoreScreen Shards = new DiamondStoreScreen();
         private int tab = -1;
 
+        /// <summary>The Shop opened on its Shard Store tab: the Camp's currency strip goes here (GG-T1963).</summary>
+        internal static ShopHubScreen OnShards() => new ShopHubScreen { tab = ShardsTab };
+
         public override string Id => "shop-hub";
         protected override string Title => "Shop";
         protected override string Backdrop => tab == MerchantTab ? base.Backdrop : "cityruins";

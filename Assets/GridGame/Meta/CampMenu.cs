@@ -66,7 +66,7 @@ namespace GridGame.Meta
             void Keeper(string id, string label, CampGroup group, string npc) =>
                 Add(id, label, group, CampUnlocks.NpcOpen(s, npc), CampUnlocks.JoinHint(c, npc), npc: npc);
 
-            Add(Campaign, "Adventure", CampGroup.Campaign, value: $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}");
+            Add(Campaign, "Journey", CampGroup.Campaign, value: $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}");
             if (Features.Crucible)
             {
                 if (CampUnlocks.CrucibleOpen(s))
@@ -118,7 +118,7 @@ namespace GridGame.Meta
             if (Features.Bounties)
                 Add(Bounties, "Bounties", CampGroup.Journal, CampUnlocks.BountiesOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter),
                     s.Bounty.Slain.Count > 0 ? $"☠ {s.Bounty.Slain.Count} to collect" : s.Bounty.Taken.Count > 0 ? $"Hunting {s.Bounty.Taken.Count}" : "", s.Bounty.Slain.Count > 0);
-            Add(Mercenaries, "Mercenaries", CampGroup.Journal, GridGame.Meta.Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter),
+            Add(Mercenaries, "Mercenaries", CampGroup.Summon, GridGame.Meta.Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
             int newTalks = DialogueRunner.NewTalkCount(c, s);
             Add(Talk, "Talk", CampGroup.Journal, value: newTalks > 0 ? $"{newTalks} new" : "", badge: newTalks > 0);
