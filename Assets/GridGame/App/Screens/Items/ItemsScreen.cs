@@ -135,7 +135,7 @@ namespace GridGame.App
         private bool selectedBroken;
         public override string Id => "items";
         protected override string Title => "Items";
-        private static readonly string[] Tabs = { "All", "Items", "Gear", "Materials" };
+        private static readonly string[] Tabs = { "All", "Consumables", "Gear", "Materials" };
 
         protected override void BuildBody(VisualElement body)
         {
@@ -155,16 +155,16 @@ namespace GridGame.App
             foreach (var (item, n) in items)
             {
                 var it = item;
-                var row = ItemUi.Row(it, $"×{n}", () => { selected = it; selectedBroken = false; ShowDetail(detail, it, false); }, list, true, Equipment.IsMasterwork(S, it.Id));
-                if (selected == it && !selectedBroken) Ui.Select(row);
+                var row = ItemUi.Row(it, $"×{n}", () => { }, list, true, Equipment.IsMasterwork(S, it.Id));
+                Pick(row, detail, it, false);
             }
             foreach (var (item, n) in broken)
             {
                 var it = item;
-                var row = Ui.MenuRow($"Broken {it.Name}", $"×{n}", () => { selected = it; selectedBroken = true; ShowDetail(detail, it, true); }, list);
+                var row = Ui.MenuRow($"Broken {it.Name}", $"×{n}", null, list);
                 row.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)); // GG-T717
                 row.Q<Label>("label").AddToClassList("dim");
-                if (selected == it && selectedBroken) Ui.Select(row);
+                Pick(row, detail, it, true);
             }
             var fallback = selected;
             bool fallbackBroken = selectedBroken;
@@ -176,6 +176,15 @@ namespace GridGame.App
             }
             ShowDetail(detail, fallback, fallbackBroken);
             if (selected == null && list.childCount > 0 && (items.Count > 0 || broken.Count > 0)) Ui.Select(list[0]);
+        }
+
+        /// <summary>A 132-px kit row (GG-T2019): the first tap selects it and shows its detail at once; the Use and Learn
+        /// buttons in the detail are the confirm (GG-T1942), so a second tap on the row runs nothing more.</summary>
+        private void Pick(VisualElement row, VisualElement detail, ItemDef it, bool broken)
+        {
+            row.AddToClassList("menu-row--compact");
+            row.RegisterCallback<ClickEvent>(_ => { selected = it; selectedBroken = broken; ShowDetail(detail, it, broken); });
+            if (selected == it && selectedBroken == broken) Ui.Select(row);
         }
 
         private void ShowDetail(VisualElement detail, ItemDef it, bool broken)

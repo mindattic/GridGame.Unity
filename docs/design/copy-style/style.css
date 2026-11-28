@@ -1,0 +1,55 @@
+*,*::before,*::after{box-sizing:border-box}
+:root {
+  color-scheme: dark;
+  --bg: #0d0f14; --panel: #151821; --line: #2a2f3d; --fg: #e6e8ee; --muted: #9097a8;
+  --accent: #7fd1ff; --done: #7fd8a0; --partial: #ffcf6b; --missing: #e0784a; --term: #8fc8ff;
+  --display: "Segoe UI", system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+html, body { background: var(--bg); color: var(--fg); margin: 0; }
+body { font-family: var(--display); font-size: 14px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 22px; }
+h1 { font-weight: 700; font-size: clamp(22px, 3.2vw, 32px); letter-spacing: .04em; margin: 0; text-transform: uppercase; }
+h2 { font-weight: 600; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+h3 { font-size: 15px; margin: 14px 0 4px; }
+a { color: var(--accent); }
+.sub, .note { color: var(--muted); margin: 6px 0; max-width: 80ch; }
+code { font-family: var(--mono); font-size: 12px; background: #1d2130; border-radius: 4px; padding: 0 4px; overflow-wrap: anywhere; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+ul, ol { margin: 6px 0; padding-left: 20px; max-width: 90ch; }
+li { margin: 3px 0; }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+td.n { font-family: var(--mono); text-align: right; white-space: nowrap; }
+td.do { color: var(--done); }
+td.dont { color: var(--missing); text-decoration: line-through; text-decoration-color: rgba(224,120,74,.5); }
+.tix { font-family: var(--mono); color: var(--accent); }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.links a { border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; text-decoration: none; background: var(--panel); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.card { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; }
+.card b { display: block; margin-bottom: 2px; }
+.card span { color: var(--muted); }
+.pill { display: inline-block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border-radius: 10px; padding: 0 8px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.decided { color: var(--done); }
+.pill.default { color: var(--accent); }
+.pill.pending { color: var(--partial); }
+tr.pending td:first-child { border-left: 3px solid var(--partial); }
+.term { color: var(--term); text-decoration: underline; }
+.fitform { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0 12px; }
+.fitform label { display: grid; gap: 4px; color: var(--muted); font-size: 12px; flex: 1 1 220px; }
+.fitform input, .fitform select { font: inherit; color: var(--fg); background: #1d2130; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+.fitout { display: grid; gap: 8px; }
+.fitbox { width: var(--w, 106px); max-width: 100%; min-height: 33px; border: 2px dashed var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2px 0; font-size: 14px; line-height: 1.2; }
+.fitbox span { white-space: pre-wrap; overflow-wrap: normal; }
+.fitbox.single span { white-space: nowrap; }
+.fitbox.over { border-color: var(--missing); }
+.fitbox.over span { color: var(--missing); }
+.verdict { margin: 0; }
+.verdict.ok { color: var(--done); }
+.verdict.warn { color: var(--partial); }
+.verdict.bad { color: var(--missing); }
+.checks { list-style: none; padding-left: 0; }
+.checks li::before { content: "\2610"; color: var(--accent); margin-right: 8px; }
