@@ -170,7 +170,7 @@ namespace GridGame.App
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
-                panel.schedule.Execute(() => Advise("Tip: tap or hold any hero, foe or icon to read it; Abilities lists every move")).StartingIn(2500);
+                panel.schedule.Execute(() => Advise(PanelCopy(PanelState.InfoTip))).StartingIn(2500);
             }
             CaptureUnity.Raise("battle-start", new CaptureData { ["stage"] = State.Stage.Id });
         }

@@ -589,14 +589,18 @@ namespace GridGame.App
                 TutorialCard(panel);
                 return;
             }
-            if (u == null) return;
-            // Idle (§9.0): one line for the selected hero, then its card and every skill's readout.
-            if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable)
+            if (u == null)
             {
-                var idle = Ui.Text($"{u.Name}: tap Abilities to pick a move · hold it to repeat the last one · drag {u.Name} or tap a tile to move", "small gold", panel);
-                idle.name = "idle-prompt";
-                idle.style.whiteSpace = WhiteSpace.Normal;
-                idle.style.marginBottom = Space.S8;
+                if (CanCommand() && BattleEngine.HeroesLeftToAct(State).Count > 0) IdlePrompt(PanelCopy(PanelState.NoHero));
+                return;
+            }
+            // Idle (§9.0): one verb-first line for the selected hero (GG-T1953), then its skills and its card.
+            if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable && CanCommand())
+            {
+                var left = BattleEngine.HeroesLeftToAct(State);
+                var s = !left.Contains(u) ? (left.Count > 0 ? PanelState.Acted : (PanelState?)null)
+                    : BattleEngine.CanMove(State, u.Id) && HasPincerSpots(u) ? PanelState.Trap : PanelState.NoTrap;
+                if (s.HasValue) IdlePrompt(PanelCopy(s.Value, u.Name));
             }
             // GG-T2111: a commandable hero's skills come right under the instruction, so a short panel (9:20, 3:4) shows the
             // instruction and the first skill and scrolls to the hero's card, instead of clipping the skills below it.
@@ -667,6 +671,14 @@ namespace GridGame.App
             }
         }
 
+        private void IdlePrompt(string text)
+        {
+            var idle = Ui.Text(text, "small gold", panel);
+            idle.name = "idle-prompt";
+            idle.style.whiteSpace = WhiteSpace.Normal;
+            idle.style.marginBottom = Space.S8;
+        }
+
         private static string SideName(Coord f) => f.Y > 0 ? "front (facing down)" : f.Y < 0 ? "front (facing up)" : f.X > 0 ? "front (facing right)" : "front (facing left)";
 
         private static VisualElement StatusRow(VisualElement parent, string icon, string letter, Color color, string name, string what)
@@ -719,8 +731,7 @@ namespace GridGame.App
                 btns.style.marginTop = Space.S8;
                 var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
                 cancel.name = "confirm-cancel";
-                string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
-                var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns, confirmTap: false);
+                var ok = RowIcon.IconButton(CommitVerb(a), RowKind.Confirm, ConfirmPending, "btn--primary", btns, confirmTap: false);
                 ok.name = "confirm-action";
             }
             InspectCard.Ability(panel, a, state: SlotState(hero, slot, a));
@@ -738,9 +749,9 @@ namespace GridGame.App
         {
             switch (TargetResolver.AimOf(a))
             {
-                case Aim.Multi: return $"{a.Name}: tap up to {a.MaxPicks} highlighted {(a.Filter == TargetFilter.AllyOnly ? "allies" : AimNoun(a) + "s")}, then Confirm";
-                case Aim.Direction: return $"{a.Name}: tap an arrow to pick a way";
-                default: return $"{a.Name}: tap a highlighted {AimNoun(a)}";
+                case Aim.Multi: return PanelCopy(PanelState.AimMulti, a: a, n: a.MaxPicks);
+                case Aim.Direction: return PanelCopy(PanelState.AimDirection, a: a);
+                default: return PanelCopy(PanelState.AimUnit, a: a);
             }
         }
 
