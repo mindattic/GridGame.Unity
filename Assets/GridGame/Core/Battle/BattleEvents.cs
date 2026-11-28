@@ -314,6 +314,8 @@ namespace GridGame.Core.Battle
         public int UnitId; public float FromU; public float ToU; public int StunTicks;
         /// <summary>GG-T319: ticks added to a recovering (off-bar) icon's recovery; 0 when it was on the bar.</summary>
         public int RecoverTicks;
+        /// <summary>GG-T1946: how much later the foe now acts, in ticks (the push as the rules applied it, after the cap).</summary>
+        public int Ticks;
         public override string ToString() => $"PushedBack {UnitId} {FromU:F2}->{ToU:F2} stun={StunTicks}";
     }
 
