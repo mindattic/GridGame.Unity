@@ -1,0 +1,23 @@
+dialogue prologue_camp
+title: Camp at the Ford
+trigger: Prologue Camp
+backdrop: greenvalley
+speaker commander $commander
+speaker knight knight
+speaker barbarian barbarian
+speaker cleric cleric
+
+node dusk commander
+  Dusk comes down over the reeds at the ford. Nobody follows you from the bridge.
+  -> meal
+
+node meal cleric
+  Eat something and sleep. Nobody is hurt worse than tired, and tired mends by morning.
+  -> knight
+
+node knight knight
+  He showed us his plate and his flanks and dared us to try. Going round him gets us nowhere.
+  -> through
+
+node through barbarian
+  I don't need to go round it. I need to go through it. Show me where a plate like that is weakest, and I'll learn the swing tonight.

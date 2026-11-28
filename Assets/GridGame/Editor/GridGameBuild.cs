@@ -643,6 +643,8 @@ namespace GridGame.EditorTools
             // its shards and the Moon are drawn at most about screen-width.
             else if (assetPath.Contains("/Skies/") || assetPath.Contains("/Sky/")) ti.maxTextureSize = 1024;
             else if (assetPath.Contains("/Icons/")) { ti.maxTextureSize = 128; ti.textureCompression = TextureImporterCompression.Uncompressed; }
+            // GG-T2050: the UI chrome icons (docs/ICONS.md) are 22-px pixel art at x4, so they keep hard pixels.
+            if (assetPath.Contains("/UI/Icons/")) ti.filterMode = FilterMode.Point;
             AndroidOverride(ti);
         }
 

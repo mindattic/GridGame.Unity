@@ -1,0 +1,7 @@
+dialogue prologue_stair_bark
+title: The Clock
+trigger: Prologue Drill level=2
+speaker barbarian barbarian
+
+node bat barbarian
+  A bat on the stair. Take your time and line it up. Nothing moves while you think.
