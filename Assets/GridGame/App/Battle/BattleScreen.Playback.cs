@@ -269,7 +269,7 @@ namespace GridGame.App
                 case EggLaidEvent el: return EggLaidAnim(el);
                 case EggHatchedEvent eh: return HatchAnim(eh);
                 case WaveClearedEvent wc: FlushTallies(); return WaveClearedAnim(wc);
-                case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
+                case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : be.Withdrawn == true ? "FALL BACK" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped || be.Withdrawn == true ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
                 case RevivedEvent rv: return ReviveAnim(rv);
                 case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); CastCountdownTexts(); BombCountdownTexts(); WindowContinues(pc.NewWindow); return null;
                 case TileConflictEvent tc:
@@ -2426,14 +2426,14 @@ namespace GridGame.App
             CaptureUnity.Raise("battle-end", new CaptureData
             {
                 ["stage"] = State.Stage.Id,
-                ["result"] = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : "defeat",
+                ["result"] = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : lastEnded.Withdrawn == true ? "withdrawn" : "defeat",
             });
             SaveRecord();
             RecordEncounterTelemetry(); // GG-T59: one JSONL encounter record, flushed, before the session closes
             TelemetryUnity.Finish(new
             {
                 stage = State.Stage.Id,
-                result = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : "defeat",
+                result = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : lastEnded.Withdrawn == true ? "withdrawn" : "defeat",
                 waveReached = State.Wave + 1,
                 actions = State.Results.ActionsTaken,
                 ticks = State.Results.TicksElapsed,

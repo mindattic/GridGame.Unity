@@ -108,6 +108,10 @@ namespace GridGame.App
         /// <summary>The description panel starts 16 px under the action row (GG-T1894).</summary>
         private static float DescriptionTop => BarTop + BarHeight + Space.S16;
         private Label waveLabel, coinLabel, timerLabel;
+        private VisualElement bossBox, bossHpFill;
+        private Label stageName, bossName;
+        private int bossBarId = -1;
+        private float bossBarFraction = -1f;
         /// <summary>The newest ShowBanner line (automation reads it); the line itself is a billboard row that fades.</summary>
         private string bannerText = "";
         private VisualElement shake;
@@ -325,7 +329,7 @@ namespace GridGame.App
             mid.style.alignItems = Align.Center; mid.style.justifyContent = Justify.Center;
             mid.style.minWidth = Space.S0;
             mid.style.marginLeft = mid.style.marginRight = Space.S16;
-            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
+            stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
             stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
             var sep = Ui.Text("·", "small shadow", mid);
             sep.style.flexShrink = 0; sep.style.marginLeft = sep.style.marginRight = Space.S8;
@@ -333,6 +337,21 @@ namespace GridGame.App
             // vanished against a pale shard so the label read as just "Wave" (GG-T666).
             waveLabel = Ui.Text("", "small shadow", mid);
             waveLabel.style.flexShrink = 0;
+            // GG-T1952 (§9.0): during a boss wave the stage name gives way to the boss's name over a thin HP bar, so the boss
+            // costs no row of its own.
+            bossBox = Ui.El("col", mid);
+            bossBox.name = "boss-bar";
+            bossBox.style.flexShrink = 1; bossBox.style.flexGrow = 1; bossBox.style.minWidth = Space.S0;
+            bossBox.style.justifyContent = Justify.Center;
+            bossBox.style.display = DisplayStyle.None;
+            bossBox.PlaceBehind(sep);
+            bossName = Ui.Marquee(Ui.Text("", "small shadow", bossBox), grow: false);
+            bossName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            bossName.style.color = Palette.TeamBoss;
+            var gauge = Ui.El("gauge", bossBox);
+            gauge.style.height = Size.Bar + Space.S4; gauge.style.marginTop = Space.S4;
+            bossHpFill = Ui.El("gauge-fill", gauge);
+            bossBarId = -1;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
         }
@@ -446,19 +465,17 @@ namespace GridGame.App
             BuildGuardCell(bar);
         }
 
-        /// <summary>The Info cell: a placeholder for Examine mode (GG-T1918). It keeps its place in the row, dimmed, and a tap
-        /// only says it is coming.</summary>
+        /// <summary>The Info cell (GG-T1918): a tap toggles Examine mode (<see cref="ToggleExamine"/>); gold-edged while on.</summary>
         private void BuildInfoCell(VisualElement bar)
         {
-            var cell = HudCell(bar);
+            var cell = infoButton = HudCell(bar);
             cell.name = "info";
             Ui.Pressable(cell);
             var icon = cell.KindIcon(RowKind.Eye);
             icon.style.width = icon.style.height = Size.IconL;
             icon.style.marginRight = Space.S0;
             Ui.Text("Info", "tiny", cell).pickingMode = PickingMode.Ignore;
-            cell.style.opacity = 0.45f;
-            cell.RegisterCallback<ClickEvent>(_ => { App.Audio.Sfx("ui.error"); ShowBanner("Examine: coming"); });
+            cell.RegisterCallback<ClickEvent>(_ => ToggleExamine());
         }
 
         /// <summary>The GUARD cell for <see cref="SyncGuardCall"/>'s gold call and Guard's mana motes (<see cref="MintFrom"/>).</summary>
@@ -477,7 +494,7 @@ namespace GridGame.App
             cell.style.backgroundImage = new StyleBackground(Art.WindowDark);
             cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = GuardEdge;
             Ui.Pressable(cell);
-            cell.RegisterCallback<ClickEvent>(_ => { if (CanCommand()) Commit(new ShieldCommand()); });
+            cell.RegisterCallback<ClickEvent>(_ => { ExitExamine(); if (CanCommand()) Commit(new ShieldCommand()); });
             var icon = Ui.El(null, cell); icon.name = "icon";
             icon.pickingMode = PickingMode.Ignore;
             icon.style.position = Position.Absolute;
@@ -559,6 +576,34 @@ namespace GridGame.App
             int wave = Math.Min(State.Wave + 1, State.Stage.Waves.Count);
             waveLabel.text = InCrucible ? $"Crucible wave {wave}" : $"Wave {wave}/{State.Stage.Waves.Count}";
             if (shownCoins < 0) SyncCoins();
+        }
+
+        /// <summary>GG-T1952 (§9.0): the top bar's named boss HP bar. The first living boss on the board (Unit.IsBossLike, lowest
+        /// id) swaps in for the stage name; its fill follows the boss token's own gauge, so it drops with playback's beats.</summary>
+        private void SyncBossBar()
+        {
+            if (bossBox == null || State == null) return;
+            Unit boss = null;
+            UnitView bv = null;
+            foreach (var u in State.Units)
+                if (u.Team == Team.Enemy && u.OnBoard && u.IsBossLike && (boss == null || u.Id < boss.Id)
+                    && board.Units.TryGetValue(u.Id, out var v) && !v.Dead) { boss = u; bv = v; }
+            int id = boss?.Id ?? -1;
+            if (id != bossBarId)
+            {
+                bossBarId = id;
+                bossBarFraction = -1f;
+                bossBox.style.display = boss != null ? DisplayStyle.Flex : DisplayStyle.None;
+                VisualElement nameHost = stageName; // the marquee may have wrapped the name in a clip
+                while (nameHost.parent != null && nameHost.parent != bossBox.parent) nameHost = nameHost.parent;
+                nameHost.style.display = boss != null ? DisplayStyle.None : DisplayStyle.Flex;
+                if (boss != null) bossName.text = boss.Name;
+            }
+            if (bv == null || Mathf.Approximately(bv.HpFraction, bossBarFraction)) return;
+            float f = bossBarFraction = bv.HpFraction;
+            bossHpFill.style.width = Length.Percent(f * 100f);
+            bossHpFill.EnableInClassList("gauge-fill--mid", f <= 0.5f && f > 0.25f);
+            bossHpFill.EnableInClassList("gauge-fill--low", f <= 0.25f);
         }
 
         /// <summary>Linger effect (bible §6.2 stage 4): units carrying a strong status glow its color.</summary>
@@ -684,6 +729,7 @@ namespace GridGame.App
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             if (refusal != null) PanelLine(panel, refusal, "small warn", "refusal");
+            if (examining) { ExaminePanel(); return; }
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
@@ -958,8 +1004,9 @@ namespace GridGame.App
 
         /// <summary>Not while a drag is in progress either: a second finger tapping GUARD or a slot mid-drag would
         /// commit that instead and silently drop the drag, leaving the previewed units out of place (GG-T70).
-        /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through.</summary>
-        public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused;
+        /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through. Nor while
+        /// examining (GG-T1918): no battle time passes until Examine mode closes.</summary>
+        public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused && !examining;
 
         /// <summary>Dev/automation helper: add orbs to every spell meter (cheat — development builds only call this).</summary>
         public void DevGiveMana(int n)
@@ -1450,6 +1497,7 @@ namespace GridGame.App
         public override void Tick(float dt)
         {
             TickPrefabFx();
+            SyncBossBar();
             if (Paused)
             {
                 // GG-T126: the battle's clock is stopped — no watchdog, drag timer, hint, long-press or auto battle

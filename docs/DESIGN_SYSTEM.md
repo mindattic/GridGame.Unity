@@ -74,7 +74,9 @@ Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-g
 | Menu row, role badge, scrollbar | 6 | 6, 10 |
 | Lab clamp, conduit | square | none |
 
-Radii are literals in Theme.uss today. GG-T2047 makes them tokens (`--radius-*`, `Radius.*`).
+Radii are tokens (GG-T2047): Theme.uss `--radius-N` and Tokens.cs `Radius.RN`, steps 3, 6, 8, 10, 12, 14, 16, 17, 18, 22; POL-C1 counts a literal `border-*-radius` in Theme.uss as a failure.
+
+The page's token data (`docs/design/design-system/tokens.js`: colours, space, size, timing, radii and device shapes) is generated from the tokens by `python tools/design_tokens.py`; `tools/test.ps1` runs it with `--check`, which fails when the page is stale or Tokens.cs and Theme.uss disagree on the radii. Rerun it after changing a token.
 
 ### 2.5 Elevation
 
