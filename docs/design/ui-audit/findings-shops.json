@@ -66,7 +66,9 @@
    "detail": "Mean luminance 0.2/255 on shop, blacksmith, alchemist, enchantress, talk, caravan, summon, skill-hex, talents, respec, status, equip, abilities, items, party (diamonds is the only real frame). 30 of 37 captures in f17cf7da are black. The layout dump in facts.json is still live, so text sizes, overflows and tap targets are usable, but text.contrast bg is the black frame: light-text fails are real (black is their best case), dark-on-light labels (Buy, Enchant, Summon x1) read as false 1.03:1 fails. mercenaries and summon-history are in StartScreens' switch but not its All list, so uiaudit's goto_screens skips them. skill-hex reports landedOn 'abilities' (GG-T1843 covers scenario landing). Every '…' at 40 chars in facts.json text is AutomationServer.Trim, not on-screen truncation.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/shop.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: all shops/status screens plus mercenaries and summon-history captured as real frames"
   },
   {
    "id": "header",
@@ -89,7 +91,9 @@
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/diamonds.png",
     "docs/design/ui-audit/captures/iphone17pro/respec.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: gold is top-right on every shop and Heroes page; the remaining zero chips and the bare '0' on shop pages are filed as GG-T1879"
   },
   {
    "id": "crafting-header",
@@ -109,7 +113,9 @@
     "docs/design/ui-audit/captures/iphone17pro/alchemist.png",
     "docs/design/ui-audit/captures/iphone17pro/enchantress.png",
     "docs/design/ui-audit/captures/iphone17pro/blacksmith.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: station rank line sits on its own row under the header; title and currencies are full size"
   },
   {
    "id": "hero-picker",
@@ -129,7 +135,9 @@
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/status.png",
     "docs/design/ui-audit/captures/iphone17pro/equip.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: Party tag and level fit inside each hero card"
   },
   {
    "id": "status-table",
@@ -144,7 +152,9 @@
    "detail": "layoutProblems: Base 91>66, Board 117>66, Gear 95>66, Total 105>86, '+24' 84>66 and three more, 'Next: 4050 XP · Skill points: 23' 655>639.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/status.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: Base / Board / Gear / Total columns and bonuses fit; XP and skill points are on their own lines"
   },
   {
    "id": "respec-contrast",
@@ -159,7 +169,9 @@
    "detail": "38 of 61 respec text samples fail, all in the per-hero role blurbs ('Backline healer buffer. Restores tempo with cleanse and aid.'). This is body text, not disabled text, so X5's 3:1 does not apply. Black is the best case for light text, so the fail holds whatever the real backdrop is.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/respec.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: respec blurbs read light with blue keyword links; facts.json reports no contrast fails"
   },
   {
    "id": "alchemist-green",
@@ -174,7 +186,9 @@
    "detail": "Tier tint used for the recipe name text. Lighten the green for text and keep the hue for the swatch. Black is the best case, so the fail is real.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/alchemist.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: facts.json reports no contrast fail on 'Greater Antidote'"
   },
   {
    "id": "shop-grey",
@@ -189,7 +203,9 @@
    "detail": "This tells the player when stock grows; it is information, not a disabled label, so it needs 4.5:1.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/shop.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: facts.json reports no contrast fail on the stock line; only disabled '−' at 3.18:1, which passes X5"
   },
   {
    "id": "blacksmith-list",
@@ -204,7 +220,9 @@
    "detail": "Every equipped piece of every hero is listed with 'OK'. Show only damaged pieces (or collapse the rest under one 'All gear sound' row) so the group stays at 7 or fewer and the actionable rows come first.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/blacksmith.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: Repair shows 'All gear sound (24 pieces at full durability)' instead of 13 OK rows; the empty panel left behind is GG-T1883"
   },
   {
    "id": "tight-gaps",
@@ -224,7 +242,9 @@
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/shop.png",
     "docs/design/ui-audit/captures/iphone17pro/equip.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: shop tabs and equip slots no longer in tightGaps; the header chips' 19 px gap is filed with GG-T1879"
   },
   {
    "id": "summon-notice",
@@ -301,6 +321,172 @@
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/diamonds.png"
    ]
+  },
+  {
+   "id": "nested-scroll-windows",
+   "ticket": "GG-T1873",
+   "screens": [
+    "equip",
+    "abilities",
+    "enchantress"
+   ],
+   "rule": "L10",
+   "summary": "Equip / Abilities / Enchantress: lists sit in nested scroll windows that show only 1-2 rows (Equip slots: Weapon, Head; Abilities Known: just 'Clear slot'; Enchantress worn armor and enchants: 2 each) while panels below sit mostly empty (checklist L10)",
+   "detail": "Each page stacks fixed-height panels, and the one the player works in is the smallest: Equip's slot list is a ~500 design px scroll box beside a 'your bag' panel that is mostly blank; Abilities' Known list is cut to one row under the battle bar; Enchantress has two 2-row scroll boxes stacked above the detail. Scroll-in-scroll hides content and costs taps. Fix: let the working list take the remaining height (one page scroll, no inner scroll box), and size the detail panel to its content.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/equip.png",
+    "docs/design/ui-audit/captures/iphone17pro/abilities.png",
+    "docs/design/ui-audit/captures/iphone17pro/enchantress.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "abilities-slot-labels",
+   "ticket": "GG-T1874",
+   "screens": [
+    "abilities"
+   ],
+   "rule": "X1",
+   "summary": "Abilities: battle bar slot names are hyphen-broken mid-word ('Chal-lenge', 'Knight-'s Oath', 'Judg-ment of Ward-ing') at 40 px while 'Taunt' and 'X-Potion ×15' shrink to 25 px, so slots differ in height and size (checklist X1, owner: no truncated text)",
+   "detail": "facts.json: 'Taunt' and 'X-Potion ×15' are 25 px (under the 30 px caption floor); the others wrap to 3-4 lines with forced hyphens, one of them breaking an apostrophe ('Knight-' / ''s Oath'). Slots range from ~100 to ~250 design px tall. Fix: equal slot boxes, the icon on top and the name in one or two lines at one size (no hyphenation; shrink-to-fit within the floor, or show the full name under the bar for the selected slot).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/abilities.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "talents-board-clipped",
+   "ticket": "GG-T1875",
+   "screens": [
+    "talents",
+    "skill-hex"
+   ],
+   "rule": "L10",
+   "summary": "Talents / skill hex: the skill board is a short strip whose bottom rows are cut off at the panel edge, while the detail panel under it is ~500 design px of empty space; the hint also says 'Hover' on a phone (checklist L10)",
+   "detail": "The board panel ends mid-hexagon (y ~1800 of 2550), so the lowest node rows can't be seen or tapped without panning, and the corner labels VIT / INT / STR are 30 px. The 'Hover or tap a node…' panel below holds one line. Fix: give the board the free height so the whole hex fits at rest, shrink the detail panel to its content, and say 'Tap a node to see the cheapest route to it.'",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/talents.png",
+    "docs/design/ui-audit/captures/iphone17pro/skill-hex.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "heroes-picker-height",
+   "ticket": "GG-T1876",
+   "screens": [
+    "status",
+    "equip",
+    "abilities",
+    "talents"
+   ],
+   "rule": "L10",
+   "summary": "Heroes pages: the hero picker lays 4 heroes out as a 3-column grid, so Red Mage sits alone on a second row and the picker takes ~560 design px (22% of the stage) on every Heroes tab (checklist L10, owner: efficient use of space)",
+   "detail": "Each card is a thumbnail plus three stacked lines (name, Lv, Party). With a 4-6 hero party that is always two rows. Fix: one row of compact cards (thumbnail with the level on it, name under), scrolling sideways past 5, so the tab content gets the height back.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/status.png",
+    "docs/design/ui-audit/captures/iphone17pro/equip.png",
+    "docs/design/ui-audit/captures/iphone17pro/abilities.png",
+    "docs/design/ui-audit/captures/iphone17pro/talents.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "talk-small-text",
+   "ticket": "GG-T1878",
+   "screens": [
+    "talk"
+   ],
+   "rule": "X1",
+   "summary": "Talk: 64 of 80 labels are 25 px, under the 30 px caption floor (hero names, scene titles, 'New!', 'Trust 1 needed') (checklist X1)",
+   "detail": "facts.json talk.text. The rows are ~155 design px tall, so there is room for body-size text; the locked rows are also grey-on-grey at that size. Fix: body size for names and titles, and indent the locked scenes under their hero (or group them) so the list reads as sections.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/talk.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "stepper-shared",
+   "ticket": "GG-T1880",
+   "screens": [
+    "shop",
+    "settings"
+   ],
+   "rule": "L7",
+   "summary": "Shop rows and Settings Difficulty: the quantity stepper shows the count as a bare small label between − and + buttons that each carry a redundant coin or gear glyph (checklist L7, G6)",
+   "detail": "Same pattern GG-T1869 fixed on Diamonds: the number is the thing being changed but is the least visible part, and each ± button leads with an icon that says nothing. Fix: reuse the Diamonds stepper (boxed value at body size, plain − / + buttons) on Shop and Settings.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/shop.png",
+    "docs/design/ui-audit/captures/iphone17pro/settings.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "items-row-height",
+   "ticket": "GG-T1882",
+   "screens": [
+    "items"
+   ],
+   "rule": "L10",
+   "summary": "Items: the list stretches 3 items over the whole panel, each row ~370 design px tall with large empty bands between X-Potion, Arcane Dust and Empty Bottle (checklist L10)",
+   "detail": "The rows are distributed to fill the panel instead of using a fixed row height. Fix: fixed row height at the top of the list (as the other lists do), with the empty space below, or let the use-on panel take it.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/items.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "empty-state-panels",
+   "ticket": "GG-T1883",
+   "screens": [
+    "blacksmith",
+    "summon-history"
+   ],
+   "rule": "L10",
+   "summary": "Blacksmith Repair and Summon history: with nothing to show, a full-height panel holds one line ('All gear sound…', 'No pulls yet.'), leaving a ~1100-1900 design px empty band (checklist L10)",
+   "detail": "POL-C9 wants no empty band over 15% of the height. Fix: size empty-state panels to their message and use the space for the next step (Repair: point to Upgrade or Salvage; Summon history: a Summon button).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/blacksmith.png",
+    "docs/design/ui-audit/captures/iphone17pro/summon-history.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "party-tab-panels",
+   "ticket": "GG-T1891",
+   "screens": [
+    "party"
+   ],
+   "rule": "X1",
+   "summary": "Party: the four mini skill boards have unreadable labels and ~22 design px ability icons, the cohesion grid shows all zeros, and the active party list is cut to a 2-row scroll window (checklist X1, L10)",
+   "detail": "Three panels share the page: Party builds (mini boards with text far under the floor), Party cohesion (a 4×4 grid of '0'), and the active list where the swap action lives, which gets the least room. Fix: make the active list the main panel, the builds a tap-through per hero, and collapse cohesion to a one-line summary until any pair is above 0.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/party.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
   }
- ]
+ ],
+ "recheck": {
+  "ticket": "GG-T1872",
+  "capture": "1231e5e0",
+  "note": "Eye review of the real (non-black) recapture; findings marked fixed where the PNG shows the fix, and new findings added with their tickets."
+ },
+ "reviewedFromScreenshot": [
+  "abilities",
+  "alchemist",
+  "blacksmith",
+  "enchantress",
+  "equip",
+  "items",
+  "mercenaries",
+  "party",
+  "respec",
+  "shop",
+  "skill-hex",
+  "status",
+  "summon-history",
+  "talents",
+  "talk"
+ ],
+ "reviewedFromLayoutDumpOnly": [],
+ "skipped": {}
 }

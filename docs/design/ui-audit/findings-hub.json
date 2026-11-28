@@ -23,12 +23,18 @@
   "bounties",
   "quests",
   "crucible",
-  "windows"
+  "windows",
+  "results"
  ],
  "screens": {
   "title": {
-   "status": "not-reviewed",
-   "reason": "capture is solid black (GG-T1856); facts.json 'Load' 2.29:1 is sampled on #000000 and needs a recapture"
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1886",
+    "GG-T1887"
+   ],
+   "notes": "Load row is disabled grey and passes X5; menu sits mid-screen"
   },
   "splash": {
    "status": "not-reviewed",
@@ -94,8 +100,13 @@
    "notes": "locked row 3.84:1 passes X5"
   },
   "settings": {
-   "status": "not-reviewed",
-   "reason": "capture is solid black (GG-T1856); header labels from facts.json are covered by GG-T1849"
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1880",
+    "GG-T1886",
+    "GG-T1892"
+   ]
   },
   "credits": {
    "status": "reviewed",
@@ -103,34 +114,58 @@
    "notes": "passes: 11.6:1, readable line length, Back top-left"
   },
   "about": {
-   "status": "missing",
-   "reason": "no capture in f17cf7da"
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1884"
+   ]
   },
   "bestiary": {
-   "status": "not-reviewed",
-   "reason": "capture is solid black (GG-T1856)"
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1889"
+   ]
   },
   "bounties": {
-   "status": "partial",
+   "status": "reviewed",
+   "capture": "1231e5e0",
    "findings": [
-    "GG-T1854"
-   ],
-   "reason": "capture is solid black (GG-T1856); finding from the UI tree only"
+    "GG-T1881"
+   ]
   },
   "quests": {
-   "status": "missing",
-   "reason": "no capture in f17cf7da"
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1885"
+   ]
   },
   "crucible": {
-   "status": "not-reviewed",
-   "reason": "capture is solid black (GG-T1856); 'Enter the Crucible' 1.03:1 is sampled on #000000"
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1852",
+    "GG-T1890",
+    "GG-T1892"
+   ]
   },
   "windows": {
-   "status": "partial",
+   "status": "reviewed",
+   "capture": "1231e5e0",
    "findings": [
-    "GG-T1855"
+    "GG-T1852",
+    "GG-T1888"
+   ]
+  },
+  "results": {
+   "status": "reviewed",
+   "capture": "1231e5e0",
+   "findings": [
+    "GG-T1877",
+    "GG-T1892"
    ],
-   "reason": "capture is solid black (GG-T1856); finding from the UI tree only"
+   "notes": "post-battle results, landed on postbattle"
   }
  },
  "falsePositives": [
@@ -221,7 +256,9 @@
     "docs/design/ui-audit/captures/iphone17pro/bounties.png",
     "docs/design/ui-audit/captures/iphone17pro/crucible.png",
     "docs/design/ui-audit/captures/iphone17pro/bestiary.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: gold now sits at the top-right of the sub-page header on stages, settings, windows, bounties, crucible and bestiary; the zero chips that remain are filed as GG-T1879"
   },
   {
    "id": "stages-ellipsis",
@@ -290,7 +327,9 @@
    "detail": "From the UI tree in facts.json (POL-A2 fails 3x on bounties). The screenshot itself came out black (see the capture ticket), so this is from layout data. Fix: draw the glyph at body size or replace it with an icon sprite.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/bounties.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: the wanted skull now draws as a red badge on each bounty portrait, well above the floor"
   },
   {
    "id": "windows-footer-align",
@@ -303,7 +342,9 @@
    "detail": "From the UI tree in facts.json (POL-C8 'ragged edges: left 194 vs right 12'); the screenshot came out black, so re-check after the recapture. L7 reserves bottom-right for the commit button, but here it is Delete. Fix: Save bottom-right, Delete separated to the left (or behind a confirm), and even insets.",
    "screenshots": [
     "docs/design/ui-audit/captures/iphone17pro/windows.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: footer reads Delete left, Reset, Save bottom-right with even insets"
   },
   {
    "id": "capture-black",
@@ -328,7 +369,188 @@
     "docs/design/ui-audit/captures/iphone17pro/crucible.png",
     "docs/design/ui-audit/captures/iphone17pro/windows.png",
     "docs/design/ui-audit/captures/iphone17pro/splash.png"
-   ]
+   ],
+   "status": "fixed",
+   "verified": "GG-T1872 on 1231e5e0: title, settings, bestiary, bounties, crucible and windows are real frames now"
+  },
+  {
+   "id": "results-small-text",
+   "ticket": "GG-T1877",
+   "screens": [
+    "results"
+   ],
+   "rule": "X1",
+   "summary": "Results: 37 of 54 labels are 24 px, under the 30 px caption floor (Gold, Experience, +214 G, loot names, 'Teach to···'), and 'Teach to···' ends in a written ellipsis (checklist X1, owner: no '...')",
+   "detail": "facts.json results.text: min and median 24 px. Rows are also spaced ~156 design px apart, so the small text floats in empty bands, and the VICTORY banner is a small 40 px label pinned left instead of a headline. Fix: body size for every row, tighter row height, 'Teach to:' without the dots, and a centred VICTORY headline.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/results.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "header-chips",
+   "ticket": "GG-T1879",
+   "screens": [
+    "summon-history",
+    "shop",
+    "blacksmith",
+    "alchemist",
+    "enchantress",
+    "respec"
+   ],
+   "rule": "L2",
+   "summary": "Shared header: zero-value diamond and ticket chips stay up on every page, so on Summon history the gold is pushed off the right edge (1013+163 > 1170 px), shop pages drop the 'Tickets' word to a bare '0', and the Talk bubble is an unlabeled icon 19 px from its neighbours (checklist L2, T2, owner: no truncated text)",
+   "detail": "Gold now sits top-right (GG-T1858), but the chips before it are fixed width: a long title ('Summon history') clips the gold; Merchant/Blacksmith/Alchemist/Enchantress/Respec show '[diamond] 0 [ticket] 0' with no words; the header chips are 19 px apart (POL-C3 wants 24). Fix: hide a currency chip at zero (or move it into the Shop), keep the label when shown, let the title shrink before the gold does, and keep 24 px between chips.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/summon-history.png",
+    "docs/design/ui-audit/captures/iphone17pro/shop.png",
+    "docs/design/ui-audit/captures/iphone17pro/blacksmith.png",
+    "docs/design/ui-audit/captures/iphone17pro/alchemist.png",
+    "docs/design/ui-audit/captures/iphone17pro/enchantress.png",
+    "docs/design/ui-audit/captures/iphone17pro/respec.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "card-actions-stacked",
+   "ticket": "GG-T1881",
+   "screens": [
+    "bounties",
+    "mercenaries"
+   ],
+   "rule": "L7",
+   "summary": "Bounties / Mercenaries: each card's actions sit on their own rows (Take under every bounty; 3 battles / 5 battles / 10 battles / Haggle stacked), making a mercenary card ~900 design px tall (checklist L7, owner: efficient use of space)",
+   "detail": "The right half of every card is empty while its buttons stack below. Fix: Take on the card's right edge beside the name; the three hire lengths as one segmented row with Haggle beside it; the flavour quote one tap away (E4).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/bounties.png",
+    "docs/design/ui-audit/captures/iphone17pro/mercenaries.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "about-spacing",
+   "ticket": "GG-T1884",
+   "screens": [
+    "about"
+   ],
+   "rule": "L10",
+   "summary": "About: six lines spread over the page with 190-400 design px gaps (Privacy policy y 1434, Terms 1839, Third-party 2241), the legal rows use the settings gear glyph, and Third-party notices has no 'Open' like its siblings (checklist L10, G6)",
+   "detail": "Rows are distributed to fill the panel. Fix: fixed row height, a document glyph for the legal links, and 'Open' on all three.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/about.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "quests-rows",
+   "ticket": "GG-T1885",
+   "screens": [
+    "quests"
+   ],
+   "rule": "G6",
+   "summary": "Quests: only some rows have a portrait, so the text column jumps between x 110 and x 36, and no row has a kind icon or action though each says 'Talk to them' (checklist G6)",
+   "detail": "Rows without a giver portrait (What the Frogs Know, Travel Light, Grown, Not Forged) are flush left. Nothing marks a row as tappable or takes the player to the giver. Fix: a placeholder thumbnail (or the place icon) on every row, and a 'Talk' button that opens that giver.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/quests.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "same-glyph-rows",
+   "ticket": "GG-T1886",
+   "screens": [
+    "settings",
+    "title"
+   ],
+   "rule": "G6",
+   "summary": "Settings / title: every Settings row leads with the same gear glyph, and on the title menu About and Credits share the book glyph, so the icons tell nothing apart (checklist G6)",
+   "detail": "G6 wants a kind icon that tells rows apart. Fix: per-row glyphs in Settings (turn mode, difficulty, speed, timer, quality, shake…) or drop the icon on plain setting rows, and give About an 'i' glyph.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/settings.png",
+    "docs/design/ui-audit/captures/iphone17pro/title.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "title-contrast",
+   "ticket": "GG-T1887",
+   "screens": [
+    "title"
+   ],
+   "rule": "X7",
+   "summary": "Title: the 'Slide. Flank. Strike.' tagline is 4.32:1 and 'v1.0.0' 4.04:1 over the backdrop art with no plate, and the GRIDGAME wordmark is a thin small label (checklist X4, X7)",
+   "detail": "facts.json title contrast fails. Text drawn over art needs a plate or outline that keeps 4.5:1 on the worst pixel. Fix: a soft dark plate behind the logo block and the version, and a bolder, larger wordmark.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/title.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "windows-swatch-contrast",
+   "ticket": "GG-T1888",
+   "screens": [
+    "windows"
+   ],
+   "rule": "X4",
+   "summary": "Windows: white preset names on their swatches fail 4.5:1 (Cyberpunk 3.33:1, Ember 3.57:1, Parchment 4.1:1) (checklist X4, X7)",
+   "detail": "facts.json windows contrast fails. Fix: an outline or dark plate behind swatch labels, or pick black/white per swatch by its lightest stop.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/windows.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "bestiary-silhouettes",
+   "ticket": "GG-T1889",
+   "screens": [
+    "bestiary"
+   ],
+   "rule": "X6",
+   "summary": "Bestiary: unseen creatures show as near-black silhouettes on a dark tile, and many are framed from the wrong part of the sprite (solid black squares, cropped blobs), so the grid gives no hint of the creature (checklist X6)",
+   "detail": "Rows 7-8 are almost entirely black tiles; large sprites are cropped to a corner. Fix: frame each silhouette from the sprite's trimmed bounds, and draw it a step lighter than the tile (or outlined) so it reads at 3:1.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/bestiary.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "crucible-foes-wall",
+   "ticket": "GG-T1890",
+   "screens": [
+    "crucible"
+   ],
+   "rule": "E4",
+   "summary": "Crucible: the Foes row prints all 27 families as a 9-line paragraph inside the intro scroll box, and 'Costs 1 Rested' uses an undefined term (checklist E4, G2)",
+   "detail": "The intro, rules and foe list share one small scroll box above the team panel. Fix: show the count ('27 families met') with the names one tap away, and link 'Rested' to its glossary entry.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/crucible.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
+  },
+  {
+   "id": "arrow-glyphs",
+   "ticket": "GG-T1892",
+   "screens": [
+    "abilities",
+    "results",
+    "crucible",
+    "settings"
+   ],
+   "rule": "owner: arrows",
+   "summary": "Abilities / results / crucible / header: arrows are tiny glyphs inside circle badges (Move ← / Move →, Continue, Next battle, Enter the Crucible, Back), not filled outlined arrow shapes, and the two Abilities buttons are both labelled 'Move' (owner: arrows drawn as filled, outlined shapes)",
+   "detail": "The owner's standing ask is arrows drawn as filled, outlined shapes. Today the direction is a ~20 px glyph in a blue disc, and on Abilities the only difference between the two 'Move' buttons is that glyph. Fix: a filled arrow shape with an outline as the button's leading shape, and 'Move left' / 'Move right' labels.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/abilities.png",
+    "docs/design/ui-audit/captures/iphone17pro/results.png",
+    "docs/design/ui-audit/captures/iphone17pro/crucible.png",
+    "docs/design/ui-audit/captures/iphone17pro/settings.png"
+   ],
+   "foundBy": "GG-T1872 on 1231e5e0"
   }
- ]
+ ],
+ "recheck": {
+  "ticket": "GG-T1872",
+  "capture": "1231e5e0",
+  "note": "Eye review of the real (non-black) recapture; findings marked fixed where the PNG shows the fix, and new findings added with their tickets."
+ }
 }
