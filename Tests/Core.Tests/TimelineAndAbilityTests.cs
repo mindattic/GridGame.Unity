@@ -223,9 +223,10 @@ namespace GridGame.Tests
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             GrantMana(s, 3);
+            int before = ManaIn(s);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = new Coord(2, 0) });
-            Assert.That(ev.OfType<SpellManaSpentEvent>().Single().Points, Is.EqualTo(s.ManaFull(k, 0)));
-            Assert.That(s.ManaIn(k.Id, 0), Is.LessThan(s.ManaFull(k, 0)), "the cast emptied the meter");
+            Assert.That(ev.OfType<SpellManaSpentEvent>().Single().Points, Is.EqualTo(s.SpellPrice(k, 0)));
+            Assert.That(ManaIn(s), Is.LessThan(before), "the cast paid its price from the pool");
             int expected = (int)System.Math.Round(18 * Formulas.CasterPower(db.Abilities["fireball"], k)); // §13.1.5: INT scales it
             Assert.That(ev.Any(e => e is DamagedEvent d && d.Amount == expected), Is.True);
             Assert.That(ev.Any(e => e is BuffAppliedEvent b && b.BuffId == "burning"), Is.True);
@@ -242,7 +243,7 @@ namespace GridGame.Tests
             long clock = s.Clock;
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = new Coord(2, 0) });
             Assert.That(ev.Any(e => e is AbilityRefusedEvent), Is.True);
-            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(BattleConfig.ManaPointsPerOrb), "nothing is spent");
+            Assert.That(ManaIn(s), Is.EqualTo(BattleConfig.ManaPointsPerOrb), "nothing is spent");
             Assert.That(s.Clock, Is.EqualTo(clock));
         }
 
@@ -256,7 +257,7 @@ namespace GridGame.Tests
             GrantMana(s, 2);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = new Coord(2, 0) });
             Assert.That(ev.Any(e => e is CastQueuedEvent), Is.True);
-            Assert.That(s.ManaIn(m.Id, 0), Is.EqualTo(0)); // mana spent at cast start
+            Assert.That(ManaIn(s), Is.EqualTo(0)); // mana spent at cast start
             bool resolved = ev.Any(e => e is AbilityResolvedEvent r && r.AbilityId == "meteor");
             for (int i = 0; i < 5 && !resolved; i++)
             {
@@ -268,7 +269,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_cast_empties_only_its_own_meter()
+        public void A_cast_spends_only_its_own_price_from_the_pool()
         {
             var db = Mini();
             var (s, _) = Battle(db, Stage(("tank", 2, 0)), ("knight", 5, 7), ("mage", 4, 7));
@@ -278,17 +279,16 @@ namespace GridGame.Tests
             m.Bar[1] = new AbilitySlot { AbilityId = "fireball" };
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             Assert.That(BattleEngine.GetSlotStatus(s, m.Id, 0), Is.EqualTo(SlotStatus.Unaffordable)); // §3.1.0: still charging
-            s.SetMana(m.Id, 0, s.ManaFull(m, 0));
-            s.SetMana(m.Id, 1, s.ManaFull(m, 1));
-            s.SetMana(k.Id, 0, s.ManaFull(k, 0));
+            ManaFull(s);
             Assert.That(BattleEngine.GetSlotStatus(s, m.Id, 0), Is.EqualTo(SlotStatus.Ready));
 
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = new Coord(2, 0) });
 
-            Assert.That(ev.OfType<SpellManaSpentEvent>().Single().Points, Is.EqualTo(s.ManaFull(m, 0)));
-            Assert.That(s.ManaIn(m.Id, 0), Is.LessThan(s.ManaFull(m, 0)));
-            Assert.That(s.ManaIn(m.Id, 1), Is.EqualTo(s.ManaFull(m, 1)));
-            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(s.ManaFull(k, 0)));
+            int price = s.SpellPrice(m, 0);
+            Assert.That(ev.OfType<SpellManaSpentEvent>().Single().Points, Is.EqualTo(price));
+            Assert.That(ManaIn(s), Is.InRange(BattleConfig.PartyManaCapacity - price, BattleConfig.PartyManaCapacity - 1));
+            Assert.That(s.SpellReady(m, 1), Is.True, "the rest of the pool still pays the mage's other spell");
+            Assert.That(s.SpellReady(k, 0), Is.True, "and the knight's");
         }
 
         [Test]

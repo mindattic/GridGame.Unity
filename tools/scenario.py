@@ -4,7 +4,8 @@ GG-T1802: show the owner a spot in the game without playing to it.
     python tools/scenario.py <preset|target> [--spec file.json] [--device iphone15pro|<device>|<shape>] [--replace] [--build] [--no-show]
 
 A preset is tools/scenarios/<name>.json; a target is first-boss, boss:N, boss:<class>, final-boss, stage:<id>,
-region:<theme>, screen:<id> or overworld. --spec runs a spec file instead. The player is launched detached on a throwaway
+region:<theme>, screen:<id> or overworld. --spec runs a spec file instead. A spec's "open" (GG-T2129) opens a state on
+the landed screen with no taps: "abilities:consumables", "abilities:spells/fire" or "info" (ScenarioLander.Openers). The player is launched detached on a throwaway
 "Scenario" profile, sized like the device with its safe area and camera cutout / screen corners (GG-T2119) applied,
 and left open. --device takes any device id in
 tools/devices.json or a shape id (its representative device).
