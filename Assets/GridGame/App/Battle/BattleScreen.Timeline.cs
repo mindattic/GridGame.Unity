@@ -191,6 +191,7 @@ namespace GridGame.App
             frame.Add(gapLane); // above the track, under the icons
             gapLabel = Ui.Text("", "tiny shadow", frame);
             gapLabel.name = "tl-gap-time";
+            Ui.Scrim(gapLabel); // GG-T1898
             gapLabel.pickingMode = PickingMode.Ignore;
             gapLabel.style.position = Position.Absolute;
             gapLabel.style.top = TrackY + IconSpan / 2f - Space.S8;
