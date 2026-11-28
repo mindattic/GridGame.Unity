@@ -93,6 +93,9 @@ namespace GridGame.App
         /// <summary>GG-T458: campaign.json MomentMusic.title, drawn once per screen.</summary>
         public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Title) ?? "teller-of-the-tales-00";
         private string music;
+        /// <summary>GG-T1794: the menu and the Continue card span this share of the content column, so the side margins stay
+        /// inside POL-C9's 10% (66 left 17% each side on a phone-framed stage).</summary>
+        private const float TitleColumnPct = 84f;
 
         protected override void Build(VisualElement root)
         {
@@ -121,7 +124,7 @@ namespace GridGame.App
             if (save != null) Stage(ContinueCard(save, recent, col));
 
             var menu = Ui.Panel(col);
-            menu.style.width = Fit.C(66f);
+            menu.style.width = Fit.C(TitleColumnPct); // GG-T1794
             Stage(menu);
             // GG-T738 (§26.7): each Title row leads with its kind icon.
             var start = Ui.MenuRow("Start Campaign", "", SaveSlotScreen.StartCampaign, menu);
@@ -146,7 +149,7 @@ namespace GridGame.App
             credits.KindIcon(RowKind.Bestiary);
             Ui.SelectFirst(menu);
 
-            var ver = Ui.Text($"v{Application.version}", "tiny dim", root);
+            var ver = Ui.Text($"v{Application.version}", "tiny dim corner-tag", root); // GG-T1794: POL-C9 skips corner tags
             ver.style.position = Position.Absolute;
             ver.style.right = Space.S32; ver.style.bottom = Space.S24;
         }
@@ -157,7 +160,7 @@ namespace GridGame.App
         {
             var card = Ui.El("card card-tap col title-continue", parent);
             card.name = "title-continue";
-            card.style.width = Fit.C(66f);
+            card.style.width = Fit.C(TitleColumnPct);
             Fonts.UseHeavy(Ui.Text("Continue", "h2", card));
             Ui.Caption(Commander.Name(s, App.Profile?.Name), card, "gold");
             var next = HubScreen.NextStage(App.Content, s);
