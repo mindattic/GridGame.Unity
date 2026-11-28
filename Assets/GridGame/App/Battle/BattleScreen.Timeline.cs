@@ -631,7 +631,7 @@ namespace GridGame.App
             foreach (var e in State.Timeline)
             {
                 if (e.Kind == TimelineKind.Cast && unplayedCasts.Contains(e.Id)) continue; // its CastQueued beat hasn't played
-                if (e.Kind != TimelineKind.Hazard && (!board.Units.TryGetValue(e.OwnerId, out var ov) || ov.Dead)) continue; // a rule event has no owner (GG-T359)
+                if (e.Kind != TimelineKind.Hazard && (!board.Units.TryGetValue(e.OwnerId, out var ov) || (ov.Dead && !(State.UnitById(e.OwnerId) is Unit vu && vu.Vanished)))) continue; // a rule event has no owner (GG-T359); a vanished hero keeps its turn (GG-T1916)
                 drawn[e.Id] = e;
                 at[e.Id] = Mathf.Clamp01(uOverride != null && uOverride.TryGetValue(e.Id, out var ou) ? ou : BattleEngine.BarU(State, e));
             }
@@ -990,7 +990,7 @@ namespace GridGame.App
                 if (art != null) art.style.opacity = 0.55f; // dimmed: it isn't moving
             }
             foreach (var b in timelineIcons.Query<VisualElement>(className: "tl-status").ToList())
-                if (b.name != null && b.name.StartsWith("tl-status-") && !drawn.Values.Any(e => "tl-status-" + e.Id == b.name && State.UnitById(e.OwnerId) is Unit o && o.Alive && StatusOf(o, e) != null))
+                if (b.name != null && b.name.StartsWith("tl-status-") && !drawn.Values.Any(e => "tl-status-" + e.Id == b.name && State.UnitById(e.OwnerId) is Unit o && (o.Alive || o.Vanished) && StatusOf(o, e) != null))
                     b.RemoveFromHierarchy();
         }
 

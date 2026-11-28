@@ -24,6 +24,8 @@ namespace GridGame.Core.Rules
     {
         public int Tab;
         public string Category;
+        /// <summary>GG-T1916: the category is the ability's authored <see cref="AbilityDef.Category"/>, a folder it always sits in.</summary>
+        public bool Named;
         public ActionNode Node;
     }
 
@@ -31,7 +33,9 @@ namespace GridGame.Core.Rules
     /// The one source of the Abilities sheet's tree (§9.0, GG-T1914): three tabs (Abilities, Spells, Consumables) of the
     /// hero's unlocked, filled bar slots. Skills and weapon attacks are Abilities, spells Spells, items Consumables. By
     /// default a tab folds its moves into category folders (the ability's damage type; content has no category field)
-    /// only when it holds more than <see cref="FolderAbove"/> moves of two or more categories; otherwise it is flat.
+    /// only when it holds more than <see cref="FolderAbove"/> moves of two or more categories; otherwise it is flat. A move
+    /// with a content <see cref="AbilityDef.Category"/> (one of <see cref="Categories"/>, GG-T1916) always sits in that
+    /// folder, so a ninja reads Abilities › Ninjutsu › Smokebomb.
     /// GG-T1917: the hero's saved <see cref="ActionLayout"/> (<see cref="Unit.Layout"/>) is laid over that default by
     /// <see cref="Arrange"/>, so the sheet never builds its own.
     /// </summary>
@@ -39,6 +43,8 @@ namespace GridGame.Core.Rules
     {
         public static readonly string[] Tabs = { "Abilities", "Spells", "Consumables" };
         public const int FolderAbove = 3;
+        /// <summary>GG-T1916: the authored folders an ability may name in <see cref="AbilityDef.Category"/>.</summary>
+        public static readonly string[] Categories = { "Ninjutsu" };
 
         public static List<ActionNode> For(BattleState s, Unit hero)
         {
@@ -79,11 +85,12 @@ namespace GridGame.Core.Rules
         }
 
         /// <summary>One filled slot's move: items are Consumables, skills and weapon swaps Abilities, the rest Spells; its
-        /// default category is the ability's damage type.</summary>
+        /// default category is the ability's own, else its damage type.</summary>
         private static ActionMove Move(ContentDb c, AbilitySlot sl, int slot, AbilityDef a)
         {
             int tab = sl.IsItem ? 2 : sl.IsWeapon || a.Kind == AbilityKind.Skill ? 0 : 1;
-            return new ActionMove { Tab = tab, Category = a.DamageType.ToString(), Node = new ActionNode { Name = MoveName(c, sl, a), Slot = slot, Key = Key(sl) } };
+            bool named = !string.IsNullOrEmpty(a.Category);
+            return new ActionMove { Tab = tab, Category = named ? a.Category : a.DamageType.ToString(), Named = named, Node = new ActionNode { Name = MoveName(c, sl, a), Slot = slot, Key = Key(sl) } };
         }
 
         /// <summary>The slot's bar entry, the same string a hero's saved bar holds: an ability id, "item:id" or "weapon:id".</summary>
@@ -145,12 +152,16 @@ namespace GridGame.Core.Rules
             {
                 var mine = moves.Where(m => m.Tab == t).ToList();
                 bool fold = t != 2 && mine.Count > FolderAbove && mine.Select(m => m.Category).Distinct().Count() > 1;
-                if (!fold) { tabs[t].Children.AddRange(mine.Select(m => m.Node)); continue; }
-                foreach (var g in mine.GroupBy(m => m.Category))
+                var folders = new Dictionary<string, ActionNode>();
+                foreach (var m in mine)
                 {
-                    var folder = new ActionNode { Name = g.Key, Category = g.Key };
-                    folder.Children.AddRange(g.Select(m => m.Node));
-                    tabs[t].Children.Add(folder);
+                    if (!fold && !m.Named) { tabs[t].Children.Add(m.Node); continue; }
+                    if (!folders.TryGetValue(m.Category, out var folder))
+                    {
+                        folders[m.Category] = folder = new ActionNode { Name = m.Category, Category = m.Category };
+                        tabs[t].Children.Add(folder);
+                    }
+                    folder.Children.Add(m.Node);
                 }
             }
         }

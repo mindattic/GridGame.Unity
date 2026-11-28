@@ -486,6 +486,7 @@ namespace GridGame.App
                 if (b.Def.HaltsTimeline || b.Def.Immobile)
                     return (b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, Art.HexColor(b.Def.Color, Palette.Vfx.Sky), b.Def.Name);
             if (turn != null && turn.StunTicks > 0) return ("stunned", "!", Palette.Gold, "Stunned");
+            if (u.Vanished) return ("vanished", "S", Palette.Vfx.Smoke, "Vanished"); // GG-T1916: in the smoke until this turn comes
             return null;
         }
 

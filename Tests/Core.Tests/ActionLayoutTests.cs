@@ -149,7 +149,7 @@ namespace GridGame.Tests
                 (1, 0, spell.Id), (2, 2, "item:" + item.Id), (0, 3, skill.Id),
             }), "empty and locked slots are left out");
             Assert.That(moves[1].Node.Name, Is.EqualTo(item.Name));
-            Assert.That(moves[2].Category, Is.EqualTo(skill.DamageType.ToString()));
+            Assert.That(moves[2].Category, Is.EqualTo(string.IsNullOrEmpty(skill.Category) ? skill.DamageType.ToString() : skill.Category));
             Assert.That(ActionTree.Key(ActionTree.Slot("weapon:sword")), Is.EqualTo("weapon:sword"));
             Assert.That(ActionTree.Key(ActionTree.Slot("item:potion:3")), Is.EqualTo("item:potion"));
         }

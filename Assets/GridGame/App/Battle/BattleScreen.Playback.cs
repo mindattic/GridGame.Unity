@@ -251,7 +251,8 @@ namespace GridGame.App
                 case TileSabotagedEvent tsb: return SabotageAnim(tsb); // GG-T948: the tech gremlin turns a gadget
                 case SquishedEvent sqe: return SquishedAnim(sqe); // GG-T846
                 case RuneCircleEvent rce: return RuneCircleAnim(rce); // GG-T939: the Choir's circle closes
-                case VanishedEvent vne: return VanishedAnim(vne); // GG-T861: Smoke Vanish's puff, callout and reappear flash
+                case VanishedEvent vne: return VanishedAnim(vne); // GG-T861, GG-T1916: the Smokebomb's burst, callout, token gone
+                case ReappearedEvent rpe: return ReappearedAnim(rpe); // GG-T1916: a smaller burst and a flash where it comes back
                 case RegionAnchorEvent rga: return RegionAnchorAnim(rga);
                 case RegionFlagEvent rgf: return RegionFlagAnim(rgf);
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);
