@@ -25,6 +25,7 @@ namespace GridGame.Meta
         {
             public const string BattleSpeed = "battleSpeed";
             public const string DragTimer = "dragTimer";
+            public const string UntimedTurns = "untimedTurns";
             public const string ColorblindMode = "colorblindMode";
             public const string PincerCutIns = "pincerCutIns";
             public const string ConfirmActions = "confirmActions";
@@ -100,6 +101,7 @@ namespace GridGame.Meta
             var g = ps.Game;
             d.BattleSpeed = g.GetFloat(Keys.BattleSpeed, d.BattleSpeed);
             d.DragTimer = g.GetBool(Keys.DragTimer, d.DragTimer);
+            d.UntimedTurns = g.GetBool(Keys.UntimedTurns, d.UntimedTurns);
             d.ColorblindMode = g.GetBool(Keys.ColorblindMode, d.ColorblindMode);
             d.PincerCutIns = g.GetBool(Keys.PincerCutIns, d.PincerCutIns);
             d.ConfirmActions = g.GetBool(Keys.ConfirmActions, d.ConfirmActions);
@@ -175,6 +177,7 @@ namespace GridGame.Meta
             var g = ps.Game;
             g.Set(Keys.BattleSpeed, s.BattleSpeed);
             g.Set(Keys.DragTimer, s.DragTimer);
+            g.Set(Keys.UntimedTurns, s.UntimedTurns);
             g.Set(Keys.ColorblindMode, s.ColorblindMode);
             g.Set(Keys.PincerCutIns, s.PincerCutIns);
             g.Set(Keys.ConfirmActions, s.ConfirmActions);

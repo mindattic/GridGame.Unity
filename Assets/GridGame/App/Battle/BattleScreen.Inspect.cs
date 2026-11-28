@@ -254,9 +254,15 @@ namespace GridGame.App
         }
 
         /// <summary>The seconds held that travel with a drop. A coached drag (GG-T539) never counts as running the window out:
-        /// the player may take their time reading the marks.</summary>
+        /// the player may take their time reading the marks. Untimed (GG-T1978) it is the human drag model's seconds for the
+        /// path, kept inside the window so it is never a forced drop.</summary>
         private float HeldSeconds()
         {
+            if (Untimed && !simulatingDrag)
+            {
+                float model = holdElapsed + BattleEngine.DragSeconds(dragPath.Count);
+                return holdWindow > 0f ? Mathf.Min(model, holdWindow * 0.99f) : model;
+            }
             float held = holdWindow > 0f ? Mathf.Min(holdElapsed, holdWindow) : holdElapsed;
             if ((CoachRail || coachCancelStep) && holdWindow > 0f) held = Mathf.Min(held, holdWindow * 0.9f);
             return held;

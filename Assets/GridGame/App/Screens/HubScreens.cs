@@ -2597,7 +2597,7 @@ namespace GridGame.App
             Section("Gameplay");
             TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
-            Cycle(RowKind.Speed, "Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
+            Cycle(RowKind.Speed, "Battle speed", st.BattleSpeed, new[] { 0.5f, 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
             Toggle(RowKind.Timer, "Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
             Toggle(RowKind.Confirm, "Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
             Toggle(RowKind.Focus, "Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
@@ -2650,6 +2650,7 @@ namespace GridGame.App
             Row(RowKind.Text, "Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
             Toggle(RowKind.Eye, "Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
             Toggle(RowKind.Pause, "Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
+            Toggle(RowKind.Timer, "Untimed turns", st.UntimedTurns, v => st.UntimedTurns = v, "settings-untimed-turns"); // GG-T1978 (§2.0.1)
             // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
             // then draws with the default theme, font and word wrap).
             if (Features.LookPresets)

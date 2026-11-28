@@ -322,6 +322,11 @@ namespace GridGame.App
             guard.style.backgroundColor = forced ? new StyleColor(Palette.Gold.WithA(0.35f)) : new StyleColor(StyleKeyword.Null);
         }
 
+        /// <summary>GG-T1978 (§2.0.1): the player's turns have no real-time limit — the hold and Mode C turn clocks stand
+        /// still, no drop or Guard is forced, and a drop reports the human drag model's seconds (<see cref="HeldSeconds"/>).
+        /// The bot's own simulated drag keeps its timed hold.</summary>
+        private bool Untimed => App.Settings.UntimedTurns;
+
         private float holdElapsed, holdWindow = -1f, holdLastTime;
         private int holdTurnTicks = -1;
         private VisualElement holdDrain, holdDrainFill, holdLane;
@@ -351,6 +356,7 @@ namespace GridGame.App
             holdDrainFill.style.width = Length.Percent(100);
             Round(holdDrainFill, 5);
             holdDrain.Add(holdDrainFill);
+            if (Untimed) holdDrain.style.display = DisplayStyle.None; // nothing drains
             v.Root.Add(holdDrain);
 
             // On the timeline: the stretch between the left edge (acting) and the next enemy icon, and the seconds it stands for.
@@ -386,7 +392,7 @@ namespace GridGame.App
             }
             if (heroTurnHero != State.ActiveHeroId) { heroTurnHero = State.ActiveHeroId; heroTurnElapsed = 0f; }
             if (dragging) { heroTurnElapsed = holdElapsed; return; }
-            heroTurnElapsed += dt;
+            if (!Untimed) heroTurnElapsed += dt;
             float window = BattleEngine.TurnWindowSeconds(State);
             if (heroTurnElapsed >= window && window > 0f && !pressing && TargetingSlot < 0 && !AutoPlay && !CoachRail && !coachCancelStep && CanCommand())
             {
@@ -405,6 +411,7 @@ namespace GridGame.App
             holdLastTime = now;
             if (!dragging) { EndHold(); return; }
             if (Paused) return; // a paused battle holds the clock too (GG-T126)
+            if (Untimed && !simulatingDrag) { UpdateHold(); return; }
             holdElapsed += dt;
             UpdateHold();
             // The bot's simulated drag already fits its path inside the window (HeroBot), and its coroutine owns the drop.
@@ -676,7 +683,7 @@ namespace GridGame.App
                 SyncAll();
                 return;
             }
-            float timeLeft = App.Settings.DragTimer ? Mathf.Max(0f, dragTimeLeft) : 0f;
+            float timeLeft = !App.Settings.DragTimer ? 0f : Untimed ? Mathf.Max(0f, BattleConfig.DragTimerSeconds - held) : Mathf.Max(0f, dragTimeLeft);
             var cmd = new MoveCommand { HeroId = dragHeroId, Path = new List<Coord>(dragPath), TimeLeftSeconds = timeLeft, HeldSeconds = held };
             // Snap the dragged hero onto its final tile before playback.
             App.StartCoroutine(Tween.Move(v.Root, new Vector2(v.Root.resolvedStyle.left, v.Root.resolvedStyle.top), BoardView.PosOf(dragTile), Timing.Instant));
