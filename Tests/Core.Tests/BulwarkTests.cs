@@ -39,7 +39,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_siphon_drains_an_orb_from_the_bank_when_it_lands()
+        public void The_siphon_drains_an_orb_from_every_meter_when_it_lands()
         {
             var (s, _) = Battle(Real, Stage(("heavytrooper03", 2, 0)), ("paladin", 2, 6), ("redmage", 4, 7));
             var siphoner = s.Units.Single(u => u.Def.Id == "heavytrooper03");
@@ -58,16 +58,14 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void An_empty_bank_has_nothing_to_siphon()
+        public void A_party_with_no_mana_has_nothing_to_siphon()
         {
             var (s, _) = Battle(Real, Stage(("heavytrooper03", 2, 0)), ("paladin", 2, 6), ("redmage", 4, 7));
-            while (s.Bank.Count > 0) s.Bank.Spend(1);
+            foreach (var h in s.Units.Where(u => u.IsHero)) h.UnlockedSlots = 0; // no spell slot, no meter: Guard and regen fill nothing
+            s.SpellMana.Clear();
             var seen = new List<BattleEvent>();
             for (int i = 0; i < 16 && !seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon") && !s.IsOver; i++)
-            {
-                while (s.Bank.Count > 0) s.Bank.Spend(1); // Guard's banked time may mint an orb; keep the bank dry
                 seen.AddRange(Turn(s, new ShieldCommand()));
-            }
             Assert.That(seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon"), Is.True);
             Assert.That(seen.OfType<OrbsSpentEvent>().Any(e => e.Drained), Is.False);
             Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text == "No mana to take"), Is.True);
