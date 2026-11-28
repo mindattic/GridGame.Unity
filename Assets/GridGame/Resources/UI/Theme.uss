@@ -112,7 +112,7 @@
     --color-btn-danger-lip: rgb(96, 18, 26);
     --color-btn-danger-hover: rgb(178, 40, 52);
     --color-btn-danger-pressed: rgb(110, 20, 28);
-    --color-badge: rgba(4, 6, 20, 0.75); /* a role badge's dark plate */
+    --color-badge: rgba(4, 6, 20, 0.92); /* a role badge's dark plate */
     --color-chrome: rgba(4, 8, 30, 0.85); /* the header and bottom nav */
     --color-label: rgb(170, 184, 255); /* an inactive tab, nav tab or tile label */
     --color-alert: rgb(214, 48, 64); /* a nav tab's count badge */
@@ -647,7 +647,7 @@
 .theme-chrono .card { background-color: rgba(255, 255, 255, 0.06); }
 .theme-chrono .card--selected { background-color: rgba(255, 255, 255, 0.16); }
 .theme-chrono .thumb { background-color: rgb(52, 52, 56); }
-.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.8); }
+.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.92); }
 
 .theme-chrono .header {
     background-color: rgba(40, 40, 44, 0.94);
@@ -712,7 +712,7 @@
 .theme-granite .card { background-color: rgba(219, 240, 255, 0.06); }
 .theme-granite .card--selected { background-color: rgba(219, 240, 255, 0.16); }
 .theme-granite .thumb { background-color: rgb(58, 64, 68); }
-.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.8); }
+.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.92); }
 
 .theme-granite .header {
     background-color: rgba(47, 52, 55, 0.94);
