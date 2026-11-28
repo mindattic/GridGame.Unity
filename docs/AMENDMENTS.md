@@ -1872,3 +1872,21 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   floor(pool / 100), carried mana as points, and the grant translation N x 100.
 - *Why:* owner (quoted above): abilities don't have to fit in a square box, Guard and the Abilities button sit under the
   thumb, and one thin bar is read at a glance.
+
+## 2026-11-28 — Target devices: every iPhone 12-17 and Galaxy S21-S25, one device file (owner, GG-T2025)
+
+- **Owner, 2026-11-28:** the target is the latest Apple and Samsung phones from the last five years: iPhone 12 to 17
+  (all variants) and Galaxy S21 to S25 (including + and Ultra), plus the Z Flip/Fold screens as optional.
+- **Was ([§26.3](BIBLE.md#263-adaptive-stage-gg-t169), GG-T724):** flagships from 2021 on, floor A15 / Snapdragon 8 Gen 1
+  / Exynos 2200 (iPhone 13, Galaxy S22); the iPhone 12 mini and 13 mini "not designed for" (below 390 pt); each tool
+  kept its own device table (`scenario.py` `DEVICES`, `uiaudit.py` `METRICS`, `harness.py` `DEVICE_ASPECTS`).
+- **Now ([§26.9](BIBLE.md#269-target-devices-gg-t2025)):** every iPhone 12 to 17 (minis, Plus, Pro, Pro Max, 16e, Air)
+  and every Galaxy S21 to S25 (base, +, Ultra, FE, S25 Edge) are targets, Z Flip5/6 main and Z Fold5/6 cover a should;
+  the floor for those families is the A14 and Snapdragon 888 / Exynos 2100. `tools/devices.json` is the one source of
+  device numbers (portrait px, scale, ppi, safe areas, aspect, refresh, chip tier, year), grouped into fifteen shapes
+  with a representative id each; [docs/devices/DEVICES.md](devices/DEVICES.md) cites the sources. Pixel keeps GG-T724's
+  rule. The aspect range and stage sizes are unchanged.
+- **Pending:** the Galaxy safe-area insets and a few Galaxy dp widths are estimates until read on a device; GG-T2026
+  moves the tools onto `tools/devices.json`.
+- *Why:* the owner's matrix is the phones players own today, and every tool should use the same published numbers
+  instead of its own estimates.
