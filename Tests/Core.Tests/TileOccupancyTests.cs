@@ -216,7 +216,7 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 0, 0)), ("mage", 5, 7), ("knight", 4, 7));
             var mage = Hero(s, "mage");
             mage.Bar[0] = new AbilitySlot { AbilityId = "warp" };
-            s.Bank.Add(3);
+            GrantMana(s, 3);
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = mage.Id, Slot = 0, Target = new Coord(3, 3) });
             Assert.That(s.CastEntryOf(mage.Id), Is.Not.Null);
             // Meanwhile the knight walks onto the landing tile.

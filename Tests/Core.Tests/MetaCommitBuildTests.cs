@@ -391,10 +391,10 @@ namespace GridGame.Tests
             s.Gold = 10000;
             Assert.That(CaravanUpgrades.Buy(c, s, "medic_wagon").Ok, Is.True);
             var st = FightWithCoins(c, s, c.Campaign.Themes[0].Stages[0], 10);
-            st.Bank.Add(3);
+            GrantMana(st, 3);
             var rep = BattleFactory.Commit(c, s, st);
-            Assert.That(rep.CarriedOrbs, Is.EqualTo(st.Bank.Count));
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(st.Bank.Count));
+            Assert.That(rep.CarriedOrbs, Is.EqualTo(st.ReadySpellCount));
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(st.ReadySpellCount));
             Assert.That(rep.MedicHealed, Is.GreaterThanOrEqualTo(0));
         }
 

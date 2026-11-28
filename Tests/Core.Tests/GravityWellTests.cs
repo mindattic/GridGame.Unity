@@ -29,7 +29,7 @@ namespace GridGame.Tests
         private static List<BattleEvent> Cast(BattleState s, Unit caster, Coord at)
         {
             caster.Bar[0] = new AbilitySlot { AbilityId = Id };
-            s.Bank.Add(s.Content.TryAbility(Id).Cost);
+            GrantMana(s, s.Content.TryAbility(Id).Cost);
             caster.ActedThisWindow = false; // one cast a window (GG-T308)
             caster.Cooldowns.Clear(); // these tests are about the pull, not its cooldown
             return BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = at });

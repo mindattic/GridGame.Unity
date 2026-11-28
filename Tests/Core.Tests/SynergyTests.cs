@@ -122,10 +122,11 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 0, 0)), ("knight", 3, 6), ("cleric", 5, 7));
             var k = Hero(s, "knight");
             s.Pickups.Add(new Pickup { Id = 1, PickupId = "pk", At = new Coord(3, 5), ActionsLeft = 4 });
-            int before = s.Bank.Count;
+            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            int before = s.ManaIn(k.Id, 0);
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = k.Id, Path = P((3, 5), (3, 6)) });
             Assert.That(ev.Any(e => e is AbilityRefusedEvent), Is.False);
-            Assert.That(s.Bank.Count >= before + 2, Is.True);
+            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), before + 2 * BattleConfig.ManaPointsPerOrb)));
         }
 
         [Test]
@@ -221,18 +222,17 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Charge_rolls_over_into_orbs_and_keeps_the_remainder()
+        public void A_pincer_charge_goes_straight_into_the_spell_meters()
         {
             var db = Mini();
             var (s, _) = Battle(db, Stage(("goblin", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
-            s.ManaCharge = BattleConfig.ManaChargePerOrb - 1;
-            int before = s.Bank.Count;
+            var k = Hero(s, "knight");
+            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
-            var c = ev.OfType<ManaChargedEvent>().First(x => x.Reason == "pincer");
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "pincer"), Is.True);
-            Assert.That(s.Bank.Count >= before + 1, Is.True);
-            Assert.That(s.ManaCharge, Is.InRange(0, BattleConfig.ManaChargePerOrb - 1));
-            Assert.That(c.Total, Is.EqualTo((BattleConfig.ManaChargePerOrb - 1 + c.Amount) % BattleConfig.ManaChargePerOrb));
+            int earned = ev.OfType<ManaChargedEvent>().Where(x => x.Reason == "pincer").Sum(x => x.Amount);
+            Assert.That(earned, Is.GreaterThan(0));
+            Assert.That(ev.OfType<ManaGainedEvent>().Any(g => g.Reason == "pincer"), Is.True);
+            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), earned)));
         }
 
         [Test]
@@ -240,42 +240,44 @@ namespace GridGame.Tests
         {
             var db = Mini();
             var (s, _) = Battle(db, Stage(("goblin", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
+            Hero(s, "knight").Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
             Assert.That(ev.Any(e => e is DiedEvent), Is.True);
             var charge = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "pincer");
             Assert.That(charge.Amount, Is.EqualTo((int)System.Math.Round(BattleConfig.PincerChargePerHp))); // the whole foe: share 1, two heroes ×1
-            Assert.That(ev.OfType<OrbMintedEvent>().Count(o => o.Reason == "pincer"), Is.EqualTo(charge.Amount / BattleConfig.ManaChargePerOrb)); // one per 100, not one per hero
+            Assert.That(ev.OfType<ManaGainedEvent>().Count(g => g.Reason == "pincer"), Is.EqualTo(1)); // one gain, not one per hero
         }
 
-        [Test] // GG-T112: several orbs minted by one action each carry their own slot, so the fly-in fans into consecutive slots
-        public void Orbs_minted_together_carry_consecutive_bank_slots()
+        [Test] // §3.1.0: one gain reaches every hero's meters, each in its own slot
+        public void An_earned_gain_lists_every_meter_it_filled()
         {
             var db = Mini();
             var (s, _) = Battle(db, Stage(("goblin", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
-            s.ManaCharge = BattleConfig.ManaChargePerOrb - 1; // a killing pincer (+120) now rolls over twice
-            int before = s.Bank.Count;
-            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
-            var landed = ev.OfType<OrbMintedEvent>().Where(o => o.Landed).ToList();
-            Assert.That(landed.Count, Is.GreaterThanOrEqualTo(2), "the setup must mint more than one orb in one action");
-            for (int i = 0; i < landed.Count; i++) Assert.That(landed[i].Slot, Is.EqualTo(before + i), $"orb {i} lands in its own slot");
-            Assert.That(landed.Last().Slot, Is.EqualTo(s.Bank.Count - 1));
+            var k = Hero(s, "knight"); var c = Hero(s, "cleric");
+            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            c.Bar[1] = new AbilitySlot { AbilityId = "heal" };
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = c.Id, Path = P((3, 3)) });
+            var gain = ev.OfType<ManaGainedEvent>().First(g => g.Reason == "pincer");
+            Assert.That(gain.Meters.Any(m => m.UnitId == k.Id && m.Slot == 0), Is.True);
+            Assert.That(gain.Meters.Any(m => m.UnitId == c.Id && m.Slot == 1), Is.True);
         }
 
-        [Test] // GG-T112: an orb that overflows a full bank has no slot
-        public void An_overflowing_orb_has_no_slot()
+        [Test] // a whole grant stops at each meter's full
+        public void A_whole_grant_stops_at_the_meters_full()
         {
             var db = Mini();
-            // Two whole orbs at once, one slot left. An explicit grant, so fullness damping (§3.1.9, GG-T247) can't shrink it.
+            // Two whole orbs at once. An explicit grant, so fullness damping (§3.1.9, GG-T247) can't shrink it.
             db.Abilities["test_two_orbs"] = new AbilityDef { Id = "test_two_orbs", Name = "Two Orbs", Kind = AbilityKind.Skill, Shape = TargetShape.Self, Mode = TargetMode.Auto, Filter = TargetFilter.AllyOnly, GrantsOrbs = 2 };
             var (s, _) = Battle(db, Stage(("goblin", 2, 3)), ("knight", 1, 3), ("cleric", 3, 4));
-            s.Bank.Add(s.Bank.Capacity - 1 - s.Bank.Count);
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "test_two_orbs" };
+            k.Bar[1] = new AbilitySlot { AbilityId = "fireball" };
+            const int shortBy = 50;
+            s.SetMana(k.Id, 1, s.ManaFull(k, 1) - shortBy);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = k.Pos });
-            var minted = ev.OfType<OrbMintedEvent>().ToList();
-            Assert.That(minted.First().Landed && minted.First().Slot == s.Bank.Capacity - 1, Is.True);
-            Assert.That(minted.Skip(1).All(o => !o.Landed && o.Slot == -1), Is.True);
-            Assert.That(minted.Count, Is.GreaterThanOrEqualTo(2));
+            Assert.That(s.ManaIn(k.Id, 1), Is.EqualTo(s.ManaFull(k, 1)));
+            var delta = ev.OfType<ManaGainedEvent>().SelectMany(g => g.Meters).First(m => m.UnitId == k.Id && m.Slot == 1);
+            Assert.That(delta.Delta, Is.EqualTo(shortBy));
         }
 
         [Test] // owner direction 2026-10-11: "more combos more xp and mana get generated" — chain depth already paid mana, now XP too
@@ -467,7 +469,7 @@ namespace GridGame.Tests
             var gob = s.Units.Single(u => u.Def.Id == "goblin");
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(3);
+            GrantMana(s, 3);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = gob.Pos });
             Assert.That(ev.Any(e => e is PlateHitEvent), Is.False);
             Assert.That(ev.Any(e => e is DamagedEvent d && d.TargetId == gob.Id && d.Amount > 0), Is.True);

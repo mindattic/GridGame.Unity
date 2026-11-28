@@ -41,7 +41,7 @@ namespace GridGame.Tests
 
         private static List<BattleEvent> Cast(BattleState s, Unit caster, int slot, Unit target)
         {
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             caster.ActedThisWindow = false; // one cast a window (GG-T308)
             return BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = slot, Target = target.Pos });
         }

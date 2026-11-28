@@ -57,7 +57,7 @@ namespace GridGame.Tests
             // A real cast: the entry the engine creates is placed by its cast time and then runs down with the clock.
             Wolf(s).Buffs.Add(new BuffInstance { Def = s.Content.Buffs["frozen"], Remaining = 1 }); // keep the wolf from acting
             mage.Bar[0] = new AbilitySlot { AbilityId = "meteor" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             long c0 = s.Clock;
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = mage.Id, Slot = 0, Target = new Coord(2, 0) });
             var queued = ev.OfType<CastQueuedEvent>().Single();

@@ -222,9 +222,10 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 0)), ("knight", 5, 7), ("cleric", 4, 7));
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(3);
+            GrantMana(s, 3);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = new Coord(2, 0) });
-            Assert.That(s.Bank.Count, Is.EqualTo(1 + ev.OfType<OrbMintedEvent>().Count(o => o.Landed)));
+            Assert.That(ev.OfType<SpellManaSpentEvent>().Single().Points, Is.EqualTo(s.ManaFull(k, 0)));
+            Assert.That(s.ManaIn(k.Id, 0), Is.LessThan(s.ManaFull(k, 0)), "the cast emptied the meter");
             int expected = (int)System.Math.Round(18 * Formulas.CasterPower(db.Abilities["fireball"], k)); // §13.1.5: INT scales it
             Assert.That(ev.Any(e => e is DamagedEvent d && d.Amount == expected), Is.True);
             Assert.That(ev.Any(e => e is BuffAppliedEvent b && b.BuffId == "burning"), Is.True);
@@ -237,34 +238,12 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 0)), ("knight", 5, 7), ("cleric", 4, 7));
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             long clock = s.Clock;
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = new Coord(2, 0) });
             Assert.That(ev.Any(e => e is AbilityRefusedEvent), Is.True);
-            Assert.That(s.Bank.Count, Is.EqualTo(1));
+            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(BattleConfig.ManaPointsPerOrb), "nothing is spent");
             Assert.That(s.Clock, Is.EqualTo(clock));
-        }
-
-        [Test]
-        public void Any_orbs_pay_for_any_spell()
-        {
-            var bank = new ManaBank();
-            bank.Add(3);
-            Assert.That(bank.CanAfford(2), Is.True);
-            Assert.That(bank.Spend(2), Is.True);
-            Assert.That(bank.Count, Is.EqualTo(1));
-            Assert.That(bank.CanAfford(2), Is.False);
-            Assert.That(bank.Spend(2), Is.False);
-            Assert.That(bank.Count, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void Bank_overflow_fades_extra_orbs()
-        {
-            var bank = new ManaBank();
-            Assert.That(bank.Add(15), Is.EqualTo(12));
-            Assert.That(bank.Add(1), Is.EqualTo(0));
-            Assert.That(bank.Count, Is.EqualTo(12));
         }
 
         [Test]
@@ -274,10 +253,10 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 0)), ("knight", 5, 7), ("mage", 4, 7));
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "meteor" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = new Coord(2, 0) });
             Assert.That(ev.Any(e => e is CastQueuedEvent), Is.True);
-            Assert.That(s.Bank.Count, Is.EqualTo(0)); // orbs spent at cast start
+            Assert.That(s.ManaIn(m.Id, 0), Is.EqualTo(0)); // mana spent at cast start
             bool resolved = ev.Any(e => e is AbilityResolvedEvent r && r.AbilityId == "meteor");
             for (int i = 0; i < 5 && !resolved; i++)
             {
@@ -321,7 +300,7 @@ namespace GridGame.Tests
             for (int i = 0; i < 4; i++)
                 s.Timeline.Add(new TimelineEntry { Id = 900 + i, Kind = TimelineKind.Cast, OwnerId = m.Id, CasterTeam = Team.Hero, AbilityId = "meteor", RemainingTicks = 999, TotalCastTicks = 999 });
             m.Bar[0] = new AbilitySlot { AbilityId = "meteor" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             Assert.That(BattleEngine.GetSlotStatus(s, m.Id, 0), Is.EqualTo(SlotStatus.CastCapReached));
         }
 
@@ -332,7 +311,7 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 2)), ("knight", 5, 7), ("mage", 4, 7));
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "frost" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             var tank = s.Units.Single(u => u.Def.Id == "tank");
             var ev = Turn(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = new Coord(2, 2) });
             Assert.That(ev.Any(e => e is BuffAppliedEvent b && b.BuffId == "frozen"), Is.True);
@@ -357,7 +336,7 @@ namespace GridGame.Tests
             Assert.That(ev.Any(e => e is DamagedEvent d && d.Amount == shock), Is.True);
 
             m.Bar[1] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             tank.Buffs.RemoveAll(b => b.Def.Id == "wet");
             tank.Buffs.Add(new BuffInstance { Def = db.Buffs["wet"], Remaining = 6 });
             ev = Turn(s, new UseSlotCommand { HeroId = m.Id, Slot = 1, Target = tank.Pos });
@@ -398,7 +377,7 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 0)), ("knight", 5, 7), ("mage", 4, 7));
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "quicken" };
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             var tank = s.Units.Single(u => u.Def.Id == "tank");
             s.TurnEntryOf(tank.Id).Ip = BattleConfig.BarLength - BattleConfig.BaseIpPerTick * 50; // 5 s out, on the drawn bar
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = tank.Pos });

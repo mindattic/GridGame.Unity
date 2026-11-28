@@ -36,7 +36,7 @@ namespace GridGame.Tests
         private static List<BattleEvent> Cast(BattleState s, Unit caster, Coord tile)
         {
             caster.Bar[0] = new AbilitySlot { AbilityId = Id };
-            s.Bank.Add(s.Content.Abilities[Id].Cost);
+            GrantMana(s, s.Content.Abilities[Id].Cost);
             caster.ActedThisWindow = false; // one action a window (GG-T308); these tests are about the spell
             return BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = tile });
         }

@@ -209,7 +209,7 @@ namespace GridGame.Tests
             var cleric = Hero(s, "cleric");
             knight.Hp = knight.MaxHp / 2;
             cleric.Bar[0] = new AbilitySlot { AbilityId = "heal" };
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = cleric.Id, Slot = 0, Target = knight.Pos });
             Assert.That(knight.Hp, Is.GreaterThan(knight.MaxHp / 2));
             Assert.That(s.Results.PairCredits.TryGetValue("cleric|knight", out int n) ? n : 0, Is.EqualTo(1));
