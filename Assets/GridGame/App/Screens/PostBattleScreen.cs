@@ -262,7 +262,8 @@ namespace GridGame.App
             int idx = drills.IndexOf(stageId);
             string nextId = idx >= 0 && idx + 1 < drills.Count && c.TryStage(drills[idx + 1]) != null ? drills[idx + 1] : null;
 
-            var title = Ui.Text(report.Victory ? "DRILL CLEARED" : "TRY AGAIN", "t-display shadow", col);
+            bool first = idx == 0 && !report.Practice; // GG-T1958: The Trap plays before the crawl; its win is the first VICTORY
+            var title = Ui.Text(!report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
             title.name = "drill-title";
             Fonts.UseDisplay(title);
             title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
@@ -273,6 +274,7 @@ namespace GridGame.App
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
             var t = Ui.Text(!report.Victory ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
+                : first ? "That's the trap, Commander. Catch a foe between two of us and it falls."
                 : nextId != null ? "Drill cleared. We're ready for the next, Commander."
                 : "That's all we know, Commander. Lead us out.", "kit-text", list);
             t.name = "drill-line";
@@ -292,6 +294,15 @@ namespace GridGame.App
                 onContinue = () => StageLauncher.Launch(stageId, true);
                 RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";
             }
+            else if (first)
+            {
+                onContinue = () =>
+                {
+                    if (nextId == null) MarkDrillsFinished();
+                    App.Router.ResetTo(StoryBeats.AfterFirstDrill()); // GG-T1958: the opening crawl and the Founding, then drill 2
+                };
+                RowIcon.IconButton("Next", RowKind.Enter, Go, "btn--primary", row).name = "next";
+            }
             else if (nextId != null)
             {
                 onContinue = () =>
@@ -308,11 +319,7 @@ namespace GridGame.App
                 {
                     Onboarding.Begin(App.Save, OnboardingStep.HubIntro);
                     App.Persist();
-                    if (App.Settings != null && !App.Settings.DrillsFinished)
-                    {
-                        App.Settings.DrillsFinished = true; // GG-T1645: Start Campaign's New to GridGame? now defaults to Skip
-                        App.SaveSettings();
-                    }
+                    MarkDrillsFinished();
                     StoryBeats.AfterResults(true, stageId);
                 };
                 RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
@@ -326,6 +333,14 @@ namespace GridGame.App
                 continued = true;
                 onContinue();
             }
+        }
+
+        /// <summary>GG-T1645: the last drill won, so Start Campaign's New to GridGame? now defaults to Skip.</summary>
+        private void MarkDrillsFinished()
+        {
+            if (App.Settings == null || App.Settings.DrillsFinished) return;
+            App.Settings.DrillsFinished = true;
+            App.SaveSettings();
         }
 
         /// <summary>The drill card's cue (Law 5): a chime and a pop on the title once the card is up; Reduce Motion keeps

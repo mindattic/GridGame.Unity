@@ -1185,6 +1185,8 @@ namespace GridGame.Core.Content
         public List<StageLessonDef> Lessons = new List<StageLessonDef>();
         /// <summary>GG-T1641: a drill's intro card line, the heroes speaking to the Commander, shown before its first lesson.</summary>
         public string Intro;
+        /// <summary>GG-T1958: a drill fields only the party's first N heroes (The Trap: two); null fields the whole party.</summary>
+        public int? PartySize;
     }
 
     /// <summary>GG-T1374: one lesson of a tutorial drill: its id (<see cref="Ids"/>), the wave (0-based) it waits for, and

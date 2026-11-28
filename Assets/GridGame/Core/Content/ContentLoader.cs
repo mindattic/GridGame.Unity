@@ -510,6 +510,7 @@ namespace GridGame.Core.Content
             foreach (var s in db.Stages.Values)
             {
                 if (s.Lessons.Count > 0 && !drills.Contains(s.Id)) p.Add($"stage {s.Id}: Lessons on a stage not in campaign Tutorial");
+                if (s.PartySize is int ps && (ps < 1 || !drills.Contains(s.Id))) p.Add($"stage {s.Id}: PartySize {ps} needs a drill and at least 1 (GG-T1958)");
                 var seen = new HashSet<string>();
                 foreach (var l in s.Lessons)
                 {

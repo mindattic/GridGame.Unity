@@ -75,10 +75,12 @@ namespace GridGame.Meta
             // One shared pool: every hero's item slots draw from the same owned counts, in party order, so five heroes
             // can't each carry a full stack of the same five potions (GG-T285: 5 owned X-Potions became 25 heals).
             var owned = new Dictionary<string, int>(s.Inventory);
+            int fielded = drill && stage.PartySize is int size ? size : int.MaxValue; // GG-T1958: The Trap fields two
             foreach (var id in s.Party)
             {
                 var h = s.Hero(id);
                 if (h == null) continue;
+                if (setup.Party.Count >= fielded) break;
                 var spec = SpecFor(c, h, s);
                 spec.ItemCounts = owned;
                 setup.Party.Add(spec);

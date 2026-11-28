@@ -2520,7 +2520,7 @@ Title ──▶ SaveSlot (New / Load) ──▶ Camp (HubScreen) ◀────
                                       ├─ Settings                                   │ (Continue → Camp,
                                       └─ Save & Quit ─▶ Title                       │  Retry / Next stage
                                                                                     └── → Battle)
-Start Campaign (was New Game, GG-T1358): SaveSlot (skipped into slot 1 when every slot is empty; turn mode under More options) → CharacterSelect and VariantPicker (the team pick) → **New to GridGame?** (GG-T1645, below) → StoryCrawl (Opening) → Founding dialogue (when due) → the first tutorial drill (`campaign.json` `Tutorial[0]`, when its stage exists), else Camp. `StoryBeats.NewCampaign()` is the one sequencer: an ordered list of steps, each playing its screen or passing to the next.
+Start Campaign (was New Game, GG-T1358): SaveSlot (skipped into slot 1 when every slot is empty; turn mode under More options) → CharacterSelect and VariantPicker (the team pick) → **New to GridGame?** (GG-T1645, below) → the first tutorial drill, The Trap (`campaign.json` `Tutorial[0]`, when its stage exists and the drills weren't skipped; GG-T1958: untimed, the party's first two heroes, stage `PartySize`) → StoryCrawl (Opening) → Founding dialogue (when due) → the second drill (`Tutorial[1]`), else Camp. The Trap's results card reads VICTORY and its **Next** plays the crawl and the Founding (`StoryBeats.AfterFirstDrill`); a save resumed at the Crawl checkpoint skips The Trap once it is cleared. `StoryBeats.NewCampaign()` is the one sequencer: an ordered list of steps, each playing its screen or passing to the next.
 Final victory (first time, §27.0): PostBattle → Continue → StoryCrawl (Ending) → Credits (rolling) → Title.
 ```
 
@@ -2536,7 +2536,7 @@ Splash ──▶ (otherwise) ─────────────────
                                                 └─ Start Campaign
                                                      │ [slot picker only when a slot is in use]
                                                      ▼
-                     Team pick ─▶ New to GridGame? ─▶ Opening crawl ─▶ (Founding) ─▶ Drill 1 ─▶ … ─▶ Drill 5
+                     Team pick ─▶ New to GridGame? ─▶ Drill 1 ─▶ Opening crawl ─▶ (Founding) ─▶ Drill 2 ─▶ Drill 3
                                                                         ─▶ Graduation card ─▶ Camp, first visit
 ```
 - **Start Campaign** (was New Game) skips the slot picker when every slot is empty and takes slot 1; only when a slot is in use does it show the slots, and picking a used one confirms the overwrite. The turn-mode row folds under More options; the save is named after the Commander (GG-T1351, GG-T1355, GG-T1358).
