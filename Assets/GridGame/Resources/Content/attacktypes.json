@@ -34,7 +34,7 @@
     "Totem": "magic", "Wand": "magic"
   },
   "Enemies": {
-    "bat": "bite", "bluelion": "claw", "captain": "slash", "ceramicknight": "slash", "cyberzombie": "claw",
+    "bat": "bite", "bluelion": "claw", "captain": "slash", "collector": "slash", "ceramicknight": "slash", "cyberzombie": "claw",
     "cyclops": "slam", "demonlord": "claw", "flyingmonkey": "claw", "frog": "lash", "ganger": "slash", "ghost": "magic",
     "goblinthug": "blunt", "hag": "claw", "hag00": "magic", "hag01": "magic", "icemauler": "claw", "lurker": "claw",
     "mannequin": "blunt", "marshshambler": "slam", "mechaarmor": "slash", "mountaintroll": "slam", "naga": "bite",
