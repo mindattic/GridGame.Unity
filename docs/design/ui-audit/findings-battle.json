@@ -1,0 +1,281 @@
+{
+ "ticket": "GG-T1838",
+ "parent": "GG-T1834",
+ "devices": [
+  "iphone17pro",
+  "pixel9",
+  "ipad"
+ ],
+ "capture": "7ff001e0",
+ "checklist": "docs/research/MobileGameAccessibility.md",
+ "ownerAsks": "BIBLE 9.0, 3.1.0",
+ "scope": [
+  "battle",
+  "battle-idle-ready",
+  "battle-spells",
+  "battle-aim",
+  "battle-confirm",
+  "battle-pincer",
+  "battle-pause",
+  "battle-log",
+  "battle-unitsheet",
+  "battle-boss",
+  "results"
+ ],
+ "screens": {
+  "battle": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1904",
+    "GG-T1910",
+    "GG-T1912",
+    "GG-T1907"
+   ],
+   "notes": "rows match BIBLE 9.0 (hamburger, title/wave, gold; timeline + GUARD; 6x8 board; 5 icon-only slots; panel); no board cast rings; announcement 1 line (GG-T1893)"
+  },
+  "battle-idle-ready": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1904",
+    "GG-T1910",
+    "GG-T1912",
+    "GG-T1907"
+   ],
+   "notes": "spell slots show their fill bar along the bottom edge; the potion slot its stack badge '5'"
+  },
+  "battle-spells": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1905"
+   ],
+   "notes": "partial fill bars readable (Fireball 100/300, Firewall 100/200)"
+  },
+  "battle-aim": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1906",
+    "GG-T1908"
+   ],
+   "notes": "legal anchors glow, aimed slot gets the gold border; nothing persists on tiles"
+  },
+  "battle-confirm": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1903",
+    "GG-T1907"
+   ],
+   "notes": "Cast/Cancel in the thumb zone; the aimed unit takes one red tint"
+  },
+  "battle-pincer": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1913"
+   ],
+   "notes": "raw frame (harness shot, no facts): the billboard is one line at 80% (GG-T1893 confirmed)"
+  },
+  "battle-pause": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1909"
+   ],
+   "notes": "Resume/Retreat use the filled, outlined arrows"
+  },
+  "battle-log": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1911"
+   ]
+  },
+  "battle-unitsheet": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1905"
+   ],
+   "notes": "long-press opens the same card as a plain tap"
+  },
+  "battle-boss": {
+   "status": "reviewed",
+   "findings": [],
+   "notes": "POL-C8 3 and 3 low-contrast captions ('500 G' 3.2:1, 'TANK' 3.5:1) over a light sky: caption contrast is GG-T1898's scope"
+  },
+  "results": {
+   "status": "reviewed",
+   "findings": [],
+   "notes": "Continue / Next battle side by side at the bottom with filled arrows; stage subtitle 4.29:1 on iphone17pro is within GG-T1898/POL-B2 follow-up scope"
+  }
+ },
+ "ownerAskCheck": {
+  "rows": "met: top bar, timeline + GUARD, 8-row board, ability bar, description panel",
+  "iconOnlySlots": "met: no names in the bar, nothing ellipsized",
+  "rechargeSweep": "not seen: no skill was on cooldown in these captures",
+  "stackCount": "met: potion slot shows '5'",
+  "spellFillBars": "met: a fill bar per spell slot along its bottom edge",
+  "panelExplainsSkills": "partly: content is there but below the fold and out of order (GG-T1906, GG-T1908)",
+  "noBoardCastRings": "met: no rings or countdowns on tiles; cast time on the timeline entry",
+  "arrows": "met: filled, outlined arrows on Resume, Retreat, Continue, Next battle (Battle log Back has a stray second icon, GG-T1911)",
+  "guardThumbReach": "fails L1: GG-T1904"
+ },
+ "alreadyFiled": [
+  "GG-T1893",
+  "GG-T1894",
+  "GG-T1895",
+  "GG-T1898",
+  "GG-T1899",
+  "GG-T1900"
+ ],
+ "findings": [
+  {
+   "id": "confirm-squeeze",
+   "ticket": "GG-T1903",
+   "screens": [
+    "battle-confirm",
+    "battle-confirm"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-confirm.png",
+    "docs/design/ui-audit/captures/pixel9/battle-confirm.png"
+   ],
+   "rule": "E5 / X9",
+   "summary": "Battle confirm card: the outcome text is crammed into a ~157 px column left of Cast/Cancel, so numbers wrap mid-value ('-29-4 / 6', 'Burn-ing') and the mana line is clipped (checklist E5, X9)",
+   "detail": "On iphone17pro and pixel9 the confirm card puts 'On Frog', 'Frog: -29-46 . Burning' and 'Mana +0-4 to every spell' in a column 157 design px wide (x 218-375) beside the Cast/Cancel pair at the panel's top right. The damage range breaks across lines ('-29-4' / '6'), 'Burning' hyphenates, and the mana line runs under Cancel and is clipped. The outcome preview (E5) is the one thing the player must read before Cast. Fix: put Cast and Cancel on their own row at the bottom of the panel (Cancel left, Cast right, L7) and let the outcome lines use the panel's full width; a damage range never wraps."
+  },
+  {
+   "id": "guard-thumb",
+   "ticket": "GG-T1904",
+   "screens": [
+    "battle-idle-ready"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-idle-ready.png"
+   ],
+   "rule": "L1 / L8",
+   "summary": "Battle: GUARD sits at the timeline's right end, its centre at y 394 of 2550 (15% from the top), outside the bottom-45% thumb zone for a once-a-turn action (checklist L1, L8)",
+   "detail": "GUARD (element 'shield', 1003,328 132x132) is used on most turns, yet it is the only frequent control in the top quarter: a one-handed right-thumb turn (L8) cannot reach it on iphone17pro, pixel9 or ipad. BIBLE 9.0 places it at the timeline's right end by the owner's layout, so this needs the owner's pick. Options: (a) a sixth cell at the right end of the ability bar (icon-only like the slots); (b) a Guard button in the description panel's idle footer beside the orders row; (c) keep the timeline GUARD and add (a) as a second entry. Recommend (a)."
+  },
+  {
+   "id": "tapcard-covers",
+   "ticket": "GG-T1905",
+   "screens": [
+    "battle-spells",
+    "battle-unitsheet"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-spells.png",
+    "docs/design/ui-audit/captures/iphone17pro/battle-unitsheet.png"
+   ],
+   "rule": "E7",
+   "summary": "Battle: tapping your own hero to select it pops the full stats card over the board and the ability bar until dismissed, hiding the slots you tap next (checklist E7, BIBLE 9.0)",
+   "detail": "Tapping the Red Mage (to switch the bar to her skills) opens the tap card (name, stats, Supporter text, all five skills) over y 360-1030 of the 1312-px window, covering four board rows and the top of the ability bar. The player has to dismiss it before aiming. The description panel already shows the selected hero's name, class, HP and mana in its idle state, so the card duplicates it. The long-press unit sheet shows the identical card, so tap and hold do the same thing. Fix: a tap on your own hero selects it into the panel only (no card); a tap on a foe may keep the card; the long-press keeps the unit sheet."
+  },
+  {
+   "id": "aim-prompt-fold",
+   "ticket": "GG-T1906",
+   "screens": [
+    "battle-aim",
+    "battle-aim"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-aim.png",
+    "docs/design/ui-audit/captures/ipad/battle-aim.png"
+   ],
+   "rule": "G2 / E4",
+   "summary": "Battle aim: the target prompt takes the panel's first three lines, so only the ability's name shows and the five answers (what it does, how it targets, who) start below the fold (checklist G2)",
+   "detail": "Aiming Fireball on iphone17pro the panel shows 'Fireball: choose a target', 'Tap a highlighted tile . tap the slot again to cancel' (two lines) and then the 'Fireball' title, cut at the panel bottom; the damage, targeting and who-it-hits lines sit 500-1100 design px further down and need scrolling. Fix: one prompt line ('Fireball: tap a highlighted foe'); drop the 'tap the slot again to cancel' hint after the first battles (it is a lesson, not a fact), and start the card with what it does."
+  },
+  {
+   "id": "panel-gutter",
+   "ticket": "GG-T1907",
+   "screens": [
+    "battle-idle-ready",
+    "battle-confirm"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-idle-ready.png",
+    "docs/design/ui-audit/captures/iphone17pro/battle-confirm.png"
+   ],
+   "rule": "L10",
+   "summary": "Battle description panel: every line starts at x 218 of a 1170 stage (the panel's own left edge is 23), leaving ~195 design px of dead band on the left of the only text area (checklist L10)",
+   "detail": "Idle text, the aim card and the confirm card all start at x 218; only the ability icon uses that column, and only on the ability card. The panel is the screen's one reading area and is already short on phones, and the dead band is what squeezes the confirm card's outcome column. Fix: text starts at the panel's 24-px content inset; the ability icon floats beside the title line only."
+  },
+  {
+   "id": "card-units",
+   "ticket": "GG-T1908",
+   "screens": [
+    "battle-aim",
+    "battle-aim"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/ipad/battle-aim.png",
+    "docs/design/ui-audit/captures/iphone17pro/battle-aim.png"
+   ],
+   "rule": "G2 / G3",
+   "summary": "Battle ability card: a spell shows '3 mana' cost pips while its meter reads '300 / 300 mana', and the answers come out of order (how/who it targets before what it does) (checklist G2, G3, BIBLE 3.1.0, 9.0)",
+   "detail": "Fireball's card in the description panel: 'Spell . charges 1.5s on the timeline', three cost pips and '3 mana', then 'How it targets', 'Who it targets', then '18 Fire damage', 'Applies Burning', a repeat summary '18 Fire dmg + burning', and last 'Charged: 300 / 300 mana.' BIBLE 3.1.0 retired orb units (100 points per old orb), and 9.0 orders the panel: what it is, what it does, how it works, how it targets, who it targets. Fix: the state line reads '300 / 300 mana . ready' (no pips, no '3 mana'), the damage/status lines come second, and the duplicate summary line goes."
+  },
+  {
+   "id": "pause-settings",
+   "ticket": "GG-T1909",
+   "screens": [
+    "battle-pause"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-pause.png"
+   ],
+   "rule": "X2 / P2 / M1",
+   "summary": "Battle pause menu lists Resume, Auto battle, Battle log, How to play, Retreat but no Settings, so text size, battle speed, Reduce Motion and the turn timer can't be changed mid-battle (BIBLE 9.0 row 1; checklist X2, P2, M1)",
+   "detail": "BIBLE 9.0 row 1: the hamburger opens Resume, Battle log, Settings, Retreat. The built menu has no Settings row (How to play took its place). The accessibility settings a player needs most when a battle is hard to read or too fast (text size, battle speed, Reduce Motion, turn mode and drag timer, colourblind) are out of reach until the battle ends. Fix: add a Settings row that opens the Settings page over the paused battle; How to play stays."
+  },
+  {
+   "id": "menu-glyph",
+   "ticket": "GG-T1910",
+   "screens": [
+    "battle-idle-ready"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-idle-ready.png"
+   ],
+   "rule": "G6 / X6",
+   "summary": "Battle top bar: the menu button's icon is a ~36 design px circled glyph inside a 132 px button, so on a phone it reads as a blue dot, not the hamburger the owner asked for (checklist G6, X6)",
+   "detail": "Element 'menu' (35,179 132x130) draws a small light-blue disc with tiny lines in its centre, about a quarter of the button's width. BIBLE 9.0 row 1 names it the hamburger. Fix: a plain three-bar hamburger glyph at about 60% of the button (~80 px), white on the button plate, at least 3:1 against it."
+  },
+  {
+   "id": "battlelog-page",
+   "ticket": "GG-T1911",
+   "screens": [
+    "battle-log"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-log.png"
+   ],
+   "rule": "G6 / P6",
+   "summary": "Battle log page: the Back row shows two icons (a pointing hand and a left arrow), and the log has no line for the pincer just made, though P6 says announcements can be re-read in the Log (checklist G6, P6)",
+   "detail": "After a Knight & Barbarian pincer the Battle log held 'Carried: +100 mana to every spell', 'Knight -> Toad: 11', 'Barbarian -> Toad: 33' and nothing for the pincer or its mana, while the billboard said 'PINCER!' and 'Knight & Barbarian - Pincer'. The Back row at the bottom draws a hand icon and an arrow icon side by side. Fix: one arrow icon on Back (filled, outlined, as elsewhere); every billboard line that carries a fact (pincer, mana gained, wave, refusal) also lands in the log."
+  },
+  {
+   "id": "timeline-seconds-twice",
+   "ticket": "GG-T1912",
+   "screens": [
+    "battle-idle-ready"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-idle-ready.png"
+   ],
+   "rule": "E7",
+   "summary": "Battle timeline: the turn's seconds show twice, '3.5s' under the NOW icon and '3.5s . move or skill' as the caption under the track (checklist E7: one fact once)",
+   "detail": "Row 2 shows '3.5s' under the left NOW diamond and a caption chip '3.5s . move or skill' to its right, both counting down together. Fix: keep one, the caption chip, and drop the number under the NOW icon; the freed room lets the caption sit larger."
+  },
+  {
+   "id": "pincer-thrice",
+   "ticket": "GG-T1913",
+   "screens": [
+    "battle-pincer"
+   ],
+   "captures": [
+    "docs/design/ui-audit/captures/iphone17pro/battle-pincer.png"
+   ],
+   "rule": "E7 / M5",
+   "summary": "Battle: one pincer is announced three ways at once: the billboard line 'PINCER!', a 'PINCER!' callout on the board, and the full-screen cut-in that covers the timeline and board (checklist E7, M5)",
+   "detail": "Frames after a Knight & Barbarian pincer: first the billboard 'PINCER!' over the board top, then the board callout 'PINCER!' at the units with the hero cut-in art spanning the timeline and most of the board for over 0.4 s. Fix: the billboard carries the fact ('Pincer . Knight & Barbarian . Mana +34 to every spell'); drop the duplicate board callout while a cut-in plays, and keep the cut-in off the timeline row."
+  }
+ ]
+}

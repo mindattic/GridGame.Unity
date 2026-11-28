@@ -1,0 +1,6121 @@
+{
+ "device": "pixel9",
+ "captured": "2026-11-28T00:07:52",
+ "screens": {
+  "results": {
+   "screen": "results",
+   "method": "goto",
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/pixel9/results.png",
+   "device": {
+    "name": "pixel9",
+    "px": [
+     1080,
+     2424
+    ],
+    "ppi": 422,
+    "pxPerUnit": 2.625,
+    "unit": "dp",
+    "devicePxPerDesignPx": 0.9231
+   },
+   "window": [
+    584,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2628.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     584.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "dp": 46.4,
+     "mm": 7.3
+    },
+    "checked": 14,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "dp": 8.4,
+     "mm": 1.3
+    },
+    "gapsChecked": 14,
+    "tightGapCount": 0,
+    "tightGaps": [],
+    "total": 24
+   },
+   "text": {
+    "count": 54,
+    "captionFloor": {
+     "px": 30,
+     "dp": 10.5,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 40,
+     "dp": 14.1,
+     "mm": 2.2
+    },
+    "median": {
+     "px": 40,
+     "dp": 14.1,
+     "mm": 2.2
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 38,
+    "contrastFails": 0,
+    "minContrast": 5.17,
+    "items": [
+     {
+      "text": "VICTORY",
+      "rect": [
+       34.0,
+       258.0,
+       1100.0,
+       96.0
+      ],
+      "size": {
+       "px": 64,
+       "dp": 22.5,
+       "mm": 3.6
+      },
+      "large": true,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#2b313f",
+       "ratio": 9.48,
+       "worstStop": 9.48,
+       "need": 3.0,
+       "pass": true
+      }
+     },
+     {
+      "text": "The Tithe Moors I",
+      "rect": [
+       34.0,
+       361.0,
+       1100.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#2c3246",
+       "ratio": 5.17,
+       "worstStop": 5.17,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Gold",
+      "rect": [
+       220.0,
+       539.0,
+       675.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#27253d",
+       "ratio": 11.93,
+       "worstStop": 11.93,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "+214 G",
+      "rect": [
+       916.0,
+       539.0,
+       150.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#27263d",
+       "ratio": 10.71,
+       "worstStop": 10.71,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Experience",
+      "rect": [
+       220.0,
+       695.0,
+       639.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#25243a",
+       "ratio": 12.15,
+       "worstStop": 12.15,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "+38 each",
+      "rect": [
+       880.0,
+       695.0,
+       186.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#26243b",
+       "ratio": 12.1,
+       "worstStop": 12.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "The Tithe Moors cleared!",
+      "rect": [
+       220.0,
+       827.0,
+       315.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#242339",
+       "ratio": 12.31,
+       "worstStop": 12.31,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Milestone: Healing Potion",
+      "rect": [
+       555.0,
+       857.0,
+       511.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#252339",
+       "ratio": 12.28,
+       "worstStop": 12.28,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Loot",
+      "rect": [
+       68.0,
+       978.0,
+       1014.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#232136",
+       "ratio": 6.36,
+       "worstStop": 6.36,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Tome of Counter Attack",
+      "rect": [
+       220.0,
+       1092.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#96c8ff",
+       "bg": "#222035",
+       "ratio": 9.05,
+       "worstStop": 9.05,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d71",
+      "rect": [
+       1012.0,
+       1092.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#222135",
+       "ratio": 12.65,
+       "worstStop": 12.65,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Reactive",
+      "rect": [
+       82.0,
+       1200.0,
+       168.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#9cc7ff",
+       "bg": "#212033",
+       "ratio": 9.1,
+       "worstStop": 9.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Counter",
+      "rect": [
+       262.0,
+       1200.0,
+       158.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#211f33",
+       "ratio": 12.93,
+       "worstStop": 12.93,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Attack:",
+      "rect": [
+       433.0,
+       1200.0,
+       146.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#212033",
+       "ratio": 12.83,
+       "worstStop": 12.83,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "When",
+      "rect": [
+       591.0,
+       1200.0,
+       106.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#212033",
+       "ratio": 12.83,
+       "worstStop": 12.83,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "attacked directly",
+      "rect": [
+       709.0,
+       1200.0,
+       341.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#9cc7ff",
+       "bg": "#222034",
+       "ratio": 9.07,
+       "worstStop": 9.07,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": ":",
+      "rect": [
+       1050.0,
+       1200.0,
+       18.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#201f32",
+       "ratio": 12.98,
+       "worstStop": 12.98,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Counterstrike",
+      "rect": [
+       82.0,
+       1256.0,
+       274.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#9cc7ff",
+       "bg": "#212033",
+       "ratio": 9.1,
+       "worstStop": 9.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "(\u00d70.5).",
+      "rect": [
+       369.0,
+       1256.0,
+       134.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#201f32",
+       "ratio": 12.98,
+       "worstStop": 12.98,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Teach to",
+      "rect": [
+       84.0,
+       1316.0,
+       998.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#201e31",
+       "ratio": 6.61,
+       "worstStop": 6.61,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       202.0,
+       1428.0,
+       140.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Barbarian",
+      "rect": [
+       505.0,
+       1428.0,
+       204.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Cleric",
+      "rect": [
+       880.0,
+       1428.0,
+       122.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Red Mage",
+      "rect": [
+       509.0,
+       1585.0,
+       194.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Broken Blade",
+      "rect": [
+       220.0,
+       1749.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#c0c0c4",
+       "bg": "#1c1b2b",
+       "ratio": 9.33,
+       "worstStop": 9.33,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       1749.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1c1b2b",
+       "ratio": 13.63,
+       "worstStop": 13.63,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Cracked Fang",
+      "rect": [
+       220.0,
+       1905.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#c0c0c4",
+       "bg": "#1a1928",
+       "ratio": 9.54,
+       "worstStop": 9.54,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       1905.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1b1928",
+       "ratio": 13.91,
+       "worstStop": 13.91,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Tattered Cloth",
+      "rect": [
+       220.0,
+       2062.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#c0c0c4",
+       "bg": "#191826",
+       "ratio": 9.65,
+       "worstStop": 9.65,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2062.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#191826",
+       "ratio": 14.1,
+       "worstStop": 14.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Empty Bottle",
+      "rect": [
+       220.0,
+       2218.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ececf0",
+       "bg": "#171723",
+       "ratio": 15.05,
+       "worstStop": 15.05,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2218.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#181724",
+       "ratio": 14.25,
+       "worstStop": 14.25,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Iron Ore",
+      "rect": [
+       220.0,
+       2374.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ececf0",
+       "bg": "#515a72",
+       "ratio": 5.86,
+       "worstStop": 5.86,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2374.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#404130",
+       "ratio": 8.39,
+       "worstStop": 8.39,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Leather",
+      "rect": [
+       220.0,
+       2530.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ececf0",
+       "bg": "#181815",
+       "ratio": 15.08,
+       "worstStop": 15.08,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2530.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#29271c",
+       "ratio": 12.07,
+       "worstStop": 12.07,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Cloth",
+      "rect": [
+       220.0,
+       2687.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2687.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Wood Plank",
+      "rect": [
+       220.0,
+       2843.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2843.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Slime Gel",
+      "rect": [
+       220.0,
+       2999.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       2999.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Pure Slime Gel",
+      "rect": [
+       220.0,
+       3153.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       3153.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Wolf Pelt",
+      "rect": [
+       220.0,
+       3310.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       3310.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Goblin Ear",
+      "rect": [
+       220.0,
+       3466.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       3466.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Arcane Dust",
+      "rect": [
+       220.0,
+       3622.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       3622.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Mana Dust",
+      "rect": [
+       220.0,
+       3778.0,
+       771.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u00d72",
+      "rect": [
+       1012.0,
+       3778.0,
+       54.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Continue",
+      "rect": [
+       309.0,
+       2402.0,
+       184.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Next battle",
+      "rect": [
+       671.0,
+       2402.0,
+       236.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#0c0c16",
+       "bg": "#7590c8",
+       "ratio": 6.09,
+       "worstStop": 6.09,
+       "need": 4.5,
+       "pass": true
+      }
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 119.0,
+     "safeBottom": 68.0,
+     "design": [
+      1170.0,
+      2628.0
+     ],
+     "screens": [
+      120.205482,
+      2440.17114
+     ],
+     "device": "(x:0.00, y:0.00, width:584.00, height:1312.00)",
+     "screen": [
+      584,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 54,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 54,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 87,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 14,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 14,
+      "failed": 0
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [],
+    "fill": {
+     "minX": 34.0,
+     "maxX": 1134.0,
+     "band": 258.0,
+     "main": 1090.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "battle": {
+   "screen": "battle",
+   "method": "scenario",
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/pixel9/battle.png",
+   "device": {
+    "name": "pixel9",
+    "px": [
+     1080,
+     2424
+    ],
+    "ppi": 422,
+    "pxPerUnit": 2.625,
+    "unit": "dp",
+    "devicePxPerDesignPx": 0.9231
+   },
+   "window": [
+    584,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2628.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     584.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "dp": 46.4,
+     "mm": 7.3
+    },
+    "checked": 7,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "dp": 8.4,
+     "mm": 1.3
+    },
+    "gapsChecked": 7,
+    "tightGapCount": 0,
+    "tightGaps": [],
+    "total": 7
+   },
+   "text": {
+    "count": 89,
+    "captionFloor": {
+     "px": 30,
+     "dp": 10.5,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 35,
+     "dp": 12.3,
+     "mm": 1.9
+    },
+    "median": {
+     "px": 40,
+     "dp": 14.1,
+     "mm": 2.2
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 18,
+    "contrastFails": 0,
+    "minContrast": 5.67,
+    "items": [
+     {
+      "text": "The Arkgrave I",
+      "rect": [
+       303.0,
+       150.0,
+       286.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#463c3b",
+       "ratio": 8.59,
+       "worstStop": 8.59,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00b7",
+      "rect": [
+       601.0,
+       150.0,
+       18.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#473d3c",
+       "ratio": 8.46,
+       "worstStop": 8.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Wave 1/1",
+      "rect": [
+       629.0,
+       150.0,
+       186.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#493f3d",
+       "ratio": 8.21,
+       "worstStop": 8.21,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "1550 G",
+      "rect": [
+       944.0,
+       150.0,
+       198.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#37373c",
+       "ratio": 9.54,
+       "worstStop": 9.54,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s \u00b7 move or skill",
+      "rect": [
+       333.0,
+       359.0,
+       413.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#59d973",
+       "bg": "#282826",
+       "ratio": 8.14,
+       "worstStop": 8.14,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s",
+      "rect": [
+       26.0,
+       331.0,
+       130.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#89524b",
+       "ratio": 5.67,
+       "worstStop": 5.67,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "GUARD",
+      "rect": [
+       1002.0,
+       266.0,
+       132.0,
+       132.0
+      ],
+      "size": {
+       "px": 37,
+       "dp": 13.0,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "5",
+      "rect": [
+       621.0,
+       1929.0,
+       50.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#100f16",
+       "ratio": 17.36,
+       "worstStop": 17.36,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Tip: tap or hold any hero, foe, slot or \u2026",
+      "rect": [
+       218.0,
+       2037.0,
+       713.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#26243a",
+       "ratio": 10.98,
+       "worstStop": 10.98,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight: tap a skill to aim it \u00b7 hold one\u2026",
+      "rect": [
+       218.0,
+       2174.0,
+       713.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#232134",
+       "ratio": 11.45,
+       "worstStop": 11.45,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       355.0,
+       2310.0,
+       317.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1e1c2d",
+       "ratio": 13.44,
+       "worstStop": 13.44,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "TANK",
+      "rect": [
+       683.0,
+       2310.0,
+       124.0,
+       60.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f25c4c",
+       "bg": "#0c0c16",
+       "ratio": 5.94,
+       "worstStop": 5.94,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 10",
+      "rect": [
+       817.0,
+       2310.0,
+       114.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1e1c2d",
+       "ratio": 13.44,
+       "worstStop": 13.44,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "HEALTH",
+      "rect": [
+       355.0,
+       2380.0,
+       156.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1c1b2a",
+       "ratio": 6.89,
+       "worstStop": 6.89,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "272/272",
+      "rect": [
+       521.0,
+       2380.0,
+       178.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1c1a2a",
+       "ratio": 13.7,
+       "worstStop": 13.7,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "MANA",
+      "rect": [
+       355.0,
+       2450.0,
+       118.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#191826",
+       "ratio": 7.12,
+       "worstStop": 7.12,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "no spells",
+      "rect": [
+       483.0,
+       2450.0,
+       178.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#191826",
+       "ratio": 14.1,
+       "worstStop": 14.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "STR 18  VIT 50  AGI 22  SPD 22 INT 12  W\u2026",
+      "rect": [
+       355.0,
+       2520.0,
+       577.0,
+       106.0
+      ],
+      "size": {
+       "px": 35,
+       "dp": 12.3,
+       "mm": 1.9
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#16161e",
+       "ratio": 7.31,
+       "worstStop": 7.31,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Skills",
+      "rect": [
+       218.0,
+       2637.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunt",
+      "rect": [
+       290.0,
+       2707.0,
+       118.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       429.0,
+       2707.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Roar",
+      "rect": [
+       288.0,
+       2773.0,
+       90.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       391.0,
+       2773.0,
+       24.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "challenge:",
+      "rect": [
+       427.0,
+       2773.0,
+       202.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       641.0,
+       2773.0,
+       62.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "two",
+      "rect": [
+       715.0,
+       2773.0,
+       76.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "turns",
+      "rect": [
+       803.0,
+       2773.0,
+       110.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "every",
+      "rect": [
+       288.0,
+       2829.0,
+       106.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "enemy",
+      "rect": [
+       407.0,
+       2829.0,
+       122.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "that",
+      "rect": [
+       541.0,
+       2829.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "can",
+      "rect": [
+       641.0,
+       2829.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "reach",
+      "rect": [
+       721.0,
+       2829.0,
+       108.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       841.0,
+       2829.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "must",
+      "rect": [
+       288.0,
+       2885.0,
+       98.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "come",
+      "rect": [
+       399.0,
+       2885.0,
+       98.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       509.0,
+       2885.0,
+       62.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       583.0,
+       2885.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       663.0,
+       2885.0,
+       16.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunting",
+      "rect": [
+       679.0,
+       2885.0,
+       174.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "),",
+      "rect": [
+       853.0,
+       2885.0,
+       28.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       288.0,
+       2941.0,
+       72.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       373.0,
+       2941.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "take",
+      "rect": [
+       453.0,
+       2941.0,
+       86.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "25%",
+      "rect": [
+       551.0,
+       2941.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "less",
+      "rect": [
+       651.0,
+       2941.0,
+       78.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "damage.",
+      "rect": [
+       741.0,
+       2941.0,
+       162.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       288.0,
+       2997.0,
+       114.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "your",
+      "rect": [
+       415.0,
+       2997.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "casters",
+      "rect": [
+       515.0,
+       2997.0,
+       144.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "safe",
+      "rect": [
+       671.0,
+       2997.0,
+       86.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "from",
+      "rect": [
+       769.0,
+       2997.0,
+       96.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "staggering",
+      "rect": [
+       288.0,
+       3053.0,
+       214.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "blows.",
+      "rect": [
+       515.0,
+       3053.0,
+       126.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "<alpha=#01>Sacred Challenge",
+      "rect": [
+       290.0,
+       3121.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       477.0,
+       3121.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Sacred Challenge",
+      "rect": [
+       292.0,
+       3125.0,
+       333.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Cry a holy challenge: for two turns ever\u2026",
+      "rect": [
+       290.0,
+       3191.0,
+       641.0,
+       184.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "X-Potion",
+      "rect": [
+       290.0,
+       3390.0,
+       176.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Item \u00b7 5/5 left",
+      "rect": [
+       487.0,
+       3390.0,
+       290.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "<alpha=#01>Knight's Oath",
+      "rect": [
+       290.0,
+       3468.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       477.0,
+       3468.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight's Oath",
+      "rect": [
+       292.0,
+       3472.0,
+       268.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       288.0,
+       3534.0,
+       114.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       415.0,
+       3534.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "oath:",
+      "rect": [
+       495.0,
+       3534.0,
+       106.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       613.0,
+       3534.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       693.0,
+       3534.0,
+       132.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "trades",
+      "rect": [
+       288.0,
+       3590.0,
+       130.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "places",
+      "rect": [
+       431.0,
+       3590.0,
+       124.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "with",
+      "rect": [
+       567.0,
+       3590.0,
+       90.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       669.0,
+       3590.0,
+       24.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "comrade,",
+      "rect": [
+       705.0,
+       3590.0,
+       176.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stepping",
+      "rect": [
+       288.0,
+       3646.0,
+       172.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "into",
+      "rect": [
+       473.0,
+       3646.0,
+       82.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       567.0,
+       3646.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "danger",
+      "rect": [
+       647.0,
+       3646.0,
+       136.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "they",
+      "rect": [
+       795.0,
+       3646.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stood",
+      "rect": [
+       288.0,
+       3702.0,
+       112.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "in,",
+      "rect": [
+       413.0,
+       3702.0,
+       52.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       477.0,
+       3702.0,
+       72.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "shields",
+      "rect": [
+       561.0,
+       3702.0,
+       140.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "them",
+      "rect": [
+       713.0,
+       3702.0,
+       100.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       288.0,
+       3758.0,
+       16.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Ward",
+      "rect": [
+       305.0,
+       3758.0,
+       100.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": ").",
+      "rect": [
+       405.0,
+       3758.0,
+       30.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "<alpha=#01>Judgment of Warding",
+      "rect": [
+       290.0,
+       3827.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 2 turns",
+      "rect": [
+       477.0,
+       3827.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Judgment of Warding",
+      "rect": [
+       292.0,
+       3831.0,
+       421.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Smite a foe with a judging blow that wei\u2026",
+      "rect": [
+       290.0,
+       3897.0,
+       641.0,
+       184.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 119.0,
+     "safeBottom": 68.0,
+     "design": [
+      1170.0,
+      2628.0
+     ],
+     "screens": [
+      120.205482,
+      2440.17114
+     ],
+     "device": "(x:0.00, y:0.00, width:584.00, height:1312.00)",
+     "screen": [
+      584,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 89,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 89,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 122,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 3,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C8": {
+      "checkedCount": 1,
+      "failed": 0
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [],
+    "fill": {
+     "minX": 0.0,
+     "maxX": 1146.0,
+     "band": 116.0,
+     "main": 1122.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "battle-boss": {
+   "screen": "battle-boss",
+   "method": "scenario",
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/pixel9/battle-boss.png",
+   "device": {
+    "name": "pixel9",
+    "px": [
+     1080,
+     2424
+    ],
+    "ppi": 422,
+    "pxPerUnit": 2.625,
+    "unit": "dp",
+    "devicePxPerDesignPx": 0.9231
+   },
+   "window": [
+    584,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2628.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     584.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "dp": 46.4,
+     "mm": 7.3
+    },
+    "checked": 7,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "dp": 8.4,
+     "mm": 1.3
+    },
+    "gapsChecked": 7,
+    "tightGapCount": 0,
+    "tightGaps": [],
+    "total": 7
+   },
+   "text": {
+    "count": 89,
+    "captionFloor": {
+     "px": 30,
+     "dp": 10.5,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 37,
+     "dp": 13.0,
+     "mm": 2.1
+    },
+    "median": {
+     "px": 40,
+     "dp": 14.1,
+     "mm": 2.2
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 18,
+    "contrastFails": 2,
+    "minContrast": 3.15,
+    "items": [
+     {
+      "text": "The Tithe Moors III",
+      "rect": [
+       256.0,
+       150.0,
+       379.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#3d4c60",
+       "ratio": 7.05,
+       "worstStop": 7.05,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00b7",
+      "rect": [
+       647.0,
+       150.0,
+       18.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#3b4b5e",
+       "ratio": 7.19,
+       "worstStop": 7.19,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Wave 1/1",
+      "rect": [
+       675.0,
+       150.0,
+       186.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#3b4b5f",
+       "ratio": 7.18,
+       "worstStop": 7.18,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "500 G",
+      "rect": [
+       944.0,
+       150.0,
+       198.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#677890",
+       "ratio": 3.63,
+       "worstStop": 3.63,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "3.5s \u00b7 move or skill",
+      "rect": [
+       333.0,
+       359.0,
+       413.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#59d973",
+       "bg": "#3a434a",
+       "ratio": 5.56,
+       "worstStop": 5.56,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s",
+      "rect": [
+       26.0,
+       331.0,
+       130.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#694b59",
+       "ratio": 6.95,
+       "worstStop": 6.95,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "GUARD",
+      "rect": [
+       1002.0,
+       266.0,
+       132.0,
+       132.0
+      ],
+      "size": {
+       "px": 37,
+       "dp": 13.0,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "5",
+      "rect": [
+       621.0,
+       1929.0,
+       50.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#100f16",
+       "ratio": 17.36,
+       "worstStop": 17.36,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Tip: tap or hold any hero, foe, slot or \u2026",
+      "rect": [
+       218.0,
+       2037.0,
+       713.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#26243a",
+       "ratio": 10.98,
+       "worstStop": 10.98,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight: tap a skill to aim it \u00b7 hold one\u2026",
+      "rect": [
+       218.0,
+       2174.0,
+       713.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#232134",
+       "ratio": 11.45,
+       "worstStop": 11.45,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       355.0,
+       2310.0,
+       343.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1d1c2d",
+       "ratio": 13.47,
+       "worstStop": 13.47,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "TANK",
+      "rect": [
+       709.0,
+       2310.0,
+       124.0,
+       60.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f25c4c",
+       "bg": "#0c0c16",
+       "ratio": 5.94,
+       "worstStop": 5.94,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Lv 4",
+      "rect": [
+       843.0,
+       2310.0,
+       88.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1e1c2d",
+       "ratio": 13.44,
+       "worstStop": 13.44,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "HEALTH",
+      "rect": [
+       355.0,
+       2380.0,
+       156.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1c1b2a",
+       "ratio": 6.89,
+       "worstStop": 6.89,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "191/191",
+      "rect": [
+       521.0,
+       2380.0,
+       178.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1b1a2a",
+       "ratio": 13.78,
+       "worstStop": 13.78,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "MANA",
+      "rect": [
+       355.0,
+       2450.0,
+       118.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#191826",
+       "ratio": 7.12,
+       "worstStop": 7.12,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "no spells",
+      "rect": [
+       483.0,
+       2450.0,
+       178.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#191826",
+       "ratio": 14.1,
+       "worstStop": 14.1,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "STR 12  VIT 35  AGI 17  SPD 14 INT 9  WI\u2026",
+      "rect": [
+       355.0,
+       2520.0,
+       577.0,
+       118.0
+      ],
+      "size": {
+       "px": 38,
+       "dp": 13.4,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#565434",
+       "ratio": 3.15,
+       "worstStop": 3.15,
+       "need": 4.5,
+       "pass": false
+      }
+     },
+     {
+      "text": "Skills",
+      "rect": [
+       218.0,
+       2649.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunt",
+      "rect": [
+       290.0,
+       2719.0,
+       118.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       429.0,
+       2719.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Roar",
+      "rect": [
+       288.0,
+       2785.0,
+       90.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       391.0,
+       2785.0,
+       24.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "challenge:",
+      "rect": [
+       427.0,
+       2785.0,
+       202.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       641.0,
+       2785.0,
+       62.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "two",
+      "rect": [
+       715.0,
+       2785.0,
+       76.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "turns",
+      "rect": [
+       803.0,
+       2785.0,
+       110.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "every",
+      "rect": [
+       288.0,
+       2841.0,
+       106.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "enemy",
+      "rect": [
+       407.0,
+       2841.0,
+       122.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "that",
+      "rect": [
+       541.0,
+       2841.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "can",
+      "rect": [
+       641.0,
+       2841.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "reach",
+      "rect": [
+       721.0,
+       2841.0,
+       108.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       841.0,
+       2841.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "must",
+      "rect": [
+       288.0,
+       2897.0,
+       98.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "come",
+      "rect": [
+       399.0,
+       2897.0,
+       98.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "for",
+      "rect": [
+       509.0,
+       2897.0,
+       62.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       583.0,
+       2897.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       663.0,
+       2897.0,
+       16.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Taunting",
+      "rect": [
+       679.0,
+       2897.0,
+       174.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "),",
+      "rect": [
+       853.0,
+       2897.0,
+       28.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       288.0,
+       2953.0,
+       72.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "you",
+      "rect": [
+       373.0,
+       2953.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "take",
+      "rect": [
+       453.0,
+       2953.0,
+       86.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "25%",
+      "rect": [
+       551.0,
+       2953.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "less",
+      "rect": [
+       651.0,
+       2953.0,
+       78.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "damage.",
+      "rect": [
+       741.0,
+       2953.0,
+       162.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       288.0,
+       3009.0,
+       114.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "your",
+      "rect": [
+       415.0,
+       3009.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "casters",
+      "rect": [
+       515.0,
+       3009.0,
+       144.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "safe",
+      "rect": [
+       671.0,
+       3009.0,
+       86.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "from",
+      "rect": [
+       769.0,
+       3009.0,
+       96.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "staggering",
+      "rect": [
+       288.0,
+       3065.0,
+       214.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "blows.",
+      "rect": [
+       515.0,
+       3065.0,
+       126.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "<alpha=#01>Sacred Challenge",
+      "rect": [
+       290.0,
+       3133.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       477.0,
+       3133.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Sacred Challenge",
+      "rect": [
+       292.0,
+       3137.0,
+       333.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Cry a holy challenge: for two turns ever\u2026",
+      "rect": [
+       290.0,
+       3203.0,
+       641.0,
+       184.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "X-Potion",
+      "rect": [
+       290.0,
+       3402.0,
+       176.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Item \u00b7 5/5 left",
+      "rect": [
+       487.0,
+       3402.0,
+       290.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "<alpha=#01>Knight's Oath",
+      "rect": [
+       290.0,
+       3480.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 3 turns",
+      "rect": [
+       477.0,
+       3480.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight's Oath",
+      "rect": [
+       292.0,
+       3484.0,
+       268.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Keeps",
+      "rect": [
+       288.0,
+       3546.0,
+       114.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       415.0,
+       3546.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "oath:",
+      "rect": [
+       495.0,
+       3546.0,
+       106.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       613.0,
+       3546.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Knight",
+      "rect": [
+       693.0,
+       3546.0,
+       132.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "trades",
+      "rect": [
+       288.0,
+       3602.0,
+       130.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "places",
+      "rect": [
+       431.0,
+       3602.0,
+       124.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "with",
+      "rect": [
+       567.0,
+       3602.0,
+       90.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "a",
+      "rect": [
+       669.0,
+       3602.0,
+       24.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "comrade,",
+      "rect": [
+       705.0,
+       3602.0,
+       176.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stepping",
+      "rect": [
+       288.0,
+       3658.0,
+       172.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "into",
+      "rect": [
+       473.0,
+       3658.0,
+       82.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "the",
+      "rect": [
+       567.0,
+       3658.0,
+       68.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "danger",
+      "rect": [
+       647.0,
+       3658.0,
+       136.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "they",
+      "rect": [
+       795.0,
+       3658.0,
+       88.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "stood",
+      "rect": [
+       288.0,
+       3714.0,
+       112.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "in,",
+      "rect": [
+       413.0,
+       3714.0,
+       52.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "and",
+      "rect": [
+       477.0,
+       3714.0,
+       72.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "shields",
+      "rect": [
+       561.0,
+       3714.0,
+       140.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "them",
+      "rect": [
+       713.0,
+       3714.0,
+       100.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "(",
+      "rect": [
+       288.0,
+       3770.0,
+       16.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Ward",
+      "rect": [
+       305.0,
+       3770.0,
+       100.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": ").",
+      "rect": [
+       405.0,
+       3770.0,
+       30.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "<alpha=#01>Judgment of Warding",
+      "rect": [
+       290.0,
+       3839.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Skill \u00b7 recharge 2 turns",
+      "rect": [
+       477.0,
+       3839.0,
+       455.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Judgment of Warding",
+      "rect": [
+       292.0,
+       3843.0,
+       421.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Smite a foe with a judging blow that wei\u2026",
+      "rect": [
+       290.0,
+       3909.0,
+       641.0,
+       184.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 119.0,
+     "safeBottom": 68.0,
+     "design": [
+      1170.0,
+      2628.0
+     ],
+     "screens": [
+      120.205482,
+      2440.17114
+     ],
+     "device": "(x:0.00, y:0.00, width:584.00, height:1312.00)",
+     "screen": [
+      584,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 89,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 89,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 125,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 3,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C8": {
+      "checkedCount": 4,
+      "failed": 3
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [
+     {
+      "rule": "POL-C8",
+      "subject": "#plate-5",
+      "detail": "edge 20/20 vs gap 42; gap 42px is off the space scale"
+     },
+     {
+      "rule": "POL-C8",
+      "subject": "#plate-6",
+      "detail": "edge 22/20 vs gap 42; gap 42px is off the space scale"
+     },
+     {
+      "rule": "POL-C8",
+      "subject": "#plate-7",
+      "detail": "edge 20/20 vs gap 42; gap 42px is off the space scale"
+     }
+    ],
+    "fill": {
+     "minX": 0.0,
+     "maxX": 1146.0,
+     "band": 116.0,
+     "main": 1122.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "battle-aim": {
+   "screen": "battle-aim",
+   "method": "harness",
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/pixel9/battle-aim.png",
+   "device": {
+    "name": "pixel9",
+    "px": [
+     1080,
+     2424
+    ],
+    "ppi": 422,
+    "pxPerUnit": 2.625,
+    "unit": "dp",
+    "devicePxPerDesignPx": 0.9231
+   },
+   "window": [
+    584,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2628.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     584.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "dp": 46.4,
+     "mm": 7.3
+    },
+    "checked": 7,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "dp": 8.4,
+     "mm": 1.3
+    },
+    "gapsChecked": 7,
+    "tightGapCount": 2,
+    "tightGaps": [
+     {
+      "target": "#slot0",
+      "gap": {
+       "px": 18,
+       "dp": 6.3,
+       "mm": 1.0
+      }
+     },
+     {
+      "target": "#slot1",
+      "gap": {
+       "px": 18,
+       "dp": 6.3,
+       "mm": 1.0
+      }
+     }
+    ],
+    "total": 7
+   },
+   "text": {
+    "count": 26,
+    "captionFloor": {
+     "px": 30,
+     "dp": 10.5,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 37,
+     "dp": 13.0,
+     "mm": 2.1
+    },
+    "median": {
+     "px": 40,
+     "dp": 14.1,
+     "mm": 2.2
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 14,
+    "contrastFails": 0,
+    "minContrast": 6.28,
+    "items": [
+     {
+      "text": "The Arkgrave I",
+      "rect": [
+       301.0,
+       150.0,
+       290.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#453d41",
+       "ratio": 8.47,
+       "worstStop": 8.47,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00b7",
+      "rect": [
+       603.0,
+       150.0,
+       18.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#443d42",
+       "ratio": 8.48,
+       "worstStop": 8.48,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Wave 1/1",
+      "rect": [
+       631.0,
+       150.0,
+       188.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#423b3f",
+       "ratio": 8.77,
+       "worstStop": 8.77,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "1550 G",
+      "rect": [
+       944.0,
+       150.0,
+       198.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#443c40",
+       "ratio": 8.6,
+       "worstStop": 8.6,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s \u00b7 move or skill",
+      "rect": [
+       333.0,
+       359.0,
+       415.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#59d973",
+       "bg": "#312f2c",
+       "ratio": 7.35,
+       "worstStop": 7.35,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s",
+      "rect": [
+       26.0,
+       329.0,
+       130.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#663a3e",
+       "ratio": 8.5,
+       "worstStop": 8.5,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "GUARD",
+      "rect": [
+       1002.0,
+       266.0,
+       132.0,
+       132.0
+      ],
+      "size": {
+       "px": 37,
+       "dp": 13.0,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "5",
+      "rect": [
+       621.0,
+       1929.0,
+       50.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#100f16",
+       "ratio": 17.36,
+       "worstStop": 17.36,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Fireball: choose a target",
+      "rect": [
+       218.0,
+       2037.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#27253c",
+       "ratio": 10.82,
+       "worstStop": 10.82,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Tap a highlighted tile \u00b7 tap the slot ag\u2026",
+      "rect": [
+       218.0,
+       2108.0,
+       713.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#242237",
+       "ratio": 6.28,
+       "worstStop": 6.28,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Fireball",
+      "rect": [
+       331.0,
+       2254.0,
+       601.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#1f1e30",
+       "ratio": 13.15,
+       "worstStop": 13.15,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Spell \u00b7 charges 1.5s on the timeline",
+      "rect": [
+       331.0,
+       2324.0,
+       601.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#1c1b2b",
+       "ratio": 12.33,
+       "worstStop": 12.33,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "  3 mana",
+      "rect": [
+       451.0,
+       2462.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#77cbff",
+       "bg": "#191825",
+       "ratio": 9.86,
+       "worstStop": 9.86,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u2022 How it targets: Pick a unit anywhere o\u2026",
+      "rect": [
+       218.0,
+       2548.0,
+       713.0,
+       184.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#262223",
+       "ratio": 12.72,
+       "worstStop": 12.72,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u2022 Who it targets: One foe.",
+      "rect": [
+       218.0,
+       2739.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2022 <color=#FFB186>18 Fire damage</color> \u2026",
+      "rect": [
+       218.0,
+       2809.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2022",
+      "rect": [
+       216.0,
+       2875.0,
+       22.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Applies",
+      "rect": [
+       250.0,
+       2875.0,
+       144.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Burning",
+      "rect": [
+       407.0,
+       2875.0,
+       154.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": ":",
+      "rect": [
+       561.0,
+       2875.0,
+       18.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "4",
+      "rect": [
+       591.0,
+       2875.0,
+       26.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "damage",
+      "rect": [
+       629.0,
+       2875.0,
+       148.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "each",
+      "rect": [
+       789.0,
+       2875.0,
+       90.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "tick",
+      "rect": [
+       216.0,
+       2931.0,
+       78.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "18 Fire dmg + burning",
+      "rect": [
+       218.0,
+       3003.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Charged: 300 / 300 mana.",
+      "rect": [
+       218.0,
+       3077.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 119.0,
+     "safeBottom": 68.0,
+     "design": [
+      1170.0,
+      2628.0
+     ],
+     "screens": [
+      120.205482,
+      2440.17114
+     ],
+     "device": "(x:0.00, y:0.00, width:584.00, height:1312.00)",
+     "screen": [
+      584,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 26,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 26,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 44,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 1,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 7,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 7,
+      "failed": 2
+     },
+     "POL-C8": {
+      "checkedCount": 2,
+      "failed": 1
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [
+     {
+      "rule": "POL-C3",
+      "subject": "#slot0",
+      "detail": "18px from the next target"
+     },
+     {
+      "rule": "POL-C3",
+      "subject": "#slot1",
+      "detail": "18px from the next target"
+     },
+     {
+      "rule": "POL-C8",
+      "subject": "VisualElement.row",
+      "detail": "edge 4/4 vs gap 8"
+     }
+    ],
+    "fill": {
+     "minX": 0.0,
+     "maxX": 1146.0,
+     "band": 116.0,
+     "main": 1122.0
+    }
+   },
+   "layoutProblems": []
+  },
+  "battle-confirm": {
+   "screen": "battle-confirm",
+   "method": "harness",
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/pixel9/battle-confirm.png",
+   "device": {
+    "name": "pixel9",
+    "px": [
+     1080,
+     2424
+    ],
+    "ppi": 422,
+    "pxPerUnit": 2.625,
+    "unit": "dp",
+    "devicePxPerDesignPx": 0.9231
+   },
+   "window": [
+    584,
+    1312
+   ],
+   "stage": {
+    "design": [
+     1170.0,
+     2628.0
+    ],
+    "framed": false,
+    "rect": [
+     0.0,
+     0.0,
+     584.0,
+     1312.0
+    ]
+   },
+   "tapTargets": {
+    "floor": {
+     "px": 132,
+     "dp": 46.4,
+     "mm": 7.3
+    },
+    "checked": 9,
+    "undersizedCount": 0,
+    "undersized": [],
+    "gapFloor": {
+     "px": 24,
+     "dp": 8.4,
+     "mm": 1.3
+    },
+    "gapsChecked": 9,
+    "tightGapCount": 2,
+    "tightGaps": [
+     {
+      "target": "#slot0",
+      "gap": {
+       "px": 18,
+       "dp": 6.3,
+       "mm": 1.0
+      }
+     },
+     {
+      "target": "#slot1",
+      "gap": {
+       "px": 18,
+       "dp": 6.3,
+       "mm": 1.0
+      }
+     }
+    ],
+    "total": 9
+   },
+   "text": {
+    "count": 30,
+    "captionFloor": {
+     "px": 30,
+     "dp": 10.5,
+     "mm": 1.7
+    },
+    "min": {
+     "px": 37,
+     "dp": 13.0,
+     "mm": 2.1
+    },
+    "median": {
+     "px": 40,
+     "dp": 14.1,
+     "mm": 2.2
+    },
+    "underCaptionFloor": 0,
+    "contrastSamples": 16,
+    "contrastFails": 0,
+    "minContrast": 6.09,
+    "items": [
+     {
+      "text": "The Arkgrave I",
+      "rect": [
+       301.0,
+       150.0,
+       290.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#453d41",
+       "ratio": 8.47,
+       "worstStop": 8.47,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\u00b7",
+      "rect": [
+       603.0,
+       150.0,
+       18.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#443d42",
+       "ratio": 8.48,
+       "worstStop": 8.48,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Wave 1/1",
+      "rect": [
+       631.0,
+       150.0,
+       188.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#423b3f",
+       "ratio": 8.77,
+       "worstStop": 8.77,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "1550 G",
+      "rect": [
+       944.0,
+       150.0,
+       198.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#443c40",
+       "ratio": 8.6,
+       "worstStop": 8.6,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s \u00b7 move or skill",
+      "rect": [
+       333.0,
+       359.0,
+       415.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#59d973",
+       "bg": "#312f2c",
+       "ratio": 7.35,
+       "worstStop": 7.35,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "3.5s",
+      "rect": [
+       26.0,
+       329.0,
+       130.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#663a3e",
+       "ratio": 8.5,
+       "worstStop": 8.5,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "GUARD",
+      "rect": [
+       1002.0,
+       266.0,
+       132.0,
+       132.0
+      ],
+      "size": {
+       "px": 37,
+       "dp": 13.0,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "5",
+      "rect": [
+       621.0,
+       1929.0,
+       50.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#f4f4f6",
+       "bg": "#100f16",
+       "ratio": 17.36,
+       "worstStop": 17.36,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "On Frog",
+      "rect": [
+       218.0,
+       2037.0,
+       156.0,
+       62.0
+      ],
+      "size": {
+       "px": 38,
+       "dp": 13.4,
+       "mm": 2.1
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#27253c",
+       "ratio": 11.95,
+       "worstStop": 11.95,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Frog: <color=#FFAAA2>\u221229\u201346</color> \u00b7 Bu\u2026",
+      "rect": [
+       218.0,
+       2106.0,
+       156.0,
+       303.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#211f33",
+       "ratio": 12.93,
+       "worstStop": 12.93,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "<alpha=#01>Mana +0\u20134 to every spell",
+      "rect": [
+       218.0,
+       2414.0,
+       156.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#6bc7ff",
+       "bg": "#1a1928",
+       "ratio": 9.25,
+       "worstStop": 9.25,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Mana +0\u20134 to every spell",
+      "rect": [
+       220.0,
+       2418.0,
+       491.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#6bc7ff",
+       "bg": "#1a1928",
+       "ratio": 9.25,
+       "worstStop": 9.25,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Cast",
+      "rect": [
+       507.0,
+       2066.0,
+       96.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#0c0c16",
+       "bg": "#7590c8",
+       "ratio": 6.09,
+       "worstStop": 6.09,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Cancel",
+      "rect": [
+       757.0,
+       2068.0,
+       136.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#2a2840",
+       "ratio": 11.46,
+       "worstStop": 11.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Fireball",
+      "rect": [
+       331.0,
+       2500.0,
+       601.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#e6e6ee",
+       "bg": "#181724",
+       "ratio": 14.25,
+       "worstStop": 14.25,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Spell \u00b7 charges 1.5s on the timeline",
+      "rect": [
+       331.0,
+       2570.0,
+       601.0,
+       124.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#2c2626",
+       "ratio": 10.81,
+       "worstStop": 10.81,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "  3 mana",
+      "rect": [
+       451.0,
+       2709.0,
+       166.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2022 How it targets: Pick a unit anywhere o\u2026",
+      "rect": [
+       218.0,
+       2795.0,
+       713.0,
+       184.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2022 Who it targets: One foe.",
+      "rect": [
+       218.0,
+       2985.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2022 <color=#FFB186>18 Fire damage</color> \u2026",
+      "rect": [
+       218.0,
+       3055.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "\u2022",
+      "rect": [
+       216.0,
+       3121.0,
+       22.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Applies",
+      "rect": [
+       250.0,
+       3121.0,
+       144.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Burning",
+      "rect": [
+       407.0,
+       3121.0,
+       154.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": ":",
+      "rect": [
+       561.0,
+       3121.0,
+       18.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "4",
+      "rect": [
+       591.0,
+       3121.0,
+       26.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "damage",
+      "rect": [
+       629.0,
+       3121.0,
+       148.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "each",
+      "rect": [
+       789.0,
+       3121.0,
+       90.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "tick",
+      "rect": [
+       216.0,
+       3177.0,
+       78.0,
+       56.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "18 Fire dmg + burning",
+      "rect": [
+       218.0,
+       3250.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     },
+     {
+      "text": "Charged: 300 / 300 mana.",
+      "rect": [
+       218.0,
+       3324.0,
+       713.0,
+       64.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 14.1,
+       "mm": 2.2
+      },
+      "large": false,
+      "contrast": null
+     }
+    ]
+   },
+   "safeArea": {
+    "insets": {
+     "safeTop": 119.0,
+     "safeBottom": 68.0,
+     "design": [
+      1170.0,
+      2628.0
+     ],
+     "screens": [
+      120.205482,
+      2440.17114
+     ],
+     "device": "(x:0.00, y:0.00, width:584.00, height:1312.00)",
+     "screen": [
+      584,
+      1312
+     ]
+    },
+    "intrusions": []
+   },
+   "polish": {
+    "counts": {
+     "POL-A2": {
+      "checkedCount": 30,
+      "failed": 0
+     },
+     "POL-A3": {
+      "checkedCount": 30,
+      "failed": 0
+     },
+     "POL-C5": {
+      "checkedCount": 52,
+      "failed": 0
+     },
+     "POL-A5": {
+      "checkedCount": 1,
+      "failed": 0
+     },
+     "POL-C2": {
+      "checkedCount": 9,
+      "failed": 0
+     },
+     "POL-C3": {
+      "checkedCount": 9,
+      "failed": 2
+     },
+     "POL-C8": {
+      "checkedCount": 2,
+      "failed": 1
+     },
+     "POL-C9": {
+      "checkedCount": 1,
+      "failed": 0
+     }
+    },
+    "findings": [
+     {
+      "rule": "POL-C3",
+      "subject": "#slot0",
+      "detail": "18px from the next target"
+     },
+     {
+      "rule": "POL-C3",
+      "subject": "#slot1",
+      "detail": "18px from the next target"
+     },
+     {
+      "rule": "POL-C8",
+      "subject": "VisualElement.row",
+      "detail": "edge 4/4 vs gap 8"
+     }
+    ],
+    "fill": {
+     "minX": 0.0,
+     "maxX": 1146.0,
+     "band": 116.0,
+     "main": 1122.0
+    }
+   },
+   "layoutProblems": []
+  }
+ }
+}
