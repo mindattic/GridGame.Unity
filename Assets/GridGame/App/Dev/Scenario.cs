@@ -35,6 +35,9 @@ namespace GridGame.App.Dev
         /// into the hero's first empty bar slot (else its last), the way Heroes > Abilities > Items equips one, so the battle
         /// Abilities sheet lists it under Consumables.</summary>
         public Dictionary<string, Dictionary<string, int>> Consumables;
+        /// <summary>Items put in the bag, unequipped (GG-T2061), as item id → how many: a drop waiting to be worn, so Camp's
+        /// Heroes tab shows its New badge and Heroes › Equip compares it.</summary>
+        public Dictionary<string, int> Bag;
         /// <summary>Profile settings by automation <c>setting</c> key (cutins, reducemotion, colorblind, ...): 0/1 or a value.</summary>
         public Dictionary<string, JToken> Settings;
         /// <summary>Battle targets: play every wave from the target wave on, not just the target wave.</summary>

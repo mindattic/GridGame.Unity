@@ -17,9 +17,24 @@ namespace GridGame.App
         private string previewId;
         public override string Id => "equip";
         public override void OnHeroChanged() => previewId = null;
+        /// <summary>GG-T2061: the Auto-equip tip only while it has something to equip.</summary>
+        public override string TipStation => Hero != null && AutoEquip.Plan(C, S, Hero).Count > 0 ? Id : null;
         public override void BuildBody(VisualElement body)
         {
             var h = Hero;
+            // GG-T2061: an upgrade not shown before opens picked and previewed, so the compare reads it at once; then it's seen.
+            if (previewId == null && !h.Domesticated)
+            {
+                var fresh = AutoEquip.Plan(C, S, h);
+                int i = fresh.FindIndex(p => !S.SeenGear.Contains(p.Item.Id));
+                if (i >= 0)
+                {
+                    slot = fresh[i].Slot;
+                    previewId = fresh[i].Item.Id;
+                    AutoEquip.MarkSeen(C, S, h);
+                    App.Persist();
+                }
+            }
             bool MasteryFor(EquipmentSlot sl) => sl == EquipmentSlot.Weapon ? h.WeaponMastery > 1f : h.Armor.TryGetValue(sl, out var piece) && piece.Mastery > 1f;
             // GG-T452: the eleven slots used to be three stacked windows; with the stat compare under them they pushed the
             // bag below the stage on a phone, so nothing could be equipped. They now share one scrolling window, which

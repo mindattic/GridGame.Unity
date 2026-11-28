@@ -28,7 +28,7 @@ namespace GridGame.App
             this.owner = owner; this.state = state; this.hidden = hidden;
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
-            style.left = style.top = style.right = style.bottom = 0f;
+            style.left = style.top = style.right = style.bottom = Space.S0;
             generateVisualContent += Draw;
         }
 

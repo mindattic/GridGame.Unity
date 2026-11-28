@@ -377,7 +377,10 @@ namespace GridGame.App
                 case CampMenu.Crucible: return new CrucibleScreen();
                 case CampMenu.Heroes:
                     string lead = s.Party.FirstOrDefault();
-                    return Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
+                    if (Training.Step(s)) return new AbilitiesScreen(lead);
+                    // GG-T2061: new gear in the bag opens Equip on the hero it upgrades.
+                    var gear = AutoEquip.FirstNew(GameApp.I.Content, s);
+                    return gear != null ? new EquipScreen(gear.Value.Hero.ClassId) : (GameScreen)new StatusScreen(lead);
                 case CampMenu.Summon: return new SummonScreen();
                 case CampMenu.Shop: return new ShopHubScreen();
                 case CampMenu.Diamonds: return new DiamondStoreScreen();
@@ -1126,7 +1129,7 @@ namespace GridGame.App
                 {
                     var t = new VisualElement { pickingMode = PickingMode.Ignore };
                     t.style.position = Position.Absolute;
-                    t.style.top = t.style.bottom = 0;
+                    t.style.top = t.style.bottom = Space.S0;
                     t.style.width = Size.Underline;
                     t.style.left = Length.Percent(100f * p / capacity);
                     t.style.marginLeft = -Size.Underline / 2f;
@@ -1204,24 +1207,24 @@ namespace GridGame.App
             Add(glow);
             var track = new VisualElement { name = "track", pickingMode = PickingMode.Ignore };
             track.style.position = Position.Absolute;
-            track.style.left = track.style.right = track.style.top = track.style.bottom = 0;
+            track.style.left = track.style.right = track.style.top = track.style.bottom = Space.S0;
             track.style.backgroundColor = Palette.Ink.WithA(0.75f);
             track.style.borderTopLeftRadius = track.style.borderTopRightRadius = track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = r;
             track.style.overflow = Overflow.Hidden;
             Add(track);
             fill = new VisualElement { name = "fill", pickingMode = PickingMode.Ignore };
             fill.style.position = Position.Absolute;
-            fill.style.left = fill.style.top = fill.style.bottom = 0;
+            fill.style.left = fill.style.top = fill.style.bottom = Space.S0;
             fill.style.backgroundColor = Charging;
             track.Add(fill);
             cost = new VisualElement { name = "price", pickingMode = PickingMode.Ignore };
             cost.style.position = Position.Absolute;
-            cost.style.top = cost.style.bottom = 0;
+            cost.style.top = cost.style.bottom = Space.S0;
             cost.style.display = DisplayStyle.None;
             track.Add(cost);
             ticks = new VisualElement { name = "ticks", pickingMode = PickingMode.Ignore };
             ticks.style.position = Position.Absolute;
-            ticks.style.left = ticks.style.right = ticks.style.top = ticks.style.bottom = 0;
+            ticks.style.left = ticks.style.right = ticks.style.top = ticks.style.bottom = Space.S0;
             track.Add(ticks);
             Capacity = 1;
             schedule.Execute(Tick).Every(16);
