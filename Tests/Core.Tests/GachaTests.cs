@@ -56,7 +56,7 @@ namespace GridGame.Tests
         public void A_featured_banner_splits_its_share_across_the_featured_heroes()
         {
             var s = NewSave("G2");
-            var banner = Featured("fb", 0.5f, 0, "f1", "f2");
+            var banner = Featured("fb", 0.5f, "f1", "f2");
             var pool = new List<string> { "f1", "f2", "a", "b", "c", "d", "e" };
             var odds = Gacha.Odds(s, banner, pool);
             Assert.That(odds.Select(o => o.ClassId), Is.EqualTo(pool), "pool order");
