@@ -2305,6 +2305,25 @@
     ]
   },
   {
+    "Id": "chest_tithe",
+    "CoinsMin": 150,
+    "CoinsMax": 150,
+    "Entries": [
+      {
+        "Item": "tome_bolt",
+        "Chance": 1.0,
+        "Min": 1,
+        "Max": 1
+      },
+      {
+        "Item": "flask_storm",
+        "Chance": 1.0,
+        "Min": 1,
+        "Max": 1
+      }
+    ]
+  },
+  {
     "Id": "chest_wooden",
     "CoinsMin": 40,
     "CoinsMax": 120,

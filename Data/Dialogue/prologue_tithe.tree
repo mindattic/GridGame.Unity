@@ -1,0 +1,27 @@
+dialogue prologue_tithe
+title: The Hamlet of Tithe
+trigger: Prologue Tithe
+backdrop: greenvalley
+speaker commander $commander
+speaker knight knight
+speaker cleric cleric
+speaker merchant - name=Merchant portrait=courier
+
+node arrive commander
+  A dozen turf roofs around a well, and every door shut. Grey paint on every wall where the colour used to be.
+  -> monthly
+
+node monthly knight
+  The Captain's Tithe Collector takes the colour every month now. Paint, cloth, flowers, anything bright. He says the Choir needs it.
+  -> bridge
+
+node bridge cleric
+  He's holding a Red Mage at the toll bridge. She wouldn't pay, and he wants the whole hamlet to see what that costs.
+  -> merchant
+
+node merchant merchant
+  If you're going to that bridge, I've one Healing Potion left. Take it. I'd rather it went your way than his.
+  -> plan
+
+node plan knight
+  One potion. Give it to whoever stands in front. That's me.

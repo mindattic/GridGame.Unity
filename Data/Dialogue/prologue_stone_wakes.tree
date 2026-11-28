@@ -1,0 +1,18 @@
+dialogue prologue_stone_wakes
+title: The Stone Wakes
+trigger: Prologue Waystone
+backdrop: greenvalley
+speaker commander $commander
+speaker cleric cleric
+speaker knight knight
+
+node circle commander
+  The stone hums awake. A circle of light rolls out over the moor, and the fog lifts off every road it touches.
+  -> ease
+
+node ease cleric
+  Look up. The Manalith. It eased, just a hair.
+  -> more
+
+node more knight
+  If one stone does that, there are more of them out there. Only you can see them. Lead the way.

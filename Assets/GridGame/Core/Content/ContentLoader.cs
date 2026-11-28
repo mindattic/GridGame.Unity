@@ -1113,6 +1113,12 @@ namespace GridGame.Core.Content
                     if (trigger.Id != null && !IsHero(trigger.Id) && !db.Factions.Exists(f => string.Equals(f.Id, trigger.Id, StringComparison.OrdinalIgnoreCase)))
                         p.Add($"{w}: Joined needs a hero class, a faction or no Id, has '{trigger.Id}'");
                     break;
+                case DialogueTriggerKind.Prologue:
+                    // GG-T2066: a prologue onboarding step; a Drill names its drill.
+                    if (Array.IndexOf(DialogueDef.PrologueSteps, trigger.Id) < 0) p.Add($"{w}: Prologue needs a step ({string.Join(", ", DialogueDef.PrologueSteps)}), has '{trigger.Id}'");
+                    else if (trigger.Id == "Drill" ? trigger.Level < 1 || trigger.Level > DialogueDef.PrologueDrills : trigger.Level != 0)
+                        p.Add($"{w}: Prologue {trigger.Id} needs {(trigger.Id == "Drill" ? $"a drill Level of 1-{DialogueDef.PrologueDrills}" : "no Level")}, has {trigger.Level}");
+                    break;
             }
             bool bondScene = trigger.Kind == DialogueTriggerKind.Trust || trigger.Kind == DialogueTriggerKind.Cohesion;
             if (d.Crawl != null)

@@ -56,7 +56,7 @@ namespace GridGame.Tests
         public void Validation_rejects_bad_tomes_chests_restrictions_and_milestones()
         {
             var db = Fresh();
-            db.Items["tome_bad"] = new ItemDef { Id = "tome_bad", Name = "Bad", Type = ItemType.Tome, TeachesAbility = "heal" };
+            db.Items["tome_bad"] = new ItemDef { Id = "tome_bad", Name = "Bad", Type = ItemType.Tome, TeachesAbility = "spellblade_quickstrike" };
             db.Items["tome_none"] = new ItemDef { Id = "tome_none", Name = "None", Type = ItemType.Tome };
             db.Items["chest_bad"] = new ItemDef { Id = "chest_bad", Name = "Bad", Type = ItemType.Chest, OpensTable = "nope" };
             db.Items["chest_nest"] = new ItemDef { Id = "chest_nest", Name = "Nest", Type = ItemType.Chest, OpensTable = "chest_nest" };
@@ -65,7 +65,7 @@ namespace GridGame.Tests
             db.Abilities["thorns"].LearnableBy.Add("dragon");
             db.Campaign.Themes[0].MilestoneReward = "no_such_item";
             var p = ContentLoader.Validate(db);
-            Assert.That(p, Has.Some.Contains("item tome_bad: 'heal' isn't a Passive or Reactive"));
+            Assert.That(p, Has.Some.Contains("item tome_bad: 'spellblade_quickstrike' isn't a Spell, or a Passive or Reactive"));
             Assert.That(p, Has.Some.Contains("item tome_none: a Tome needs TeachesAbility"));
             Assert.That(p, Has.Some.Contains("item chest_bad: unknown drop table 'nope'"));
             Assert.That(p, Has.Some.Contains("holds another chest 'chest_wooden'"));
@@ -140,6 +140,25 @@ namespace GridGame.Tests
             Assert.That(PassiveLoadout.Slots(h), Is.EqualTo(3));
             Assert.That(PassiveLoadout.Toggle(Real, h, "thorns").Ok, Is.True);
             Assert.That(PassiveLoadout.Active(Real, h).Count, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void The_tome_of_bolt_teaches_its_spell_to_the_red_mage_only()
+        {
+            // GG-T2074: the Collector's chest holds the Tome of Bolt; a Tome's Spell goes to a class that lists it.
+            Assert.That(Real.DropTables[Real.Items["chest_tithe"].OpensTable].Entries.Select(e => e.Item), Does.Contain("tome_bolt").And.Contain("flask_storm"));
+            var s = NewSave();
+            var mage = s.Hero("redmage");
+            if (mage == null) s.Roster.Add(mage = Progression.NewHero(Real, "redmage"));
+            mage.Known.Remove("bolt");
+            var other = s.Roster.First(h => !Real.Classes[h.ClassId].Abilities.Contains("bolt"));
+            s.AddItem("tome_bolt", 1);
+            Assert.That(Tomes.WhyNot(Real, s, "tome_bolt", other.ClassId), Is.Not.Null);
+            var r = Tomes.Teach(Real, s, "tome_bolt", "redmage");
+            Assert.That(r.Ok, Is.True, r.Message);
+            Assert.That(mage.Known, Does.Contain("bolt"));
+            Assert.That(mage.ActivePassives, Does.Not.Contain("bolt"));
+            Assert.That(s.Count("tome_bolt"), Is.EqualTo(0));
         }
 
         [Test]

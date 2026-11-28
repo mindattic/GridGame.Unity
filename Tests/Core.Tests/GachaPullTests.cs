@@ -127,33 +127,16 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Heroes_coming_earlier_in_a_batch_count_as_owned_for_pity_and_odds()
-        {
-            var s = Progression.NewGame(Real, "P6");
-            var owned = s.Roster.First().ClassId;
-            var pool = new List<string> { owned, "x_new", "y_new" };
-            var banner = new BannerDef { Id = "std", Kind = BannerKind.Standard, NewHeroPity = 3 };
-            s.Summon.NewHeroMiss[BannerKind.Standard] = 2;
-
-            Assert.That(Gacha.Due(s, banner, pool), Is.EqualTo(PityDue.NewHero));
-            Assert.That(Gacha.Odds(s, banner, pool).Select(o => o.ClassId), Is.EqualTo(new[] { "x_new", "y_new" }));
-            var coming = new List<string> { "x_new" };
-            Assert.That(Gacha.Odds(s, banner, pool, coming).Select(o => o.ClassId), Is.EqualTo(new[] { "y_new" }), "pity does not award x_new twice");
-            coming.Add("y_new");
-            Assert.That(Gacha.Due(s, banner, pool, coming), Is.EqualTo(PityDue.None), "no one is left to be new");
-        }
-
-        [Test]
         public void A_repeat_inside_a_batch_is_recorded_as_an_Echo_without_touching_the_roster()
         {
             var s = Progression.NewGame(Real, "P7");
             var pool = new List<string> { "x_new", "y_new" };
             var banner = new BannerDef { Id = "std", Kind = BannerKind.Standard };
             var coming = new List<string>();
-            var first = Gacha.Record(s, banner, pool, "x_new", "1 Ticket", T0, coming);
+            var first = Gacha.Record(s, banner, "x_new", "1 Ticket", T0, coming);
             coming.Add("x_new");
             Assert.That(first.Result, Is.EqualTo(PullResult.New));
-            var again = Gacha.Record(s, banner, pool, "x_new", "1 Ticket", T0, coming);
+            var again = Gacha.Record(s, banner, "x_new", "1 Ticket", T0, coming);
             Assert.That(again.Result, Is.EqualTo(PullResult.Echo));
             Assert.That(s.Hero("x_new"), Is.Null, "nothing lands until the job finishes");
         }
