@@ -2295,6 +2295,7 @@ Source (spell, item, charge, trap, expire chain, Shield) → `ApplyBuff` (refres
   4. **How it targets** — the shape and reach (single, row, cross, radius n, all), the anchor (a tile, a unit, self, automatic), AdjacentOnly and line rules.
   5. **Who it targets** — foes, allies, self, everyone; whether the caster is included; how many units at most.
   **No card pops over the board for a slot** (GG-T1895): tapping, holding or hovering a slot only selects it into this panel; the old slot hold/hover `InspectCard` popup is gone.
+  **No card pops over the board for your own hero either** (GG-T1905): a tap on a hero only selects it into this panel (name, class, HP, mana in the idle state); its unit sheet is the long-press. A tap on a foe still opens its card.
   While aiming, the prompt line and then the **confirm card** (outcome preview, Cast/Use/Go and Cancel side by side) take the panel. With **nothing selected** the panel is idle: the selected hero's name and HP, the Commander card with Ask, and the orders row ([§9.2](#92-the-commander-in-battle-gg-t1457-owner-2026-11-27-gg-t1305)). **Tutorial lessons** (GG-T1827) show here: the kicker ("Drill n of 5 · Lesson k of m"), title, text and Next/Skip, while the coach marks stay on the board and input outside the marked target stays blocked as built.
 - **Off the battle screen** (GG-T1825, GG-T1826, GG-T1828, GG-T1821; owner answers 8 and 9):
   - **Log** becomes a **Battle log** page in the hamburger menu: the same `Feed` lines, newest last, the last 200, kept across a rebuild (element name `feed` kept).
