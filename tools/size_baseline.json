@@ -1,11 +1,9 @@
 {
  "long": [
-  "Assets/GridGame/App/Battle/BattleScreen.cs",
   "Assets/GridGame/App/Battle/BoardView.cs",
   "Assets/GridGame/App/UI/Ui.cs",
   "Assets/GridGame/Core/Battle/BattleRunner.cs",
-  "Assets/GridGame/Core/Bot/HeroBot.cs",
-  "Assets/GridGame/Core/Content/ContentLoader.cs"
+  "Assets/GridGame/Core/Bot/HeroBot.cs"
  ],
  "shared": {
   "Assets/GridGame/App/Screens/AboutScreen.cs": [
@@ -23,14 +21,6 @@
    "PartyScreen",
    "SkillTreeScreen",
    "StatusScreen"
-  ],
-  "Assets/GridGame/App/Screens/HubScreens.cs": [
-   "BestiaryScreen",
-   "BountyScreen",
-   "CrucibleScreen",
-   "SettingsScreen",
-   "SummonHistoryScreen",
-   "SummonScreen"
   ],
   "Assets/GridGame/App/Screens/MercenaryScreens.cs": [
    "MercenaryRenewalScreen",
