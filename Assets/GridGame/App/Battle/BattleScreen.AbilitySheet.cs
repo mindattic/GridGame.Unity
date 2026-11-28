@@ -438,16 +438,9 @@ namespace GridGame.App
             foot.style.marginTop = Space.S8;
             var back = RowIcon.IconButton("Back", RowKind.Back, SheetBack, "btn--small", foot);
             back.name = "abilities-back";
-            var go = RowIcon.IconButton(CommitVerb(hero, slot, a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
+            var go = RowIcon.IconButton(CommitVerb(a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
             go.name = "abilities-commit";
             go.SetEnabled(ready && CanCommand());
-        }
-
-        /// <summary>The detail page's commit button: Use for an item, Cast for a spell, else Perform.</summary>
-        private static string CommitVerb(Unit hero, int slot, AbilityDef a)
-        {
-            var sl = hero.Bar[slot];
-            return sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
         }
 
         /// <summary>Perform / Cast / Use: the sheet slides away and the board takes that move's own aiming.</summary>
