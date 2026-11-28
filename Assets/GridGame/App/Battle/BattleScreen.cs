@@ -440,19 +440,17 @@ namespace GridGame.App
             BuildGuardCell(bar);
         }
 
-        /// <summary>The Info cell: a placeholder for Examine mode (GG-T1918). It keeps its place in the row, dimmed, and a tap
-        /// only says it is coming.</summary>
+        /// <summary>The Info cell (GG-T1918): a tap toggles Examine mode (<see cref="ToggleExamine"/>); gold-edged while on.</summary>
         private void BuildInfoCell(VisualElement bar)
         {
-            var cell = HudCell(bar);
+            var cell = infoButton = HudCell(bar);
             cell.name = "info";
             Ui.Pressable(cell);
             var icon = cell.KindIcon(RowKind.Eye);
             icon.style.width = icon.style.height = Size.IconL;
             icon.style.marginRight = Space.S0;
             Ui.Text("Info", "tiny", cell).pickingMode = PickingMode.Ignore;
-            cell.style.opacity = 0.45f;
-            cell.RegisterCallback<ClickEvent>(_ => { App.Audio.Sfx("ui.error"); ShowBanner("Examine: coming"); });
+            cell.RegisterCallback<ClickEvent>(_ => ToggleExamine());
         }
 
         /// <summary>The GUARD cell for <see cref="SyncGuardCall"/>'s gold call and Guard's mana motes (<see cref="MintFrom"/>).</summary>
@@ -471,7 +469,7 @@ namespace GridGame.App
             cell.style.backgroundImage = new StyleBackground(Art.WindowDark);
             cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = GuardEdge;
             Ui.Pressable(cell);
-            cell.RegisterCallback<ClickEvent>(_ => { if (CanCommand()) Commit(new ShieldCommand()); });
+            cell.RegisterCallback<ClickEvent>(_ => { ExitExamine(); if (CanCommand()) Commit(new ShieldCommand()); });
             var icon = Ui.El(null, cell); icon.name = "icon";
             icon.pickingMode = PickingMode.Ignore;
             icon.style.position = Position.Absolute;
@@ -678,6 +676,7 @@ namespace GridGame.App
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             if (refusal != null) PanelLine(panel, refusal, "small warn", "refusal");
+            if (examining) { ExaminePanel(); return; }
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
@@ -953,8 +952,9 @@ namespace GridGame.App
 
         /// <summary>Not while a drag is in progress either: a second finger tapping GUARD or a slot mid-drag would
         /// commit that instead and silently drop the drag, leaving the previewed units out of place (GG-T70).
-        /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through.</summary>
-        public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused;
+        /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through. Nor while
+        /// examining (GG-T1918): no battle time passes until Examine mode closes.</summary>
+        public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused && !examining;
 
         /// <summary>Dev/automation helper: add orbs to every spell meter (cheat — development builds only call this).</summary>
         public void DevGiveMana(int n)

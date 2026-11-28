@@ -283,8 +283,13 @@ namespace GridGame.App
             slotTime.style.left = slotTime.style.right = Space.S0; slotTime.style.bottom = -Space.S8;
             slotTime.style.unityTextAlign = TextAnchor.MiddleCenter;
             Fonts.UseHeavy(slotTime);
-            InspectCard.Attach(timelineSlot, body => drawn.TryGetValue(slotEntry, out var e) && BuildTimelineCard(body, e), tap: true); // GG-T450
-            timelineSlot.RegisterCallback<ClickEvent>(_ => { if (drawn.TryGetValue(slotEntry, out var e)) OnTimelineTap(timelineSlot, e.OwnerId); });
+            InspectCard.Attach(timelineSlot, body => !examining && drawn.TryGetValue(slotEntry, out var e) && BuildTimelineCard(body, e), tap: true); // GG-T450
+            timelineSlot.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (!drawn.TryGetValue(slotEntry, out var e)) return;
+                if (examining) ExamineTimeline(timelineSlot, e);
+                else OnTimelineTap(timelineSlot, e.OwnerId);
+            });
         }
 
         /// <summary>The white selection ring behind a diamond (GG-T288), shown while its owner is the selected unit.</summary>
@@ -564,7 +569,7 @@ namespace GridGame.App
             frame.Add(back);
             if (e.Kind == TimelineKind.Turn) icon.Add(new RecoverRing(IconSpan));
             AttachTimelineInspect(icon, e);
-            icon.RegisterCallback<ClickEvent>(_ => OnTimelineTap(icon, e.OwnerId)); // GG-T288: a tap selects, a hold reads
+            icon.RegisterCallback<ClickEvent>(_ => { if (examining) ExamineTimeline(icon, e); else OnTimelineTap(icon, e.OwnerId); }); // GG-T288: a tap selects, a hold reads
             return icon;
         }
 
