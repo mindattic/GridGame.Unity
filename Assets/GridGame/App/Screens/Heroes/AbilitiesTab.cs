@@ -12,7 +12,7 @@ namespace GridGame.App
 {
     /// <summary>The Hero screen's Abilities tab (§25.6, GG-T435): the battle bar over the Known / Items / Passives /
     /// Locked sub-tabs, plus Board — the skill hexagon (GG-T1079: the gold Learn sub-tab is gone; abilities come from the board).</summary>
-    internal sealed class AbilitiesTab : HeroTab
+    internal sealed partial class AbilitiesTab : HeroTab
     {
         private int slot;
         private int tab = -1;
@@ -101,6 +101,7 @@ namespace GridGame.App
             var right = RowIcon.IconButton("Move right", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
+            RowIcon.IconButton("Arrange sheet", RowKind.Menu, OpenTree, "btn--small", tools).name = "abtree-open"; // GG-T2159: the battle Abilities sheet's folders, order and pins
 
             Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
             var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
