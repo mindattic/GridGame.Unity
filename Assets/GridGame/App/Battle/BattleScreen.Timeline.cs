@@ -172,7 +172,11 @@ namespace GridGame.App
 
         // ── The gap (GG-T311, §2.0): the stretch between the left edge and the next enemy icon is the party's time ──
         private VisualElement gapLane;
-        private Label gapLabel;
+        private Label gapLabel, gapYou;
+        /// <summary>GG-T1944: the window lane is a block a chip tall, so it reads as a labelled stretch, not a line.</summary>
+        private const float GapBlockHeight = Size.Chip;
+        /// <summary>GG-T1944: the narrowest lane (design px) that still carries its "YOU" label.</summary>
+        private const float GapYouMinWidth = 96f;
         /// <summary>GG-T1091 (§2.13.2): "Round 3 · 2 of 4 moved", above the track's left end, only when rounds are kept.</summary>
         private Label roundLabel;
         private static readonly Color GapRoomy = Palette.Vfx.GapRoomy, GapTight = Palette.Vfx.GapTight, GapNone = Palette.Vfx.Harmful;
@@ -181,10 +185,18 @@ namespace GridGame.App
         {
             gapLane = new VisualElement { name = "tl-gap", pickingMode = PickingMode.Ignore };
             gapLane.style.position = Position.Absolute;
-            gapLane.style.top = TrackY - Size.Gauge / 2f; gapLane.style.height = Size.Gauge;
-            gapLane.style.borderTopLeftRadius = gapLane.style.borderTopRightRadius = gapLane.style.borderBottomLeftRadius = gapLane.style.borderBottomRightRadius = Radius.R7;
+            gapLane.style.top = TrackY - GapBlockHeight / 2f; gapLane.style.height = GapBlockHeight;
+            gapLane.style.borderTopLeftRadius = gapLane.style.borderTopRightRadius = gapLane.style.borderBottomLeftRadius = gapLane.style.borderBottomRightRadius = Radius.R8;
             gapLane.style.display = DisplayStyle.None;
             frame.Add(gapLane); // above the track, under the icons
+            gapYou = Ui.Text("YOU", "tiny shadow", gapLane);
+            gapYou.name = "tl-gap-you";
+            gapYou.pickingMode = PickingMode.Ignore;
+            gapYou.style.position = Position.Absolute;
+            gapYou.style.left = Space.S16; gapYou.style.top = Space.S0; gapYou.style.bottom = Space.S0;
+            gapYou.style.unityTextAlign = TextAnchor.MiddleLeft;
+            gapYou.style.color = Palette.Text;
+            Fonts.UseHeavy(gapYou);
             gapLabel = Ui.Text("", "tiny shadow", frame);
             gapLabel.name = "tl-gap-time";
             Ui.Scrim(gapLabel); // GG-T1898
@@ -245,6 +257,9 @@ namespace GridGame.App
             gapLane.style.left = XOfU(0f);
             gapLane.style.width = w;
             gapLane.style.backgroundColor = c.WithA(0.45f);
+            gapLane.style.borderTopColor = gapLane.style.borderBottomColor = gapLane.style.borderLeftColor = gapLane.style.borderRightColor = c;
+            gapLane.style.borderTopWidth = gapLane.style.borderBottomWidth = gapLane.style.borderLeftWidth = gapLane.style.borderRightWidth = 2f;
+            gapYou.style.display = w >= GapYouMinWidth ? DisplayStyle.Flex : DisplayStyle.None;
             string fits = skill && drag ? "move or skill" : drag ? "move only" : skill ? "skill only" : "Guard";
             if (TurnRules.OneHeroPerTurn(State) && (skill || drag)) // GG-T787 (§2.13.1): the gap holds one hero's one action
                 fits = "one hero: " + (skill && drag ? "move or skill" : drag ? "move" : "skill");
@@ -476,6 +491,27 @@ namespace GridGame.App
         /// clip) cuts it back to the diamond. A turn shows the owner's portrait; a cast its ability icon, inset so the
         /// whole icon sits inside the diamond.
         /// </summary>
+        /// <summary>GG-T1944: the prominence slot's "YOU" face while the party's window is open: the word, upright, on ink.</summary>
+        private static void SetYouArt(VisualElement frame, float side, float border)
+        {
+            frame.Q("tl-art")?.RemoveFromHierarchy();
+            float inner = side - 2f * border, s = inner * Sqrt2;
+            var art = new VisualElement { name = "tl-art", pickingMode = PickingMode.Ignore };
+            art.style.position = Position.Absolute;
+            art.style.width = art.style.height = s;
+            art.style.left = art.style.top = (inner - s) / 2f;
+            art.style.rotate = new Rotate(-45f);
+            frame.Add(art);
+            var you = Ui.Text("YOU", "shadow", art);
+            you.name = "tl-slot-you";
+            you.pickingMode = PickingMode.Ignore;
+            you.style.position = Position.Absolute;
+            you.style.left = you.style.top = you.style.right = you.style.bottom = Space.S0;
+            you.style.unityTextAlign = TextAnchor.MiddleCenter;
+            you.style.color = Palette.Good;
+            Fonts.UseHeavy(you);
+        }
+
         private void SetDiamondArt(VisualElement frame, float side, float border, TimelineEntry e)
         {
             frame.Q("tl-art")?.RemoveFromHierarchy();
@@ -725,24 +761,36 @@ namespace GridGame.App
 
         private static float ReadyIntensity(float r) => Mathf.Lerp(ReadyMinIntensity, 1f, r);
 
-        /// <summary>The prominence slot shows the acting entry during its turn, otherwise the next actor.</summary>
+        /// <summary>GG-T1944: the prominence slot's entry while the party's window is open: it reads "YOU", not the next foe.</summary>
+        private const int YouSlotEntry = int.MinValue + 1;
+
+        /// <summary>GG-T1944 (UX review §1.4 #2): the party's window is open: input, nobody acting, no hero's own turn holding
+        /// the slot, the battle still on. The next foe then sits at the window lane's end, not in the slot.</summary>
+        private bool PartyWindowOpen(int activeHero) =>
+            !playing && actingEntry < 0 && activeHero < 0 && !ended && !State.IsOver && State.Phase == BattlePhase.PlayerInput;
+
+        /// <summary>The prominence slot shows the acting entry during its turn ("NOW"), "YOU" while the party's window is open,
+        /// otherwise the next actor.</summary>
         private void SyncSlot(Dictionary<int, float> at)
         {
             if (timelineSlot == null) return;
             int activeHero = ActiveHeroEntry(); // GG-T1109: the hero whose own icon arrived holds the slot while it acts
-            int id = actingEntry >= 0 && drawn.ContainsKey(actingEntry) ? actingEntry : activeHero >= 0 ? activeHero : nextActorEntry;
+            bool you = PartyWindowOpen(activeHero);
+            int id = actingEntry >= 0 && drawn.ContainsKey(actingEntry) ? actingEntry : activeHero >= 0 ? activeHero : you ? YouSlotEntry : nextActorEntry;
             drawn.TryGetValue(id, out var e);
             if (id != slotEntry)
             {
                 slotEntry = id;
-                SetDiamondArt(slotFrame, SlotSide, SlotBorder, e);
-                slotFrame.style.display = e != null ? DisplayStyle.Flex : DisplayStyle.None;
+                if (you) SetYouArt(slotFrame, SlotSide, SlotBorder);
+                else SetDiamondArt(slotFrame, SlotSide, SlotBorder, e);
+                slotFrame.style.display = e != null || you ? DisplayStyle.Flex : DisplayStyle.None;
                 if (e != null && timelineSeeded)
                 {
                     App.Audio.Sfx("battle.whoosh", 0.5f, 1.25f); // a new actor takes the slot
                     if (!ReduceMotion) App.StartCoroutine(Tween.Pop(timelineSlot, 1.18f, Timing.Standard));
                 }
             }
+            if (you) { SetBorder(slotFrame, Radius.R8, SlotBorder, Palette.Good); slotTime.text = ""; return; }
             if (e == null) { slotTime.text = ""; return; }
             SetBorder(slotFrame, Radius.R8, SlotBorder, EntryColor(e));
             float secs = at.TryGetValue(e.Id, out var u) ? u * BattleConfig.BarSeconds : 0f;

@@ -119,8 +119,8 @@ GG-T2119: every iPhone row carries its camera cutout (`cutout`) and its display'
 the player as a device (the automation `deviceframe` endpoint, sent by `tools/scenario.py` and `tools/uiaudit.py`), so the owner sees what the island, notch and corners cover.
 
 - **type**: `island` is the Dynamic Island, a pill floating `top` pt below the screen's top edge; `notch` hangs from
-  the top edge with its bottom corners rounded by `radius`; `punch` (reserved for Galaxy punch-hole cameras, not filled
-  yet) is a circle of diameter `w`, its top `top` below the edge. Every cutout is centred horizontally.
+  the top edge with its bottom corners rounded by `radius`; `punch` (the Galaxy punch-hole camera) is a circle of
+  diameter `w`, its top `top` below the edge. Every cutout is centred horizontally.
 - **Display corner radius**: the value iOS reports as the screen's corner radius (`_displayCornerRadius`), as
   tabulated by the ScreenCorners project: 44 pt (12/13 mini), 47.33 (12, 12 Pro, 13, 13 Pro, 14, 16e), 53.33 (12/13
   Pro Max, 14 Plus), 55 (14 Pro through 16 Plus, including 15 Pro / Pro Max), 62 (16 Pro / Pro Max). Apple's real
@@ -133,7 +133,10 @@ the player as a device (the automation `deviceframe` endpoint, sent by `tools/sc
 - **Notch**: about 210 × 30 pt on the iPhone 12 family (the iPhone X notch) and about 162 × 33 pt on the 13, 14 and
   16e (Apple: the 13's notch is 20% narrower), bottom radius about 20 pt. *Estimated*. The 12/13 mini notch is left
   null (the mini's 2.88x native scale makes a pt figure misleading); its corner radius is recorded.
-- Galaxy punch-holes are not recorded yet (`cutout: null`); the data shape takes them as `type: punch`.
+- **Galaxy punch-hole** (GG-T2030): Samsung publishes no hole size. Every in-target Galaxy gets one centred hole about
+  18 dp across, its top 11 dp below the edge (about 3.4 mm, inside the 32 dp status bar the safe area assumes), and a
+  screen corner of 30 dp (S23-S25, S23 Ultra), 26 dp (the flatter S24/S25 Ultra and S25 Edge), 34 dp (Z Flip main) or
+  28 dp (Z Fold cover). Galaxy rows read dp where the table below says pt. All *estimated*.
 
 | Id | Model | Cutout | W×H pt | Top pt | Cutout radius pt | Screen radius pt | Device px (w×h, top, r / screen r) |
 |---|---|---|---|---|---|---|---|
@@ -162,6 +165,23 @@ the player as a device (the automation `deviceframe` endpoint, sent by `tools/sc
 | `iphone17pro` | iPhone 17 Pro | island\* | 126×37.33 | 14 | 18.67 | 62\* | 378×112, 42, 56 / 186 |
 | `iphone17promax` | iPhone 17 Pro Max | island\* | 126×37.33 | 14 | 18.67 | 62\* | 378×112, 42, 56 / 186 |
 | `iphoneair` | iPhone Air | island\* | 126×37.33 | 20 | 18.67 | 62\* | 378×112, 60, 56 / 186 |
+| `galaxys23` | Galaxy S23 | punch\* | 18×18 | 11 | 9 | 30\* | 54×54, 33, 27 / 90 |
+| `galaxys23plus` | Galaxy S23+ | punch\* | 18×18 | 11 | 9 | 30\* | 51×51, 31, 25 / 84 |
+| `galaxys23ultra` | Galaxy S23 Ultra | punch\* | 18×18 | 11 | 9 | 30\* | 63×63, 38, 32 / 105 |
+| `galaxys23fe` | Galaxy S23 FE | punch\* | 18×18 | 11 | 9 | 30\* | 51×51, 31, 25 / 84 |
+| `galaxys24` | Galaxy S24 | punch\* | 18×18 | 11 | 9 | 30\* | 54×54, 33, 27 / 90 |
+| `galaxys24plus` | Galaxy S24+ | punch\* | 18×18 | 11 | 9 | 30\* | 63×63, 38, 32 / 105 |
+| `galaxys24ultra` | Galaxy S24 Ultra | punch\* | 18×18 | 11 | 9 | 26\* | 63×63, 38, 32 / 91 |
+| `galaxys24fe` | Galaxy S24 FE | punch\* | 18×18 | 11 | 9 | 30\* | 51×51, 31, 25 / 84 |
+| `galaxys25` | Galaxy S25 | punch\* | 18×18 | 11 | 9 | 30\* | 54×54, 33, 27 / 90 |
+| `galaxys25plus` | Galaxy S25+ | punch\* | 18×18 | 11 | 9 | 30\* | 63×63, 38, 32 / 105 |
+| `galaxys25ultra` | Galaxy S25 Ultra | punch\* | 18×18 | 11 | 9 | 26\* | 63×63, 38, 32 / 91 |
+| `galaxys25edge` | Galaxy S25 Edge | punch\* | 18×18 | 11 | 9 | 26\* | 63×63, 38, 32 / 91 |
+| `galaxys25fe` | Galaxy S25 FE | punch\* | 18×18 | 11 | 9 | 30\* | 51×51, 31, 25 / 84 |
+| `galaxyzflip5` | Galaxy Z Flip5 (main) | punch\* | 18×18 | 11 | 9 | 34\* | 50×50, 30, 25 / 94 |
+| `galaxyzflip6` | Galaxy Z Flip6 (main) | punch\* | 18×18 | 11 | 9 | 34\* | 50×50, 30, 25 / 94 |
+| `galaxyzfold5cover` | Galaxy Z Fold5 (cover) | punch\* | 18×18 | 11 | 9 | 28\* | 54×54, 33, 27 / 84 |
+| `galaxyzfold6cover` | Galaxy Z Fold6 (cover) | punch\* | 18×18 | 11 | 9 | 28\* | 54×54, 33, 27 / 84 |
 
 ## What the matrix means for the layout
 

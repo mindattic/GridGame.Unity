@@ -118,6 +118,7 @@ namespace GridGame.App
             BoardAudit.Synced(AuditTokens(true, rendered: true));
             while (Tween.Paused || awayOnSettings) yield return null;
             playing = false;
+            if (lastAt != null) SyncSlot(lastAt); // GG-T1944: the slot reads YOU once playback is over
             if (State.IsOver && !ended) yield return EndBattle();
         }
 
