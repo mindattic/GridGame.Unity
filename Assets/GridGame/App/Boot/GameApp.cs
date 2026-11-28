@@ -262,6 +262,7 @@ namespace GridGame.App
             fade.AddToClassList("fill");
             fade.AddToClassList("fade");
             Stage.Add(fade);
+            Dev.DevOptions.SyncBadge(Stage); // GG-T1938: DEV in the corner while Developer cheats are on
 
             FitStage();
 #if DEVELOPMENT_BUILD
@@ -531,7 +532,7 @@ namespace GridGame.App
             // GG-T1548: the frame cap and Effects amount go through the thermal step-down, which only ever lowers them.
             ThermalStepDown.Apply(cap, Mathf.Clamp01(st.VfxAmount));
             Tween.ShakeScale = Mathf.Clamp01(st.ScreenShake);
-            Tween.Speed = Mathf.Clamp(st.BattleSpeed, 0.5f, 3f);
+            Tween.Speed = Dev.DevOptions.BattleSpeed(st.BattleSpeed); // GG-T1938: up to x8 from the pause menu with Cheats on
             // GG-T392: with the look presets hidden (Features.LookPresets off) every profile draws with the defaults.
             bool presets = GridGame.Meta.Features.LookPresets;
             Art.ApplyTheme(presets ? st.MenuTheme : GridGame.Meta.SettingsSave.DefaultMenuTheme);

@@ -63,7 +63,7 @@ namespace GridGame.App
                 if (walked) { Ui.Para("Walked off. Back after the next battle.", col, "bad"); continue; }
                 // GG-T1881: Haggle on the card's right edge beside the name; the hire lengths below as one segmented row.
                 Ui.El("grow", top);
-                var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", top);
+                var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", top, confirmTap: true);
                 haggle.name = "merc-haggle-" + m.Class;
                 haggle.AddToClassList("target-gap");
                 Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
@@ -205,12 +205,12 @@ namespace GridGame.App
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.RenewalPrice(C, S, classId, t);
-                    var b = RowIcon.IconButton($"Renew {term} more battles · {Ui.Gold(price)}", RowKind.Confirm, () => Answer(Mercenaries.Renew(C, S, classId, term)), null, choices);
+                    var b = RowIcon.IconButton($"Renew {term} more battles · {Ui.Gold(price)}", RowKind.Confirm, () => Answer(Mercenaries.Renew(C, S, classId, term)), null, choices, confirmTap: false);
                     b.name = $"merc-renew-{term}";
                     Ui.SetEnabled(b, S.Gold >= price);
                 }
             }
-            var finish = RowIcon.IconButton("Finish the contract (1 battle left)", RowKind.Confirm, () => { Mercenaries.FinishContract(S, classId); Answer(Result.Success($"{def.Name} will see out the last battle")); }, null, choices);
+            var finish = RowIcon.IconButton("Finish the contract (1 battle left)", RowKind.Confirm, () => { Mercenaries.FinishContract(S, classId); Answer(Result.Success($"{def.Name} will see out the last battle")); }, null, choices, confirmTap: false);
             finish.name = "merc-finish";
             var part = RowIcon.IconButton("Part ways now", RowKind.Close, () => Answer(Mercenaries.PartWays(C, S, classId)), null, choices);
             part.name = "merc-part";

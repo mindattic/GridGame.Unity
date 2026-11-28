@@ -39,6 +39,9 @@ namespace GridGame.Core.Battle
                 case TutorialSceneCommand sc:
                     o = new JObject { ["type"] = "scene", ["scene"] = sc.Scene };
                     break;
+                case DevCheatCommand dc:
+                    o = new JObject { ["type"] = "dev", ["cheat"] = dc.Cheat.ToString() };
+                    break;
                 default:
                     throw new NotSupportedException("No codec for command " + cmd.GetType().Name);
             }
@@ -70,6 +73,9 @@ namespace GridGame.Core.Battle
                     break;
                 case "scene":
                     cmd = new TutorialSceneCommand { Scene = (string)o["scene"] };
+                    break;
+                case "dev":
+                    cmd = new DevCheatCommand { Cheat = (DevCheat)Enum.Parse(typeof(DevCheat), (string)o["cheat"]) };
                     break;
                 default:
                     throw new NotSupportedException("Unknown command type " + (string)o["type"]);

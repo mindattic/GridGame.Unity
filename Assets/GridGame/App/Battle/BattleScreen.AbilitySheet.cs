@@ -29,6 +29,9 @@ namespace GridGame.App
         /// <summary>The move row last highlighted in the sheet, or −1.</summary>
         private int highlightedMove = -1;
         private bool abilitiesHeld;
+        /// <summary>The slot a tutorial cast mark has boxed the Abilities button for: a tap aims it directly (GG-T1922 walks
+        /// the sheet instead), or −1.</summary>
+        private int coachSlot = -1;
 
         public bool AbilitiesOpen => sheetVeil != null && sheetVeil.parent != null;
 
@@ -69,7 +72,8 @@ namespace GridGame.App
             cell.RegisterCallback<ClickEvent>(_ =>
             {
                 if (abilitiesHeld) { abilitiesHeld = false; return; }
-                OpenAbilities();
+                if (coachSlot >= 0) { OnSlot(coachSlot); return; }
+                OpenAbilities(TargetingSlot);
             });
         }
 
@@ -107,8 +111,9 @@ namespace GridGame.App
             return true;
         }
 
-        /// <summary>Opens the sheet for the selected hero, at the list holding its last move when it has one.</summary>
-        private void OpenAbilities()
+        /// <summary>Opens the sheet for the selected hero: at <paramref name="detail"/>'s detail page when given (Cancel while
+        /// aiming, GG-T1921), else at the list holding its last move when it has one.</summary>
+        private void OpenAbilities(int detail = -1)
         {
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null || ended) { App.Audio.Sfx("ui.error"); return; }
@@ -120,8 +125,14 @@ namespace GridGame.App
             sheetPath.Clear();
             highlightedMove = -1;
             var tree = ActionTree.For(State, hero);
+            var page = detail >= 0 ? ActionTree.PathTo(tree, detail) : null;
             var at = lastMove.TryGetValue(hero.Id, out int last) ? ActionTree.PathTo(tree, last) : null;
-            if (at != null)
+            if (page != null)
+            {
+                sheetPath.AddRange(page);
+                HighlightMove(hero, detail);
+            }
+            else if (at != null)
             {
                 sheetPath.AddRange(at.Take(at.Count - 1));
                 HighlightMove(hero, last);
@@ -352,7 +363,7 @@ namespace GridGame.App
             back.name = "abilities-back";
             var sl = hero.Bar[slot];
             string verb = sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
-            var go = RowIcon.IconButton(verb, RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot);
+            var go = RowIcon.IconButton(verb, RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
             go.name = "abilities-commit";
             go.SetEnabled(ready && CanCommand());
         }

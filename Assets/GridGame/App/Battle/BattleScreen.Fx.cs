@@ -496,10 +496,11 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>A spell slot's centre in Overlay (stage) coordinates, where its mana motes land.</summary>
+        /// <summary>Where a spell's mana motes land, in Overlay (stage) coordinates: the Abilities button's centre now that the
+        /// slots are gone (GG-T1921; GG-T1928 points them at the party bar).</summary>
         private Vector2 SlotCenter(int slot)
         {
-            var b = slot >= 0 && slot < slotViews.Count ? slotViews[slot].worldBound : new Rect(float.NaN, 0, 0, 0);
+            var b = abilitiesButton != null ? abilitiesButton.worldBound : new Rect(float.NaN, 0, 0, 0);
             return float.IsNaN(b.x) || b.width <= 0f ? BarCenter() : b.center - App.Stage.worldBound.position;
         }
 
@@ -512,7 +513,7 @@ namespace GridGame.App
             var mine = new List<ManaMeterDelta>();
             foreach (var d in g.Meters)
             {
-                if (d.UnitId == SelectedHeroId && d.Slot < slotViews.Count) mine.Add(d);
+                if (d.UnitId == SelectedHeroId && d.Slot < BarSlots) mine.Add(d);
                 else shownMana[(d.UnitId, d.Slot)] = d.After;
             }
             if (mine.Count == 0) yield break;
@@ -525,38 +526,16 @@ namespace GridGame.App
                     App.StartCoroutine(MoteFlight(from, seconds, false, guard ? Palette.Gold : (Color?)null, 0.7f, SlotCenter(d.Slot)));
                 yield return Tween.Wait(seconds);
             }
-            foreach (var d in mine)
-            {
-                shownMana[(d.UnitId, d.Slot)] = d.After;
-                if (d.Full > 0) App.StartCoroutine(MeterGainLine(slotViews[d.Slot], d.Delta * 100 / d.Full));
-            }
+            foreach (var d in mine) shownMana[(d.UnitId, d.Slot)] = d.After;
             if (g.Amount > 0) App.Audio.Sfx("battle.orb", 0.35f, 1f + Random.Range(-0.05f, 0.1f));
             SyncBar();
         }
 
-        /// <summary>The short "+N%" over a spell bar: it rises a little and fades (it holds still under Reduce Motion).</summary>
-        private IEnumerator MeterGainLine(VisualElement slot, int pct)
-        {
-            var l = slot.Q<Label>("gain");
-            if (l == null || pct == 0) yield break;
-            int token = (l.userData is int t ? t : 0) + 1;
-            l.userData = token;
-            l.text = pct > 0 ? $"+{pct}%" : $"{pct}%";
-            l.style.color = pct > 0 ? Palette.Mana : Palette.Bad;
-            yield return Tween.Run(Timing.Dramatic, k =>
-            {
-                if (!(l.userData is int now) || now != token) return;
-                l.style.opacity = k < 0.7f ? 1f : (1f - k) / 0.3f;
-                l.style.translate = new Translate(0, ReduceMotion ? 0f : -Space.S16 * k);
-            });
-            if (l.userData is int end && end == token) l.style.opacity = 0f;
-        }
-
-        /// <summary>A spell's meter filled: its slot pops with a bright tick (the bar itself glows from here on).</summary>
+        /// <summary>A spell's meter filled: the Abilities button pops with a bright tick (its dot shows from here on).</summary>
         private IEnumerator SpellReadyAnim(SpellReadyEvent sr)
         {
-            if (sr.UnitId != SelectedHeroId || sr.Slot < 0 || sr.Slot >= slotViews.Count) yield break;
-            var v = slotViews[sr.Slot];
+            if (sr.UnitId != SelectedHeroId || sr.Slot < 0 || sr.Slot >= BarSlots || abilitiesButton == null) yield break;
+            var v = abilitiesButton;
             App.Audio.Sfx("battle.pickup", 0.45f, 1.5f);
             yield return Tween.Pop(v, 1.12f, Timing.Quick);
             v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)

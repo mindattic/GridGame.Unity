@@ -31,7 +31,7 @@ namespace GridGame.App
             var all = C.QuestOrder;
             Section("Ready to hand in!", all.Where(q => Quests.State(C, S, q) == QuestState.Ready), (q, card) =>
             {
-                var b = RowIcon.IconButton("Hand in", RowKind.Quest, () => TurnIn(q), "btn--primary btn--small", card);
+                var b = RowIcon.IconButton("Hand in", RowKind.Quest, () => TurnIn(q), "btn--primary btn--small", card, confirmTap: true);
                 b.name = "quest-turnin-" + q.Id;
             });
             Section("Under way", all.Where(q => Quests.State(C, S, q) == QuestState.Active), (q, card) =>
@@ -39,7 +39,7 @@ namespace GridGame.App
             var heard = Quests.Heard(C, S);
             Section("Heard of", heard, (q, card) =>
             {
-                var b = RowIcon.IconButton("Accept", RowKind.Quest, () => Accept(q), "btn--small", card);
+                var b = RowIcon.IconButton("Accept", RowKind.Quest, () => Accept(q), "btn--small", card, confirmTap: true);
                 b.name = "quest-accept-" + q.Id;
             });
             Section("Ask around", all.Where(q => Quests.State(C, S, q) == QuestState.Available && !heard.Contains(q)), null);

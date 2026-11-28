@@ -218,6 +218,7 @@ namespace GridGame.Core.Battle
                 case ShieldCommand sh: return new JObject { ["type"] = "guard", ["held"] = sh.HeldSeconds }; // as CommandCodec keeps it
                 case TalkCommand t: return new JObject { ["type"] = "talk", ["hero"] = t.HeroId, ["target"] = t.TargetId };
                 case TutorialSceneCommand sc: return new JObject { ["type"] = "scene", ["scene"] = sc.Scene };
+                case DevCheatCommand dc: return new JObject { ["type"] = "dev", ["cheat"] = dc.Cheat.ToString() };
                 default: return new JObject { ["type"] = cmd?.GetType().Name ?? "none" };
             }
         }

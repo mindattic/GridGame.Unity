@@ -566,7 +566,7 @@ namespace GridGame.App
                     App.Audio.Sfx(r.Ok ? "battle.victory" : "ui.error", r.Ok ? 0.6f : 1f);
                     if (r.Ok) { App.Persist(); Settle(r.Message, true); }
                     else Show(r.Message, false); // a refusal (no room, say) isn't an answer: a re-mount offers it again
-                }, "btn--primary", buttons).name = "tame-accept";
+                }, "btn--primary", buttons, confirmTap: false).name = "tame-accept";
                 RowIcon.IconButton("Decline", RowKind.Close, () =>
                 {
                     if (tameSettled.ContainsKey(offer.ClassId)) return;

@@ -926,7 +926,7 @@ namespace GridGame.App
                 GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
                 PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
                 card.AddToClassList("card-tap");
-                Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.select");
+                Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.confirm", confirmTap: true);
             }
         }
     }
@@ -1313,7 +1313,7 @@ namespace GridGame.App
                 Ui.Para($"🔒 Needs {Facilities.NeededName(c, r)} (you have the {Facilities.Current(c, s, r.Station)})", w, "bad");
                 if (Facilities.Next(c, s, r.Station) is CaravanLevel next)
                 {
-                    var b = RowIcon.IconButton($"Build {next.Name} · {Ui.Gold(next.Cost)}", RowKind.Confirm, () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w));
+                    var b = RowIcon.IconButton($"Build {next.Name} · {Ui.Gold(next.Cost)}", RowKind.Confirm, () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w), confirmTap: false);
                     b.name = "facility-build-detail";
                     Ui.SetEnabled(b, s.Gold >= next.Cost);
                 }
@@ -1650,7 +1650,7 @@ namespace GridGame.App
                 };
                 InspectCard.Attach(ic, read, tap: true);
                 InspectCard.Attach(top, read, tap: true);
-                var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
+                var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col), confirmTap: false);
                 b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);
             }
@@ -1808,7 +1808,7 @@ namespace GridGame.App
                     return;
                 }
                 Confirm.Show($"Pay {pay} for {(count == 1 ? "a pull" : $"{count} pulls")} on {b.Name}? {RatesLine(b, Gacha.Odds(C, S, b))}.", "Summon", () => Pull(b, count));
-            }, classes, row);
+            }, classes, row, confirmTap: false);
             Ui.SetEnabled(btn, !busy && !S.TestMode && Gacha.Pool(C, S, b).Count > 0 && LootBoxPolicy.Allows(S, b, count).Ok);
             return btn;
         }
@@ -1893,7 +1893,7 @@ namespace GridGame.App
                 Ui.Card(list, d.Id, d.Name, out var col);
                 GlossaryText.Create(d.Card ?? d.Description ?? "", "kit-text dim", col);
                 var b = RowIcon.IconButton(owned ? "Joined" : "Recruit", RowKind.Confirm, () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
-                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
+                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col), confirmTap: false); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
             }
         }
@@ -2519,6 +2519,43 @@ namespace GridGame.App
             row.KindIcon(RowKind.Close);
         }
 
+        /// <summary>Party levels the Developer section cycles through.</summary>
+        private static readonly int[] DevLevels = { 1, 5, 10, 20, 30, 40, 50 };
+
+        /// <summary>Settings &gt; Developer (GG-T1938): shown only once the version line was tapped seven times on this device.
+        /// The Cheats switch adds the pause menu's cheat rows and the DEV badge; with it on, the save cheats below run the
+        /// dev automation's own code paths (<see cref="Dev.DevCheats"/>) on the loaded save.</summary>
+        private void DeveloperSection(VisualElement w, Action<string> section)
+        {
+            section("Developer");
+            bool cheats = Dev.DevOptions.Cheats;
+            var toggle = Ui.MenuRow("Cheats", cheats ? "ON" : "OFF", () => { Dev.DevOptions.SetCheats(!cheats); Refresh(); }, w);
+            toggle.name = "settings-dev-cheats";
+            toggle.KindIcon(RowKind.Settings);
+            if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
+            var s = App.Save;
+            if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }
+            var c = App.Content;
+            void Cheat(string label, string value, string name, Action act, string done)
+            {
+                var row = Ui.MenuRow(label, value, () => { act(); App.Persist(); App.Toast(done); Refresh(); }, w);
+                row.name = name;
+                row.KindIcon(RowKind.Settings);
+            }
+            Cheat("Give gold", "+10,000", "settings-dev-gold", () => s.Gold += 10000, "+10,000 gold");
+            Cheat("Give items", "10 of each consumable", "settings-dev-items", () =>
+            {
+                foreach (var item in c.Items.Values.Where(i => i.Type == ItemType.Consumable)) Dev.DevCheats.GiveItem(s, item.Id, 10);
+            }, "Consumables added");
+            Cheat("Unlock all stages", $"{s.HighestClearedStage + 1}/{c.CampaignStages().Count} cleared", "settings-dev-stages",
+                () => Dev.DevCheats.UnlockAllStages(c, s), "Every stage unlocked");
+            Cheat("Unlock all stations", "", "settings-dev-stations", () => Dev.DevCheats.UnlockAllStations(s), "Every station unlocked");
+            int level = s.Roster.Count > 0 ? s.Roster.Max(Progression.Level) : 1;
+            int next = DevLevels.FirstOrDefault(l => l > level);
+            if (next == 0) next = DevLevels[0];
+            Cheat("Party level", $"{level} → {next}", "settings-dev-level", () => Dev.DevCheats.SetLevel(s.Roster, next), $"Party level {next}");
+        }
+
         protected override void BuildBody(VisualElement body)
         {
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
@@ -2636,10 +2673,14 @@ namespace GridGame.App
             importRow.KindIcon(RowKind.Save);
             if (Features.DiamondStore && DiamondExchange.Wallet != null) SpendingLimitRow(DiamondExchange.Wallet, w);
             DeleteAllDataRow(w);
+            if (Dev.DevOptions.Unlocked) DeveloperSection(w, Section);
             // GG-T1330: version, legal links and third-party notices.
             var about = Ui.MenuRow("About", "", () => App.Router.Push(new AboutScreen()), w);
             about.name = "settings-about";
             about.KindIcon(RowKind.Codex);
+            var version = Ui.Note("Version " + Legal.VersionLine(), w);
+            version.name = "settings-version";
+            Dev.DevOptions.CountTaps(version); // GG-T1938: seven taps unlock the Developer section
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
