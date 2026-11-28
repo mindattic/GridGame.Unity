@@ -103,7 +103,7 @@ namespace GridGame.App
         private readonly StageDepthsDef depth;
         private readonly float aspect, moonAspect, somAspect, start;
         private readonly bool still, live, liveMoon;
-        private Color tint = Color.white;
+        private Color tint = Palette.White;
         private float w, h, skyBottom, refW;
         private float somX, somY, somR, rainTop;
         private Vector2 wakeDir, wakeAcross;

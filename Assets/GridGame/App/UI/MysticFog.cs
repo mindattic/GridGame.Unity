@@ -107,6 +107,7 @@ namespace GridGame.App
             };
             var rng = new System.Random(706);
             var px = new Color32[TexSize * TexSize];
+            Color32 wisp = Palette.White;
             float[][] octaves = { Lattice(rng, 4), Lattice(rng, 8), Lattice(rng, 16) };
             for (int y = 0; y < TexSize; y++)
                 for (int x = 0; x < TexSize; x++)
@@ -115,7 +116,8 @@ namespace GridGame.App
                     float n = 0.55f * Sample(octaves[0], 4, u, v) + 0.3f * Sample(octaves[1], 8, u, v) + 0.15f * Sample(octaves[2], 16, u, v);
                     // Bias toward wisps and gaps rather than an even haze.
                     float a = Ease.InOut(Mathf.InverseLerp(0.3f, 0.78f, n));
-                    px[y * TexSize + x] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(a * 255f));
+                    wisp.a = (byte)Mathf.RoundToInt(a * 255f);
+                    px[y * TexSize + x] = wisp;
                 }
             noise.SetPixels32(px);
             noise.Apply(false, true);

@@ -53,7 +53,7 @@ namespace GridGame.App
                 Shapes.Blob(p, c, radius, wobble, phase, ShapeStyle.Small.Tint(state.WithA(0.95f)).Outlined(ShapeStyle.Ink, 3f));
                 // A wet shine on its upper left, riding the wobble.
                 var shine = c + new Vector2(-radius * 0.35f, -radius * (0.4f + 0.5f * wobble * Mathf.Sin(phase)));
-                Shapes.Dot(p, shine, radius * 0.18f, ShapeStyle.Small.Tint(Color.white.WithA(0.7f)).Outlined(Color.clear, 0f));
+                Shapes.Dot(p, shine, radius * 0.18f, ShapeStyle.Small.Tint(Palette.White.WithA(0.7f)).Outlined(Color.clear, 0f));
             }
             if (Crate && !hidden) DrawCrate(p, r, Wear);
         }
@@ -69,7 +69,7 @@ namespace GridGame.App
             float pad = Mathf.Min(r.width, r.height) * 0.16f;
             var box = new Rect(r.x + pad, r.y + pad, r.width - 2f * pad, r.height - 2f * pad);
             var wood = Color.Lerp(Wood, new Color(0.3f, 0.2f, 0.12f, 1f), Mathf.Clamp01(wear) * 0.6f);
-            var plank = Color.Lerp(wood, Color.white, 0.25f);
+            var plank = Color.Lerp(wood, Palette.White, 0.25f);
             Shapes.RoundedRect(p, box, 8f, ShapeStyle.Small.Tint(wood).Outlined(ShapeStyle.Ink, 3f), filled: true);
             var inner = new Rect(box.x + 9f, box.y + 9f, box.width - 18f, box.height - 18f);
             Shapes.RoundedRect(p, inner, 4f, ShapeStyle.Small.Tint(plank).Thick(5f).Outlined(ShapeStyle.Ink, 2f));

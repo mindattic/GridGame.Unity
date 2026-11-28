@@ -92,7 +92,7 @@ namespace GridGame.App
             portrait.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Left, Length.Percent(crop?.X ?? 50f));
             portrait.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Top, Length.Percent(crop?.Y ?? 0f));
             portrait.style.rotate = new Rotate(-tilt); // keep the hero upright inside the tilted window
-            portrait.style.unityBackgroundImageTintColor = team == Team.Hero ? Color.white : new Color(1f, 0.88f, 0.88f);
+            portrait.style.unityBackgroundImageTintColor = team == Team.Hero ? Palette.White : Palette.FoeTint;
             window.Add(portrait);
             root.Add(window);
             if (!string.IsNullOrEmpty(tag))
@@ -174,7 +174,7 @@ namespace GridGame.App
                 card.style.scale = new Scale(Vector2.one * Mathf.LerpUnclamped(1.9f, 1f, e));
                 card.style.rotate = new Rotate(Mathf.LerpUnclamped(spin, 0f, e));
                 card.style.opacity = Mathf.Min(1f, k * 3f);
-                portrait.style.unityBackgroundImageTintColor = Color.Lerp(new Color(3f, 3f, 3f), Color.white, k);
+                portrait.style.unityBackgroundImageTintColor = Color.Lerp(Palette.Overbright, Palette.White, k);
             });
             App.StartCoroutine(Tween.Shake(card, 16f * Fx, Timing.Quick));
             float t = 0f;

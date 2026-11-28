@@ -127,7 +127,7 @@ namespace GridGame.App
             if (input != null)
             {
                 input.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                input.style.color = Color.white;
+                input.style.color = Palette.White;
                 input.style.paddingLeft = input.style.paddingRight = Space.S16;
                 input.style.borderTopWidth = input.style.borderBottomWidth = input.style.borderLeftWidth = input.style.borderRightWidth = Size.Hairline;
                 input.style.borderTopColor = input.style.borderBottomColor = input.style.borderLeftColor = input.style.borderRightColor = Palette.Neutral.WithA(0.8f);
@@ -198,7 +198,7 @@ namespace GridGame.App
             if (input != null)
             {
                 input.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                input.style.color = Color.white;
+                input.style.color = Palette.White;
                 input.style.whiteSpace = WhiteSpace.Normal;
                 input.style.unityTextAlign = TextAnchor.UpperLeft;
                 input.style.paddingLeft = input.style.paddingRight = Space.S16;

@@ -61,16 +61,46 @@ namespace GridGame.App
             Ui.Caption($"{q.Giver}{(theme != null ? " · " + theme : "")}", col, "dim");
             var chain = Quests.ChainLine(C, S, q); // GG-T434: the chain's steps
             if (chain != null) Ui.Para(chain, col, "gold");
-            if (st == QuestState.Available && !Quests.Heard(C, S).Contains(q))
+            bool asking = st == QuestState.Available && !Quests.Heard(C, S).Contains(q);
+            bool canTalk = CanTalk(q);
+            if (asking)
+                Ui.Para(q.Giver == "Party" ? "One of your companions has something on their mind. Talk to the party."
+                    : canTalk ? $"The {q.Giver} has something on their mind. Talk to them."
+                    : $"The {q.Giver} has something on their mind, but you haven't met them yet. Clear more stages to meet them.", col);
+            else
             {
-                Ui.Para(q.Giver == "Party" ? "One of your companions has something on their mind. Talk to the party." : $"The {q.Giver} has something on their mind. Talk to them.", col);
-                RowIcon.IconButton("Talk", RowKind.Talk, () => Talk(q), "btn--small", Ui.Actions(col)).name = "quest-talk-" + q.Id;
-                return;
+                Ui.Para(q.Summary, col);
+                Ui.Para(st == QuestState.Done ? Quests.Describe(C, q) : $"{Quests.Describe(C, q)}  {Quests.Progress(S, q)}/{Quests.Goal(q)}", col, st == QuestState.Ready ? "good" : "gold");
+                Ui.Para("Reward: " + Quests.RewardText(C, q), col, "dim");
             }
-            Ui.Para(q.Summary, col);
-            Ui.Para(st == QuestState.Done ? Quests.Describe(C, q) : $"{Quests.Describe(C, q)}  {Quests.Progress(S, q)}/{Quests.Goal(q)}", col, st == QuestState.Ready ? "good" : "gold");
-            Ui.Para("Reward: " + Quests.RewardText(C, q), col, "dim");
-            if (extra != null) extra(q, Ui.Actions(col));
+            var actions = Ui.Actions(col);
+            if (canTalk) RowIcon.IconButton("Talk", RowKind.Talk, () => Talk(q), "btn--small", actions).name = "quest-talk-" + q.Id;
+            else
+            {
+                var (label, go) = NextPlace(q, asking);
+                RowIcon.IconButton(label, RowKind.Enter, () => App.Router.Push(go()), "btn--small", actions).name = "quest-next-" + q.Id;
+            }
+            extra?.Invoke(q, actions);
+        }
+
+        /// <summary>Whether the giver is someone to talk to: the party, or an NPC who has joined the caravan.</summary>
+        private bool CanTalk(QuestDef q)
+        {
+            var id = GiverId(q);
+            return System.Array.IndexOf(DialogueDef.Npcs, id) < 0 || DialogueRunner.NpcJoined(S, id);
+        }
+
+        /// <summary>Where a quest moves on when its giver can't be talked to yet: the road to meet them, else the place its
+        /// objective is worked.</summary>
+        private static (string label, System.Func<GameScreen> go) NextPlace(QuestDef q, bool meetGiver)
+        {
+            switch (meetGiver ? QuestObjectiveKind.ClearStage : q.Objective.Kind)
+            {
+                case QuestObjectiveKind.Recruit: return ("To Recruit", () => new SummonScreen());
+                case QuestObjectiveKind.ReachLevel:
+                case QuestObjectiveKind.LearnSkill: return ("To Heroes", () => new HeroScreen());
+                default: return ("To Journey", () => new StageSelectScreen());
+            }
         }
 
         private string GiverId(QuestDef q)

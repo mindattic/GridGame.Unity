@@ -185,8 +185,8 @@ namespace GridGame.App
             return new CoachLesson
             {
                 Id = BoardLesson, Kicker = "Camp", Title = "Skill points",
-                Text = $"The {hero} earned a skill point. Every level gives 1 SP, and every node on the Skill Board costs 1. " +
-                       "Buy nodes next to the ones the hero owns: passives add stats, ability nodes teach the ability. The Codex explains the board and its six families.",
+                Text = $"The {hero} earned a skill point. Every level gives 1 SP, and every node in Talents costs 1. " +
+                       "Buy nodes next to the ones the hero owns: passives add stats, ability nodes teach the ability. The Codex explains Talents and its six families.",
                 Image = "Tutorial/" + BoardLesson,
                 Steps = new List<CoachStep>
                 {
@@ -195,7 +195,7 @@ namespace GridGame.App
                     new CoachStep { Caption = "Tap Abilities.", Element = () => CampTipOverlay.Find("tab-abilities"), Done = OnAbilities },
                     new CoachStep { Caption = $"Tap the {hero}.", Element = () => CampTipOverlay.Find("hero-pick-" + id),
                         Done = () => OnAbilities() && GameApp.I.Router.Current is HeroScreen hs && hs.HeroId == id },
-                    new CoachStep { Caption = "Tap Board.", Element = () => CampTipOverlay.Find("tab-board"),
+                    new CoachStep { Caption = "Tap Talents.", Element = () => CampTipOverlay.Find("tab-talents"),
                         Done = () => GameApp.I.Router.Current is HeroScreen hs && hs.Id == "talents" },
                     new CoachStep { Caption = "Tap a node next to your trail to see its route and cost, then Buy route.",
                         Element = () => CampTipOverlay.Find("hex-board"), Info = true },

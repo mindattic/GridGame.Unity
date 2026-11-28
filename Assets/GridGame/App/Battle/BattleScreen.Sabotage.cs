@@ -69,7 +69,7 @@ namespace GridGame.App
                     board.Lines.Add(prev, p, SabotageSpark.WithA(0.5f + 0.5f * i / segs), 3f);
                     prev = p;
                 }
-                board.Lines.Dot(prev, 7f + 3f * UnityEngine.Random.value, Color.white);
+                board.Lines.Dot(prev, 7f + 3f * UnityEngine.Random.value, Palette.White);
             });
 
             // It bites: a clank, a burst of sparks on the tile, and the edge turns (or the hidden charge fades away).

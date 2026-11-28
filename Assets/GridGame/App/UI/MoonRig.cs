@@ -97,7 +97,7 @@ namespace GridGame.App
             var key = new GameObject("Light").AddComponent<Light>();
             key.transform.SetParent(transform, false);
             key.type = LightType.Directional;
-            key.color = Color.white;
+            key.color = Palette.White;
             key.intensity = 1f;
             key.shadows = LightShadows.None;
             key.cullingMask = 1 << Layer;

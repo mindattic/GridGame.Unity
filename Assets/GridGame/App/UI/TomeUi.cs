@@ -77,6 +77,62 @@ namespace GridGame.App
             }
         }
 
+        /// <summary>GG-T1969: a looted Tome on the results as one card: the tome's icon and "Teach Counter Attack to", the
+        /// taught passive's sentence, then a thumbnail button per roster hero (party first), dimmed for a hero who can't
+        /// learn it. A tap selects a hero and a second tap teaches (it uses up one Tome); the card redraws itself.</summary>
+        public static VisualElement TeachCard(VisualElement parent, ItemDef tome)
+        {
+            var card = Ui.Panel(parent, null, false, "tome-" + tome.Id);
+            DrawTeachCard(Ui.El("col", card), tome, null);
+            return card;
+        }
+
+        private static void DrawTeachCard(VisualElement box, ItemDef tome, string taughtTo)
+        {
+            box.Clear();
+            var c = App.Content; var s = App.Save;
+            var a = RewardCatalog.TaughtBy(c, tome);
+            if (a == null) return;
+            int left = s.Count(tome.Id);
+            var head = Ui.El("row", box);
+            head.style.alignItems = Align.Center;
+            var title = Ui.Heading(left > 1 ? $"Teach {a.Name} to ({left} tomes)" : left > 0 ? $"Teach {a.Name} to" : a.Name, head, "gold");
+            title.style.whiteSpace = WhiteSpace.Normal;
+            title.style.flexShrink = 1;
+            head.KindIcon(RowKind.Item, Art.ItemIcon(tome.Id));
+            GlossaryText.Create(Sentence(c, a), "kit-text dim", box).style.whiteSpace = WhiteSpace.Normal;
+            if (taughtTo != null)
+            {
+                var done = Ui.Para($"{taughtTo} learned {a.Name}.", box, "good");
+                App.StartCoroutine(Tween.Pop(done, 1.12f, Timing.Quick));
+            }
+            if (left <= 0) return;
+            var row = Ui.El("row", box);
+            row.style.flexWrap = Wrap.Wrap;
+            foreach (var h in s.Roster.OrderByDescending(x => s.Party.Contains(x.ClassId)).ToList())
+            {
+                string id = h.ClassId, name = c.TryClass(id)?.Name ?? id;
+                string why = Tomes.WhyNot(c, s, tome.Id, id);
+                var b = Ui.Button("", () =>
+                {
+                    var r = Tomes.Teach(c, s, tome.Id, id);
+                    App.Toast(r.Message, 2.4f);
+                    App.Audio.Sfx(r.Ok ? "battle.powerup" : "ui.error");
+                    if (r.Ok) App.Persist();
+                    DrawTeachCard(box, tome, r.Ok ? name : null);
+                }, "btn--small", row, confirmTap: true);
+                b.name = "teach-" + id;
+                b.style.flexDirection = FlexDirection.Column;
+                b.style.alignItems = Align.Center;
+                b.style.flexGrow = 1; b.style.flexShrink = 1; b.style.flexBasis = Length.Percent(22); b.style.minWidth = Size.Target;
+                Ui.Pad(b, Space.S8, Space.S8, Space.S8, Space.S8);
+                Ui.Thumb(id, b, Size.Avatar).pickingMode = PickingMode.Ignore;
+                Ui.Caption(name, b).pickingMode = PickingMode.Ignore;
+                Ui.SetEnabled(b, why == null);
+                if (why != null) b.tooltip = why;
+            }
+        }
+
         /// <summary>A Chest's "Open" button: rolls it, toasts the haul, and calls <paramref name="opened"/> with what came out.</summary>
         public static Button OpenButton(VisualElement parent, ItemDef chest, Action<Result, Chests.Haul> opened)
         {

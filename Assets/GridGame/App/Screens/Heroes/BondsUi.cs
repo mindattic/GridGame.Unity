@@ -11,7 +11,7 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>Trust and cohesion read on the Hero screen: the Status tab's Trust meter and top bonds, and the Party tab's
-    /// cohesion grid, so every bond reads without a debug tool.</summary>
+    /// pair lines, so every bond reads without a debug tool.</summary>
     internal static class BondsUi
     {
         private const int TopBonds = 3;
@@ -84,44 +84,24 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>The Party tab's cohesion grid: the party down the side and across the top, each cell the pair's cohesion
-        /// tier (gold from the Duo tier). Nothing for a party of fewer than two heroes with cohesion; one line while every
-        /// pair is still at tier 0 (GG-T1891: a grid of zeros took a third of the page).</summary>
-        public static void CohesionGrid(ContentDb c, SaveData s, VisualElement body)
+        /// <summary>The Party tab's cohesion: one line per party pair above tier 0 ("Knight + Cleric · tier 2", gold from the
+        /// Duo tier), strongest first, under a Cohesion header. Nothing while every pair is still at tier 0 (GG-T1970: the
+        /// grid of zeros it replaces took a third of the page).</summary>
+        public static void PairLines(ContentDb c, SaveData s, VisualElement parent)
         {
             var ids = s?.Party?.Where(id => Bonds.HasCohesion(s, id)).ToList();
             if (ids == null || ids.Count < 2) return;
-            if (!ids.Any(a => ids.Any(b => a != b && Bonds.CohesionTier(s, a, b) > 0)))
+            var pairs = ids.SelectMany((a, i) => ids.Skip(i + 1).Select(b => (a, b, tier: Bonds.CohesionTier(s, a, b))))
+                .Where(p => p.tier > 0)
+                .OrderByDescending(p => p.tier).ToList();
+            if (pairs.Count == 0) return;
+            Ui.Section("Cohesion", parent).name = "party-cohesion";
+            foreach (var (a, b, tier) in pairs)
             {
-                Ui.Caption($"Party cohesion: every pair at tier 0 of {BondsConfig.MaxTier}", Ui.Panel(body, null, false, "party-cohesion"), "dim");
-                return;
+                var line = Ui.Caption($"{c.TryClass(a)?.Name ?? a} + {c.TryClass(b)?.Name ?? b} · tier {tier} of {BondsConfig.MaxTier}",
+                    parent, tier >= BondsConfig.DuoTier ? "gold" : "good");
+                line.name = "party-pair-" + Bonds.PairKey(a, b);
             }
-            var panel = Ui.Panel(body, "Party cohesion", false, "party-cohesion");
-            VisualElement Cell(VisualElement row)
-            {
-                var cell = Ui.El("col", row);
-                cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.minWidth = 0;
-                cell.style.alignItems = Align.Center; cell.style.justifyContent = Justify.Center;
-                cell.style.height = Size.IconM + Space.S8;
-                return cell;
-            }
-            var header = Ui.El("row", panel);
-            Cell(header);
-            foreach (var id in ids) Ui.Thumb(id, Cell(header), Size.IconM);
-            foreach (var a in ids)
-            {
-                var row = Ui.El("row", panel);
-                row.name = "party-cohesion-" + a;
-                Ui.Thumb(a, Cell(row), Size.IconM);
-                foreach (var b in ids)
-                {
-                    var cell = Cell(row);
-                    if (a == b) { Ui.Caption("—", cell, "dim"); continue; }
-                    int t = Bonds.CohesionTier(s, a, b);
-                    Ui.Caption(t.ToString(), cell, t >= BondsConfig.DuoTier ? "gold" : t > 0 ? "good" : "dim");
-                }
-            }
-            Ui.Caption($"Cohesion tier of each pair, 0 to {BondsConfig.MaxTier}", panel, "dim");
         }
     }
 }

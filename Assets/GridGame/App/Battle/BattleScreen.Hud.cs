@@ -311,7 +311,7 @@ namespace GridGame.App
                 var aura = AuraFor(u);
                 if (sel) v.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
                 else if (aura.a > 0f && !ReduceMotion) v.SetGlow(aura, 0.45f);
-                else v.SetGlow(Color.white, 0f);
+                else v.SetGlow(Palette.White, 0f);
             }
             board.SyncTraps(State);
             board.SyncRegion(State); // GG-T359

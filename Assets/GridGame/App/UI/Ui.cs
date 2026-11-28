@@ -1105,7 +1105,7 @@ namespace GridGame.App
     /// lights up, or the share the pool is short shows red. Under Reduce Motion the fill jumps and the glow holds still.</summary>
     public sealed class PartyManaBar : VisualElement
     {
-        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Color.white, 0.45f);
+        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Palette.White, 0.45f);
         /// <summary>Points between two ticks (a 1-cost spell's price).</summary>
         public const int TickEvery = 100;
         /// <summary>How long a spend takes to drain the fill.</summary>
