@@ -366,6 +366,11 @@ namespace GridGame.Meta
                 s.Version = 29;
             }
             s.World.CarriedOrbs = null;
+            // GG-T2127: the Commander's look and pronouns. An older save keeps the female look and is they/them (the
+            // field defaults); any version, a value the enums don't know (a hand-edited or future save) reads as those.
+            if (s.Version < 30) s.Version = 30;
+            if (s.CommanderLook != HeroVariant.Female && s.CommanderLook != HeroVariant.Male) s.CommanderLook = HeroVariant.Female;
+            if (!Enum.IsDefined(typeof(CommanderPronouns), s.CommanderPronouns)) s.CommanderPronouns = CommanderPronouns.TheyThem;
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();

@@ -1,0 +1,42 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-waystone",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_waystone",
+  "about": [
+    "character-commander",
+    "class-knight",
+    "class-redmage"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Sleeping Stone",
+    "start": "unfold",
+    "nodes": [
+      {
+        "id": "unfold",
+        "speaker": "character-commander",
+        "line": "The rock unfolds. Halcyon plates slide apart, and a Ward-Engine rises out of the hill to face you.",
+        "next": "lock"
+      },
+      {
+        "id": "lock",
+        "speaker": "class-knight",
+        "line": "It shrugged off a sword. Check what it's weak to before we waste another swing.",
+        "next": "bolt"
+      },
+      {
+        "id": "bolt",
+        "speaker": "class-redmage",
+        "line": "Lightning. It's built to answer lightning. Stand back."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-knight",
+    "class-redmage"
+  ]
+}

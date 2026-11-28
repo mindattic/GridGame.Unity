@@ -1,0 +1,34 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-mouth-bark",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_mouth_bark",
+  "about": [
+    "class-cleric",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Vault Mouth",
+    "start": "hurt",
+    "nodes": [
+      {
+        "id": "hurt",
+        "speaker": "class-cleric",
+        "line": "It caught me on the way up. I can mend it, if someone keeps that glob off me.",
+        "next": "cover"
+      },
+      {
+        "id": "cover",
+        "speaker": "class-knight",
+        "line": "Heal yourself. I'll stand in front."
+      }
+    ]
+  },
+  "speakers": [
+    "class-cleric",
+    "class-knight"
+  ]
+}

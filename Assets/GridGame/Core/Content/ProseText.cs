@@ -175,8 +175,15 @@ namespace GridGame.Core.Content
         }
 
         private static readonly System.Text.RegularExpressions.Regex TokenPattern = new System.Text.RegularExpressions.Regex(@"\{([^{}]*)\}");
-        /// <summary>The one {token} story text may carry (GG-T1618): the commander's name, filled in where it is shown.</summary>
+        /// <summary>The {token} for the commander's name (GG-T1618), filled in where it is shown.</summary>
         public const string CommanderToken = "commander";
+        /// <summary>GG-T2127: the Commander's pronoun tokens, filled from the save's pick (they/them, she/her, he/him): {they}
+        /// {them} {their} {theirs} {themself}, and each capitalized ({They}) for the start of a sentence.</summary>
+        public static readonly string[] PronounTokens = { "they", "them", "their", "theirs", "themself" };
+
+        /// <summary>GG-T2127: <paramref name="token"/> (no braces) is a pronoun token, lower case or capitalized.</summary>
+        public static bool IsPronounToken(string token) =>
+            !string.IsNullOrEmpty(token) && Array.IndexOf(PronounTokens, char.ToLowerInvariant(token[0]) + token.Substring(1)) >= 0;
 
         /// <summary>Reads Content/Text and fills every narrative field from it. With no text file at all (a hand-built test
         /// fixture) nothing is joined and the records keep whatever they were given. Never throws on a missing or broken
@@ -211,8 +218,8 @@ namespace GridGame.Core.Content
                 foreach (var t in kv.Value.Payload?.DescendantsAndSelf().OfType<JValue>() ?? Enumerable.Empty<JValue>())
                     if (t.Type == JTokenType.String)
                         foreach (System.Text.RegularExpressions.Match m in TokenPattern.Matches((string)t))
-                            if (m.Groups[1].Value != CommanderToken)
-                                db.TextProblems.Add($"text {kv.Key}: unknown token {m.Value} (only {{{CommanderToken}}} is filled in)");
+                            if (m.Groups[1].Value != CommanderToken && !IsPronounToken(m.Groups[1].Value))
+                                db.TextProblems.Add($"text {kv.Key}: unknown token {m.Value} (only {{{CommanderToken}}} and the pronoun tokens are filled in)");
 
             foreach (var kv in texts)
             {

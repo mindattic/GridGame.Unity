@@ -1,0 +1,50 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-camp",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_camp",
+  "about": [
+    "character-commander",
+    "class-barbarian",
+    "class-cleric",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "Camp at the Ford",
+    "start": "dusk",
+    "nodes": [
+      {
+        "id": "dusk",
+        "speaker": "character-commander",
+        "line": "Dusk comes down over the reeds at the ford. Nobody follows you from the bridge.",
+        "next": "meal"
+      },
+      {
+        "id": "meal",
+        "speaker": "class-cleric",
+        "line": "Eat something and sleep. Nobody is hurt worse than tired, and tired mends by morning.",
+        "next": "knight"
+      },
+      {
+        "id": "knight",
+        "speaker": "class-knight",
+        "line": "He showed us his plate and his flanks and dared us to try. Going round him gets us nowhere.",
+        "next": "through"
+      },
+      {
+        "id": "through",
+        "speaker": "class-barbarian",
+        "line": "I don't need to go round it. I need to go through it. Show me where a plate like that is weakest, and I'll learn the swing tonight."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-cleric",
+    "class-knight",
+    "class-barbarian"
+  ]
+}
