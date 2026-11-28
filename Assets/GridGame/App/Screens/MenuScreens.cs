@@ -149,10 +149,10 @@ namespace GridGame.App
             settings.KindIcon(RowKind.Settings);
             var about = Ui.MenuRow("About", "", () => App.Router.Push(new AboutScreen()), menu);
             about.name = "title-about";
-            about.KindIcon(RowKind.Bestiary);
+            about.KindIcon(RowKind.Codex);
             var credits = Ui.MenuRow("Credits", "", () => App.Router.Push(new CreditsScreen()), menu);
             credits.name = "title-credits";
-            credits.KindIcon(RowKind.Bestiary);
+            credits.KindIcon(RowKind.Lore);
             Ui.SelectFirst(menu);
 
             var ver = Ui.Text($"v{Application.version}", "tiny dim corner-tag", root); // GG-T1794: POL-C9 skips corner tags
