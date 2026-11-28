@@ -106,7 +106,7 @@ namespace GridGame.Tests
                 {
                     case TurnTimeUpEvent _: row.Forced++; supportHealer = -1; break;
                     case PincerFormedEvent _: supportHealer = -1; break;
-                    case ManaChargedEvent mc: row.Mana[mc.Reason ?? "?"] = row.ManaOf(mc.Reason ?? "?") + mc.Amount; break;
+                    case ManaGainedEvent mc when mc.Kind == ManaGainKind.Earned: row.Mana[mc.Reason ?? "?"] = row.ManaOf(mc.Reason ?? "?") + mc.Amount; break;
                     case SupportActionEvent sa:
                         supportHealer = -1;
                         if (!heroes.Contains(sa.SupporterId)) break;

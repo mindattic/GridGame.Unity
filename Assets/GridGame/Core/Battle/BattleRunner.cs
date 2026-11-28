@@ -575,25 +575,25 @@ namespace GridGame.Core.Battle
             if (S.AllSpellsFull) return;
             amount = BattleEngine.DampedCharge(S, amount);
             if (amount <= 0) return;
-            Emit(new ManaChargedEvent { SourceId = sourceId, Amount = amount, Reason = reason, Participants = participants, Chain = chain });
-            GainMana(amount, sourceId, reason);
+            GainMana(amount, sourceId, reason, e => { e.Kind = ManaGainKind.Earned; e.Participants = participants; e.Chain = chain; });
         }
 
         /// <summary>A whole grant (§3.1.0): <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points to
-        /// every meter as one undamped gain. The Log reads one <see cref="OrbMintedEvent"/> per orb.</summary>
+        /// every meter as one undamped gain. One that finds every meter full is still reported (Amount 0, no meters), so
+        /// the Log can say so.</summary>
         private void GrantOrbs(int orbs, int sourceId, string reason)
         {
             if (orbs <= 0) return;
-            bool landed = GainMana(orbs * BattleConfig.ManaPointsPerOrb, sourceId, reason);
-            for (int i = 0; i < orbs; i++)
-                Emit(new OrbMintedEvent { SourceUnitId = sourceId, Landed = landed, Reason = reason });
+            if (!GainMana(orbs * BattleConfig.ManaPointsPerOrb, sourceId, reason, e => e.Orbs = orbs))
+                Emit(new ManaGainedEvent { SourceId = sourceId, Reason = reason, Kind = ManaGainKind.Grant, Orbs = orbs });
         }
 
         /// <summary>Applies a gain (or a negative siphon) to the spell meters and reports it; false when no meter moved.</summary>
-        private bool GainMana(int points, int sourceId, string reason)
+        private bool GainMana(int points, int sourceId, string reason, Action<ManaGainedEvent> tag = null)
         {
             var e = BattleEngine.GainMana(S, points, reason, sourceId);
             if (e == null) return false;
+            tag?.Invoke(e);
             Emit(e);
             foreach (var d in e.Readied)
                 Emit(new SpellReadyEvent { UnitId = d.UnitId, Slot = d.Slot, AbilityId = S.UnitById(d.UnitId)?.Bar[d.Slot].AbilityId });
