@@ -49,7 +49,7 @@ namespace GridGame.Tests
             setup.Party.Add(k);
             setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(cleric.x, cleric.y) });
             var s = BattleEngine.Create(Db(), setup, new List<BattleEvent>());
-            s.Bank.Add(4);
+            GrantMana(s, 4);
             return s;
         }
 

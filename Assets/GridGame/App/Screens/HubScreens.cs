@@ -316,8 +316,13 @@ namespace GridGame.App
             }
             foreach (var slot in Equipment.JewelrySlots)
                 G(ItemUi.SlotName(slot), h.Jewelry.TryGetValue(slot, out var jid) ? jid : null);
-            Ui.Section("Lore", sheet);
-            GlossaryText.Create(def.Lore ?? def.Description ?? "", "kit-text dim", sheet);
+            // GG-T1826: a unit's description and lore live here and in the Bestiary, not in battle.
+            if (!string.IsNullOrEmpty(def.Description) || !string.IsNullOrEmpty(def.Lore))
+            {
+                Ui.Section("Lore", sheet);
+                if (!string.IsNullOrEmpty(def.Description)) GlossaryText.Create(def.Description, "kit-text", sheet).name = "status-description";
+                if (!string.IsNullOrEmpty(def.Lore) && def.Lore != def.Description) GlossaryText.Create(def.Lore, "kit-text dim", sheet).name = "status-lore";
+            }
 
             // GG-T182: armor set progress — every set this hero wears a piece of, with each bonus tier lit once reached.
             var setsBlock = Ui.El("col", sheet);
@@ -662,19 +667,15 @@ namespace GridGame.App
             if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list).KindIcon(RowKind.Close);
             if (tab == 0)
             {
-                int ownedOrbs = ManaOrbs.Owned(C, S); // GG-T677: a spell costing more orbs than you hold can't be cast yet
                 // GG-T1043: the bar picks from the abilities the hero owns (known, or on its owned skill hexagon nodes) —
                 // only the ones it can fire (skills and spells); passives work from the Passives tab, not a slot.
                 foreach (var id in HeroBoard.OwnedAbilities(C, h))
                 {
                     var a = C.TryAbility(id);
                     if (a == null || !Abilities.IsHeroUsable(a)) continue;
-                    bool shortOrbs = a.Kind == AbilityKind.Spell && a.Cost > ownedOrbs;
-                    string value = shortOrbs ? $"{KindLabel(a)} · needs {a.Cost} orbs, you have {ownedOrbs}" : KindLabel(a);
-                    var row = Ui.MenuRow(a.Name, value, () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, null, slot < unlocked);
+                    var row = Ui.MenuRow(a.Name, KindLabel(a), () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, null, slot < unlocked);
                     row.KindIcon(RowKind.Ability, Art.AbilityIcon(a));
-                    if (shortOrbs) row.Q<Label>("value")?.AddToClassList("bad");
-                    if (a.Cost > 0) Ui.CostPips(a.Cost, row, have: ownedOrbs);
+                    if (a.Cost > 0) Ui.CostPips(a.Cost, row);
                     InspectCard.Attach(row, b => InspectCard.Ability(b, a, wearer: C.TryClass(h.ClassId)));
                     Describe(a, list);
                 }
@@ -2305,6 +2306,7 @@ namespace GridGame.App
             Ui.Caption($"Defeated {e.Defeated}", top, "gold");
             if (!string.IsNullOrEmpty(d.Description)) GlossaryText.Create(d.Description, "kit-text", w);
             if (!string.IsNullOrEmpty(d.Lore) && d.Lore != d.Description) GlossaryText.Create(d.Lore, "kit-text dim", w);
+            Fact(w, "beast-known", "Known", Known(tier));
             if (d.Heavy) GlossaryText.Create(InspectCard.HeavyLine, "kit-text gold", w).name = "beast-heavy"; // GG-T892: its keyword and counters, once seen
             if (d.DropTable != null && C.DropTables.TryGetValue(d.DropTable, out var drops) && drops.Entries.Count > 0)
             {
@@ -2346,6 +2348,11 @@ namespace GridGame.App
             var hint = BestiaryKnowledge.Hint(e);
             if (hint != null) Ui.Para(hint, w, "dim").name = "beast-hint";
         }
+
+        /// <summary>How much of it the Bestiary knows, by the highest tier reached.</summary>
+        private static string Known(int tier) =>
+            tier >= BestiaryKnowledge.Abilities ? "Everything" : tier >= BestiaryKnowledge.Elements ? "Its weaknesses"
+            : tier >= BestiaryKnowledge.Stats ? "Its HP and stats" : tier >= BestiaryKnowledge.Speed ? "Its speed" : "Its name and story";
 
         /// <summary>One knowledge row: its label, then the value, or "???" while <paramref name="value"/> is still locked (null).</summary>
         private static void Fact(VisualElement w, string name, string label, string value)
@@ -2584,11 +2591,11 @@ namespace GridGame.App
                 "• Moving never hurts. Only pincers and spells deal damage.\n" +
                 "• Time moves only when you act. Icons flow left; whoever reaches the left edge acts, and speed decides who gets there first.\n" +
                 "• Pincer an enemy to push its icon back on the timeline.\n" +
-                "• Pincers fill your mana orbs. Spend them on spells; skills and items cost a turn.\n" +
+                "• Every spell has its own mana bar. Pincers and every other mana gain fill every spell's bar, cheap spells faster. Casting empties only that spell's bar. Skills and items cost a turn.\n" +
                 "• Tap a hero, a slot, a target, then Cast. Spells charge on the timeline before they land.\n" +
                 "• Roles need each other: Tanks Taunt so enemies leave your casters alone, Healers mend (WIS), Mages hit hardest with spells (INT), Strikers swing Cleave and War Cry (STR).\n" +
                 "• Fallen enemies sometimes drop a pickup. Walk a hero over it before it fades.\n" +
-                "• GUARD skips to the next enemy turn and shields everyone.", help);
+                "• GUARD skips to the next enemy turn, shields everyone and banks the unused time as mana.", help);
             if (S != null)
             {
                 // GG-T539: one button brings back every lesson: the first battle's (on The Tithe Moors I), each battle system's
@@ -2688,17 +2695,6 @@ namespace GridGame.App
             refineBtn.name = "aetherist-refine";
             Ui.SetEnabled(refineBtn, refineAmount <= maxRefine);
 
-            // GG-T677: the Manasmith reseals Broken Mana Orbs found as loot into owned orbs (one more orb to fill in battle).
-            int broken = S.Count(ManaOrbs.BrokenOrbId);
-            var orbs = Ui.Panel(body, "Mana Orbs", false, "aetherist-orb-panel");
-            Ui.Field("Held", $"{ManaOrbs.Owned(C, S)} of {GridGame.Core.Battle.BattleConfig.MaxOrbCapacity}", orbs, null, "aetherist-orb-count");
-            Ui.Field("Broken Mana Orbs", broken.ToString("N0"), orbs, null, "aetherist-broken-count");
-            Ui.Field("Restoring one costs", $"{ManaOrbs.RestoreDust:N0} {DustEconomy.DustName} + {Ui.Gold(ManaOrbs.RestoreGold)}", orbs, null, "aetherist-restore-quote");
-            var can = ManaOrbs.CanRestore(C, S);
-            var restoreBtn = RowIcon.IconButton("Restore a Mana Orb", RowKind.Confirm, () => Done(ManaOrbs.Restore(C, S), true, "ui.diamond"), "btn--primary", orbs);
-            restoreBtn.name = "aetherist-restore";
-            Ui.SetEnabled(restoreBtn, can.Ok);
-            if (!can.Ok && broken > 0) Ui.Para(can.Message, orbs, "dim");
 
             Ui.Note($"{DustEconomy.DustPerShard} {DustEconomy.DustName} refines into 1 {ShardText.Short}. {DustEconomy.DustName} costs {DustEconomy.GoldPerDust} G a piece here — " +
                 $"buying {ShardText.Plural} outright at the {ShardText.Store} is the better rate; Dust is the free-play path, earned in battle.", body);

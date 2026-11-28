@@ -18,8 +18,8 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>
-    /// The battle. Layout follows the bible HUD rows (§9): top bar · timeline + shield · action banner ·
-    /// 6×8 board · ability bar with the mana pool at its right end (GG-T405) · Party · Lore · Log tabs. The simulation (BattleState) is the only truth;
+    /// The battle. Layout follows the bible HUD rows (§9.0): top bar (hamburger · stage and wave · gold) · timeline + GUARD ·
+    /// 6×8 board · icon-only ability bar · description panel to the safe bottom. The simulation (BattleState) is the only truth;
     /// this screen turns input into commands and plays the resulting events back.
     /// </summary>
     public sealed partial class BattleScreen : GameScreen
@@ -56,7 +56,9 @@ namespace GridGame.App
 
         // Layout (design pixels). Vertical positions are fixed from the top; horizontal ones follow the live stage
         // width (bible §26.3) so a wider phone centres the board and stretches the timeline instead of leaving a gap.
-        private const float BoardTop = 450f;
+        // §9.0 (GG-T1822): fixed rows, nothing stacked between them: the top bar, the timeline, the board a gutter under
+        // the timeline frame (the old banner row is gone, so the board gains its 117 px), the ability bar, the description panel.
+        private const float BoardTop = TimelineY + TimelineFrameHeight / 2f + Space.S8;
         private static float BoardLeft => (GameApp.StageWidth - BoardView.Tile * BattleConfig.Cols) / 2f;
         // The timeline's geometry lives with it in BattleScreen.Timeline.cs (GG-T287).
 
@@ -81,40 +83,27 @@ namespace GridGame.App
         private readonly BattleSetup setupOverride;
         private BoardView board;
         private readonly List<VisualElement> slotViews = new List<VisualElement>();
-        /// <summary>The mana orbs row (GG-T673, back from GG-T405's single globe): one orb per bank slot, named "orbs" with
-        /// children "orb0".."orbN" so automation finds it. Filled orbs glow (their bloom behind them); the next orb forming
-        /// shows the mana charge round its rim; an aimed spell marks the orbs it would spend.</summary>
-        private VisualElement pool;
-        private readonly List<ManaOrbView> orbViews = new List<ManaOrbView>();
-        private readonly List<VisualElement> orbBlooms = new List<VisualElement>();
-        /// <summary>How many orbs the pool currently shows (GG-T366). Mid-playback it lags State.Bank, which already
-        /// holds the action's final count: each mint ticks it up as its orb lands and each spend ticks it down, so the
-        /// pool never shows an orb before its fly-in or after it was spent.</summary>
-        private int shownOrbs;
-        /// <summary>The Party page of the info tabs (GG-T391): the selected unit, its skills, the ability/confirm card and
-        /// the tutorial lesson all draw here (a ScrollView, so Add/Clear reach its content).</summary>
+        /// <summary>The description panel's page (§9.0): the selected unit, its skills and the ability/confirm card draw here
+        /// (a ScrollView, so Add/Clear reach its content).</summary>
         private VisualElement panel;
+        /// <summary>Where the announcement overlay sits (§9.0, GG-T1824): no row of its own, an empty anchor on the board's
+        /// top edge that the billboard reads its place from; it takes no input.</summary>
         private VisualElement bannerViewport;
-        private Coroutine bannerScrollRoutine;
-        /// <summary>The banner band (GG-T391, GG-T405): a gutter under the timeline frame to a gutter above the board, so
-        /// nothing in it (banner, billboard, drag timer) can touch either. Two lines of the stepped-down banner font fit.</summary>
-        private const float BannerTop = TimelineY + TimelineFrameHeight / 2f + Space.S8, TopBarHeight = 110f;
-        private const float BannerViewportHeight = BoardTop - Space.S8 - BannerTop;
-        /// <summary>Room the drag-timer seconds take at the banner row's right end; the banner keeps the same inset on both
-        /// sides so it stays centred and never runs under the timer (GG-T391).</summary>
-        private const float TimerReserve = Size.Label + Space.S24;
-        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391, GG-T405): the ability bar (five slots and
-        // the mana pool), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
+        private const float BannerTop = BoardTop + Space.S8, TopBarHeight = 110f;
+        /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
+        private const float BannerViewportHeight = Size.Target - Space.S24;
+        // The HUD rows under the board, top to bottom, a gutter apart (§9.0): the ability bar (five icon-only slots), then
+        // the description panel, which stretches to the safe bottom and so alone absorbs a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => BoardBottom + Space.S24; // 24 px from the board's tiles, also targets (GG-T656, POL-C3)
         // GG-T706 (owner 2026-11-23): the ability bar is always the row under the board. GG-T523's side columns beside the
         // board on a 2:3 / 3:4 stage are gone: those shapes are now letterboxed at 9:16 (bible §26.3), so no stage is wide
         // enough for them.
-        /// <summary>The info tabs start a target gap (POL-C3, 24) under the mana orbs row.</summary>
-        private static float InfoTabsTop => OrbRowTop + Size.OrbRow + Space.S24;
-        /// <summary>The mana orbs row (GG-T673) sits a target gap under the ability row; the info tabs start a gap under it.</summary>
-        private static float OrbRowTop => BarTop + Size.Slot + Space.S24;
-        private Label banner, waveLabel, coinLabel, timerLabel;
+        /// <summary>The description panel starts a target gap (POL-C3, 24) under the ability row.</summary>
+        private static float DescriptionTop => BarTop + Size.Slot + Space.S24;
+        private Label waveLabel, coinLabel, timerLabel;
+        /// <summary>The newest ShowBanner line (automation reads it); the line itself is a billboard row that fades.</summary>
+        private string bannerText = "";
         private VisualElement shake;
         private VisualElement boardHost;
         /// <summary>Stage-sized layer inside the board, under board.Lines, that holds cut-in cards (GG-T128).</summary>
@@ -129,6 +118,13 @@ namespace GridGame.App
         // First-battles hint: after a pause, show the move the bot would make (§29 tutorial question → contextual hints).
         private float idle;
         private bool hintShown;
+        /// <summary>The hint's or a tip's words (§9.2.1): the description panel's idle content, gone on input or after
+        /// <see cref="AdviceSeconds"/>. The hint's board marks stay on the board.</summary>
+        private string advice;
+        private float adviceAt;
+        private const float AdviceSeconds = 6f;
+        /// <summary>The last refusal's reason (§9.0): the panel's state line until the next input.</summary>
+        private string refusal;
         private const float HintDelay = 5f;
         private bool HintsEnabled => App.Save == null || App.Save.HighestClearedStage < 2;
 
@@ -190,13 +186,6 @@ namespace GridGame.App
             billboard?.RemoveFromHierarchy();
             billboard = null;
             if (Coach.Active && (Coach.LessonId ?? "").StartsWith("battle-")) Coach.Cancel(); // GG-T539: a lesson leaves with its battle
-            mintTagHost?.RemoveFromHierarchy(); // GG-T405: the globe's source tags live on the Overlay too
-            mintTagHost = null;
-            mintTags.Clear();
-            // Build() rebuilds `banner` fresh when the player backs out of "How to play" onto this same
-            // instance (see the Build() comment); an in-flight scroll left running would keep animating
-            // whatever `banner` now points to using timing measured against the old one (GG-T70).
-            if (bannerScrollRoutine != null) { App.StopCoroutine(bannerScrollRoutine); bannerScrollRoutine = null; }
         }
 
         private bool Colorblind => App.Settings.ColorblindMode;
@@ -209,14 +198,12 @@ namespace GridGame.App
             var initial = new List<BattleEvent>();
             // Build runs again on this same instance when the player backs out of "How to play" (the router
             // re-mounts the screen). Every per-build view cache must start empty, or the HUD keeps writing to
-            // the previous build's detached elements (every slot read "Locked", orbs empty, timeline icons
+            // the previous build's detached elements (every slot read "Locked", timeline icons
             // gone, coin label blank) — and the once-per-battle work (tutorial, opening playback, capture
             // event) must not run a second time (GG-T70).
             bool firstBuild = !built;
             built = true;
             slotViews.Clear();
-            pool = null;
-            orbViews.Clear(); orbBlooms.Clear();
             timelineIconViews.Clear();
             shownCoins = -1;
             if (!firstBuild)
@@ -263,16 +250,6 @@ namespace GridGame.App
 
             BuildTopBar(shake);
             BuildTimeline(shake);
-            bannerViewport = Ui.El("", shake);
-            bannerViewport.name = "banner-viewport";
-            bannerViewport.style.position = Position.Absolute;
-            bannerViewport.style.left = TimerReserve; bannerViewport.style.right = TimerReserve; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
-            bannerViewport.style.overflow = Overflow.Hidden;
-            banner = Ui.Text("", "h2 shadow", bannerViewport);
-            banner.style.position = Position.Absolute;
-            banner.style.left = Space.S0; banner.style.right = Space.S0; banner.style.top = Space.S0;
-            banner.style.unityTextAlign = TextAnchor.UpperCenter;
-            banner.style.whiteSpace = WhiteSpace.Normal;
 
             boardHost = Ui.El("", shake);
             boardHost.style.position = Position.Absolute;
@@ -297,8 +274,9 @@ namespace GridGame.App
             board.Root.RegisterCallback<PointerUpEvent>(OnPointerUp);
             board.Root.RegisterCallback<PointerCaptureOutEvent>(_ => { if (dragging) CommitDrag(); pressing = false; });
 
+            BuildAnnouncementBand(shake);
             BuildAbilityBar(shake);
-            BuildInfoTabs(shake);
+            BuildDescriptionPanel(shake);
 
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
@@ -313,7 +291,7 @@ namespace GridGame.App
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
-                panel.schedule.Execute(() => ShowBanner("Tip: tap or hold any hero, foe, slot or icon to read it")).StartingIn(2500);
+                panel.schedule.Execute(() => Advise("Tip: tap or hold any hero, foe, slot or icon to read it")).StartingIn(2500);
             }
             CaptureUnity.Raise("battle-start", new CaptureData { ["stage"] = State.Stage.Id });
         }
@@ -328,22 +306,42 @@ namespace GridGame.App
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = Space.S32; bar.style.height = TopBarHeight;
             RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
-            var mid = Ui.El("col grow", bar);
-            mid.style.alignItems = Align.Center;
-            mid.style.minWidth = Space.S0; // GG-T1143: the column may be narrower than the stage name (9:23), which then shrinks and ends in an ellipsis
-            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "h2 shadow", mid), grow: false);
-            stageName.style.maxWidth = Length.Percent(100); stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
+            // shrinks to an ellipsis first (GG-T1143), the wave never does.
+            var mid = Ui.El("row grow", bar);
+            mid.style.alignItems = Align.Center; mid.style.justifyContent = Justify.Center;
+            mid.style.minWidth = Space.S0;
+            mid.style.marginLeft = mid.style.marginRight = Space.S16;
+            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
+            stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
             stageName.AddToClassList(TextFit.EllipsisClass); stageName.style.overflow = Overflow.Hidden; stageName.style.textOverflow = TextOverflow.Ellipsis;
+            var sep = Ui.Text("·", "small shadow", mid);
+            sep.style.flexShrink = 0; sep.style.marginLeft = sep.style.marginRight = Space.S8;
             // Full-colour, not .dim: the LivingBackdrop's drifting shards pass behind the top bar, and dim grey "1/5"
             // vanished against a pale shard so the label read as just "Wave" (GG-T666).
             waveLabel = Ui.Text("", "small shadow", mid);
+            waveLabel.style.flexShrink = 0;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
-            timerLabel = Ui.Text("", "h1 shadow warn", root);
+        }
+
+        /// <summary>The announcement anchor (§9.0, GG-T1824): an empty, input-free box on the board's top edge where the
+        /// billboard's fading lines stack. The drag timer's seconds sit in the timeline row beside the NOW diamond, above the
+        /// track, so nothing of the drag covers the board.</summary>
+        private void BuildAnnouncementBand(VisualElement root)
+        {
+            bannerViewport = Ui.El("", root);
+            bannerViewport.name = "banner-viewport";
+            bannerViewport.pickingMode = PickingMode.Ignore;
+            bannerViewport.style.position = Position.Absolute;
+            bannerViewport.style.left = bannerViewport.style.right = Fit.Edge; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
+            timerLabel = Ui.Text("", "h2 shadow warn", root);
+            timerLabel.name = "drag-timer";
+            timerLabel.pickingMode = PickingMode.Ignore;
             timerLabel.style.position = Position.Absolute;
-            // The drag timer keeps to the banner band (GG-T405): its own height, centred in it, never over the timeline or board.
-            timerLabel.style.right = Space.S48; timerLabel.style.top = BannerTop; timerLabel.style.height = BannerViewportHeight;
-            timerLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+            timerLabel.style.left = Fit.Edge + SlotSpan + Space.S8;
+            timerLabel.style.top = TimelineY - TimelineFrameHeight / 2f; timerLabel.style.height = TrackY - IconSpan / 2f;
+            timerLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
         }
 
         /// <summary>Re-applies the positions that depend on the stage width (build time and on resize).</summary>
@@ -352,19 +350,14 @@ namespace GridGame.App
             if (boardHost == null) return;
             boardHost.style.left = BoardLeft;
             cutInLayer.style.left = -BoardLeft;
-            // The rows under the board (ability bar + mana pool, info tabs) keep to the centred content column, so on a
+            // The rows under the board (ability bar, description panel) keep to the centred content column, so on a
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
             LayoutAbilityBar(inset);
-            if (pool != null)
+            if (Root?.Q("description-panel") is VisualElement desc)
             {
-                pool.style.left = pool.style.right = inset + Fit.Edge;
-                pool.style.top = OrbRowTop;
-            }
-            if (Root?.Q("info-tabs") is VisualElement tabs)
-            {
-                tabs.style.left = tabs.style.right = inset + Fit.Edge;
-                tabs.style.top = InfoTabsTop;
+                desc.style.left = desc.style.right = inset + Fit.Edge;
+                desc.style.top = DescriptionTop;
             }
             cutInLayer.style.width = GameApp.StageWidth; cutInLayer.style.height = GameApp.StageHeight;
             LayoutTimelineFrame();
@@ -388,7 +381,7 @@ namespace GridGame.App
             var bar = abilityBar;
             bar.style.top = BarTop; bar.style.height = Size.Slot;
             // Row padding + each cell's 12-px margin: slots sit 24 px apart (POL-C3), the row's edge equals that gap
-            // (POL-C8), and the cells still line up with the info tabs at inset + Fit.Edge (GG-T651, GG-T656).
+            // (POL-C8), and the cells still line up with the description panel at inset + Fit.Edge (GG-T651, GG-T656).
             bar.style.left = bar.style.right = inset + Fit.Edge - 2 * Space.TargetHalfGap;
             bar.style.paddingLeft = bar.style.paddingRight = Space.TargetHalfGap;
             foreach (var cell in bar.Children()) LayCell(cell);
@@ -410,7 +403,7 @@ namespace GridGame.App
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
             // Exactly five slots fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit that
-            // row" - the mana pool no longer shares it, see BuildManaPool); even gutters on the space scale, and the
+            // row"); even gutters on the space scale, and the
             // cells, not the gaps, take a wider stage (POL-C1/C8). Laid out by LayoutAbilityBar.
             bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
@@ -428,7 +421,6 @@ namespace GridGame.App
                 Ui.AbilitySlot(slot);
                 slotViews.Add(slot);
             }
-            BuildManaPool(root);
         }
 
         /// <summary>One cell of the ability row: a window-framed column that takes an even share of the row.</summary>
@@ -441,82 +433,6 @@ namespace GridGame.App
             cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 4;
             cell.style.backgroundImage = new StyleBackground(Art.Window);
             return cell;
-        }
-
-        /// <summary>The mana orbs row (GG-T673, owner 2026-11-22: "return the mana orbs line ... it's easier to interpret orbs
-        /// than it is to do math"), replacing GG-T405's single globe (owner 2026-11-17). One <see cref="ManaOrbView"/> per bank
-        /// slot under the ability row; lit orbs bloom; the next empty orb carries the forming charge round its rim. Mints
-        /// fly into their own slot along a bezier trail, spends leave from the newest orbs (BattleScreen.Playback). Holding
-        /// it explains it (ManaPoolCard).</summary>
-        private void BuildManaPool(VisualElement root)
-        {
-            // GG-T673 (owner 2026-11-22: "return the mana orbs line"): a row of orbs, one per bank slot, under the ability
-            // row. Spells cost whole orbs, so the row reads at a glance: no count to do maths on.
-            pool = Ui.El("row", root);
-            pool.name = "orbs";
-            pool.AddToClassList("mana-orbs");
-            pool.style.position = Position.Absolute;
-            pool.style.height = Size.OrbRow;
-            pool.style.justifyContent = Justify.FlexStart; // left to right, equal gaps (LayoutOrbs)
-            pool.style.alignItems = Align.Center;
-            pool.RegisterCallback<GeometryChangedEvent>(_ => LayoutOrbs());
-            pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
-            InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
-            // GG-T729: no label leads the row (the orbs speak for themselves).
-            int cap = Mathf.Max(1, State?.Bank?.Capacity ?? BattleConfig.ManaBankCapacity);
-            for (int i = 0; i < cap; i++)
-            {
-                var cell = Ui.El("", pool);
-                cell.name = "orb" + i;
-                cell.pickingMode = PickingMode.Ignore;
-                cell.style.width = cell.style.height = Size.OrbRow; // LayoutOrbs fits these to the row
-                cell.style.flexShrink = 0;
-                var bloom = new VisualElement { name = "bloom", pickingMode = PickingMode.Ignore };
-                bloom.style.position = Position.Absolute;
-                bloom.style.backgroundImage = new StyleBackground(Art.Glow);
-                bloom.style.unityBackgroundImageTintColor = Palette.OrbLit;
-                bloom.style.opacity = 0f;
-                cell.Add(bloom);
-                var orb = new ManaOrbView { ReduceMotion = ReduceMotion };
-                orb.style.position = Position.Absolute;
-                orb.style.left = orb.style.top = orb.style.right = orb.style.bottom = Space.S0;
-                cell.Add(orb);
-                orbViews.Add(orb);
-                orbBlooms.Add(bloom);
-            }
-            if (!ReduceMotion) pool.schedule.Execute(BreatheOrbs).Every(33);
-        }
-
-        /// <summary>Owner 2026-11-22: "all mana orbs need to always be sized properly and spaced equally, rendered from left
-        /// to right." Any count from 1 to MaxOrbCapacity: every orb the same size (at most Size.OrbRow, smaller as the count
-        /// grows so the row always fits), the same gap between each, starting at the left edge.</summary>
-        private void LayoutOrbs()
-        {
-            if (pool == null || orbViews.Count == 0) return;
-            float avail = pool.contentRect.width;
-            if (float.IsNaN(avail) || avail <= 0f) return;
-            int n = orbViews.Count;
-            float gap = Size.OrbGap;
-            // GG-T688: big bulbs while you own few (1 to 2 doubles your casting, so each one must read), shrinking only as
-            // the count needs, never below OrbMin.
-            float size = Mathf.Clamp((avail - gap * (n - 1)) / n, Size.OrbMin, Size.OrbRow);
-            for (int i = 0; i < n; i++)
-            {
-                var cell = orbViews[i].parent;
-                if (cell == null) continue;
-                cell.style.width = cell.style.height = size;
-                cell.style.marginRight = i < n - 1 ? gap : Space.S0;
-                var bloom = orbBlooms[i];
-                bloom.style.left = bloom.style.top = bloom.style.right = bloom.style.bottom = -size * Size.OrbBloom / Size.OrbRow;
-            }
-        }
-
-        /// <summary>Lit orbs breathe their bloom softly, in step, so the row reads as live mana (GG-T673).</summary>
-        private void BreatheOrbs()
-        {
-            float k = 0.78f + 0.22f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / Timing.OrbBreathe);
-            for (int i = 0; i < orbBlooms.Count; i++)
-                orbBlooms[i].style.opacity = orbViews[i].Filled ? k : 0.6f * Mathf.Clamp01(orbViews[i].Charge); // GG-T739: the halo of a filling orb brightens with its fill
         }
 
         // ─────────────────────────────────────────────────────────────────────────
@@ -577,7 +493,6 @@ namespace GridGame.App
             board.SyncAmplifier(State.Amplifier);
             board.SyncPickups(State);
             SyncTimeline(null);
-            SyncOrbs();
             SyncBar();
             SyncPanel();
             int wave = Math.Min(State.Wave + 1, State.Stage.Waves.Count);
@@ -660,92 +575,6 @@ namespace GridGame.App
             e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c;
         }
 
-        /// <param name="upTo">Mid-playback (GG-T112): show only this many orbs, so orbs minted in one action tick the pool
-        /// up one by one as each lands instead of all at once; -1 shows the bank as it is. Also used by
-        /// <see cref="OrbsSpentEvent"/> playback (GG-T130) to show the count right after that spend, not the command's
-        /// end-of-action <see cref="BattleState.Bank"/> count, which may already include orbs the same action mints later.</param>
-        private void SyncOrbs(int upTo = -1)
-        {
-            int filled = upTo >= 0 ? Mathf.Min(upTo, State.Bank.Count) : State.Bank.Count;
-            shownOrbs = filled; // GG-T366: the pool shows what has landed so far, not the final count
-            // Mid-playback the charge beats own shownCharge (each ChargeAnim starts from the last one's total); the
-            // end-of-action State.ManaCharge here would break the next charge animation in the same playback.
-            if (!playing) shownCharge = State.ManaCharge;
-            if (pool == null) return;
-            if (!playing) SetChargeBubble(State.ManaCharge / (float)BattleConfig.ManaChargePerOrb);
-            ShowPoolCount(filled);
-            SyncPoolPreview();
-        }
-
-        /// <summary>Holding the mana globe (GG-T405, owner: "it should be obvious what it is and what is filling it up"):
-        /// what the pool is, and every way it fills, as the rules have them (BattleRunner.MintOrb and AddCharge callers).</summary>
-        private bool ManaPoolCard(VisualElement body)
-        {
-            int cap = State.Bank.Capacity;
-            return InspectCard.Explain(body, Art.Orb, "Mana orbs", $"{State.Bank.Count}/{cap} orbs", Palette.ManaBloom,
-                "The party's shared mana. Every spell costs whole orbs from this row; skills and items cost none. It holds " + cap + " orbs; once they're all full, earning stops until a spell spends one.",
-                new[]
-                {
-                    "The next empty orb fills a ring as you fight; a full ring becomes an orb.",
-                    "Pincers fill it by the HP they take (fewer heroes and longer chains fill it faster).",
-                    "Striking a foe with a skill, felling a foe, and every Clutch! add to it.",
-                    "It also refills slowly on its own as the battle clock runs.",
-                    "Critical hits, interrupting a foe's charge, the power amplifier and Mana supporters add to it too.",
-                    "Guard trades the turn time you give up for charge (10 per second, up to 40).",
-                    "A quick move banks the drag timer's spare seconds as orbs at the next foe's turn.",
-                    "Mana pickups on the board, Mana Potions and Ethers, Steal and Mug, and Meditate or Mana Pour give whole orbs.",
-                    "Some gear starts the battle with orbs, an expedition carries orbs over, and some regions' rules grant them.",
-                },
-                "Aiming a spell marks the orbs it will spend; a red rim marks the ones you still lack. The Log tab lists every orb and where it came from.");
-        }
-
-        /// <summary>The pool's numbers: the globe's level and the count on it, and the cap beneath, gold when full.</summary>
-        private void ShowPoolCount(int count)
-        {
-            if (pool == null) return;
-            for (int i = 0; i < orbViews.Count; i++)
-            {
-                bool lit = i < count;
-                orbViews[i].Filled = lit;
-                if (!lit || ReduceMotion) orbBlooms[i].style.opacity = lit ? 1f : 0f;
-            }
-            pool.EnableInClassList("mana-orbs--full", count >= orbViews.Count);
-            ApplyOrbCharge(); // the forming-orb ring moves to the new next empty orb
-        }
-
-        /// <summary>The stage-space centre of orb <paramref name="index"/> (clamped), for trails that fly into it.</summary>
-        private Vector2 OrbCenter(int index)
-        {
-            if (orbViews.Count > 0)
-            {
-                var o = orbViews[Mathf.Clamp(index, 0, orbViews.Count - 1)];
-                if (!float.IsNaN(o.worldBound.x) && o.worldBound.width > 0f) return o.worldBound.center - App.Stage.worldBound.position;
-            }
-            return new Vector2(GameApp.StageWidth / 2f, OrbRowTop + Size.OrbRow / 2f);
-        }
-
-        /// <summary>The pending-cost preview (GG-T405): while a spell is aimed the count dims and a "-N" ghost fades in over
-        /// the pool's corner (red if the bank can't pay it); both fade back when the aim ends.</summary>
-        private void SyncPoolPreview()
-        {
-            if (pool == null) return;
-            int cost = 0;
-            var hero = State.UnitById(SelectedHeroId);
-            if (TargetingSlot >= 0 && hero != null && TargetingSlot < hero.Bar.Count)
-            {
-                var sl = hero.Bar[TargetingSlot];
-                var a = BattleEngine.SlotAbility(State, hero, TargetingSlot);
-                if (a != null && a.Kind == AbilityKind.Spell && !sl.IsItem && !sl.IsWeapon) cost = a.Cost;
-            }
-            // The orbs it would spend (the newest ones) pulse; orbs it still lacks show a red rim, so "can I afford it"
-            // reads from the row itself (GG-T673).
-            for (int i = 0; i < orbViews.Count; i++)
-            {
-                orbViews[i].Preview = cost > 0 && i < shownOrbs && i >= shownOrbs - cost;
-                orbViews[i].Short = cost > shownOrbs && i >= shownOrbs && i < cost;
-            }
-        }
-
         private void SyncBar()
         {
             var hero = State.UnitById(SelectedHeroId);
@@ -813,7 +642,6 @@ namespace GridGame.App
                 v.style.opacity = alpha;
                 v.Q("icon").style.opacity = iconAlpha;
             }
-            SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }
 
         private int panelUnitId = -1;
@@ -821,28 +649,38 @@ namespace GridGame.App
         private void SyncPanel()
         {
             panel.Clear();
-            ApplyInfoTab();
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
-            SyncLore(u);
-            // The lessons live in their own Tutorial tab (GG-T449, owner: "built into the tabs at the bottom, not another
-            // popup over the top of the tabs"): Party keeps showing the unit, and a new lesson brings its tab forward once.
-            tutorialPage?.Clear();
-            if (TutorialActive && tutorialPage != null)
-            {
-                if (shownLesson != TutorialStep) { shownLesson = TutorialStep; if (TargetingSlot < 0 && infoTab != InfoTabTutorial) ShowInfoTab(InfoTabTutorial); }
-                TutorialCard(tutorialPage);
-                // Its Next/Skip sit side by side at the top, so the lesson's buttons never scroll out of the short page.
-                var tb = tutorialPage.Q("tutorial-skip")?.parent;
-                if (tb != null) { tb.style.flexDirection = FlexDirection.Row; tb.style.alignSelf = Align.FlexStart; }
-            }
-            else if (infoTab == InfoTabTutorial) ShowInfoTab(InfoTabParty);
+            if (refusal != null) PanelLine(panel, refusal, "small warn", "refusal");
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
-                if (ab != null) { AbilityInfo(ab); return; }
+                if (ab != null) { AbilityInfo(caster, TargetingSlot, ab); return; }
+            }
+            if (advice != null) PanelLine(panel, advice, "small gold", "advice");
+            // A slot read without aiming (a hold, or a tap on one that can't aim) stays in the panel until a unit is read or
+            // another hero is selected (GG-T1823).
+            if (panelUnitId >= 0 || readSlotHero != SelectedHeroId) readSlot = -1;
+            if (readSlot >= 0 && State.UnitById(SelectedHeroId) is Unit reader && BattleEngine.SlotAbility(State, reader, readSlot) is AbilityDef read)
+            {
+                InspectCard.Ability(panel, read, SlotState(reader, readSlot, read));
+                return;
+            }
+            // A running lesson is the panel's content (§9.0, GG-T1827) until an aim, a held slot or a unit the player reads needs it.
+            if (TutorialActive && panelUnitId < 0)
+            {
+                TutorialCard(panel);
+                return;
             }
             if (u == null) return;
+            // Idle (§9.0): one line for the selected hero, then its card and every skill's readout.
+            if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable)
+            {
+                var idle = Ui.Text($"{u.Name}: tap a skill to aim it · hold one to read it · drag {u.Name} to move", "small gold", panel);
+                idle.name = "idle-prompt";
+                idle.style.whiteSpace = WhiteSpace.Normal;
+                idle.style.marginBottom = Space.S8;
+            }
             var row = Ui.El("row", panel);
             row.style.alignItems = Align.FlexStart;
             Ui.Thumb(u.Def.Id, row, Size.Thumb).style.marginRight = Space.S16;
@@ -859,8 +697,7 @@ namespace GridGame.App
             // What the Bestiary has learned from defeating its class gates the numbers (§25.11, GG-T290).
             int know = Knowledge(u);
             // FF-style plain numbers, no bar (owner 2026-11-21): "HEALTH"/"AETHER" are the same width, so those labels
-            // line up instead of "HP"/"MP". Aether is the party's one shared pool (ManaBank), so it reads the same on
-            // every hero's card.
+            // line up instead of "HP"/"MP". A hero's MANA is how many of its spell meters are full (§3.1.0).
             var hpRow = Ui.El("row", col);
             Ui.Text("HEALTH", "tiny dim", hpRow).style.marginRight = Space.S8;
             Ui.Text(know >= BestiaryKnowledge.Stats ? $"{u.Hp}/{u.MaxHp}" : "???", "small", hpRow);
@@ -868,7 +705,15 @@ namespace GridGame.App
             {
                 var aetherRow = Ui.El("row", col);
                 Ui.Text("MANA", "tiny dim", aetherRow).style.marginRight = Space.S8;
-                Ui.Text($"{State.Bank.Count}/{State.Bank.Capacity}", "small", aetherRow);
+                int spells = 0, full = 0;
+                for (int i = 0; i < u.Bar.Count; i++)
+                {
+                    int need = State.ManaFull(u, i);
+                    if (need <= 0) continue;
+                    spells++;
+                    if (State.ManaIn(u.Id, i) >= need) full++;
+                }
+                Ui.Text(spells == 0 ? "no spells" : $"{full}/{spells} spells full", "small", aetherRow);
             }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297
             else if (know >= BestiaryKnowledge.Speed) Ui.Text($"SPD {u.Effective.Speed:0}  ·  defeat more to learn the rest", "tiny dim", col);
@@ -915,187 +760,84 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// The ability card in the actor panel (fits its ~260 design px). While aiming it explains the ability; once a
-        /// target is picked it becomes the confirm card: what, on whom, then Cast / Cancel stacked on the right.
+        /// The aimed ability in the description panel (§9.0, GG-T1823). While aiming: "Name: choose a target"; once a target
+        /// is picked, the confirm card (on whom, the outcome preview, Cast / Cancel) takes the top. Under either, the full
+        /// card: what it is, its cost, how and who it targets, its numbers and description, and the slot's live state.
         /// </summary>
-        private void AbilityInfo(AbilityDef a)
+        private void AbilityInfo(Unit hero, int slot, AbilityDef a)
         {
             bool confirm = PendingTarget.HasValue && TargetingSlot >= 0;
             var row = Ui.El("row", panel);
-            row.style.alignItems = Align.Center;
-            var icon = Ui.El("menu-icon", row);
-            icon.style.width = icon.style.height = Size.Avatar;
-            var itemTex = a.Id != null && a.Id.StartsWith("item:") ? Art.ItemIcon(a.Id.Substring(5)) : null;
-            icon.style.backgroundImage = new StyleBackground(itemTex ?? Art.AbilityIcon(a) ?? Art.Orb);
+            row.name = "aim-card";
+            row.style.alignItems = Align.FlexStart;
+            row.style.marginBottom = Space.S16;
             var col = Ui.El("col grow", row);
             col.style.flexShrink = 1;
-            var top = Ui.El("row", col);
-            top.style.alignItems = Align.Center;
-            Ui.Text(a.Name, "h2", top);
-            if (a.Cost > 0) Ui.CostPips(a.Cost, top, 32).style.marginLeft = Space.S16;
-            string timing = a.Kind == AbilityKind.Skill ? (a.CooldownTurns > 0 ? $"Skill · recharges in {a.CooldownTurns} turns" : "Skill")
-                : a.Kind == AbilityKind.Item ? "Item · acts at once"
-                : a.CastTime > 0 ? $"Charges {a.CastTime:0.#}s on the timeline" : "Instant";
-            Ui.Text(timing, "tiny gold", col);
             if (!confirm)
             {
-                var d = GlossaryText.Create(a.Description ?? "", "tiny", col);
-                d.style.whiteSpace = WhiteSpace.Normal;
-                Ui.Text("Tap a highlighted tile · tap the slot again to cancel", "tiny dim", col);
-                return;
+                var ask = Ui.Text($"{a.Name}: choose a target", "small gold", col);
+                ask.name = "aim-prompt";
+                ask.style.whiteSpace = WhiteSpace.Normal;
+                Ui.Text("Tap a highlighted tile · tap the slot again to cancel", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
             }
-            var hero = State.UnitById(SelectedHeroId);
-            var hits = hero == null ? new List<Unit>() : TargetResolver.Collect(State, a, hero, PendingTarget.Value);
-            string who = hits.Count == 0 ? (a.IsTeleport ? "Teleport to the marked tile" : "No one in the area")
-                : hits.Count == 1 ? (hits[0] == hero ? $"On {hero.Name} (self)" : $"On {hits[0].Name}")
-                : $"On {string.Join(", ", hits.Take(3).Select(h => h.Name))}{(hits.Count > 3 ? $" +{hits.Count - 3}" : "")}";
-            var summary = Ui.Text(who, "small", col);
-            summary.name = "confirm-summary";
-            summary.style.whiteSpace = WhiteSpace.Normal;
-            OutcomeLines(col, a);
-            // Cast / Cancel side by side at the top of the card (GG-T391): the Party page is one tap target tall at the
-            // shortest stage, so the two never stack out of view.
-            row.style.alignItems = Align.FlexStart;
-            var btns = Ui.El("row", row);
-            btns.style.flexShrink = 0;
-            btns.style.marginLeft = Space.S16;
-            string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
-            var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
-            ok.name = "confirm-action";
-            var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
-            cancel.name = "confirm-cancel";
+            else
+            {
+                var hits = TargetResolver.Collect(State, a, hero, PendingTarget.Value);
+                string who = hits.Count == 0 ? (a.IsTeleport ? "Teleport to the marked tile" : "No one in the area")
+                    : hits.Count == 1 ? (hits[0] == hero ? $"On {hero.Name} (self)" : $"On {hits[0].Name}")
+                    : $"On {string.Join(", ", hits.Take(3).Select(h => h.Name))}{(hits.Count > 3 ? $" +{hits.Count - 3}" : "")}";
+                var summary = Ui.Text(who, "small", col);
+                summary.name = "confirm-summary";
+                summary.style.whiteSpace = WhiteSpace.Normal;
+                OutcomeLines(col, a);
+                // Cast / Cancel side by side at the top of the card (GG-T391), so the two never scroll out of view.
+                var btns = Ui.El("row", row);
+                btns.style.flexShrink = 0;
+                btns.style.marginLeft = Space.S16;
+                string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+                var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
+                ok.name = "confirm-action";
+                var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
+                cancel.name = "confirm-cancel";
+            }
+            InspectCard.Ability(panel, a, SlotState(hero, slot, a));
         }
 
         // ─────────────────────────────────────────────────────────────────────────
-        // Info tabs (GG-T391): one tabbed panel under the orbs — Party · Lore · Log
+        // The description panel (§9.0, GG-T1822): from a gutter under the ability bar to the safe bottom
         // ─────────────────────────────────────────────────────────────────────────
 
-        private const int InfoTabParty = 0, InfoTabLore = 1, InfoTabLog = 2, InfoTabTutorial = 3;
-        private static readonly string[] InfoTabNames = { "Party", "Lore", "Log", "Tutorial" };
-        /// <summary>The tab the player picked; it lasts the whole battle (the instance outlives a rebuild).</summary>
-        private int infoTab = InfoTabParty;
-        private VisualElement infoTabStrip;
-        private readonly VisualElement[] infoPages = new VisualElement[4];
-        private ScrollView lorePage, logPage, tutorialPage;
-        /// <summary>The tutorial lesson last shown, so a new one brings the Party page forward exactly once.</summary>
-        private int shownLesson = -1;
+        private ScrollView logPage;
         /// <summary>Every combat line this battle (newest last, capped), so the Log survives a rebuild.</summary>
         private const int LogCap = 200;
         private readonly List<(string text, Color color)> logLines = new List<(string, Color)>();
 
-        private void BuildInfoTabs(VisualElement root)
+        /// <summary>The panel holds one page: the aimed or read ability, a running lesson, or the unit. The Party · Lore · Log tab strip
+        /// and window are gone (owner 2026-11-27): the Log page is built and filled off the layout and shown by the pause
+        /// menu's Battle log (GG-T1825); a unit's lore lives in the hub's Bestiary and hero sheet (GG-T1826).</summary>
+        private void BuildDescriptionPanel(VisualElement root)
         {
-            var host = Ui.El("col info-tabs", root);
-            host.name = "info-tabs";
+            var host = Ui.El("col description-panel", root);
+            host.name = "description-panel";
             host.style.position = Position.Absolute;
-            host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right/top: ApplyStageLayout (the HUD column)
-            // A thin drawn strip (GG-T405: 60 px, under half a target) in a full-size hit area (GG-T524): each tab is a
-            // 132-px-tall transparent target with its 60-px face at the bottom, flush on the window.
-            infoTabStrip = Ui.El("tabs tabs--thin", host);
-            for (int i = 0; i < InfoTabNames.Length; i++)
-            {
-                int idx = i;
-                var hit = Ui.El("info-tab", infoTabStrip);
-                hit.name = "tab-" + InfoTabNames[i].ToLowerInvariant();
-                hit.pickingMode = PickingMode.Position;
-                var face = Ui.Text(InfoTabNames[i], "tab" + (i == infoTab ? " tab--active" : ""), hit);
-                face.pickingMode = PickingMode.Ignore;
-                Ui.Tappable(hit, () => ShowInfoTab(idx));
-            }
-            var win = Ui.Window(null, host, "window--compact info-tabs__window");
-            win.name = "info-panel";
-            panel = infoPages[InfoTabParty] = InfoPage(win, "party");
-            lorePage = InfoPage(win, "lore");
-            infoPages[InfoTabLore] = lorePage;
-            // The combat log keeps the old feed's name, so automation that looks for "feed" still finds it.
-            logPage = InfoPage(win, "feed");
-            infoPages[InfoTabLog] = logPage;
-            tutorialPage = InfoPage(win, "tutorial");
-            infoPages[InfoTabTutorial] = tutorialPage;
+            host.style.top = DescriptionTop; host.style.bottom = Space.S24; // left/right/top: ApplyStageLayout (the HUD column)
+            var win = Ui.Window(null, host, "window--compact description-panel__window");
+            win.name = "description-window";
+            panel = InfoPage(win, "description");
+            // The combat log keeps the old feed's name, so automation that looks for "feed" finds it on the pause menu's Battle log.
+            logPage = InfoPage(null, "feed");
             foreach (var (text, color) in logLines) AddLogLine(text, color);
-            ApplyInfoTab();
         }
 
         private static ScrollView InfoPage(VisualElement win, string name)
         {
             var sv = new ScrollView(ScrollViewMode.Vertical) { name = name };
             sv.AddToClassList("list");
-            sv.AddToClassList("info-tabs__page");
+            sv.AddToClassList("description-panel__page");
             sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             sv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
-            win.Add(sv);
+            win?.Add(sv);
             return sv;
-        }
-
-        private void ShowInfoTab(int i)
-        {
-            infoTab = Mathf.Clamp(i, InfoTabParty, TutorialActive ? InfoTabTutorial : InfoTabLog);
-            ApplyInfoTab();
-        }
-
-        /// <summary>Shows the picked page. While an ability is aimed the Party page (its card and Cast / Cancel) shows
-        /// whatever tab was picked, and the pick comes back when the aim ends.</summary>
-        private void ApplyInfoTab()
-        {
-            if (infoTabStrip == null) return;
-            int shown = TargetingSlot >= 0 ? InfoTabParty : infoTab;
-            for (int i = 0; i < infoPages.Length; i++)
-                if (infoPages[i] != null) infoPages[i].style.display = i == shown ? DisplayStyle.Flex : DisplayStyle.None;
-            int k = 0;
-            foreach (var t in infoTabStrip.Children())
-            {
-                bool on = k++ == shown;
-                // The Tutorial tab exists only while lessons are running (GG-T449).
-                if (k - 1 == InfoTabTutorial) t.style.display = TutorialActive ? DisplayStyle.Flex : DisplayStyle.None;
-                // t is the tab's hit area (GG-T524); its drawn face is its one child.
-                if (t.childCount == 0) continue;
-                var face = t[0];
-                face.EnableInClassList("tab--active", on);
-                if (on) Fonts.UseHeavy(face); else Fonts.UseBody(face);
-            }
-            if (shown == InfoTabLog) ScrollLogToEnd();
-        }
-
-        /// <summary>The Lore page: the unit's Prose description and lore (ClassDef.Description / Lore, filled from
-        /// Content/Text by ProseText) and, for a foe, what the Bestiary knows of it.</summary>
-        private void SyncLore(Unit u)
-        {
-            if (lorePage == null) return;
-            lorePage.Clear();
-            if (u == null) return;
-            var top = Ui.El("row", lorePage);
-            top.style.alignItems = Align.Center;
-            var nm = Ui.Text(u.Name, "h2 grow", top);
-            nm.style.flexShrink = 1;
-            if (!string.IsNullOrEmpty(u.Def.Role)) Ui.Text(u.Def.Role, "small gold", top);
-            bool foe = !u.IsHero && !u.IsIndependent;
-            var entry = foe && App.Save?.Bestiary != null && App.Save.Bestiary.TryGetValue(u.Def.Id, out var be) ? be : null;
-            int know = Knowledge(u);
-            bool seen = !foe || know >= BestiaryKnowledge.Description || (entry != null && entry.Seen);
-            if (!seen) LoreText("Not yet in the Bestiary. Its story is learned by meeting it.", "small dim");
-            else
-            {
-                if (!string.IsNullOrEmpty(u.Def.Description)) LoreText(u.Def.Description, "small");
-                if (!string.IsNullOrEmpty(u.Def.Lore) && u.Def.Lore != u.Def.Description) LoreText(u.Def.Lore, "small dim");
-            }
-            if (!foe) return;
-            var head = Ui.Text("Bestiary", "small gold", lorePage);
-            head.style.marginTop = Space.S8;
-            int defeated = entry?.Defeated ?? 0;
-            string knows = know >= BestiaryKnowledge.Abilities ? "everything" : know >= BestiaryKnowledge.Elements ? "its weaknesses"
-                : know >= BestiaryKnowledge.Stats ? "its HP and stats" : know >= BestiaryKnowledge.Speed ? "its speed" : "its name";
-            LoreText($"Defeated {defeated} · known: {knows}", "small");
-            if (know >= BestiaryKnowledge.Elements) LoreText(BestiaryKnowledge.ElementLine(u.Def), "small dim");
-            int more = BestiaryKnowledge.DefeatsToNext(entry);
-            int next = BestiaryKnowledge.NextTier(entry);
-            if (next >= 0 && more > 0) LoreText($"Defeat {more} more to learn {BestiaryKnowledge.Label(next)}.", "small dim");
-        }
-
-        private void LoreText(string text, string classes)
-        {
-            var t = GlossaryText.Create(text, classes, lorePage);
-            t.style.whiteSpace = WhiteSpace.Normal;
-            t.style.marginBottom = Space.S8;
         }
 
         /// <summary>The Party page's skill readout under a hero's card: each bar slot's icon, name, cost or recharge,
@@ -1140,7 +882,8 @@ namespace GridGame.App
                     d.style.whiteSpace = WhiteSpace.Normal;
                 }
                 var ab = a;
-                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotNote(hero, ab)));
+                int idx = i;
+                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotState(hero, idx, ab)));
             }
         }
 
@@ -1178,11 +921,12 @@ namespace GridGame.App
             // Dev only: a charge past one orb is allowed on purpose, so the next charge gain rolls several orbs at
             // once (tools/harness.py orbs, GG-T112).
             if (charge >= 0) State.ManaCharge = Mathf.Clamp(charge, 0, 10 * BattleConfig.ManaChargePerOrb);
-            SyncOrbs();
             SyncBar();
         }
 
-        public string BannerText => banner?.text;
+        public string BannerText => bannerText;
+        /// <summary>The hint or tip the description panel shows right now (§9.2.1), or null.</summary>
+        public string AdviceText => advice;
 
         // GG-T358: the battle-start announcements (a wanderer, a guest) play in the opening beats and the billboard
         // drops each line after 1.6 s, so a poll that arrives a moment late misses them. Automation reads this
@@ -1269,6 +1013,7 @@ namespace GridGame.App
             if (!CanCommand()) return;
             bool wasTargeting = TargetingSlot >= 0;
             CancelTargeting();
+            readSlot = -1;
             if (wasTargeting) { SyncBar(); panelUnitId = -1; SyncPanel(); }
             bool telemetryOn = TelemetryUnity.Current.Enabled;
             var before = recorder != null || telemetryOn ? BattleRecorder.Snapshot(State) : null;
@@ -1292,6 +1037,7 @@ namespace GridGame.App
 
         private void OnSlot(int slot)
         {
+            DropRefusal();
             if (!CanCommand()) { TapSlotCard(slot); return; } // GG-T450: looking is free, even mid-playback
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null) return;
@@ -1321,7 +1067,6 @@ namespace GridGame.App
             TargetingSlot = slot;
             board.ClearMarks();
             foreach (var t in targets) board.Mark(t, Palette.Gold, 0.35f);
-            ShowBanner($"{a.Name}: choose a target");
             SyncBar();
             SyncPanel();
         }
@@ -1351,7 +1096,6 @@ namespace GridGame.App
             PendingTarget = null;
             board.ClearMarks();
             ClearTargetGlows();
-            SyncPoolPreview();
             ShowBanner("");
         }
 
@@ -1366,8 +1110,8 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// Lock a pick and ask for confirmation: the area and every unit it would touch light up, the banner names the
-        /// deal, and the actor panel turns into the confirm card. Tapping another legal tile re-aims; tapping the same
+        /// Lock a pick and ask for confirmation: the area and every unit it would touch light up and the description panel
+        /// turns into the confirm card (on whom, the outcome, Cast / Cancel). Tapping another legal tile re-aims; tapping the same
         /// tile again (or Confirm) commits.
         /// </summary>
         private void SetPending(Coord anchor)
@@ -1377,9 +1121,6 @@ namespace GridGame.App
             if (a == null) return;
             PendingTarget = anchor;
             RedrawTargeting();
-            var hits = TargetResolver.Collect(State, a, hero, anchor);
-            string who = hits.Count == 0 ? "" : hits.Count == 1 ? $" on {(hits[0] == hero ? "self" : hits[0].Name)}" : $" on {hits.Count} targets";
-            ShowBanner($"{a.Name}{who}? Confirm below");
             App.Audio.Sfx("ui.select", 0.8f);
             SyncPanel();
             var btn = panel.Q<Button>("confirm-action");
@@ -1467,9 +1208,6 @@ namespace GridGame.App
         private int beatsAtPause;
         /// <summary>Beats that started while the menu was up (must stay 0; logged as an error when not).</summary>
         public int BeatsWhilePaused { get; private set; }
-        /// <summary>Bank slot each landed orb flew to, in playback order (last 24) — the automation proof that orbs
-        /// minted together fan into consecutive slots (GG-T112).</summary>
-        public readonly List<int> OrbSlotsFlown = new List<int>();
         /// <summary>Seconds of unpaused battle time; the playback watchdog measures against this, so a long pause
         /// can't make it fire on Resume.</summary>
         private float battleTime;
@@ -1525,6 +1263,7 @@ namespace GridGame.App
             closePause = Close;
             Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter); // GG-T751 (§26.7)
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
+            Ui.MenuRow("Battle log", logLines.Count > 0 ? Ui.Count(logLines.Count) : "", () => ShowBattleLog(veil, w), w).KindIcon(RowKind.Menu);
             Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
@@ -1534,6 +1273,33 @@ namespace GridGame.App
                 Ui.MenuRow("Retreat", $"(keep {retreatPct}%)", () => { Close();
                     Confirm.Show($"Retreat from battle? You'll keep {retreatPct}% of this fight's gold and loot — safer than risking a wipe.", "Retreat", Retreat); }, w).KindIcon(RowKind.Back);
             Ui.Select(w[1]);
+        }
+
+        /// <summary>The pause menu's Battle log page (GG-T1825): the combat log (<see cref="logPage"/>, still named "feed")
+        /// mounted in its own window over the veil, newest line at the bottom; Back returns to the menu.</summary>
+        private void ShowBattleLog(VisualElement veil, VisualElement menu)
+        {
+            if (logPage == null) return;
+            menu.style.display = DisplayStyle.None;
+            var w = Ui.Window("Battle log", veil);
+            w.name = "battle-log";
+            w.style.width = Length.Percent(86);
+            w.style.height = Length.Percent(70);
+            logPage.style.flexGrow = 1;
+            logPage.style.flexShrink = 1;
+            logPage.style.display = DisplayStyle.Flex;
+            w.Add(logPage);
+            if (logLines.Count == 0) Ui.Text("Nothing has happened yet this battle.", "small dim", w);
+            var back = Ui.MenuRow("Back", "", () =>
+            {
+                logPage.RemoveFromHierarchy();
+                w.RemoveFromHierarchy();
+                menu.style.display = DisplayStyle.Flex;
+            }, w);
+            back.KindIcon(RowKind.Back);
+            back.name = "battle-log-back";
+            Ui.Select(back);
+            ScrollLogToEnd();
         }
 
         // ── Battle records (§22.6): every battle is saved as JSON for balance analysis and future ML ──
@@ -1653,10 +1419,12 @@ namespace GridGame.App
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
             {
                 dragTimeLeft -= dt;
-                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}";
+                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}s";
                 if (dragTimeLeft <= 0f && !CoachRail && !coachCancelStep) CommitDrag(); // a coached drag is never forced (GG-T539)
             }
             else if (timerLabel != null) timerLabel.text = "";
+            if (roundLabel != null) roundLabel.style.visibility = string.IsNullOrEmpty(timerLabel?.text) ? Visibility.Visible : Visibility.Hidden;
+            if (advice != null && battleTime - adviceAt > AdviceSeconds) DropAdvice();
 
             TickBoardInspect();
             if (TutorialActive && !LessonWaiting && CurrentLesson.DoneOnInspect && InspectCard.IsOpen && (!CoachOn || (!Coach.Active && coachPopupFor == TutorialStep))) NextLesson();
@@ -1797,17 +1565,17 @@ namespace GridGame.App
                 {
                     SelectHero(caster.Id);
                     if (use.Slot < slotViews.Count) App.StartCoroutine(Tween.Pop(slotViews[use.Slot], 1.12f, 0.35f));
-                    ShowBanner($"Hint: {caster.Name} can use {ab.Name}");
+                    Advise($"Hint: {caster.Name} can use {ab.Name}");
                 }
                 return;
             }
-            if (decision is ShieldCommand) { ShowBanner("Hint: nothing good to do? Press GUARD"); return; }
+            if (decision is ShieldCommand) { Advise("Hint: nothing good to do? Press GUARD"); return; }
             var cmd = decision as MoveCommand;
             if (cmd == null || cmd.Path.Count == 0) return;
             var pv = BattleEngine.PreviewMove(State, cmd.HeroId, cmd.Path);
             // The Moving lesson promises a glowing path even when no pincer is reachable yet (the opening board of
             // the first battle): demo the bot's best positioning move instead of falling back to a bare tip.
-            if (pv.Pincers.Count == 0 && !TutorialDemoMove) { ShowBanner("Tip: trap an enemy between two heroes"); return; }
+            if (pv.Pincers.Count == 0 && !TutorialDemoMove) { Advise("Tip: trap an enemy between two heroes"); return; }
             var hero = State.UnitById(cmd.HeroId);
             var dest = cmd.Path[cmd.Path.Count - 1];
             board.ClearMarks();
@@ -1818,7 +1586,7 @@ namespace GridGame.App
             var route = new List<Vector2> { BoardView.CenterOf(hero.Pos) };
             foreach (var step in cmd.Path) route.Add(BoardView.CenterOf(step));
             board.Lines.PathArrow(route, ShapeStyle.Indicator);
-            ShowBanner($"Hint: drag {hero.Name} to the glowing tile");
+            Advise($"Hint: drag {hero.Name} to the glowing tile");
         }
 
         private void ClearHint()
@@ -1826,9 +1594,42 @@ namespace GridGame.App
             idle = 0f;
             if (!hintShown) return;
             hintShown = false;
+            DropAdvice();
             // While aiming the marks are the aim's own, but the hint's route lines are still the hint's: clear those.
             if (!dragging) board.Lines.ClearLines();
             if (TargetingSlot < 0 && !dragging) board.ClearMarks();
+        }
+
+        /// <summary>Puts a hint's or tip's words in the description panel (§9.2.1), never over the board.</summary>
+        private void Advise(string text)
+        {
+            advice = text;
+            adviceAt = battleTime;
+            NoteShown(text);
+            SyncPanel();
+        }
+
+        private void DropAdvice()
+        {
+            if (advice == null) return;
+            advice = null;
+            SyncPanel();
+        }
+
+        private void DropRefusal()
+        {
+            if (refusal == null) return;
+            refusal = null;
+            SyncPanel();
+        }
+
+        /// <summary>One wrapped line at the top of a description page (the refusal, the hint).</summary>
+        private static void PanelLine(VisualElement page, string text, string classes, string name)
+        {
+            var l = Ui.Text(text, classes, page);
+            l.name = name;
+            l.style.whiteSpace = WhiteSpace.Normal;
+            l.style.marginBottom = Space.S8;
         }
 
         public void SelectHero(int id)
@@ -1836,7 +1637,7 @@ namespace GridGame.App
             if (SelectedHeroId == id)
             {
                 // Re-touching the selected hero still dismisses an inspected enemy card (it hid the tutorial card).
-                if (panelUnitId >= 0) { panelUnitId = -1; SyncPanel(); }
+                if (panelUnitId >= 0 || readSlot >= 0) { panelUnitId = -1; readSlot = -1; SyncPanel(); }
                 return;
             }
             CancelTargeting();
@@ -1861,40 +1662,15 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// Action/status banner in the band between the timeline frame and the board (GG-T405: it never touches either).
-        /// It draws at the one GUI size (GG-T770) and wraps when it runs long; if the lines still don't fit the band it's
-        /// shown, paused, then slowly scrolled so the whole message gets read. It eases in over Timing.Quick.
+        /// An announcement (§9.0, GG-T1824): "PINCER!", a turn, a wave, a refusal, "VICTORY!". It joins the billboard as one
+        /// of its fading lines on the board's top edge, never a row; repeating the newest line keeps it up instead of
+        /// stacking a copy, and an empty text takes the banner lines down (the billboard's own lines run their course).
         /// </summary>
         private void ShowBanner(string text)
         {
-            if (banner == null) return;
-            text ??= "";
-            banner.text = text;
-            NoteShown(text);
-            banner.style.fontSize = TypeScale.Base;
-            banner.style.top = Space.S0;
-            if (bannerScrollRoutine != null) { App.StopCoroutine(bannerScrollRoutine); bannerScrollRoutine = null; }
-            if (text.Length > 0) bannerScrollRoutine = App.StartCoroutine(FitBanner());
-        }
-
-        private IEnumerator FitBanner()
-        {
-            banner.style.opacity = 0f;
-            // A frame so resolvedStyle.height is current.
-            yield return null;
-            float content = banner.resolvedStyle.height;
-            App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (banner != null) banner.style.opacity = k; }));
-            if (content <= BannerViewportHeight)
-            {
-                banner.style.top = (BannerViewportHeight - content) / 2f;
-                bannerScrollRoutine = null;
-                yield break;
-            }
-            float travel = content - BannerViewportHeight;
-            yield return Tween.Wait(Timing.Cinematic); // let the reader start before it moves
-            yield return Tween.Run(Mathf.Clamp(travel / 40f, 0.8f, 4f), k => banner.style.top = -travel * k);
-            yield return Tween.Wait(Timing.Dramatic); // hold on the tail before the next message replaces it
-            bannerScrollRoutine = null;
+            bannerText = text ?? "";
+            if (bannerText.Length == 0) { ClearBannerLines(); return; }
+            Billboard(bannerText, null, Palette.Text, banner: true);
         }
     }
 }

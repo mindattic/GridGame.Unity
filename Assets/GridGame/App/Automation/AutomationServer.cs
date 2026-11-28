@@ -650,7 +650,7 @@ namespace GridGame.App.Automation
                     return new { ok = true, current = app.Profile.Name, profiles = app.Profile.List(), root = app.Profile.Store.Root };
                 }
                 case "givemana":
-                    if (app.Router.Current is BattleScreen gm) { gm.DevGiveMana(int.TryParse(q["n"], out var gn) ? gn : 6, int.TryParse(q["charge"], out var gc) ? gc : -1); return new { ok = true, bank = gm.State.Bank.ToString(), charge = gm.State.ManaCharge }; }
+                    if (app.Router.Current is BattleScreen gm) { gm.DevGiveMana(int.TryParse(q["n"], out var gn) ? gn : 6, int.TryParse(q["charge"], out var gc) ? gc : -1); var gs = gm.State; return new { ok = true, meters = gs.Units.Where(u => u.IsHero).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => gs.ManaFull(u, i) > 0).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, points = gs.ManaIn(u.Id, i), full = gs.ManaFull(u, i) })).ToList() }; }
                     return new { error = "not in battle" };
                 case "suggest":
                 {
@@ -760,9 +760,9 @@ namespace GridGame.App.Automation
                 case "banner":
                 {
                     // GG-T358: "shown" is every banner/billboard line this battle has put up, so an opening announcement
-                    // the billboard already dropped is still readable.
+                    // the billboard already dropped is still readable. "hint" is the hint or tip in the description panel (GG-T1824).
                     var bnr = app.Router.Current as BattleScreen;
-                    return new { text = bnr?.BannerText, shown = bnr?.ShownLines?.ToList() };
+                    return new { text = bnr?.BannerText, hint = bnr?.AdviceText, shown = bnr?.ShownLines?.ToList() };
                 }
                 case "press":
                     StartCoroutine(Press(F(q["x"]), F(q["y"]), F(q["ms"], 600) / 1000f, reply));
@@ -1160,7 +1160,7 @@ namespace GridGame.App.Automation
                 dump["battle"] = new
                 {
                     phase = s.Phase.ToString(), turn_mode = s.TurnMode.ToString(), wave = s.Wave, clock = s.Clock, busy = b.Busy, selected = b.SelectedHeroId, targeting = b.TargetingSlot, confirming = b.Confirming, record = b.LastRecordPath,
-                    bank = s.Bank.ToString(), cutins = b.CutInsShown, coinsShown = b.CoinsShown, tallies = b.TalliesBurst, billboard = b.BillboardLines, paused = b.Paused, pauseOnTop = b.PauseOnTop, beats = b.PlaybackBeats, beatsWhilePaused = b.BeatsWhilePaused, orbSlots = b.OrbSlotsFlown, lines = b.LineStrokes, chain = b.ChainCount, amplifier = s.Amplifier.HasValue ? new[] { s.Amplifier.Value.X, s.Amplifier.Value.Y } : null,
+                    meters = s.Units.Where(u => u.IsHero).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => s.ManaFull(u, i) > 0).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, points = s.ManaIn(u.Id, i), full = s.ManaFull(u, i) })).ToList(), cutins = b.CutInsShown, coinsShown = b.CoinsShown, tallies = b.TalliesBurst, billboard = b.BillboardLines, paused = b.Paused, pauseOnTop = b.PauseOnTop, beats = b.PlaybackBeats, beatsWhilePaused = b.BeatsWhilePaused, lines = b.LineStrokes, chain = b.ChainCount, amplifier = s.Amplifier.HasValue ? new[] { s.Amplifier.Value.X, s.Amplifier.Value.Y } : null,
                     units = s.Units.Where(u => u.Alive).Select(u => new
                     {
                         u.Id, cls = u.Def.Id, team = u.Team.ToString(), x = u.Pos.X, y = u.Pos.Y, u.W, u.H, u.Hp, u.MaxHp, u.Level,

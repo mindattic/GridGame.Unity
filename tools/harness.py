@@ -59,7 +59,7 @@ Self-play harness: launches the development player with the automation endpoint 
     watched (endless, testmode, boardaudit, stress, clips, durability, campaign, crucible, fullloop,
     smoke, ...). The automation HTTP endpoint and game logic run the same either way; only pixels
     are gone. A command that screenshots (sweep, aspects, vfxsheet, storyarc, profiles, recruits,
-    camptips, firstbrew/firstforge/firstarmor/firstenchant/firstskill, bestiary, orbs, pause,
+    camptips, firstbrew/firstforge/firstarmor/firstenchant/firstskill, bestiary, pause,
     outline, shot) fails fast with a clear error the moment it tries to, rather than silently.
     Verified live (board_audit, GG-T314): the process opens with MainWindowHandle 0 and still
     completes a real bot battle through the automation endpoint. Don't combine with --capture or
@@ -2869,7 +2869,7 @@ def pause_check(run="pause", speed=1, timeout=240):
         "paused mid-chain": s1["busy"] and s1["chain"] >= 1 and s1["lines"] > 0,
         "no beat advanced": s1["beats"] == s2["beats"] and s2["beatsWhilePaused"] == 0,
         "outline frozen": s1["lines"] == s2["lines"],
-        "clock frozen": s1["clock"] == s2["clock"] and s1["bank"] == s2["bank"],
+        "clock frozen": s1["clock"] == s2["clock"] and s1["meters"] == s2["meters"],
         "veil on top": s1["pauseOnTop"] and s2["pauseOnTop"],
         "frames identical": diff == 0.0,
     }
@@ -2984,66 +2984,6 @@ def outline_frames(run="outline", speed=1, frames=48, every=3, timeout=240):
             time.sleep(0.03)
     print("FAIL: never caught a pincer outline")
     return None
-
-
-def orb_fanout(run="orbs", charge=250, frames=270, every=3, timeout=300):
-    """GG-T112: orbs minted together must fan into consecutive bank slots, not all fly to the last one. Starts a
-    random battle, plays the bot's suggested moves until one forms a pincer, then pre-loads the mana meter past
-    one orb (givemana charge=250, so that pincer's charge rolls 3 orbs in one AddCharge) and frame-records the
-    pincer into artifacts/<run>/orbs/f###.png. Checks the battle's orbSlots telemetry: the new orbs flew to
-    distinct, consecutive slots starting at the bank's count before the move. Returns True when they did."""
-    import threading
-    art = launch(run)
-    call("speed", x=1)
-    t0 = time.time()
-    while time.time() - t0 < timeout:
-        call("randombattle"); time.sleep(1.0)
-        for _ in range(20):
-            if call("state")["screen"] == "battle":
-                break
-            time.sleep(0.2)
-        call("click", name="tutorial-skip"); time.sleep(0.3)
-        for _ in range(15):
-            st = call("state")
-            if st["screen"] != "battle" or st.get("battle") is None:
-                break
-            while call("state").get("battle", {}).get("busy"):
-                time.sleep(0.2)
-            sug = call("suggest")
-            if not (isinstance(sug, dict) and sug.get("path")):
-                break
-            pts = ";".join(f"{x},{y}" for x, y in ([tile(*sug["from"])] + [tile(x, y) for x, y in sug["path"]]))
-            if sug.get("pincers", 0) == 0:
-                call("drag", path=pts, step=0.1); time.sleep(0.6)
-                continue
-            gm = call("givemana", n=0, charge=charge)
-            b0 = call("state")["battle"]
-            bank_before = int(b0["bank"].split("/")[0]); cap = int(b0["bank"].split("/")[1])
-            flown_before = len(b0["orbSlots"])
-            th = threading.Thread(target=lambda: call("drag", path=pts, step=0.1)); th.start()
-            t1 = time.time()
-            while time.time() - t1 < 20 and not call("state")["battle"]["busy"]:
-                time.sleep(0.03)
-            rec = call("record", name="orbs", frames=frames, every=every, step=1 / 30, timeout=300)
-            th.join()
-            t1 = time.time()
-            while time.time() - t1 < 60:
-                b1 = call("state").get("battle")
-                if b1 is None or not b1["busy"]:
-                    break
-                time.sleep(0.2)
-            b1 = call("state").get("battle") or b1
-            flown = b1["orbSlots"]
-            new = flown[flown_before:] if len(flown) >= flown_before else flown
-            want = list(range(bank_before, min(cap, bank_before + len(new))))
-            checks = {"several orbs minted at once": len(new) >= 2,
-                      "each orb its own slot": len(set(new)) == len(new),
-                      "consecutive from the old count": new == want}
-            print(json.dumps({"givemana": gm, "bank_before": b0["bank"], "bank_after": b1["bank"], "slots_flown": new,
-                              "expected": want, "frames": rec, "checks": checks}, indent=1))
-            return all(checks.values())
-    print("FAIL: never found a pincer move")
-    return False
 
 
 def durability(run="durability"):
@@ -4041,8 +3981,6 @@ def _dispatch(cmd):
         durability()
     elif cmd == "outline":
         sys.exit(0 if outline_frames() else 1)
-    elif cmd == "orbs":
-        sys.exit(0 if orb_fanout() else 1)
     elif cmd == "pause":
         sys.exit(0 if pause_check() else 1)
     elif cmd == "vfxprefabs":

@@ -114,6 +114,9 @@ namespace GridGame.Tests
 
         public static Unit At(BattleState s, int x, int y) => s.UnitAt(new Coord(x, y));
 
+        /// <summary>A whole mana grant of <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points to every spell meter (§3.1.0), undamped. Heroes need real Spell slots to hold a meter.</summary>
+        public static void GrantMana(BattleState s, int orbs) => BattleEngine.GainMana(s, orbs * BattleConfig.ManaPointsPerOrb, "test");
+
         public static Unit Hero(BattleState s, string cls) => s.Units.First(u => u.IsHero && u.Def.Id == cls);
 
         public static List<Coord> P(params (int x, int y)[] steps) => steps.Select(t => new Coord(t.x, t.y)).ToList();
@@ -200,7 +203,8 @@ namespace GridGame.Tests
             foreach (var p in s.Pickups)
                 Assert.That(seen.ContainsKey(p.At), Is.False, $"Pickup {p.Id} at {p.At} under unit {(seen.ContainsKey(p.At) ? seen[p.At] : -1)}");
             AssertItemsApart(s);
-            Assert.That(s.Bank.Count, Is.InRange(0, s.Bank.Capacity));
+            s.CountMeters(out int fullMeters, out int totalMeters);
+            Assert.That(fullMeters, Is.InRange(0, totalMeters));
             foreach (var e in s.Timeline)
             {
                 if (e.Kind == TimelineKind.Hazard) { Assert.That(e.RemainingTicks, Is.GreaterThan(0), $"rule event {e.Id} sits at the edge unresolved"); continue; } // GG-T359: no owner

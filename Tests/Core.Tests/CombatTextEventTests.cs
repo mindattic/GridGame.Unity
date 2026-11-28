@@ -56,7 +56,7 @@ namespace GridGame.Tests
             var tank = At(s, 2, 0);
             prep?.Invoke(tank);
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(3);
+            GrantMana(s, 3);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = new Coord(2, 0) });
             return ev.OfType<DamagedEvent>().First(d => d.TargetId == tank.Id && d.Hit != HitKind.Miss && d.SourceId == k.Id);
         }

@@ -78,24 +78,20 @@ namespace GridGame.App
             {
                 Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold"); // GG-T749: the coin emblem
                 // GG-T623: a slow, repeatable trickle, same row style as Gold — the Aetherist refines it once joined.
-                // GG-T676: orbs left in the row settle back into Dust; the row says how much of it came from them.
+                // GG-T676, GG-T1811: full spell meters settle into Dust; the row says how much of it came from them.
                 if (report.DustEarned > 0)
                     Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
-                        ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "orb" : "orbs")})"
+                        ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "spell" : "spells")})"
                         : $"+{report.DustEarned:N0}", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(DustEconomy.DustId)).name = "results-dust";
                 TicketsRow(list);
-                // GG-T677: an owned Mana Orb gained here is one more orb to fill in every battle from now on.
-                if (report.OrbsGained > 0)
+                // GG-T1811: what a milestone or a Halcyon find paid in place of the retired Mana Orb.
+                if (report.OrbRewards.Count > 0)
                 {
-                    var orbRow = Ui.MenuRow(report.OrbsGained == 1 ? "Mana Orb found" : $"{report.OrbsGained} Mana Orbs found",
-                        $"you now hold {report.OrbsOwned}", null, list);
+                    var orbRow = Ui.MenuRow("Bonus", string.Join(" · ", report.OrbRewards), null, list);
                     orbRow.name = "results-orbs";
                     orbRow.KindIcon(RowKind.Item);
                     orbRow.Q<Label>("label")?.AddToClassList("gold");
-                    Ui.Text(string.Join(" · ", report.OrbsGainedFrom), "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
-                if (report.BrokenOrbFound)
-                    Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
                 NextAbilityRows(c, list);
                 TurnsRow(list);
@@ -361,7 +357,7 @@ namespace GridGame.App
         }
 
         /// <summary>GG-T852 (§1.2.8): the battle's best combo (rank and score) and its top supporter (the hero with the most
-        /// combo points earned supporting), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
+        /// combo points earned supporting) and each hero's combo points (GG-T1828), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
         private void ComboRows(ContentDb c, VisualElement list)
         {
             if (report.BestComboRank == GridGame.Core.Battle.ComboRank.None) return;
@@ -369,9 +365,22 @@ namespace GridGame.App
             best.name = "results-best-combo";
             best.KindIcon(RowKind.Hero);
             best.Q<Label>("value")?.AddToClassList(report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good");
-            if (report.TopSupporter == null || report.TopSupporterPoints <= 0) return;
-            string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
-            Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list).WithKindIcon(RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+            if (report.TopSupporter != null && report.TopSupporterPoints > 0)
+            {
+                string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
+                Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list).WithKindIcon(RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+            }
+            // GG-T1828: each hero's combo points, attacking and supporting, most first.
+            var heroes = report.ComboAttackerPoints.Keys.Union(report.ComboSupporterPoints.Keys)
+                .Select(id => (id, atk: report.ComboAttackerPoints.TryGetValue(id, out int a) ? a : 0, sup: report.ComboSupporterPoints.TryGetValue(id, out int s) ? s : 0))
+                .Where(h => h.atk + h.sup > 0)
+                .OrderByDescending(h => h.atk + h.sup).ThenBy(h => h.id, System.StringComparer.Ordinal);
+            foreach (var (id, atk, sup) in heroes)
+            {
+                string name = c.TryClass(id)?.Name ?? id;
+                string split = atk > 0 && sup > 0 ? $"{atk} atk · {sup} sup" : sup > 0 ? $"{sup} sup" : $"{atk} atk";
+                Ui.MenuRow($"{name} combo", $"{atk + sup} pts · {split}", null, list).WithKindIcon(RowKind.Hero, id).name = "results-combo-hero";
+            }
         }
 
         /// <summary>GG-T1556 (§22.8): each hero who leveled up this battle, with <see cref="NextAbility.Line"/> and a Learn button

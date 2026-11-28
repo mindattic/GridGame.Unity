@@ -500,7 +500,7 @@ namespace GridGame.App
         private Vector2 SlotCenter(int slot)
         {
             var b = slot >= 0 && slot < slotViews.Count ? slotViews[slot].worldBound : new Rect(float.NaN, 0, 0, 0);
-            return float.IsNaN(b.x) || b.width <= 0f ? PoolCenter() : b.center - App.Stage.worldBound.position;
+            return float.IsNaN(b.x) || b.width <= 0f ? BarCenter() : b.center - App.Stage.worldBound.position;
         }
 
         /// <summary>A gain reaches the meters: a mote flies from its real source (MintFrom) to each of the shown hero's spell

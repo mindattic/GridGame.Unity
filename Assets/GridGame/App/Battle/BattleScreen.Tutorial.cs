@@ -20,9 +20,9 @@ namespace GridGame.App
     /// arrows and dotted lines ... wait for the user to click that exact area"): the stage dims except the one hero, tile,
     /// slot or button to use, a move's route is a dotted line the drag is held to, and the lesson completes when the player
     /// does exactly that. A lesson whose situation isn't on the board yet (no chain to make, no foe charging) keeps its
-    /// popup text in the Tutorial tab and puts its marks up the moment the situation arrives, or completes the old way
+    /// popup text in the description panel and puts its marks up the moment the situation arrives, or completes the old way
     /// (the player does it, a few actions pass, or Next). Lessons that need particular foes wait for their wave.
-    /// Under automation (no `-coach`) the marks are off and the Tutorial tab teaches alone, as before.
+    /// Under automation (no `-coach`) the marks are off and the description panel teaches alone.
     /// </summary>
     public sealed partial class BattleScreen
     {
@@ -42,11 +42,11 @@ namespace GridGame.App
             public string TextHeroTimeline;
             /// <summary>GG-T815: the popup's lines under HeroTimeline, for a lesson whose <see cref="Short"/> would mislead there.</summary>
             public string ShortHeroTimeline;
-            /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
+            /// <summary>The popup's one or two lines (GG-T539); the description panel keeps the longer <see cref="Text"/>.</summary>
             public string Short;
             /// <summary>The wave (0-based) the lesson needs on the board: the drill's (<see cref="StageLessonDef.Wave"/>).</summary>
             public int Wave;
-            /// <summary>Show the bot's move as a glowing demo while idle (the Tutorial tab mode, without coach marks).</summary>
+            /// <summary>Show the bot's move as a glowing demo while idle (the description panel's mode, without coach marks).</summary>
             public bool DemoMove;
             /// <summary>Done when this returns true for a committed command's events.</summary>
             public Func<BattleScreen, BattleCommand, List<BattleEvent>, bool> Done;
@@ -59,10 +59,10 @@ namespace GridGame.App
             public bool DoneOnInspect;
             /// <summary>GG-T539: the coach marks for this board, or null/empty when its situation isn't here yet.</summary>
             public Func<BattleScreen, List<CoachStep>> Marks;
-            /// <summary>Without marks, the lesson stays (in the Tutorial tab) until done instead of ending on the popup's Next.</summary>
+            /// <summary>Without marks, the lesson stays (in the description panel) until done instead of ending on the popup's Next.</summary>
             public bool Waits;
             /// <summary>GG-T542: the tutorial battle sets this lesson's situation up (<see cref="TutorialSceneCommand"/>) when its
-            /// marks find nothing to point at: a chain to close, a foe charging, a plated foe, an orb for a spell.</summary>
+            /// marks find nothing to point at: a chain to close, a foe charging, a plated foe, a full spell bar.</summary>
             public string Scene;
             /// <summary>Stage the scene as the lesson opens even when marks exist (Taunt: a foe closes on the Cleric).</summary>
             public bool SceneFirst;
@@ -115,18 +115,18 @@ namespace GridGame.App
                 Example = "Example: lift one of us, then drag off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
-            // GG-T731: what an orb is, before Mana teaches how to earn one (the orbs as GG-T730 draws them).
-            new Lesson { Id = "orbs", Title = "Mana orbs", Patience = 2,
-                Short = "Commander, these glass orbs hold our mana. Mana dust flows in and fills them with glowing light; a full orb breathes, ready to spend on an ability.",
-                Text = "Commander, the row of glass orbs under our abilities is our mana. An empty orb is clear glass. As we earn mana, glowing mana dust flows into the next orb and fills it with light from the bottom up. A full orb glows and gently breathes: it is ready to spend. Abilities cost whole orbs, and casting one drains them back to empty glass.",
-                Example = "Example: watch the next orb fill as our pincers land.",
-                Done = (b, c, e) => e.Exists(x => x is OrbMintedEvent),
+            // GG-T731: what mana is, before Mana teaches how to earn it (each spell's own fill bar, §3.1.0, GG-T1821).
+            new Lesson { Id = "orbs", Title = "Spell mana", Patience = 2,
+                Short = "Commander, each of our spells has its own bar. Mana fills it as we fight; a full bar glows, ready to cast.",
+                Text = "Commander, every spell on our bar has its own mana bar. As we earn mana, every spell's bar fills by the same amount, so a cheap spell fills sooner than a costly one. A full bar glows: that spell is ready to cast, and casting it empties only its own bar.",
+                Example = "Example: watch the spell bars fill as our pincers land.",
+                Done = (b, c, e) => e.Exists(x => x is ManaGainedEvent g && g.Amount > 0),
                 Marks = b => b.OrbMarks() },
             new Lesson { Id = "mana", Title = "Earn mana",
-                Short = "Commander, our pincers fill the mana globe. Every 100 mana makes an orb, and spells spend orbs.",
-                Text = "Commander, our pincers fill the mana bubble at the end of the orb row; at 100 it becomes an orb. Lean pincers earn the most: every extra one of us divides the mana, every chain link multiplies it.",
-                Example = "Example: two of us taking half a foe's HP earn 60 of the 100.",
-                Done = (b, c, e) => e.Exists(x => x is OrbMintedEvent o && o.Reason == "pincer"), Patience = 3,
+                Short = "Commander, our pincers fill every spell's bar with mana.",
+                Text = "Commander, our pincers pour mana into every spell's bar. Lean pincers earn the most: every extra one of us divides the mana, every chain link multiplies it.",
+                Example = "Example: two of us taking half a foe's HP earn 60 mana for every spell.",
+                Done = (b, c, e) => e.Exists(x => x is ManaChargedEvent m && m.Reason == "pincer"), Patience = 3,
                 Marks = b => b.ManaMarks() },
             new Lesson { Id = "chain", Title = "Chain them", DemoMove = true, Waits = true, Scene = "chain",
                 Short = "Commander, one order can set off several pincers at once: a CHAIN. Every link strikes and earns more mana.",
@@ -135,8 +135,8 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.ChainIndex >= 1),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Count(p => p.A.IsHero) >= 2), "Drag the {0} along the dotted line: the drop closes two pincers at once.") },
             new Lesson { Id = "support", Title = "Bring support", Waits = true, Patience = 4, Scene = "support",
-                Short = "Commander, whoever of us touches an attacker joins the pincer as a supporter, linked in blue, adds a support action and earns a share on the combo meter.",
-                Text = "Commander, any of us linked to a pincer's attacker by an unbroken line of allies joins in as a supporter: the blue links in the drag preview. Each adds a support action — the Healer mends, a Striker adds a blow — and its own points on the combo meter at the board's top right, in mana blue.",
+                Short = "Commander, whoever of us touches an attacker joins the pincer as a supporter, linked in blue, adds a support action and earns a share of the combo.",
+                Text = "Commander, any of us linked to a pincer's attacker by an unbroken line of allies joins in as a supporter: the blue links in the drag preview. Each adds a support action — the Healer mends, a Striker adds a blow — and its own share of the combo, counted on the results screen.",
                 Example = "Example: pincer with a third one of us standing next to an attacker.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.Supporters.Count > 0),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero && p.SupportersA.Count + p.SupportersB.Count > 0)), "Drag the {0} along the dotted line: the third hero joins in as a supporter.") },
@@ -166,9 +166,9 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is BuffAppliedEvent a && a.BuffId == "taunting"),
                 Marks = b => b.SlotMarks(a => (a.Id ?? "").Contains("taunt")) },
             new Lesson { Id = "guard", Title = "Guard us", Patience = 2,
-                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time.",
-                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action.",
-                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time.",
+                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time. Time we don't use is banked as mana in every spell's bar.",
+                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action. The turn time we leave unused is banked as mana in every spell's bar.",
+                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time. Time we don't use is banked as mana in every spell's bar.",
                 TextHeroTimeline = "Commander, GUARD gives up the acting hero's turn: that hero is shielded and the clock runs on to the next hero's icon, foes acting on the way. Call it when there is no good move, or when the gap before the next icon is too short for any action.",
                 Example = "Example: tap GUARD at the top right.",
                 Done = (b, c, e) => c is ShieldCommand,
@@ -272,6 +272,7 @@ namespace GridGame.App
             hintShown = false; idle = 0f;
             App.Audio.Sfx("ui.select", 0.6f);
             panelUnitId = -1;
+            readSlot = -1;
             SyncPanel();
             FocusLesson();
         }
@@ -326,8 +327,8 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>The Tutorial tab (GG-T449) stays as the lesson's recap: the popup's lesson in full, its example, and
-        /// Next / Skip for a lesson whose situation hasn't come up yet.</summary>
+        /// <summary>The lesson's recap in the description panel (GG-T449, GG-T1827): the popup's lesson in full, its example,
+        /// and Next / Skip for a lesson whose situation hasn't come up yet.</summary>
         private void TutorialCard(VisualElement page)
         {
             var l = CurrentLesson;
@@ -352,15 +353,15 @@ namespace GridGame.App
                 ex.style.whiteSpace = WhiteSpace.Normal;
                 ex.style.color = Palette.Term;
             }
-            var btns = Ui.El("col", row);
+            // Next / Skip side by side at the top, so they never scroll out of the short panel; 24 px apart (GG-T656, POL-C3).
+            var btns = Ui.El("row", row);
             btns.style.flexShrink = 0;
-            // 24 px from the tab hit areas above (window padding 8 + 16) and between the two buttons (GG-T656, POL-C3).
-            Ui.Pad(btns, top: Space.S16);
+            btns.style.alignSelf = Align.FlexStart;
             bool last = TutorialStep == Lessons.Length - 1;
             Button first = null;
             if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
             else if (!LessonWaiting) (first = RowIcon.IconButton("Next", RowKind.Enter, NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
-            if (first != null) Ui.Margin(first, bottom: Space.S24);
+            if (first != null) Ui.Margin(first, right: Space.S24);
             RowIcon.IconButton("Skip", RowKind.Close, FinishTutorial, "btn--small", btns).name = "tutorial-skip";
         }
 
@@ -518,7 +519,7 @@ namespace GridGame.App
             var l = Lessons[step];
             if (step == Lessons.Length - 1) { FinishTutorial(); return; }
             if (how == CoachEnd.Completed && (hadMarks || !l.Waits)) NextLesson();
-            // Aborted, or no marks for a lesson that waits: the popup's words stay in the Tutorial tab and the lesson
+            // Aborted, or no marks for a lesson that waits: the popup's words stay in the description panel and the lesson
             // completes the old way, or puts its marks up when its situation arrives.
             else
             {
@@ -553,17 +554,17 @@ namespace GridGame.App
             }
             if (Coach.Pending(s, "battle-potion") && PotionPick() is (Unit hero, int slot))
             {
-                RunSystem("battle-potion", "Potions", "A potion on a hero's bar acts at once and costs no orbs. Drink one before a hurt hero falls.", CastMarks(hero, slot));
+                RunSystem("battle-potion", "Potions", "A potion on a hero's bar acts at once and uses no spell bar. Drink one before a hurt hero falls.", CastMarks(hero, slot));
                 return;
             }
             if (comboLanded >= ComboRank.B)
             {
-                // GG-T853: the first B-or-better combo opens the Combo lesson on the meter that showed it.
+                // GG-T853: the first B-or-better combo opens the Combo lesson.
                 var rank = comboLanded;
                 comboLanded = ComboRank.None;
                 if (Coach.Pending(s, "battle-combo"))
                 {
-                    RunSystem("battle-combo", "Combo", $"A {rank} combo! Every pincer, chain link, supporter action, follow-up, status and kill in one turn builds the meter. New heroes and new tricks climb highest, up to SSS.", ComboMarks(rank));
+                    RunSystem("battle-combo", "Combo", $"A {rank} combo! Every pincer, chain link, supporter action, follow-up, status and kill in one turn builds the combo. New heroes and new tricks climb highest, up to SSS.", ComboMarks(rank));
                     return;
                 }
             }
@@ -694,53 +695,24 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>GG-T853: one mark on the combo meter, held up at the rank that landed while the lesson points at it, then
-        /// let go to fade as a closing summary does (unless a combo is still running).</summary>
+        /// <summary>GG-T853: one mark on the hero with the largest share of the combo that landed (GG-T1828: the meter left
+        /// the board), else on any hero still standing.</summary>
         private List<CoachStep> ComboMarks(ComboRank rank)
         {
-            EnsureComboMeter();
-            if (comboFrame == null) return null;
+            var u = State?.UnitById(comboTopUnit);
+            if (u == null || !u.Alive || board == null || !board.Units.ContainsKey(u.Id))
+                u = State?.Units.FirstOrDefault(x => x.IsCommandable && x.Alive && board != null && board.Units.ContainsKey(x.Id));
+            if (u == null) return null;
+            int id = u.Id;
             return new List<CoachStep>
             {
                 new CoachStep
                 {
-                    Caption = "The combo meter ranks your turn, D up to SSS. Supporters earn their own share, in blue; the bar drains between hits (tap it).",
-                    Element = () => comboFrame, Info = true,
-                    Valid = () => comboFrame != null && comboFrame.panel != null,
-                    Enter = () => HoldComboMeter(rank), Exit = ReleaseComboMeter,
+                    Caption = $"That {rank} combo ranked your turn, D up to SSS. Supporters earn their own share; your best combo and each hero's points show on the results screen.",
+                    Element = () => board != null && board.Units.TryGetValue(id, out var v) ? v.Root : null, Info = true,
+                    Valid = () => board != null && board.Units.ContainsKey(id),
                 },
             };
-        }
-
-        private void HoldComboMeter(ComboRank rank)
-        {
-            if (comboRoot == null || comboRoot.panel == null) return;
-            comboClosing = false; // a closing summary's fade stops while the lesson points at the meter
-            comboRoot.style.opacity = 1f;
-            if (comboShownRank == ComboRank.None)
-            {
-                comboShownRank = rank;
-                App.StartCoroutine(ComboRankSlam(rank, false));
-            }
-            comboFrame.MarkDirtyRepaint();
-        }
-
-        private void ReleaseComboMeter()
-        {
-            if (comboRoot == null || comboRoot.panel == null || State?.Combo?.Active == true) return;
-            comboClosing = true;
-            App.StartCoroutine(ComboLessonFade());
-        }
-
-        private IEnumerator ComboLessonFade()
-        {
-            float from = comboRoot.style.opacity.value;
-            yield return Tween.Run(Timing.Standard, k => { if (comboClosing && comboRoot != null) comboRoot.style.opacity = from * (1f - k); });
-            if (!comboClosing || comboRoot == null) yield break; // a new combo started meanwhile
-            comboChips.Clear();
-            comboShownRank = ComboRank.None;
-            comboRankLabel.text = comboWordLabel.text = comboScoreLabel.text = "";
-            comboFrame.MarkDirtyRepaint();
         }
 
         /// <summary>A hero with a ready item (a potion) on its bar while someone in the party is hurt.</summary>
@@ -914,36 +886,27 @@ namespace GridGame.App
             };
         }
 
-        /// <summary>GG-T731: the orb row (empty glass that mana dust fills), then one orb (full, it breathes and is ready).</summary>
-        private List<CoachStep> OrbMarks()
+        /// <summary>A coach step on the commandable hero's first spell bar (§3.1.0: mana fills each spell's own bar,
+        /// GG-T1821), or null when it carries no spell.</summary>
+        private List<CoachStep> SpellBarMarks(Func<AbilityDef, string> caption)
         {
-            if (pool == null) return null;
-            var marks = new List<CoachStep>
-            {
-                new CoachStep { Caption = "Each glass orb holds mana. Empty orbs are clear glass; mana dust flows in and fills them with glowing light.", Element = () => pool, Info = true },
-            };
-            if (pool.Q("orb0") != null)
-                marks.Add(new CoachStep { Caption = "A full orb glows and breathes: it's ready to spend on an ability.", Element = () => pool?.Q("orb0"), Info = true });
-            return marks;
-        }
-
-        private List<CoachStep> ManaMarks()
-        {
-            var marks = new List<CoachStep>
-            {
-                new CoachStep { Caption = "Pincers, strikes, kills and Clutch! moments fill these mana orbs; spells spend them (tap the orbs).", Element = () => pool, Info = true },
-            };
             var hero = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive);
             for (int i = 0; hero != null && i < slotViews.Count; i++)
             {
                 var a = BattleEngine.SlotAbility(State, hero, i);
-                if (a == null || a.Cost <= 0) continue;
+                if (a == null || State.ManaFull(hero, i) <= 0) continue;
                 int k = i;
-                marks.Add(new CoachStep { Caption = $"Each spell fills its own bar with mana: {a.Name} glows when its bar is full and ready to cast (tap the bar).", Element = () => k < slotViews.Count ? slotViews[k].Q("meter") : null, Info = true });
-                break;
+                return new List<CoachStep> { new CoachStep { Caption = caption(a), Element = () => k < slotViews.Count ? slotViews[k].Q("meter") : null, Info = true } };
             }
-            return marks;
+            return null;
         }
+
+        /// <summary>GG-T731: what mana is, shown on a spell's own fill bar.</summary>
+        private List<CoachStep> OrbMarks() =>
+            SpellBarMarks(_ => "Each spell has its own bar. Mana fills it as we fight; a full bar glows: that spell is ready to cast.");
+
+        private List<CoachStep> ManaMarks() =>
+            SpellBarMarks(a => $"Pincers, strikes, kills and Clutch! moments fill every spell's bar: {a.Name} glows when its bar is full and ready to cast (tap the bar).");
 
         /// <summary>A cast mark: tap the hero, its slot, the target (when it has one), then Cast / Use / Go.</summary>
         private List<CoachStep> CastMarks(Unit hero, int slot)

@@ -53,7 +53,7 @@ namespace GridGame.Meta
         /// <summary>A custom party (e.g. from the character-select screen) in place of the default <see cref="StartingRoster"/>.</summary>
         public static SaveData NewGame(ContentDb c, string name, IReadOnlyList<string> party)
         {
-            var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), CommanderName = Commander.Name(null, name), Gold = StartingGold, OwnedOrbs = BattleConfig.StartOwnedOrbs };
+            var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), CommanderName = Commander.Name(null, name), Gold = StartingGold };
             var ids = new List<string>();
             foreach (var id in party ?? Array.Empty<string>())
                 if (id != null && !ids.Contains(id, StringComparer.OrdinalIgnoreCase)) ids.Add(id);
@@ -320,18 +320,14 @@ namespace GridGame.Meta
         public int DustEarned;
         /// <summary>Summon Tickets this battle earned (a first clear, a chapter's end, every fifth win; GG-T1607); 0 for none.</summary>
         public int TicketsEarned;
-        /// <summary>GG-T673: mana orbs still in the row when the battle ended (GG-T676 converts them at stage end).</summary>
+        /// <summary>GG-T1811 (§3.1.0): full spell meters when the battle ended (GG-T676 converts them at the end of a won stage).</summary>
         public int OrbsLeft;
         /// <summary>GG-T676: the Mana Dust <see cref="OrbsLeft"/> settled back into at the end of a won stage (already counted
         /// in <see cref="DustEarned"/>); 0 when the orbs carried on along the road or the stage was lost.</summary>
         public int OrbDust;
-        /// <summary>GG-T677: owned Mana Orbs this victory added, and why (a milestone, a Halcyon find).</summary>
-        public int OrbsGained;
-        public List<string> OrbsGainedFrom = new List<string>();
-        /// <summary>GG-T677: Mana Orbs owned after this battle's rewards (0 when not recorded).</summary>
-        public int OrbsOwned;
-        /// <summary>GG-T677: a Broken Mana Orb dropped (the Manasmith restores it into an owned orb).</summary>
-        public bool BrokenOrbFound;
+        /// <summary>GG-T1811: what the former Mana Orb sources paid this victory, one line each (milestone Shards, a Halcyon
+        /// find's Dust; <see cref="ManaOrbs.AfterVictory"/>).</summary>
+        public List<string> OrbRewards = new List<string>();
         /// <summary>§25.20 (GG-T1573): Trust and cohesion this victory moved, before and after; empty short of victory.</summary>
         public BattleBonds BondChanges = new BattleBonds();
         public bool CampaignComplete;
@@ -377,6 +373,9 @@ namespace GridGame.Meta
         /// <summary>The hero class with the most combo points earned as a supporter this battle (null when none), and its points.</summary>
         public string TopSupporter;
         public int TopSupporterPoints;
+        /// <summary>GG-T1828: each hero class's combo points this battle, earned attacking and supporting.</summary>
+        public Dictionary<string, int> ComboAttackerPoints = new Dictionary<string, int>();
+        public Dictionary<string, int> ComboSupporterPoints = new Dictionary<string, int>();
         /// <summary>GG-T944 (§2.13.1): the party turns the battle took (<see cref="BattleResults.PartyTurns"/>) and the
         /// commands it took (<see cref="BattleResults.ActionsTaken"/>, Guards included).</summary>
         public int PartyTurns;
@@ -626,8 +625,8 @@ namespace GridGame.Meta
                 RecommendedLevel = crucible ? 1 : Progression.StageRecommendedLevel(c, s, stage),
                 NewGamePlus = crucible ? 0 : s.NewGamePlus,
                 Difficulty = difficulty <= DifficultyTable.Neutral ? DifficultyTable.Neutral : DifficultyTable.Clamp(difficulty),
-                StartOrbs = (crucible || drill ? 0 : TravelRules.StartOrbs(s)) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
-                OrbCapacity = ManaOrbs.Owned(c, s), // GG-T677: owned Mana Orbs are how many the row can fill
+                // §3.1.0 (GG-T1811): whole orbs granted at battle start, N x 100 points to every spell meter.
+                StartOrbs = (crucible || drill ? 0 : TravelRules.StartOrbs(s) + CampRestService.WellRestedOrbs(s)) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
                 TurnMode = TurnModeSetting.Resolve(s, profileTurnMode), // §2.13 (GG-T773): the save's lock, else the profile's
             };
             foreach (var h in s.Roster) setup.ExcludedGuests.Add(h.ClassId);
@@ -676,9 +675,11 @@ namespace GridGame.Meta
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,
                 Difficulty = battle.Difficulty,
-                OrbsLeft = battle.Bank?.Count ?? 0,
+                OrbsLeft = battle.ReadySpellCount,
                 BestComboRank = r.BestComboRank,
                 BestComboScore = r.BestComboScore,
+                ComboAttackerPoints = new Dictionary<string, int>(r.ComboAttackerPoints),
+                ComboSupporterPoints = new Dictionary<string, int>(r.ComboSupporterPoints),
                 PartyTurns = r.PartyTurns,
                 Actions = r.ActionsTaken,
                 Rounds = r.Rounds,
@@ -740,7 +741,7 @@ namespace GridGame.Meta
                 }
                 rep.QuestProgress = Quests.RecordBattle(c, s, battle);
                 var milestone = Milestones.Pay(c, s, rep, battle.Stage.Id); // a theme's first full clear teaches (GG-T301)
-                ManaOrbs.AfterVictory(c, s, rep, battle.Stage.Id, milestone); // GG-T677: milestone orb, Halcyon find, Broken Mana Orb
+                ManaOrbs.AfterVictory(c, s, rep, battle.Stage.Id, milestone); // GG-T1811: milestone Shards, Halcyon find Dust
                 rep.TameOffers.AddRange(Domestication.Offers(c, s, battle)); // a fully bonded tamed monster asks to join (GG-T303)
             }
             else if (rep.Escaped)
@@ -796,11 +797,11 @@ namespace GridGame.Meta
             rep.Wanderer = battle.Wanderer;
             rep.WandererOffer = Wanderers.OfferFrom(s, battle);
             rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
-            // GG-T1790 (§28): on the road a win carries the bank's orbs on and the Medic Wagon patches wounds; a loss camps.
-            rep.CarriedOrbs = TravelRules.AfterBattle(c, s, rep.Victory, battle.Bank?.Count ?? 0, out rep.MedicHealed);
-            // GG-T676: the orbs are Halcyon batteries that can't hold mana for long: what's left in the row at the end of a
-            // won stage settles back into Mana Dust. Orbs travel carries to its next battle stay orbs; a lost stage's
-            // orbs simply discharge (no Dust, like every other reward of a loss).
+            // GG-T1790 (§28): on the road a win carries its full spell meters on and the Medic Wagon patches wounds; a loss camps.
+            rep.CarriedOrbs = TravelRules.AfterBattle(c, s, rep.Victory, rep.OrbsLeft, out rep.MedicHealed);
+            // GG-T676, GG-T1811 (§3.1.0): each full spell meter at the end of a won stage settles into Mana Dust. Meters travel
+            // carries to its next battle arrive there as N x 100 points to every meter; a lost stage's mana simply
+            // discharges (no Dust, like every other reward of a loss).
             if (rep.Victory && rep.CarriedOrbs == 0 && rep.OrbsLeft > 0)
             {
                 rep.OrbDust = DustEconomy.SettleOrbs(rep.OrbsLeft);

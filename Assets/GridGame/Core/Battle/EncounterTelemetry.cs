@@ -195,8 +195,9 @@ namespace GridGame.Core.Battle
                     case RevivedEvent rv:
                         if (heroes.TryGetValue(rv.UnitId, out var revived)) revived.Revives++;
                         break;
-                    case OrbsSpentEvent os: if (!os.Drained) record.ManaSpent += os.Count; break; // GG-T332: a siphon isn't spending
+                    case SpellManaSpentEvent sp: record.ManaSpent += sp.Points; break; // §3.1.0: points a cast emptied (a siphon isn't spending)
                     case ManaChargedEvent mc: record.ManaCharged += mc.Amount; break;
+                    case ManaGainedEvent mg when mg.Amount > 0: record.ManaGained += mg.Amount; break;
                     case WeaponShatteredEvent ws:
                         context = "shatter";
                         record.WeaponShatters.Add(new WeaponShatter { UnitId = ws.UnitId, ClassId = ClassOf(ws.UnitId), WeaponId = ws.WeaponId, Wave = currentWave });
@@ -335,8 +336,12 @@ namespace GridGame.Core.Battle
         public int DamageTaken;
         public Dictionary<string, AbilityTally> ByAbility = new Dictionary<string, AbilityTally>();
         public PincerTally Pincers = new PincerTally();
+        /// <summary>Mana points casts emptied from their own meters (§3.1.0).</summary>
         public int ManaSpent;
+        /// <summary>Earned mana points to every meter, after damping.</summary>
         public int ManaCharged;
+        /// <summary>Every mana gain to every meter (earned and whole grants), in points.</summary>
+        public int ManaGained;
         public List<WeaponShatter> WeaponShatters = new List<WeaponShatter>();
         public Dictionary<string, int> ItemsUsed = new Dictionary<string, int>();
     }

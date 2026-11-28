@@ -147,7 +147,7 @@ namespace GridGame.Tests
         public void A_heal_from_a_hero_earns_trust_and_trust_stops_at_full()
         {
             var (s, w) = MiniWanderer();
-            s.Bank.Add(6);
+            GrantMana(s, 6);
             w.Hp = w.MaxHp / 3;
             var cleric = Hero(s, "cleric");
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = cleric.Id, Slot = 0, Target = w.Pos });

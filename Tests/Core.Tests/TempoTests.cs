@@ -20,7 +20,7 @@ namespace GridGame.Tests
         {
             caster.Bar[0] = new AbilitySlot { AbilityId = "quicken" };
             caster.Cooldowns.Clear();
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = target.Pos });
         }
 
@@ -82,7 +82,7 @@ namespace GridGame.Tests
             db.Abilities["haste_field"] = new AbilityDef { Id = "haste_field", Name = "Haste Field", Kind = AbilityKind.Spell, Cost = 1, HastenU = 0.15f, Shape = TargetShape.Square, Radius = 3, Mode = TargetMode.Auto, Filter = TargetFilter.AllyOnly };
             var (s, knight, _, _) = Setup(db);
             knight.Bar[0] = new AbilitySlot { AbilityId = "haste_field" };
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = knight.Pos });
             Assert.That(s.Tempo.Count, Is.EqualTo(1));
             Assert.That(s.NetTempo, Is.EqualTo(1));

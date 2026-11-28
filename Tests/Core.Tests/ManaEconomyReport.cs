@@ -79,9 +79,9 @@ namespace GridGame.Tests
                                     break;
                                 case PlayerControlEvent _:
                                     turn++; t.Turns++;
-                                    int bank = state.Bank.Count;
+                                    int bank = state.ReadySpellCount;
                                     t.BankSum += bank;
-                                    if (bank >= state.Bank.Capacity) { t.TurnsAtCap++; atCap++; if (firstFull < 0) firstFull = turn; }
+                                    if (state.AllSpellsFull) { t.TurnsAtCap++; atCap++; if (firstFull < 0) firstFull = turn; }
                                     if (bank >= 2) { t.TurnsAfford2++; afford2++; }
                                     break;
                             }

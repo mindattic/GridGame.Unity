@@ -204,15 +204,14 @@ namespace GridGame.Tests
         public void A_win_on_the_road_carries_its_orbs_and_wounds_into_the_next_battle_with_rest_closed()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex");
-            s.OwnedOrbs = ManaBank.DefaultCapacity; // GG-T685: a new save owns 1 orb (GG-T677); room to carry the 4 below
             Assert.That(s.World.Camped, Is.True, "a new game starts at camp");
             var theme = c.Campaign.Themes[0];
             var b1 = Fight(c, s, theme.Stages[0], true);
-            b1.Bank.Add(4);
+            GrantMana(b1, 4);
             var rep = BattleFactory.Commit(c, s, b1);
             Assert.That(TravelRules.OnTheRoad(s), Is.True);
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(b1.Bank.Count));
-            Assert.That(rep.CarriedOrbs, Is.EqualTo(b1.Bank.Count));
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(b1.ReadySpellCount));
+            Assert.That(rep.CarriedOrbs, Is.EqualTo(b1.ReadySpellCount));
             Assert.That(rep.OrbDust, Is.EqualTo(0), "carried orbs stay orbs");
             s.Roster[0].Hp = 1;
             Assert.That(CampRestService.Rest(s, out _).Ok, Is.False, "no camp rest on the road");
@@ -220,17 +219,16 @@ namespace GridGame.Tests
             var setup = BattleFactory.Build(c, s, theme.Stages[1], 3);
             Assert.That(setup.StartOrbs, Is.EqualTo(s.World.CarriedOrbs));
             var b2 = BattleEngine.Create(c, setup, new List<BattleEvent>());
-            Assert.That(b2.Bank.Count >= setup.StartOrbs, Is.True, "carried orbs seed the next battle's bank");
+            Assert.That(b2.ReadySpellCount >= setup.StartOrbs, Is.True, "carried orbs seed the next battle's bank");
         }
 
         [Test]
         public void A_defeat_on_the_road_falls_back_to_camp_with_no_orbs()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex3");
-            s.OwnedOrbs = ManaBank.DefaultCapacity;
             var theme = c.Campaign.Themes[0];
             var b1 = Fight(c, s, theme.Stages[0], true);
-            b1.Bank.Add(2);
+            GrantMana(b1, 2);
             BattleFactory.Commit(c, s, b1);
             Assume.That(TravelRules.OnTheRoad(s), Is.True);
             var lost = BattleFactory.Commit(c, s, Fight(c, s, theme.Stages[1], false));

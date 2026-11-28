@@ -388,14 +388,13 @@ namespace GridGame.Tests
         public void A_win_on_the_road_reports_the_carried_orbs_and_the_medic_heal()
         {
             var c = Real; var s = Progression.NewGame(c, "MW");
-            s.OwnedOrbs = ManaBank.DefaultCapacity;
             s.Gold = 10000;
             Assert.That(CaravanUpgrades.Buy(c, s, "medic_wagon").Ok, Is.True);
             var st = FightWithCoins(c, s, c.Campaign.Themes[0].Stages[0], 10);
-            st.Bank.Add(3);
+            GrantMana(st, 3);
             var rep = BattleFactory.Commit(c, s, st);
-            Assert.That(rep.CarriedOrbs, Is.EqualTo(st.Bank.Count));
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(st.Bank.Count));
+            Assert.That(rep.CarriedOrbs, Is.EqualTo(st.ReadySpellCount));
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(st.ReadySpellCount));
             Assert.That(rep.MedicHealed, Is.GreaterThanOrEqualTo(0));
         }
 

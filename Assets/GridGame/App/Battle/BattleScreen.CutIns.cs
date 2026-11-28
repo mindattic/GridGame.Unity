@@ -308,55 +308,22 @@ namespace GridGame.App
             App.StartCoroutine(TwistCard(card, portrait, at, 0.3f, left ? -18f : 18f, new Vector2(0f, 1f)));
         }
 
-        // ── Mana charge (§3.1.9): the forming bubble and the arithmetic, shown as it happens ──
-        private int shownCharge;
-
-        private IEnumerator ChargeAnim(ManaChargedEvent mc)
+        // ── Mana charge (§3.1.0): the arithmetic of an earned gain, in the points it adds to every spell meter. The
+        //    bars themselves fill from the ManaGainedEvent that follows (ManaGainAnim). ──
+        private void ChargeLines(ManaChargedEvent mc)
         {
-            int from = shownCharge;
-            int to = mc.Total;
-            bool rolled = mc.Amount + from >= BattleConfig.ManaChargePerOrb;
             if (mc.Reason == "pincer")
             {
                 string why = mc.Participants > 2 ? $" · {mc.Participants} heroes ÷{1f + BattleConfig.ChargeParticipantPenalty * (mc.Participants - 2):0.#}" : " · clean pincer";
                 if (mc.Chain > 1) why += $" · chain ×{1f + BattleConfig.ChargeChainBonus * (mc.Chain - 1):0.##}";
-                Billboard($"Mana charge +{mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb{why}", null, Palette.Mana); // GG-T408: charge is in hundredths of an orb
+                Billboard($"Mana +{mc.Amount} to every spell{why}", null, Palette.Mana); // GG-T408
             }
-            else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into the bubble
+            else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into every spell
             {
                 float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
-                Billboard($"Guard: {secs:0.#}s → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb", null, Palette.Mana); // GG-T408
-                // GG-T405: Guard trades time for mana, with a tag and a Log line saying so; its gold time slice pours
-                // into the spell bars (ManaGainAnim, GG-T1820).
-                MintTag($"{secs:0.#}s → mana", 0, Palette.Gold);
-                Feed($"Guard: {secs:0.#}s of turn time → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb ({to * 100 / BattleConfig.ManaChargePerOrb}% toward the next)", Palette.Mana);
+                Billboard($"Guard · Mana +{mc.Amount} · {secs:0.#}s banked", null, Palette.Mana); // §2.5
+                Feed($"Guard: {secs:0.#}s of turn time → +{mc.Amount} mana to every spell", Palette.Mana);
             }
-            // GG-T1820: the charge's motes fly from its source to the spell bars (the ManaGainedEvent that follows).
-            App.Audio.Sfx("battle.orb", 0.35f, 0.7f + 0.5f * (to / (float)BattleConfig.ManaChargePerOrb));
-            yield return Tween.Run(Timing.Standard, k =>
-            {
-                float v = rolled ? Mathf.Lerp(from, BattleConfig.ManaChargePerOrb, k) : Mathf.Lerp(from, to, k);
-                SetChargeBubble(v / BattleConfig.ManaChargePerOrb);
-            });
-            shownCharge = to;
-            if (rolled) SetChargeBubble(0f); // the OrbMinted beats that follow fill the real orb
-            else SetChargeBubble(to / (float)BattleConfig.ManaChargePerOrb);
-        }
-
-        /// <summary>The next orb forming (0..1): an arc round the rim of the next empty orb in the row (GG-T673; GG-T405 drew
-        /// it round the single globe). It closes the ring as the orb that rolls into the count forms.</summary>
-        private void SetChargeBubble(float frac)
-        {
-            orbCharge = Mathf.Clamp01(frac);
-            ApplyOrbCharge();
-        }
-
-        private float orbCharge;
-
-        /// <summary>Puts the forming charge on the orb right after the ones shown, and clears it from the rest.</summary>
-        private void ApplyOrbCharge()
-        {
-            for (int i = 0; i < orbViews.Count; i++) orbViews[i].Charge = i == shownOrbs ? orbCharge : 0f;
         }
     }
 }

@@ -51,7 +51,7 @@ namespace GridGame.Tests
             if (clericTool != null) c.Bar.Add(clericTool);
             setup.Party.Add(c);
             var s = BattleEngine.Create(Db(), setup, new List<BattleEvent>());
-            s.Bank.Add(4);
+            GrantMana(s, 4);
             return s;
         }
 

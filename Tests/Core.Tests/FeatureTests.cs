@@ -61,7 +61,7 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 2)), ("knight", 5, 7), ("mage", 4, 7));
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(4);
+            GrantMana(s, 4);
             var tank = Enemy(s, "tank");
             tank.Buffs.Add(new BuffInstance { Def = db.Buffs["burning"], Remaining = 1 });
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = tank.Pos });
@@ -88,18 +88,6 @@ namespace GridGame.Tests
             var (s3, _) = Battle(db, Stage(("hag", 2, 1)), ("knight", 2, 4), ("cleric", 5, 7));
             var plan = EnemyPlanner.PlanStep(s3, Enemy(s3, "hag"));
             Assert.That(plan.Manhattan(new Coord(2, 4)) >= 2, Is.True);
-        }
-
-        [Test] // US-082
-        public void Bank_capacity_bonus_gear_widens_the_orb_line()
-        {
-            var db = Mini();
-            db.Items["star"] = new ItemDef { Id = "star", Name = "Star", Type = ItemType.Equipment, Slot = EquipmentSlot.Ring1, BankCapacityBonus = 2 };
-            var setup = new BattleSetup { Stage = Stage(("tank", 0, 0)), Seed = 1, UnlockedSlots = 2 };
-            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(5, 7), EquippedItemIds = { "star" } });
-            setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(4, 7) });
-            var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
-            Assert.That(s.Bank.Capacity, Is.EqualTo(14));
         }
 
         [Test] // US-244
@@ -151,11 +139,11 @@ namespace GridGame.Tests
             Assert.That(save.Count(weapons[1].Id), Is.EqualTo(0));
         }
 
-        [Test] // generic mana: every hero spell is payable from a full bank
-        public void Every_hero_spell_costs_between_one_orb_and_a_full_bank()
+        [Test] // generic mana: every hero spell's cost is within the top spell cost
+        public void Every_hero_spell_costs_between_one_orb_and_the_top_cost()
         {
             foreach (var a in Real.Abilities.Values.Where(x => GridGame.Meta.Abilities.IsHeroUsable(x) && x.Kind == AbilityKind.Spell))
-                Assert.That(a.Cost, Is.InRange(1, ManaBank.DefaultCapacity));
+                Assert.That(a.Cost, Is.InRange(1, BattleConfig.MaxSpellOrbCost));
         }
     }
 }

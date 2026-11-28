@@ -25,7 +25,7 @@ namespace GridGame.Tests
 
         private static System.Collections.Generic.List<BattleEvent> Shred(BattleState s, Unit caster, Unit target)
         {
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             caster.ActedThisWindow = false; // one cast a window (GG-T308); these tests are about the status
             return BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = target.Pos });
         }
@@ -504,7 +504,7 @@ namespace GridGame.Tests
 
         private static System.Collections.Generic.List<BattleEvent> Scare(BattleState s, Unit caster, Unit target)
         {
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             caster.ActedThisWindow = false;
             caster.Bar[0] = new AbilitySlot { AbilityId = "scare" };
             return BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = target.Pos });
@@ -688,14 +688,14 @@ namespace GridGame.Tests
             m.Bar[0] = new AbilitySlot { AbilityId = "root_dart" };
             var tank = Enemy(s, "tank");
             Float(tank);
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = tank.Pos });
             Assert.That(tank.HasBuff("rooted"), Is.False, "no ground for roots to grip");
             Assert.That(ev.OfType<BuffAppliedEvent>().Any(b => b.UnitId == tank.Id && b.BuffId == "rooted"), Is.False);
             Assert.That(ev.OfType<AnnounceEvent>().Any(a => a.UnitId == tank.Id && a.Text == "Floating!"), Is.True);
 
             var gob = Enemy(s, "goblin");
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             m.ActedThisWindow = false;
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = gob.Pos });
             Assert.That(gob.IsRooted, Is.True, "a grounded foe is rooted");

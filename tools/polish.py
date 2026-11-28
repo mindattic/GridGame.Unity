@@ -260,7 +260,7 @@ def campaign_order():
 
 def balance(tally, rec_dirs):
     """Dimension G from battle records (records.py). POL-G1 casual win band and HP-left band per stage, POL-G2 no
-    spike between consecutive stages, POL-G3 mana waste and full-bank share per battle, POL-G4 ability use share,
+    spike between consecutive stages, POL-G3 share of turns with a full spell meter per battle, POL-G4 ability use share,
     POL-G5 impact band (against the median of the same ability kind, a stand-in for the role median), POL-G6
     actions per completed wave, POL-G7 no role composition winning > 90% for the casual bot."""
     import records
@@ -268,14 +268,12 @@ def balance(tally, rec_dirs):
     if not recs:
         return 0
     for r in recs:
-        _, mana = records.ability_usage([r])
-        if mana["minted"]:
-            waste = mana["overflowed"] / mana["minted"]
-            tally.one("POL-G3", waste <= 0.20, {"screen": "records", "subject": r.get("stage", "?"), "detail": f"{waste:.0%} of orbs wasted ({r.get('source')})"})
+        if records.is_legacy(r):
+            continue
         turns = r["turns"]
         if turns:
-            full = sum(1 for t in turns if t["before"].get("bankCapacity") and t["before"]["bank"] >= t["before"]["bankCapacity"])
-            tally.one("POL-G3", full / len(turns) <= 0.08, {"screen": "records", "subject": r.get("stage", "?"), "detail": f"bank full on {full / len(turns):.0%} of turns ({r.get('source')})"})
+            ready = sum(1 for t in turns if any(m["points"] >= m["full"] for m in t["before"].get("meters", [])))
+            tally.one("POL-G3", ready / len(turns) <= 0.95, {"screen": "records", "subject": r.get("stage", "?"), "detail": f"a spell sat full on {ready / len(turns):.0%} of turns ({r.get('source')})"})
     barred, used = {}, {}
     for r in recs:
         stats, _ = records.ability_usage([r])

@@ -148,15 +148,15 @@ namespace GridGame.Tests
         {
             var db = WithReal("aetherist_aetherpour");
             Assert.That(db.Abilities["aetherist_aetherpour"].PoursOrbs, Is.True);
-            var s = Board(db, "aetherist_aetherpour");
+            var s = Board(db, "aetherist_aetherpour", "fireball");
             var caster = Hero(s, "knight");
             var cleric = Hero(s, "cleric");
             cleric.Hp = 5;
-            int orbs = s.Bank.Count;
+            int points = s.ManaIn(caster.Id, 1);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = cleric.Pos });
             Assert.That(cleric.Hp, Is.GreaterThan(5), "the ally is mended");
             Assert.That(ev.OfType<OrbMintedEvent>().Count(o => o.Reason == "aether"), Is.EqualTo(1));
-            Assert.That(s.Bank.Count, Is.EqualTo(System.Math.Min(s.Bank.Capacity, orbs + 1)));
+            Assert.That(s.ManaIn(caster.Id, 1), Is.EqualTo(System.Math.Min(s.ManaFull(caster, 1), points + BattleConfig.ManaPointsPerOrb)));
             Assert.That(caster.Cooldowns["aetherist_aetherpour"], Is.GreaterThan(0), "a Skill on a cooldown, not a free orb every action");
             AssertEventInvariants(ev);
         }
@@ -167,10 +167,11 @@ namespace GridGame.Tests
             var meditate = Real.Abilities["meditate"];
             Assert.That(meditate.PoursOrbs, Is.False, "Meditate is the whole ability: no target needed");
             var db = WithReal("meditate");
-            var s = Board(db, "meditate");
-            int orbs = s.Bank.Count;
-            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "knight").Id, Slot = 0, Target = Hero(s, "knight").Pos });
-            Assert.That(s.Bank.Count, Is.EqualTo(System.Math.Min(s.Bank.Capacity, orbs + 1)));
+            var s = Board(db, "meditate", "fireball");
+            var knight = Hero(s, "knight");
+            int points = s.ManaIn(knight.Id, 1);
+            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = knight.Pos });
+            Assert.That(s.ManaIn(knight.Id, 1), Is.EqualTo(System.Math.Min(s.ManaFull(knight, 1), points + BattleConfig.ManaPointsPerOrb)));
             Assert.That(ev.OfType<OrbMintedEvent>().Count(), Is.EqualTo(1));
         }
 

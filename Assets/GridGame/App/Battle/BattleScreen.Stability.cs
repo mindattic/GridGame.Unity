@@ -89,7 +89,6 @@ namespace GridGame.App
             perfectBot = null;
             StopRoutine(ref playRoutine);
             StopRoutine(ref dragRoutine);
-            StopRoutine(ref bannerScrollRoutine);
             playing = simulatingDrag = pressing = dragging = false;
             holdTicker?.Pause();
             holdTicker = null;
@@ -97,9 +96,6 @@ namespace GridGame.App
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; }
             billboard?.RemoveFromHierarchy();
             billboard = null;
-            mintTagHost?.RemoveFromHierarchy();
-            mintTagHost = null;
-            mintTags.Clear();
             castGhosts.Clear();
             unplayedCasts.Clear();
             Tween.Paused = false;

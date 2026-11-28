@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core;
+using GridGame.Core.Battle;
 using GridGame.Meta;
 using NUnit.Framework;
 using static GridGame.Tests.TestKit;
@@ -44,6 +47,25 @@ namespace GridGame.Tests
             Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(3));
             Assert.That(TravelRules.OnTheRoad(s), Is.True);
             Assert.That(h.Hp, Is.EqualTo(5), "no Medic Wagon: the wound stays");
+        }
+
+        [Test]
+        public void Carried_orbs_arrive_as_points_in_every_spell_meter()
+        {
+            // §3.1.0: N carried orbs are a whole grant of N x 100 points to every meter, undamped, capped at each full.
+            const int carried = 1;
+            var setup = new BattleSetup { Stage = Stage(("tank", 2, 2)), Seed = 7, UnlockedSlots = 5, StartOrbs = carried };
+            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(2, 3), Bar = { "fireball", "heal" } });
+            setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(5, 7), Bar = { "heal" } });
+            var b = BattleEngine.Create(Mini(), setup, new List<BattleEvent>());
+            var k = Hero(b, "knight");
+            var c = Hero(b, "cleric");
+            int points = carried * BattleConfig.ManaPointsPerOrb;
+            Assert.That(b.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(points, b.ManaFull(k, 0))));
+            Assert.That(b.ManaIn(k.Id, 1), Is.EqualTo(System.Math.Min(points, b.ManaFull(k, 1))));
+            Assert.That(b.ManaIn(c.Id, 0), Is.EqualTo(System.Math.Min(points, b.ManaFull(c, 0))));
+            Assert.That(b.ManaIn(k.Id, 0), Is.LessThan(b.ManaFull(k, 0)), "a 2-cost Fireball is half full from one orb");
+            Assert.That(b.SpellReady(c, 0), Is.True, "a 1-cost Heal is full from one orb");
         }
 
         [Test]

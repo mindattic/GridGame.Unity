@@ -516,16 +516,8 @@ namespace GridGame.Core.Content
                     if (l.FocusRole != null && !new List<ClassDef>(db.Classes.Values).Exists(cl => cl.Role == l.FocusRole)) p.Add($"stage {s.Id} lesson {l.Id}: no class has role '{l.FocusRole}'");
                 }
             }
-            // GG-T677: every orb source is finite, so the most a save can ever own is fixed by content; it may not pass the cap.
-            int orbSources = Battle.BattleConfig.StartOwnedOrbs + Battle.BattleConfig.MaxBrokenOrbs;
             foreach (var t in db.Campaign.Themes)
-            {
                 if (t.OrbFindChance < 0f || t.OrbFindChance > 1f) p.Add($"theme {t.Id}: OrbFindChance {t.OrbFindChance} outside 0..1 (GG-T677)");
-                if (t.MilestoneOrb) orbSources++;
-                if (t.OrbFindChance > 0f) orbSources += t.Stages.Count;
-            }
-            if (orbSources > Battle.BattleConfig.MaxOrbCapacity)
-                p.Add($"campaign.json: {orbSources} Mana Orbs can be owned, past the cap of {Battle.BattleConfig.MaxOrbCapacity} (GG-T677)");
             SkyDef.Validate(db, p); // GG-T576
             Breeds.Validate(db, p); // GG-T1774
             ValidateCrawl(db, db.Campaign.Opening, "campaign Opening", false, p);

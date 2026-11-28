@@ -67,7 +67,7 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("wolf", 2, 2), ("tank", 4, 5)), ("knight", 0, 0), ("mage", 5, 7));
             var mage = Hero(s, "mage");
             mage.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(2);
+            s.SetMana(mage.Id, 0, s.ManaFull(mage, 0)); // §3.1.0: a full meter, so the bot may cast it
 
             var bot1 = new HeroBot(12345, randomness: 0f) { SkillLevel = 50f };
             var bot2 = new HeroBot(12345, randomness: 0f) { SkillLevel = 50f };
@@ -98,20 +98,24 @@ namespace GridGame.Tests
             }
         }
 
-        [Test]
-        public void Randomness_and_softened_skill_still_only_return_legal_commands()
+        [TestCase(0, TestName = "Randomness_and_softened_skill_still_only_return_legal_commands_with_a_full_meter")]
+        [TestCase(1, TestName = "Randomness_and_softened_skill_never_cast_a_spell_still_charging")]
+        public void Randomness_and_softened_skill_still_only_return_legal_commands(int pointsShort)
         {
+            // §3.1.0: a spell is castable exactly when its meter is full; AssertLegal refuses a cast whose slot isn't Ready.
             var db = Mini();
             var (s, _) = Battle(db, Stage(("wolf", 2, 2), ("tank", 3, 5)), ("knight", 0, 0), ("mage", 5, 7));
             var mage = Hero(s, "mage");
             mage.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(6);
+            s.SetMana(mage.Id, 0, s.ManaFull(mage, 0) - pointsShort);
 
             for (int seed = 1; seed <= 40; seed++)
             {
                 var bot = new HeroBot(seed, randomness: 1f) { SkillLevel = 30f };
                 var cmd = bot.Decide(s);
                 AssertLegal(s, cmd);
+                if (pointsShort > 0)
+                    Assert.That(cmd is UseSlotCommand u && u.HeroId == mage.Id && u.Slot == 0, Is.False, "a charging spell is never cast");
             }
         }
 

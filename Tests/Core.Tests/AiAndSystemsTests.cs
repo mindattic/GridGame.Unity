@@ -103,7 +103,7 @@ namespace GridGame.Tests
                 setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(3, 7), Bar = new List<string> { "meteor" } });
                 setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(0, 0) });
                 var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
-                s.Bank.Add(2);
+                GrantMana(s, 2);
                 var mage = Hero(s, "mage");
                 BattleEngine.Apply(s, new UseSlotCommand { HeroId = mage.Id, Slot = 0, Target = new Coord(3, 5) });
                 if (s.CastEntryOf(mage.Id) == null) continue;
@@ -134,8 +134,10 @@ namespace GridGame.Tests
             var setup = new BattleSetup { Stage = Stage(("tank", 0, 0)), Seed = 3, UnlockedSlots = 2 };
             setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(5, 7), EquippedItemIds = { "robe" } });
             setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(4, 7) });
+            setup.Party[0].Bar.Add("fireball");
             var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
-            Assert.That(s.Bank.Count, Is.EqualTo(2));
+            var k = Hero(s, "knight");
+            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), 2 * BattleConfig.ManaPointsPerOrb)));
             Assert.That(Hero(s, "knight").ResistanceMultiplier(DamageType.Fire), Is.EqualTo(0.5f).Within(1e-3));
         }
 
@@ -236,7 +238,7 @@ namespace GridGame.Tests
             var (s, _) = Battle(db, Stage(("tank", 2, 2)), ("knight", 5, 7), ("mage", 4, 7));
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "frost" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             var tank = Enemy(s, "tank");
             Turn(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = new Coord(2, 2) });
             Assert.That(tank.HasBuff("frozen"), Is.True, "still frozen after the casting action");
@@ -359,7 +361,7 @@ namespace GridGame.Tests
             var tank = Enemy(s, "tank");
             for (int i = 0; i < 4; i++)
             {
-                s.Bank.Add(2);
+                GrantMana(s, 2);
                 m.ActedThisWindow = false; // GG-T308: one cast a window — this test is about stacking, not the window
                 BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = tank.Pos });
             }

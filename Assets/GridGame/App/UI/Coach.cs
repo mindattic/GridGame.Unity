@@ -27,7 +27,7 @@ namespace GridGame.App
         public Func<bool> Also;
         /// <summary>The step can still be done; when this turns false the lesson's marks stop (never a soft-lock).</summary>
         public Func<bool> Valid;
-        /// <summary>Nothing real under the box: tapping it only moves on (a tour of the timeline, the mana globe).</summary>
+        /// <summary>Nothing real under the box: tapping it only moves on (a tour of the timeline, a spell's mana bar).</summary>
         public bool Info;
         /// <summary>The caption docks at the safe bottom edge (the top, when the box is low) instead of beside the box: a
         /// move's route covers the board, and a caption beside it would hide the heroes it names.</summary>
@@ -113,7 +113,7 @@ namespace GridGame.App
         public static string LessonId => lesson?.Id;
 
         /// <summary>Bots and harness runs see no blocking lessons unless the run asks for them (`-coach`, or the older
-        /// `-campTips`); the battle tutorial then keeps its non-blocking Tutorial tab.</summary>
+        /// `-campTips`); the battle tutorial then teaches in the description panel alone.</summary>
         public static bool Suppressed =>
             DemoMode.Active || TestMode.Active || CommandLine.Has("-autobattle") ||
             (CommandLine.Has("-automation") && !CommandLine.Has("-coach") && !CommandLine.Has("-campTips"));
@@ -143,7 +143,7 @@ namespace GridGame.App
             foreach (var t in CampTips.All) CampTips.MarkSeen(s, t.Station);
         }
 
-        /// <summary>Raised when Skip tutorial is confirmed (the battle drops its Tutorial tab).</summary>
+        /// <summary>Raised when Skip tutorial is confirmed (the battle drops its lesson from the description panel).</summary>
         public static event Action TurnedOff;
 
         /// <summary>Opens <paramref name="l"/>. False when another lesson is running.</summary>

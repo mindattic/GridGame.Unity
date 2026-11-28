@@ -339,11 +339,9 @@ namespace GridGame.App
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
             ArtW = 420, ArtH = 620;
-        // GG-T673: the mana orbs row (one orb per bank slot) and the trails that fly into it. OrbBloom is how far an orb's
-        // bloom spills past it; TrailSwing/TrailLift bound the bezier control point's random sideways and upward offset.
-        // GG-T688: OrbRow is the row's height and the largest an orb gets (owning 1-5 they're big bulbs); OrbMin is the
-        // smallest it may shrink to at 20; OrbGap the equal gap between orbs; OrbLabel the "MANA" label's width.
-        public const float OrbRow = 88, OrbMin = 36, OrbGap = 12, OrbLabel = 96, OrbBloom = 26, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
+        // GG-T673: the mana trails a mote leaves on its way to the spell bars. TrailSwing/TrailLift bound the bezier control
+        // point's random sideways and upward offset.
+        public const float TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
         // GG-T678: Manapunk window hardware. A corner clamp's arm length and bar thickness and its bolt head; the edge
         // conduit's tube width, and the shortest window that gets a conduit at all.
         public const float ClampArm = 44, ClampBar = 6, ClampBolt = 14, Conduit = 8, ConduitMinHeight = 220;
@@ -445,9 +443,8 @@ namespace GridGame.App
     public static class Timing
     {
         public const float Instant = 0.08f, Quick = 0.15f, Standard = 0.25f, Emphasis = 0.4f, Dramatic = 0.7f, Cinematic = 1.2f;
-        /// <summary>GG-T673: a lit orb's bloom breathes on this period; a mana trail drops a spark every TrailSparkEvery
-        /// seconds, each living TrailSparkLife.</summary>
-        public const float OrbBreathe = 2.4f, TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
+        /// <summary>GG-T673: a mana trail drops a spark every TrailSparkEvery seconds, each living TrailSparkLife.</summary>
+        public const float TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
         /// <summary>GG-T761: a Manapunk conduit's Quake light style steps ConduitStep seconds a letter (10 Hz), and the
         /// tube idles a random ConduitIdleMin..ConduitIdleMax seconds between bursts of power.</summary>
         public const float ConduitStep = 0.1f, ConduitIdleMin = 2.5f, ConduitIdleMax = 9f;

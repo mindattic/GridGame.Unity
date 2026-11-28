@@ -216,7 +216,7 @@ namespace GridGame.Tests
             s.Timeline.Add(new TimelineEntry { Id = 500, Kind = TimelineKind.Cast, OwnerId = m.Id, CasterTeam = Team.Hero, AbilityId = "meteor", RemainingTicks = 200, TotalCastTicks = 200, TargetTile = new Coord(2, 0) });
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "quicken" };
-            s.Bank.Add(1);
+            GrantMana(s, 1);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = k.Id, Slot = 0, Target = m.Pos });
             Assert.That(ev.Any(e => e is HastenedEvent h && h.EntryId == 500), Is.True);
         }
@@ -318,7 +318,7 @@ namespace GridGame.Tests
             Assert.That(BattleEngine.GetSlotStatus(s, k.Id, 4), Is.EqualTo(SlotStatus.Locked));
             k.Cooldowns["teleport"] = 2;
             Assert.That(BattleEngine.GetSlotStatus(s, k.Id, 1), Is.EqualTo(SlotStatus.Cooldown));
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             k.Buffs.Add(new BuffInstance { Def = db.Buffs["silenced"], Remaining = 2 });
             Assert.That(BattleEngine.GetSlotStatus(s, k.Id, 0), Is.EqualTo(SlotStatus.Silenced));
             k.Buffs.Add(new BuffInstance { Def = db.Buffs["sleep"], Remaining = 2 });
@@ -348,7 +348,7 @@ namespace GridGame.Tests
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             var tank = Enemy(s, "tank");
-            s.Bank.Add(4);
+            GrantMana(s, 4);
             // An action runs the clock until the next enemy turn (GG-T188); the Speed-1 tank would take ~350
             // ticks to arrive and Burning would expire inside the first cast, so its turn is put on the next tick.
             ActsAfterAction(s, tank); // GG-T311: as close as a cast still fits
@@ -398,7 +398,7 @@ namespace GridGame.Tests
             tank.Buffs.Add(new BuffInstance { Def = db.Buffs["frozen"], Remaining = 1 });
             var m = Hero(s, "mage");
             m.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            s.Bank.Add(2);
+            GrantMana(s, 2);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = tank.Pos });
             Assert.That(ev.Any(e => e is BuffRemovedEvent r && r.BuffId == "frozen"), Is.True);
             Assert.That(ev.Any(e => e is BuffRemovedEvent r && r.BuffId == "wet" && r.Reason == "steam"), Is.True);
@@ -628,7 +628,7 @@ namespace GridGame.Tests
                 setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(4, 7), Bar = new List<string> { "fireball" } });
                 setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(5, 7) });
                 var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
-                s.Bank.Add(2);
+                GrantMana(s, 2);
                 var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "mage").Id, Slot = 0, Target = new Coord(2, 2) });
                 var d = ev.OfType<DamagedEvent>().First(x => x.SourceId == Hero(s, "mage").Id);
                 if (d.Hit == HitKind.Miss) misses++;
@@ -640,36 +640,32 @@ namespace GridGame.Tests
         }
 
         [Test] // GG-T130
-        public void OrbsSpent_reports_the_bank_right_after_that_spend_not_the_whole_actions_end()
+        public void The_spend_reports_the_meter_right_after_it_not_the_whole_actions_end()
         {
-            // A spell's cost comes out of the bank the instant it's cast, but the same action can still mint
-            // more orbs afterward (here: a crit's charge rolling over). OrbsSpentEvent.CountAfter must freeze the
-            // bank as it stood right after the spend, not read it back off the command's final state once those
-            // later orbs have already landed (GG-T130, found by GG-T112) — playback would otherwise show the bank
-            // topped up before the later orb's fly-in arrives.
+            // A spell's cost comes out of its meter the instant it's cast, but the same action can still earn more mana
+            // afterward (here: a crit). The later gain is its own event, starting from the emptied meter, so playback never
+            // shows the meter topped up before the gain arrives (GG-T130, found by GG-T112).
             var db = Mini();
             db.Classes["mage"].BaseStats.Luck = 200; // crit some of the time
-            bool sawMintAfterSpend = false;
-            for (int seed = 1; seed <= 60 && !sawMintAfterSpend; seed++)
+            bool sawGainAfterSpend = false;
+            for (int seed = 1; seed <= 60 && !sawGainAfterSpend; seed++)
             {
                 var setup = new BattleSetup { Stage = Stage(("tank", 2, 2)), Seed = seed, UnlockedSlots = 2 };
                 setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(4, 7), Bar = new List<string> { "fireball" } });
                 setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(5, 7) });
                 var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
-                s.Bank.Add(2);
-                int bankBeforeCast = s.Bank.Count;
-                s.ManaCharge = BattleConfig.ManaChargePerOrb - BattleConfig.CritCharge; // one crit away from minting
-                var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "mage").Id, Slot = 0, Target = new Coord(2, 2) });
-                int spentIndex = ev.FindIndex(e => e is OrbsSpentEvent);
+                var mage = Hero(s, "mage");
+                GrantMana(s, 2);
+                var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = mage.Id, Slot = 0, Target = new Coord(2, 2) });
+                int spentIndex = ev.FindIndex(e => e is SpellManaSpentEvent);
                 if (spentIndex < 0) continue;
-                var spent = (OrbsSpentEvent)ev[spentIndex];
-                Assert.That(spent.CountAfter, Is.EqualTo(bankBeforeCast - spent.Count));
-                var mintedLater = ev.Skip(spentIndex + 1).OfType<OrbMintedEvent>().Where(o => o.Landed).ToList();
-                if (mintedLater.Count == 0) continue;
-                sawMintAfterSpend = true;
-                Assert.That(spent.CountAfter, Is.LessThan(s.Bank.Count)); // the later mint must not already show in CountAfter
+                Assert.That(((SpellManaSpentEvent)ev[spentIndex]).Points, Is.EqualTo(s.ManaFull(mage, 0)));
+                var later = ev.Skip(spentIndex + 1).OfType<ManaGainedEvent>().SelectMany(g => g.Meters).Where(m => m.UnitId == mage.Id && m.Slot == 0).ToList();
+                if (later.Count == 0) continue;
+                sawGainAfterSpend = true;
+                Assert.That(later[0].After, Is.EqualTo(later[0].Delta), "the gain starts from the meter as the spend left it");
             }
-            Assert.That(sawMintAfterSpend, Is.True, "never saw a crit roll an orb in the same action as the spend; widen the seed range");
+            Assert.That(sawGainAfterSpend, Is.True, "never saw a crit earn mana in the same action as the spend; widen the seed range");
         }
 
         [Test] // US-245
