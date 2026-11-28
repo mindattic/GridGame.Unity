@@ -199,7 +199,7 @@ namespace GridGame.App.Dev
             Onboarding.Finish(s);
             if (def.AllFeatures) CampNpcs.JoinAll(s);
 
-            for (int i = 0; i < cleared; i++) s.ClearedStages.Add(stages[i].Id);
+            for (int i = 0; i < cleared; i++) { s.ClearedStages.Add(stages[i].Id); BestiaryRegions.RecordStage(s, stages[i]); }
             s.HighestClearedStage = cleared - 1;
 
             var result = new ScenarioResult { Save = s, Target = target };
