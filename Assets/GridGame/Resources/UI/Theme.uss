@@ -340,6 +340,8 @@
 .card.tap--selected { background-color: var(--color-well); border-width: 3px; border-color: var(--color-frame); border-top-color: var(--color-well-edge); padding: var(--space-16-framed); translate: 0 3px; scale: 0.985 0.985; }
 .btn.tap--selected { border-bottom-width: 4px; border-top-color: var(--color-well-edge); translate: 0 8px; }
 .btn--small.tap--selected { border-bottom-width: 3px; translate: 0 6px; }
+/* GG-T2084: a tappable thumbnail tile (Character select) selected by a first tap; three classes so it outranks a theme's .thumb frame. */
+.card-tap.thumb.tap--selected { border-width: 3px; border-color: var(--color-frame); border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
 /* The Main Menu's mana conduit under the wordmark (GG-T1350): a lit line with a pale core. */
 .title-conduit { height: 6px; margin-top: var(--space-8); border-radius: var(--radius-3); background-color: var(--color-mana); border-top-width: 2px; border-top-color: var(--color-mana-core); }
 .splash-copy { margin-top: var(--space-32); }

@@ -130,7 +130,6 @@ namespace GridGame.App
                 global::Unity.Shared.Core.Profiles.SessionMuted = false;
                 Application.runInBackground = false;
             }
-            Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
             projectQualityLevel = QualitySettings.GetQualityLevel();
 
@@ -513,15 +512,14 @@ namespace GridGame.App
         {
             var st = Settings;
             Audio?.Apply(st);
-            // GG-T1221 Graphics: quality level (-1 = the project's own), vsync, and the frame-rate cap (60 by default).
+            // GG-T1221 Graphics: quality level (-1 = the project's own) and vsync; GG-T2102 Display: the frame rate, 60 or 120.
             int quality = st.QualityLevel >= 0 && st.QualityLevel < QualitySettings.names.Length ? st.QualityLevel : projectQualityLevel;
             if (QualitySettings.GetQualityLevel() != quality) QualitySettings.SetQualityLevel(quality, true);
-            // GG-T1240: on mobile vsync is not a setting and -1 means the platform default (often 30), so Uncapped runs at the display's refresh rate.
+            // GG-T1240: on mobile vsync is not a setting.
             bool mobileGfx = Application.isMobilePlatform;
             int cap = GridGame.Meta.GameSettings.ClampFrameRateCap(st.FrameRateCap);
-            if (mobileGfx && cap < 0) cap = Mathf.Max(60, Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value));
             QualitySettings.vSyncCount = !mobileGfx && st.VSync ? 1 : 0;
-            // GG-T1548: the frame cap and Effects amount go through the thermal step-down, which only ever lowers them.
+            // GG-T1548: the frame rate and Effects amount go through the thermal step-down, which only ever lowers them.
             ThermalStepDown.Apply(cap, Mathf.Clamp01(st.VfxAmount));
             Tween.ShakeScale = Mathf.Clamp01(st.ScreenShake);
             Tween.Speed = Dev.DevOptions.BattleSpeed(st.BattleSpeed); // GG-T1938: up to x8 from the pause menu with Cheats on

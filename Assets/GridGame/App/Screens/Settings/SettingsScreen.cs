@@ -225,18 +225,20 @@ namespace GridGame.App
             Toggle(RowKind.SpeakerOff, "Mute sound", st.MuteSfx, v => st.MuteSfx = v);
             Toggle(RowKind.WindowOff, "Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
 
-            // GG-T1221: quality (-1 = the project's own), frame-rate cap, vsync, shake and effects amount.
+            // GG-T1221: quality (-1 = the project's own), vsync, shake and effects amount.
             Section("Graphics");
             var qualities = QualitySettings.names;
             CycleInt(RowKind.Quality, "Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
                 Enumerable.Range(-1, qualities.Length + 1).ToArray(), q => q < 0 ? "Default" : qualities[q], v => st.QualityLevel = v, "settings-quality");
-            CycleInt(RowKind.Gauge, "Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
-                f => f < 0 ? "Uncapped" : $"{f} fps", v => st.FrameRateCap = v, "settings-frame-cap");
             if (!mobile) Toggle(RowKind.Sync, "VSync", st.VSync, v => st.VSync = v, "settings-vsync"); // GG-T1240: mobile ignores vsync
             Cycle(RowKind.Shake, "Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
             Cycle(RowKind.Effects, "Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
 
             Section("Display");
+            // GG-T2102: 120 Hz only where the display draws it (ProMotion iPhones, 120 Hz Galaxies); elsewhere the game runs at 60.
+            if (ThermalStepDown.HighRefreshSupported)
+                CycleInt(RowKind.Gauge, "Frame rate", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 60, ThermalStepDown.HighFrameRate },
+                    f => $"{f} Hz", v => st.FrameRateCap = v, "settings-frame-rate");
             if (desktop)
             {
                 CycleInt(RowKind.Window, "Window mode", GameSettings.ClampFullScreen(st.FullScreen), new[] { -1, 0, 1 },

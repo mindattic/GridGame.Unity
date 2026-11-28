@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -40,8 +41,7 @@ namespace GridGame.App
             var w = Ui.Window(null, col);
             w.name = "commander-look-window";
             w.style.width = Fit.Column - 2 * Kit.Gutter;
-            var title = Ui.Text("Who are you?", "h1 shadow gold", w);
-            Fonts.UseDisplay(title);
+            var title = Ui.Display("Who are you?", w, "shadow gold", false);
             title.style.unityTextAlign = TextAnchor.MiddleCenter;
             title.style.whiteSpace = WhiteSpace.Normal;
             var hint = Ui.Para("Choose how you look and how the story speaks of you. Same skills, same story.", w, "dim");
@@ -59,9 +59,7 @@ namespace GridGame.App
                 card.style.flexGrow = 1; card.style.flexShrink = 1; card.style.flexBasis = Length.Percent(0); card.style.minWidth = 0;
                 card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
                 card.style.alignItems = Align.Center;
-                card.style.paddingTop = card.style.paddingBottom = Space.S16;
-                card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = on ? 6 : 3;
-                card.style.borderTopColor = card.style.borderBottomColor = card.style.borderLeftColor = card.style.borderRightColor = on ? Palette.Gold : Palette.Ink;
+                card.EnableInClassList("tap--selected", on); // R3: the chosen look is pressed in
                 var art = Ui.El(null, card);
                 art.pickingMode = PickingMode.Ignore;
                 art.style.width = Length.Percent(100);
@@ -81,13 +79,10 @@ namespace GridGame.App
             said.style.unityTextAlign = TextAnchor.MiddleCenter;
             var pick = Ui.El("row", w);
             pick.style.justifyContent = Justify.Center;
-            foreach (var p in new[] { CommanderPronouns.TheyThem, CommanderPronouns.SheHer, CommanderPronouns.HeHim })
-            {
-                var choice = p;
-                var b = Ui.Button(Commander.Label(p), () => { pronouns = choice; Refresh(); }, p == pronouns ? "btn--primary" : null, pick);
-                b.name = "commander-pronouns-" + p.ToString().ToLowerInvariant();
-                b.style.marginLeft = b.style.marginRight = Space.TargetHalfGap;
-            }
+            var options = new[] { CommanderPronouns.TheyThem, CommanderPronouns.SheHer, CommanderPronouns.HeHim };
+            var seg = Ui.Segmented(options.Select(Commander.Label).ToArray(), Array.IndexOf(options, pronouns), i => pronouns = options[i], pick, "commander-pronouns");
+            seg.style.flexGrow = 1;
+            for (int i = 0; i < options.Length; i++) seg[i].name = "commander-pronouns-" + options[i].ToString().ToLowerInvariant();
 
             var foot = Ui.El("kit-footer", w);
             foot.style.justifyContent = Justify.FlexEnd;
