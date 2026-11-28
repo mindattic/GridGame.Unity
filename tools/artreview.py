@@ -20,7 +20,6 @@ import harness as h  # noqa: E402
 
 RUN = "artreview"
 OUT = os.path.join(h.ROOT, "artifacts", RUN)
-SLOT = lambda i: (25 + 108 + 238 * i, 450 + 1440 + 20 + 98)
 
 
 def st():
@@ -82,7 +81,7 @@ def aim(hero_cls, slot, entry, target):
     hu = hero(hero_cls)
     h.call("setbar", unit=hu["Id"], slot=slot, entry=entry)
     tap_unit(hu)
-    h.call("tap", x=SLOT(slot)[0], y=SLOT(slot)[1])
+    h.call("click", name=f"slot{slot}")  # GG-T1922: through the Abilities sheet
     time.sleep(0.35)
     if target is not None:
         tap_unit(target)
