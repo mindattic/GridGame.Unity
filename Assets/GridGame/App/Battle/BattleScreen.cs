@@ -304,7 +304,7 @@ namespace GridGame.App
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
-                panel.schedule.Execute(() => Advise("Tip: tap or hold any hero, foe, slot or icon to read it")).StartingIn(2500);
+                panel.schedule.Execute(() => Advise("Tip: tap or hold any hero, foe or icon to read it; Abilities lists every move")).StartingIn(2500);
             }
             CaptureUnity.Raise("battle-start", new CaptureData { ["stage"] = State.Stage.Id });
         }
@@ -703,7 +703,7 @@ namespace GridGame.App
             // Idle (§9.0): one line for the selected hero, then its card and every skill's readout.
             if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable)
             {
-                var idle = Ui.Text($"{u.Name}: tap a skill to aim it · hold one to read it · drag {u.Name} or tap a tile to move", "small gold", panel);
+                var idle = Ui.Text($"{u.Name}: tap Abilities to pick a move · hold it to repeat the last one · drag {u.Name} or tap a tile to move", "small gold", panel);
                 idle.name = "idle-prompt";
                 idle.style.whiteSpace = WhiteSpace.Normal;
                 idle.style.marginBottom = Space.S8;
@@ -1153,9 +1153,19 @@ namespace GridGame.App
             if (!TutorialActive) OpenAbilities(slot);
         }
 
-        /// <summary>Taps bar slot <paramref name="slot"/> by index, as the five slot cells did: automation's
-        /// <c>click name=slotN</c> routes here until GG-T1922 moves it to the Abilities sheet.</summary>
-        public void TapSlot(int slot) => OnSlot(slot);
+        /// <summary>Automation's <c>click name=slotN</c> (GG-T1922): the move on bar slot <paramref name="slot"/> through the
+        /// Abilities sheet, opened at its detail page, then Perform / Cast / Use. A move that can't be committed now is read
+        /// instead, and the move being aimed is cancelled, as a tap of its slot cell always did.</summary>
+        public void TapSlot(int slot)
+        {
+            var hero = State.UnitById(SelectedHeroId);
+            if (hero == null || TargetingSlot == slot || !CanCommand()) { OnSlot(slot); return; }
+            OpenAbilities(slot);
+            var go = sheetVeil?.Q("abilities-commit");
+            if (go != null && go.enabledSelf) { CommitMove(hero, slot); return; }
+            CloseAbilities(false);
+            OnSlot(slot);
+        }
 
         /// <summary>
         /// Lock a pick and ask for confirmation: the area and every unit it would touch light up and the description panel

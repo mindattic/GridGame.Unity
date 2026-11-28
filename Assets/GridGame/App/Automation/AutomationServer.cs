@@ -251,7 +251,7 @@ namespace GridGame.App.Automation
                 case "click":
                 {
                     var e = app.Stage.Q(q["name"]);
-                    // GG-T1921: the five slot cells are gone; "slotN" taps that bar slot by index until GG-T1922.
+                    // GG-T1922: the five slot cells are gone; "slotN" takes bar slot N through the Abilities sheet (BattleScreen.TapSlot).
                     if (e == null && app.Router.Current is BattleScreen sb && q["name"] is string sn && sn.Length == 5 && sn.StartsWith("slot") && char.IsDigit(sn[4]))
                     {
                         StepMarker(q, "click " + sn);
@@ -642,7 +642,7 @@ namespace GridGame.App.Automation
                     return new { ok = true, current = app.Profile.Name, profiles = app.Profile.List(), root = app.Profile.Store.Root };
                 }
                 case "givemana":
-                    if (app.Router.Current is BattleScreen gm) { gm.DevGiveMana(int.TryParse(q["n"], out var gn) ? gn : 6); var gs = gm.State; return new { ok = true, meters = gs.Units.Where(u => u.IsHero).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => gs.ManaFull(u, i) > 0).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, points = gs.ManaIn(u.Id, i), full = gs.ManaFull(u, i) })).ToList() }; }
+                    if (app.Router.Current is BattleScreen gm) { gm.DevGiveMana(int.TryParse(q["n"], out var gn) ? gn : 6); return new { ok = true, mana = ManaDump(gm.State) }; }
                     return new { error = "not in battle" };
                 case "suggest":
                 {
@@ -981,6 +981,13 @@ namespace GridGame.App.Automation
             return d;
         }
 
+        /// <summary>The party mana pool (§3.1.0): its points, its capacity, and the living heroes' costed spells it can pay for now.</summary>
+        private static object ManaDump(BattleState s) => new
+        {
+            points = s.PartyMana, capacity = BattleConfig.PartyManaCapacity,
+            affordable = s.Units.Where(u => u.IsHero && u.Alive).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => s.SpellPrice(u, i) > 0 && s.SpellReady(u, i)).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, price = s.SpellPrice(u, i) })).ToList()
+        };
+
         private static object TapFailure(Delivery down, Delivery up, float x, float y)
         {
             if (down.HitsNothing)
@@ -1167,7 +1174,7 @@ namespace GridGame.App.Automation
                 dump["battle"] = new
                 {
                     phase = s.Phase.ToString(), turn_mode = s.TurnMode.ToString(), wave = s.Wave, clock = s.Clock, busy = b.Busy, selected = b.SelectedHeroId, targeting = b.TargetingSlot, confirming = b.Confirming, record = b.LastRecordPath,
-                    meters = s.Units.Where(u => u.IsHero).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => s.ManaFull(u, i) > 0).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, points = s.ManaIn(u.Id, i), full = s.ManaFull(u, i) })).ToList(), cutins = b.CutInsShown, coinsShown = b.CoinsShown, tallies = b.TalliesBurst, billboard = b.BillboardLines, paused = b.Paused, pauseOnTop = b.PauseOnTop, beats = b.PlaybackBeats, beatsWhilePaused = b.BeatsWhilePaused, lines = b.LineStrokes, chain = b.ChainCount, amplifier = s.Amplifier.HasValue ? new[] { s.Amplifier.Value.X, s.Amplifier.Value.Y } : null,
+                    mana = ManaDump(s), cutins = b.CutInsShown, coinsShown = b.CoinsShown, tallies = b.TalliesBurst, billboard = b.BillboardLines, paused = b.Paused, pauseOnTop = b.PauseOnTop, beats = b.PlaybackBeats, beatsWhilePaused = b.BeatsWhilePaused, lines = b.LineStrokes, chain = b.ChainCount, amplifier = s.Amplifier.HasValue ? new[] { s.Amplifier.Value.X, s.Amplifier.Value.Y } : null,
                     units = s.Units.Where(u => u.Alive).Select(u => new
                     {
                         u.Id, cls = u.Def.Id, team = u.Team.ToString(), x = u.Pos.X, y = u.Pos.Y, u.W, u.H, u.Hp, u.MaxHp, u.Level,
