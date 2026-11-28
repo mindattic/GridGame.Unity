@@ -254,6 +254,9 @@ namespace GridGame.Core.Battle
         //    participants in the attack increases the multiplier needed to earn a mana bubble") ─────────────────────
         /// <summary>Charge that makes one orb ("mana bubble").</summary>
         public const int ManaChargePerOrb = 100;
+        /// <summary>Mana points per orb of spell cost (§3.1.0, GG-T1807): a spell's meter is full at Cost x this, and a
+        /// whole-orb grant adds this much per orb to every meter.</summary>
+        public const int ManaPointsPerOrb = 100;
         /// <summary>Orbs the party's shared bank holds before minting overflows (GG-LAW-6); also the most a spell may cost.</summary>
         public const int ManaBankCapacity = 12;
         /// <summary>Charge for a pincer that takes away a whole enemy's worth of HP (scaled by the share removed).

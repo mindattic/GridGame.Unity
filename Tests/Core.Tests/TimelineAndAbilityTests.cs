@@ -289,6 +289,30 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void A_cast_empties_only_its_own_meter()
+        {
+            var db = Mini();
+            var (s, _) = Battle(db, Stage(("tank", 2, 0)), ("knight", 5, 7), ("mage", 4, 7));
+            var m = Hero(s, "mage");
+            var k = Hero(s, "knight");
+            m.Bar[0] = new AbilitySlot { AbilityId = "meteor" };
+            m.Bar[1] = new AbilitySlot { AbilityId = "fireball" };
+            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            Assert.That(BattleEngine.GetSlotStatus(s, m.Id, 0), Is.EqualTo(SlotStatus.Unaffordable)); // §3.1.0: still charging
+            s.SetMana(m.Id, 0, s.ManaFull(m, 0));
+            s.SetMana(m.Id, 1, s.ManaFull(m, 1));
+            s.SetMana(k.Id, 0, s.ManaFull(k, 0));
+            Assert.That(BattleEngine.GetSlotStatus(s, m.Id, 0), Is.EqualTo(SlotStatus.Ready));
+
+            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = new Coord(2, 0) });
+
+            Assert.That(ev.OfType<SpellManaSpentEvent>().Single().Points, Is.EqualTo(s.ManaFull(m, 0)));
+            Assert.That(s.ManaIn(m.Id, 0), Is.LessThan(s.ManaFull(m, 0)));
+            Assert.That(s.ManaIn(m.Id, 1), Is.EqualTo(s.ManaFull(m, 1)));
+            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(s.ManaFull(k, 0)));
+        }
+
+        [Test]
         public void Fifth_hero_cast_is_refused_by_cast_cap()
         {
             var db = Mini();

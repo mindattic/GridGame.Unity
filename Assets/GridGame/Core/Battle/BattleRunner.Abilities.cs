@@ -66,7 +66,7 @@ namespace GridGame.Core.Battle
             {
                 case SlotStatus.Ready: break;
                 case SlotStatus.Silenced: return Refuse(hero, "Silenced!");
-                case SlotStatus.Unaffordable: return Refuse(hero, "Not enough mana");
+                case SlotStatus.Unaffordable: return Refuse(hero, "Still charging");
                 case SlotStatus.CastCapReached: return Refuse(hero, "Too many spells!");
                 case SlotStatus.Cooldown: return Refuse(hero, "Recharging");
                 case SlotStatus.OutOfCharges: return Refuse(hero, "None left");
@@ -116,8 +116,14 @@ namespace GridGame.Core.Battle
             }
             else
             {
-                S.Bank.Spend(a.Cost);
-                Emit(new OrbsSpentEvent { Count = a.Cost, CountAfter = S.Bank.Count });
+                // §3.1.0: casting empties this spell's own meter at cast start; every other meter is untouched.
+                int points = S.ManaIn(hero.Id, cmd.Slot);
+                S.SetMana(hero.Id, cmd.Slot, 0);
+                if (points > 0)
+                {
+                    Emit(new SpellManaSpentEvent { UnitId = hero.Id, Slot = cmd.Slot, AbilityId = a.Id, Points = points });
+                    Emit(new OrbsSpentEvent { Count = 1, CountAfter = S.Bank.Count }); // the shim's orb row, until GG-T1821
+                }
                 if (a.CastTime > 0f)
                 {
                     int ticks = Formulas.SecondsToTicks(Formulas.CastTime(a.CastTime, hero.Effective));

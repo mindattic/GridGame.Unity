@@ -714,6 +714,38 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"ManaCharged +{Amount} ({Reason}) -> {Total}";
     }
 
+    /// <summary>One spell meter's change in a <see cref="ManaGainedEvent"/> (§3.1.0).</summary>
+    public sealed class ManaMeterDelta
+    {
+        public int UnitId; public int Slot; public int Delta; public int After; public int Full;
+        public override string ToString() => $"{UnitId}#{Slot} {Delta:+0;-0} -> {After}/{Full}";
+    }
+
+    /// <summary>A mana gain (after damping) or siphon reached the spell meters (§3.1.0): every meter it changed, with the
+    /// points each moved; the view derives each slot's fill from <see cref="ManaMeterDelta.After"/>.</summary>
+    public sealed class ManaGainedEvent : BattleEvent
+    {
+        public int SourceId = -1; public int Amount; public string Reason;
+        public List<ManaMeterDelta> Meters = new List<ManaMeterDelta>();
+        /// <summary>The meters this gain filled (each also gets a <see cref="SpellReadyEvent"/>).</summary>
+        public List<ManaMeterDelta> Readied = new List<ManaMeterDelta>();
+        public override string ToString() => $"ManaGained {Amount:+0;-0} ({Reason}) x{Meters.Count}";
+    }
+
+    /// <summary>A spell's meter became full: it can be cast (§3.1.0).</summary>
+    public sealed class SpellReadyEvent : BattleEvent
+    {
+        public int UnitId; public int Slot; public string AbilityId;
+        public override string ToString() => $"SpellReady {UnitId}#{Slot} {AbilityId}";
+    }
+
+    /// <summary>A cast emptied its spell's own meter (§3.1.0); no other meter moves.</summary>
+    public sealed class SpellManaSpentEvent : BattleEvent
+    {
+        public int UnitId; public int Slot; public string AbilityId; public int Points;
+        public override string ToString() => $"SpellManaSpent {UnitId}#{Slot} {AbilityId} -{Points}";
+    }
+
     /// <summary>A physical blow from the armored side dented the plate instead of the body (§13.5).</summary>
     public sealed class PlateHitEvent : BattleEvent
     {

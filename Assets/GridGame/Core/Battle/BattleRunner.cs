@@ -567,25 +567,34 @@ namespace GridGame.Core.Battle
         // Mana
         // ─────────────────────────────────────────────────────────────────────────────
 
-        /// <summary>Fill the mana meter; every full ManaChargePerOrb becomes an orb (§3.1.9). Every caller is an earned
-        /// source, so the fullness damping applies here; explicit grants (items, pickups, steal, gear) call MintOrb.</summary>
+        /// <summary>An earned mana gain (§3.1.0): damped by the share of full spell meters, then added to every meter. Every
+        /// caller is an earned source; explicit grants (items, pickups, steal, gear) call MintOrb. Earning stops while
+        /// every meter is full.</summary>
         private void AddCharge(int amount, int sourceId, string reason, int participants = 0, int chain = 0)
         {
-            // GG-T673: once the row is full, earning stops until a spell spends an orb (the ring doesn't keep filling).
-            if (S.Bank.IsFull) return;
+            if (S.AllSpellsFull) return;
             amount = BattleEngine.DampedCharge(S, amount);
             if (amount <= 0) return;
-            S.ManaCharge += amount;
-            int orbs = 0;
-            while (S.ManaCharge >= BattleConfig.ManaChargePerOrb) { S.ManaCharge -= BattleConfig.ManaChargePerOrb; orbs++; }
             Emit(new ManaChargedEvent { SourceId = sourceId, Amount = amount, Total = S.ManaCharge, Reason = reason, Participants = participants, Chain = chain });
-            for (int i = 0; i < orbs; i++) MintOrb(sourceId, reason);
+            GainMana(amount, sourceId, reason);
         }
 
+        /// <summary>A whole-orb grant (§3.1.0): <see cref="BattleConfig.ManaPointsPerOrb"/> points to every meter, undamped.</summary>
         private void MintOrb(int sourceId, string reason)
         {
-            bool landed = S.Bank.Add(1) == 1;
+            bool landed = GainMana(BattleConfig.ManaPointsPerOrb, sourceId, reason);
             Emit(new OrbMintedEvent { SourceUnitId = sourceId, Landed = landed, Reason = reason, Slot = landed ? S.Bank.Count - 1 : -1 });
+        }
+
+        /// <summary>Applies a gain (or a negative siphon) to the spell meters and reports it; false when no meter moved.</summary>
+        private bool GainMana(int points, int sourceId, string reason)
+        {
+            var e = BattleEngine.GainMana(S, points, reason, sourceId);
+            if (e == null) return false;
+            Emit(e);
+            foreach (var d in e.Readied)
+                Emit(new SpellReadyEvent { UnitId = d.UnitId, Slot = d.Slot, AbilityId = S.UnitById(d.UnitId)?.Bar[d.Slot].AbilityId });
+            return true;
         }
 
         // ─────────────────────────────────────────────────────────────────────────────

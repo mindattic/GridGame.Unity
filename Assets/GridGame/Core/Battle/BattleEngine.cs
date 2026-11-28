@@ -195,7 +195,7 @@ namespace GridGame.Core.Battle
             if (a.Kind == AbilityKind.Spell)
             {
                 if (h.IsSilenced) return SlotStatus.Silenced;
-                if (!s.Bank.CanAfford(a.Cost)) return SlotStatus.Unaffordable;
+                if (!s.SpellReady(h, slot)) return SlotStatus.Unaffordable; // §3.1.0: its own meter is still charging
                 if (a.CastTime > 0f && s.HeroCastsInFlight >= BattleConfig.MaxHeroCastsInFlight) return SlotStatus.CastCapReached;
             }
             return SlotStatus.Ready;
@@ -386,16 +386,48 @@ namespace GridGame.Core.Battle
         /// </summary>
         public static int GuardCharge(BattleState s, float heldSeconds = 0f) => TurnRules.GuardCharge(s, heldSeconds); // §2.13 seam
 
-        /// <summary>Fullness damping (§3.1.9, GG-T247): earned mana charge is scaled down as the shared bank fills.</summary>
+        /// <summary>Fullness damping (§3.1.0, GG-T247): earned mana is scaled down by the share of the living heroes' spell
+        /// meters already full.</summary>
         public static float ChargeDamping(BattleState s)
         {
-            if (s.Bank.Capacity <= 0) return 1f;
-            return 1f - BattleConfig.ChargeFullnessDamping * System.Math.Min(1f, s.Bank.Count / (float)s.Bank.Capacity);
+            s.CountMeters(out int full, out int total);
+            if (total <= 0) return 1f;
+            return 1f - BattleConfig.ChargeFullnessDamping * (full / (float)total);
         }
 
         /// <summary>An earned charge after fullness damping; a positive amount never rounds to nothing.</summary>
         public static int DampedCharge(BattleState s, int amount) =>
             amount <= 0 ? 0 : System.Math.Max(1, (int)System.Math.Round(amount * ChargeDamping(s)));
+
+        /// <summary>
+        /// A mana gain (§3.1.0, GG-LAW-6): <paramref name="points"/> go in full to every spell meter of every living hero,
+        /// each capped at its own full (a negative amount is a siphon, floored at 0). Callers damp earned gains first
+        /// (<see cref="DampedCharge"/>). Returns the per-slot deltas, or null when no meter changed; a meter this gain
+        /// fills is listed in <see cref="ManaGainedEvent.Readied"/>. No RNG; party then slot order.
+        /// </summary>
+        public static ManaGainedEvent GainMana(BattleState s, int points, string reason, int sourceId = -1)
+        {
+            if (points == 0) return null;
+            ManaGainedEvent e = null;
+            foreach (var u in s.Units)
+            {
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count; i++)
+                {
+                    int full = s.ManaFull(u, i);
+                    if (full <= 0) continue;
+                    int before = s.ManaIn(u.Id, i);
+                    int after = System.Math.Max(0, System.Math.Min(full, before + points));
+                    if (after == before) continue;
+                    s.SetMana(u.Id, i, after);
+                    if (e == null) e = new ManaGainedEvent { SourceId = sourceId, Amount = points, Reason = reason };
+                    var d = new ManaMeterDelta { UnitId = u.Id, Slot = i, Delta = after - before, After = after, Full = full };
+                    e.Meters.Add(d);
+                    if (after >= full) e.Readied.Add(d);
+                }
+            }
+            return e;
+        }
 
         /// <summary>The conversion maths alone: <paramref name="secondsLeft"/> of unused turn → mana charge (0..GuardMaxCharge).</summary>
         public static int GuardChargeFor(float secondsLeft)
