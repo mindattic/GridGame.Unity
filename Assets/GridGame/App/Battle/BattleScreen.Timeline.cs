@@ -21,8 +21,11 @@ namespace GridGame.App
     public sealed partial class BattleScreen
     {
         // ── Geometry (design px). The frame spans the stage; the slot sits on the left gutter, the tray at the right end. ──
-        private const float TimelineY = 201f; // top bar (8 + 110) + a gutter + half the frame (GG-T1894)
+        /// <summary>GG-T2118 (owner 2026-11-28, §9.0): the timeline sits a gutter under the board, in the thumb zone, above the
+        /// party mana strip and the action row.</summary>
+        private const float TimelineY = BoardBottom + Space.S8 + TimelineFrameHeight / 2f;
         private const float TimelineFrameHeight = 150f;
+        private const float TimelineBottom = TimelineY + TimelineFrameHeight / 2f;
         /// <summary>The track line's y inside the timeline frame; every icon centres on it.</summary>
         private const float TrackY = TimelineFrameHeight / 2f;
         private const float Sqrt2 = 1.41421356f;
@@ -281,7 +284,7 @@ namespace GridGame.App
             slotTime.style.unityTextAlign = TextAnchor.MiddleCenter;
             Fonts.UseHeavy(slotTime);
             InspectCard.Attach(timelineSlot, body => drawn.TryGetValue(slotEntry, out var e) && BuildTimelineCard(body, e), tap: true); // GG-T450
-            timelineSlot.RegisterCallback<ClickEvent>(_ => { if (drawn.TryGetValue(slotEntry, out var e)) OnTimelineTap(e.OwnerId); });
+            timelineSlot.RegisterCallback<ClickEvent>(_ => { if (drawn.TryGetValue(slotEntry, out var e)) OnTimelineTap(timelineSlot, e.OwnerId); });
         }
 
         /// <summary>The white selection ring behind a diamond (GG-T288), shown while its owner is the selected unit.</summary>
@@ -292,6 +295,14 @@ namespace GridGame.App
             ring.style.display = DisplayStyle.None;
         }
 
+        /// <summary>Shows a diamond's selection ring white for the selected unit, gold for the tap arrow's diamond (GG-T2118).</summary>
+        private void PickRing(VisualElement ring, VisualElement host, bool selected)
+        {
+            bool picked = tapArrowFrom == host;
+            ring.style.display = picked || selected ? DisplayStyle.Flex : DisplayStyle.None;
+            SetBorder(ring, 6f, 4f, picked ? Palette.Gold : Palette.White);
+        }
+
         /// <summary>The unit the panel shows: an inspected foe (or ally) if any, else the selected hero.</summary>
         private int SelectedUnitId =>
             panelUnitId >= 0 && State.UnitById(panelUnitId) is Unit pu && pu.Alive ? panelUnitId : SelectedHeroId;
@@ -299,18 +310,118 @@ namespace GridGame.App
         /// <summary>
         /// GG-T288: tapping a timeline icon (or the prominence slot) selects its owner exactly as tapping it on the board
         /// does: a hero becomes the selected hero, a foe fills the info panel (gated by what the Bestiary knows). Pre-move
-        /// only: never mid-drag, mid-playback or while aiming a slot.
+        /// only: never mid-drag, mid-playback or while aiming a slot. GG-T2118: any tap but mid-drag also highlights the
+        /// diamond and draws the tap arrow from it to its owner's tile; tapping the same diamond again clears it.
         /// </summary>
-        private void OnTimelineTap(int unitId)
+        private void OnTimelineTap(VisualElement from, int unitId)
         {
-            if (!CanCommand() || TargetingSlot >= 0) return;
+            bool again = tapArrowFrom == from;
+            ClearTapArrow();
+            if (again) return;
             var u = State.UnitById(unitId);
             if (u == null || !u.Alive) return;
-            ClearHint();
-            if (u.IsCommandable) SelectHero(u.Id);
-            else { panelUnitId = u.Id; SyncPanel(); }
+            bool arrow = !dragging && board.Units.TryGetValue(u.Id, out var av) && !av.Dead;
+            if (arrow) ShowTapArrow(from, u.Id);
+            bool select = CanCommand() && TargetingSlot < 0;
+            if (select)
+            {
+                ClearHint();
+                if (u.IsCommandable) SelectHero(u.Id);
+                else { panelUnitId = u.Id; SyncPanel(); }
+            }
+            if (!arrow && !select) return;
             App.Audio.Sfx("ui.click");
             if (!ReduceMotion && board.Units.TryGetValue(u.Id, out var v) && !v.Dead) App.StartCoroutine(Tween.Pop(v.Root, 1.08f, Timing.Quick));
+        }
+
+        // ── The tap arrow (GG-T2118, §9.0): a filled, outlined Bezier arrow from a tapped diamond up to its owner's tile ──
+        /// <summary>Seconds the tap arrow stays before it clears itself.</summary>
+        private const float TapArrowSeconds = 4f;
+        /// <summary>The arrow's bow as a share of its span; its side is picked so the curve bulges above the chord.</summary>
+        private const float TapArrowBow = 0.18f;
+        private TapArrowLayer tapArrowLayer;
+        /// <summary>The diamond (an icon, or the prominence slot) the arrow leaves from; null when no arrow shows.</summary>
+        private VisualElement tapArrowFrom;
+        private int tapArrowUnit = -1;
+        private float tapArrowAt;
+
+        /// <summary>The stage-sized, input-free layer the tap arrow draws in, over the board and the timeline. Any press that
+        /// doesn't land on the arrow's own diamond clears it.</summary>
+        private void BuildTapArrow(VisualElement root)
+        {
+            tapArrowFrom = null; tapArrowUnit = -1;
+            tapArrowLayer = new TapArrowLayer { name = "timeline-arrow" };
+            root.Add(tapArrowLayer);
+            root.RegisterCallback<PointerDownEvent>(evt =>
+            {
+                if (tapArrowFrom != null && !(evt.target is VisualElement ve && (ve == tapArrowFrom || tapArrowFrom.Contains(ve)))) ClearTapArrow();
+            }, TrickleDown.TrickleDown);
+        }
+
+        private void ShowTapArrow(VisualElement from, int unitId)
+        {
+            tapArrowFrom = from; tapArrowUnit = unitId; tapArrowAt = Time.unscaledTime;
+            TickTapArrow(tapArrowAt);
+        }
+
+        private void ClearTapArrow()
+        {
+            tapArrowFrom = null; tapArrowUnit = -1;
+            tapArrowLayer?.Hide();
+        }
+
+        /// <summary>Re-aims the arrow at the diamond's top point and the owner's tile centre (both move), draws it on over
+        /// <see cref="Timing.Standard"/> (whole at once under Reduce Motion) and clears it after <see cref="TapArrowSeconds"/>,
+        /// or once its diamond, its owner or the prominence slot's actor is gone.</summary>
+        private void TickTapArrow(float t)
+        {
+            if (tapArrowFrom == null || tapArrowLayer == null) return;
+            bool slotMoved = tapArrowFrom == timelineSlot && !(drawn.TryGetValue(slotEntry, out var se) && se.OwnerId == tapArrowUnit);
+            if (t - tapArrowAt > TapArrowSeconds || slotMoved || tapArrowFrom.panel == null
+                || !board.Units.TryGetValue(tapArrowUnit, out var v) || v.Dead) { ClearTapArrow(); return; }
+            var fb = tapArrowFrom.worldBound;
+            var from = tapArrowLayer.WorldToLocal(new Vector2(fb.center.x, fb.yMin));
+            var to = tapArrowLayer.WorldToLocal(board.Root.LocalToWorld(BoardView.CenterOf(v.Tile, v.W, v.H)));
+            float k = ReduceMotion ? 1f : Mathf.Clamp01((t - tapArrowAt) / Timing.Standard);
+            tapArrowLayer.Show(from, to, 1f - (1f - k) * (1f - k) * (1f - k));
+        }
+
+        /// <summary>Paints the tap arrow: Shapes.BezierArrow (GG-T1833), filled and outlined, cut to its drawn-on share.</summary>
+        private sealed class TapArrowLayer : VisualElement
+        {
+            private static ShapeStyle Style => ShapeStyle.Indicator.Tint(Palette.Gold).Thick(12f);
+            private Vector2 from, to;
+            private float k;
+            private bool shown;
+
+            public TapArrowLayer()
+            {
+                pickingMode = PickingMode.Ignore;
+                style.position = Position.Absolute;
+                style.left = style.top = style.right = style.bottom = 0f;
+                generateVisualContent += Paint;
+            }
+
+            public void Show(Vector2 a, Vector2 b, float share) { from = a; to = b; k = share; shown = true; MarkDirtyRepaint(); }
+            public void Hide() { if (!shown) return; shown = false; MarkDirtyRepaint(); }
+
+            private void Paint(MeshGenerationContext ctx)
+            {
+                var span = to - from;
+                if (!shown || k <= 0f || span.sqrMagnitude < 1f) return;
+                // The auto bow: the control points sit a third in from each end, pushed off the chord to the side above it.
+                float bow = to.x >= from.x ? -TapArrowBow : TapArrowBow;
+                var off = new Vector2(-span.y, span.x).normalized * (span.magnitude * bow);
+                Vector2 b0 = from, b1 = from + span / 3f + off, b2 = from + span * (2f / 3f) + off, b3 = to;
+                if (k < 1f)
+                {
+                    // De Casteljau: the first k of the curve is itself a cubic, so the head rides the drawing tip.
+                    var p01 = Vector2.Lerp(b0, b1, k); var p12 = Vector2.Lerp(b1, b2, k); var p23 = Vector2.Lerp(b2, b3, k);
+                    var p012 = Vector2.Lerp(p01, p12, k); var p123 = Vector2.Lerp(p12, p23, k);
+                    b1 = p01; b2 = p012; b3 = Vector2.Lerp(p012, p123, k);
+                }
+                Shapes.BezierArrow(ctx.painter2D, b0, b1, b2, b3, Style);
+            }
         }
 
         /// <summary>Re-applies the stage-width-dependent x positions (build and resize).</summary>
@@ -453,7 +564,7 @@ namespace GridGame.App
             frame.Add(back);
             if (e.Kind == TimelineKind.Turn) icon.Add(new RecoverRing(IconSpan));
             AttachTimelineInspect(icon, e);
-            icon.RegisterCallback<ClickEvent>(_ => OnTimelineTap(e.OwnerId)); // GG-T288: a tap selects, a hold reads
+            icon.RegisterCallback<ClickEvent>(_ => OnTimelineTap(icon, e.OwnerId)); // GG-T288: a tap selects, a hold reads
             return icon;
         }
 
@@ -840,6 +951,7 @@ namespace GridGame.App
             if (State == null || board == null || timelineIcons == null || Paused) return;
             if (trayFlights.Count > 0 && lastAt != null) { LayoutIcons(lastAt); SyncTimelineStatus(); } // tray flights run on this beat too
             float t = Time.unscaledTime;
+            TickTapArrow(t);
             // GG-T672: advance each ramping foe icon's beat by its own current rate (slow and faint at half way, quick and
             // full under ImminentSeconds); accumulating phase keeps a quickening beat continuous.
             float dt = lastPulseTime < 0f ? 0f : Mathf.Clamp(t - lastPulseTime, 0f, 0.1f);
@@ -903,15 +1015,16 @@ namespace GridGame.App
                 cueKeep.Add(kv.Key);
             }
             board.HideCues(cueKeep);
-            // Selection cross-highlight (GG-T288): the selected unit's icons and its tile share a white outline.
+            // Selection cross-highlight (GG-T288): the selected unit's icons and its tile share a white outline. The diamond
+            // the tap arrow leaves from (GG-T2118) rings gold instead.
             int sel = SelectedUnitId;
             foreach (var kv in timelineIconViews)
             {
                 var ring = kv.Value.Q("tl-sel");
-                if (ring != null) ring.style.display = drawn.TryGetValue(kv.Key, out var de) && de.OwnerId == sel ? DisplayStyle.Flex : DisplayStyle.None;
+                if (ring != null) PickRing(ring, kv.Value, drawn.TryGetValue(kv.Key, out var de) && de.OwnerId == sel);
             }
             var slotRing = timelineSlot?.Q("tl-sel");
-            if (slotRing != null) slotRing.style.display = drawn.TryGetValue(slotEntry, out var sde) && sde.OwnerId == sel ? DisplayStyle.Flex : DisplayStyle.None;
+            if (slotRing != null) PickRing(slotRing, timelineSlot, drawn.TryGetValue(slotEntry, out var sde) && sde.OwnerId == sel);
             if (!dragging && board.Units.TryGetValue(sel, out var sv) && !sv.Dead) board.SetSelection(sv.Tile, sv.W, sv.H, Palette.White);
             else board.SetSelection(null, 1, 1, Palette.White);
             // GG-T1110: under HeroTimeline the hero whose turn it is wears a hero-blue ring on its tile, the board's half of
