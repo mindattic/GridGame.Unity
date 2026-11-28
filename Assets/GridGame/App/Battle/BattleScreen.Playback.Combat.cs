@@ -102,7 +102,7 @@ namespace GridGame.App
                 // A hexed bolt flies down the lane.
                 var from = ViewCenter(a); var to = ViewCenter(t);
                 App.Audio.Sfx("element.arcane", 0.7f);
-                yield return Tween.Run(Timing.Standard, k => { board.Lines.ClearLines(); board.Lines.Dot(ProjectilePoint(ProjectileMotion.Twist, from, to, k), 22f, new Color(0.7f, 0.35f, 1f)); });
+                yield return Tween.Run(Timing.Standard, k => { board.Lines.ClearLines(); board.Lines.Dot(ProjectilePoint(ProjectileMotion.Twist, from, to, k), 22f, Palette.Vfx.Twist); });
                 board.Lines.ClearLines();
                 yield break;
             }
@@ -159,7 +159,7 @@ namespace GridGame.App
                 else
                 {
                     board.Lines.Dot(p, 18f, c);
-                    board.Lines.Dot(Vector2.Lerp(from, to, Mathf.Max(0f, k - 0.1f)), 11f, new Color(c.r, c.g, c.b, 0.5f));
+                    board.Lines.Dot(Vector2.Lerp(from, to, Mathf.Max(0f, k - 0.1f)), 11f, c.WithA(0.5f));
                 }
             });
             board.Lines.ClearLines();
@@ -203,7 +203,7 @@ namespace GridGame.App
             if (cue == "battle.hit") cue = AttackHitCue(src, d.Note);
             var burn = d.Amount > 0 ? FireTileBurn(d, v.Tile) : null; // GG-T933: scorched by a firewall
             if (burn != null) FireCrackle(0.9f); else App.Audio.Sfx(cue);
-            Feed($"{(d.SourceId < 0 ? "☠" : "†")} {(src != null ? src.Name + " → " : "")}{t.Name}: {d.Amount}{(crit ? " CRIT" : "")}{(d.Note != null ? " (" + d.Note + ")" : "")}", t.IsHero ? new Color(1f, 0.65f, 0.6f) : Palette.White.WithA(0.9f));
+            Feed($"{(d.SourceId < 0 ? "☠" : "†")} {(src != null ? src.Name + " → " : "")}{t.Name}: {d.Amount}{(crit ? " CRIT" : "")}{(d.Note != null ? " (" + d.Note + ")" : "")}", t.IsHero ? Palette.Vfx.HeroHurtFeed : Palette.White.WithA(0.9f));
             // Anticipation (POL-E6): the target braces for a beat before the hit lands.
             if (!ReduceMotion) yield return Tween.Run(Timing.Instant, k => v.Root.style.scale = new Scale(Vector2.one * (1f - 0.06f * Ease.Out(k))));
             if (d.Amount > 0 && !ReduceMotion)
@@ -214,7 +214,7 @@ namespace GridGame.App
             string text = d.Note == "Armored!" ? "ARMORED" : (crit ? $"{d.Amount}!" : d.Amount.ToString());
             // GG-T495: an elemental hit names its element under Colorblind palette, since its burst says it only in colour.
             if (Colorblind && d.Note != "Armored!" && d.Type != DamageType.Physical) text += " " + d.Type;
-            var color = d.Note == "Armored!" ? new Color(0.7f, 0.7f, 0.75f) : crit ? new Color(1f, 0.85f, 0.2f) : t.IsHero ? new Color(1f, 0.5f, 0.45f) : Palette.White;
+            var color = d.Note == "Armored!" ? Palette.Vfx.Armored : crit ? Palette.Vfx.Crit : t.IsHero ? Palette.Vfx.HeroHurt : Palette.White;
             if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note, d.Effectiveness, d.Overkill);
             else
             {
@@ -236,7 +236,7 @@ namespace GridGame.App
             }
             v.SetHp(d.HpAfter, t.MaxHp);
             v.Frame.style.unityBackgroundImageTintColor = Palette.Bad;
-            v.Art.style.unityBackgroundImageTintColor = new Color(1f, 0.55f, 0.55f);
+            v.Art.style.unityBackgroundImageTintColor = Palette.Vfx.HurtTint;
             App.StartCoroutine(Tween.Shake(v.Root, (crit ? Impact.CritTileShake : Impact.HitTileShake) * Fx, crit ? Timing.Standard : Timing.Quick));
             if (crit) App.StartCoroutine(Tween.Shake(shake, Impact.CritIconShake * Fx, Timing.Quick)); // GG-T827: a crit jolts the screen
             if (crit) ShakeTurnIcon(t.Id); // GG-T668: a crit jolts the target's timeline icon too
@@ -258,7 +258,7 @@ namespace GridGame.App
             App.Audio.Sfx("battle.heal");
             if (!ReduceMotion) App.StartCoroutine(HealBurst(BoardView.CenterOf(v.Tile, v.W, v.H)));
             v.SetHp(h.HpAfter, t.MaxHp);
-            v.SetGlow(new Color(0.4f, 1f, 0.5f), 0.8f);
+            v.SetGlow(Palette.Vfx.HealGlow, 0.8f);
             Text.Show(v, CombatTextKind.Heal, "+" + h.Amount, t.MaxHp > 0 ? h.Amount * 2f / t.MaxHp : 0f);
             yield return Tween.Wait(Timing.Standard);
             v.SetGlow(Palette.White, 0f);
@@ -268,7 +268,7 @@ namespace GridGame.App
         {
             if (!board.Units.TryGetValue(d.UnitId, out var v)) yield break;
             var du = State.UnitById(d.UnitId);
-            if (du != null) Feed($"★ {du.Name} is defeated", du.IsHero ? new Color(1f, 0.45f, 0.4f) : Palette.Gold);
+            if (du != null) Feed($"★ {du.Name} is defeated", du.IsHero ? Palette.Vfx.HeroDown : Palette.Gold);
             App.Audio.Sfx("battle.death");
             // GridGame2026's death-portrait dissolve (GG-T96): the token goes at once and the unit's whole,
             // uncropped artwork takes its place over the board, shuddering, shrinking and fading on its own —
@@ -488,7 +488,7 @@ namespace GridGame.App
         private const string TooHeavyText = "Too heavy!";
 
         /// <summary>GG-T892: the "Too heavy!" callout's iron grey.</summary>
-        private static readonly Color HeavyTint = new Color(0.72f, 0.76f, 0.84f);
+        private static readonly Color HeavyTint = Palette.Vfx.Steel;
 
         /// <summary>
         /// GG-T892 (§1.1.3, §14.2): a Heavy unit refuses to move - a fizzled knockback, pull or swap (its unit id) or a drag

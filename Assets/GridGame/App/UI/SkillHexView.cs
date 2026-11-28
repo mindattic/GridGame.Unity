@@ -31,13 +31,13 @@ namespace GridGame.App
         public const float Margin = 70f;
 
         // The design page's palette (docs/design/skill-hexagon/style.css).
-        public static readonly Color Bg = Hex("#0d0f14");
-        public static readonly Color PanelColor = Hex("#151821");
-        public static readonly Color LineColor = Hex("#2a2f3d");
-        public static readonly Color Fg = Hex("#e6e8ee");
-        public static readonly Color Muted = Hex("#9097a8");
-        public static readonly Color Accent = Hex("#7fd1ff");
-        public static readonly Color Hot = Hex("#ffcf6b");
+        public static readonly Color Bg = Palette.SkillHex.Bg;
+        public static readonly Color PanelColor = Palette.SkillHex.Panel;
+        public static readonly Color LineColor = Palette.SkillHex.Line;
+        public static readonly Color Fg = Palette.SkillHex.Fg;
+        public static readonly Color Muted = Palette.SkillHex.Muted;
+        public static readonly Color Accent = Palette.SkillHex.Accent;
+        public static readonly Color Hot = Palette.SkillHex.Hot;
 
         private static readonly float Sqrt3 = Mathf.Sqrt(3f);
 
@@ -266,8 +266,8 @@ namespace GridGame.App
             if (pressed)
             {
                 var at = PositionOf(selected.Value);
-                Shapes.Dot(p, at, 13f, new ShapeStyle { Fill = new Color(0f, 0f, 0f, 0.55f) });
-                Shapes.Ring(p, at, 12f, new ShapeStyle { Width = 3f, Fill = new Color(0f, 0f, 0f, 0.7f) }, 180f, 180f);
+                Shapes.Dot(p, at, 13f, new ShapeStyle { Fill = Palette.Black.WithA(0.55f) });
+                Shapes.Ring(p, at, 12f, new ShapeStyle { Width = 3f, Fill = Palette.Black.WithA(0.7f) }, 180f, 180f);
             }
 
             // Nodes.
@@ -353,7 +353,5 @@ namespace GridGame.App
         private static bool Less((int Q, int R) a, (int Q, int R) b) => a.Q < b.Q || (a.Q == b.Q && a.R < b.R);
 
         private static Color WithAlpha(Color c, float a) { c.a *= a; return c; }
-
-        private static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out var c) ? c : Palette.Missing;
     }
 }

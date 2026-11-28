@@ -39,7 +39,7 @@ namespace GridGame.App
         {
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, App.Content.Campaign.Ending?.Backdrop ?? "cityruins", 3);
-            bg.style.unityBackgroundImageTintColor = new Color(0.25f, 0.25f, 0.32f);
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Credits;
             var clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
             // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).

@@ -287,9 +287,10 @@ namespace GridGame.Core.Content
                 if (e.Type != DamageType.Physical && !sold.ContainsKey(e.Type))
                     p.Add($"elements.json {e.Type}: the Merchant sells no consumable that deals it (every element has a flask){Tag}");
 
-            // ── every campaign foe ──
+            // ── every campaign foe, the prologue battles' too (GG-T2138: the Ward-Engine fights in prologue-ward) ──
             var checkedClass = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var s in db.CampaignStages())
+            var prologue = (db.Campaign?.Prologue ?? new List<string>()).Select(db.TryStage).Where(x => x != null);
+            foreach (var s in db.CampaignStages().Concat(prologue))
             {
                 foreach (var c in Foes(db, s))
                 {

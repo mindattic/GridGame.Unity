@@ -12,8 +12,8 @@ namespace GridGame.App
     /// shows the planted shield and the lines without the drop.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color AnchorSteel = new Color(0.62f, 0.72f, 0.84f);
-        private static readonly Color AnchorRim = new Color(1f, 0.84f, 0.45f);
+        private static readonly Color AnchorSteel = Palette.Vfx.AnchorSteel;
+        private static readonly Color AnchorRim = Palette.Vfx.AnchorRim;
 
         private IEnumerator AnchorStanceVfx(Unit warden)
         {

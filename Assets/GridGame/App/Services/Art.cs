@@ -634,7 +634,7 @@ namespace GridGame.App
 
         private static Texture2D placeholder, window, windowDark, cursor, glow, orb;
 
-        public static Texture2D Placeholder => placeholder ??= Solid(new Color(0.35f, 0.2f, 0.45f), "placeholder");
+        public static Texture2D Placeholder => placeholder ??= Solid(Palette.Scene.Placeholder, "placeholder");
 
         /// <summary>The window body: the active theme's gradient (GG-T407, <see cref="WindowThemes"/>), baked at
         /// <see cref="WindowThemes.TexSize"/>² and stretched by each window; its texture overlay, frame and accent are
@@ -702,7 +702,7 @@ namespace GridGame.App
             // A white right-pointing gauntlet-ish arrow with a dark outline, like the classic menu hand.
             const int s = 64;
             var t = NewTex(s, s, "cursor");
-            var clear = new Color(0, 0, 0, 0);
+            var clear = Palette.Clear;
             for (int y = 0; y < s; y++)
                 for (int x = 0; x < s; x++)
                 {
@@ -723,8 +723,7 @@ namespace GridGame.App
                             edge = (ox > 0.45f && Mathf.Abs(oy - 0.5f) < h2 * 0.5f) || (ox >= 0.08f && ox <= 0.5f && Mathf.Abs(oy - 0.5f) < 0.13f) || (ox >= 0.04f && ox <= 0.16f && Mathf.Abs(oy - 0.5f) < 0.22f);
                         }
                     }
-                    var shade = Mathf.Lerp(1f, 0.78f, fy);
-                    t.SetPixel(x, y, inside ? new Color(shade, shade, 1f, 1f) : edge ? new Color(0.05f, 0.05f, 0.15f, 1f) : clear);
+                    t.SetPixel(x, y, inside ? Color.Lerp(Palette.White, Palette.Scene.ArrowShade, fy) : edge ? Palette.Scene.ArrowEdge : clear);
                 }
             t.Apply();
             return t;
@@ -748,7 +747,7 @@ namespace GridGame.App
                     float d = Mathf.Sqrt(dx * dx + dy * dy);
                     // Soft ring that stays bright out to the frame edge (≈0.75) then falls off.
                     float a = d < 0.7f ? 1f : 1f - Edge(0.7f, 1f, d);
-                    t.SetPixel(x, y, new Color(1, 1, 1, a));
+                    t.SetPixel(x, y, Palette.White.WithA(a));
                 }
             t.Apply();
             return t;
@@ -763,19 +762,19 @@ namespace GridGame.App
                 {
                     float dx = (x - s / 2f + 0.5f) / (s / 2f), dy = (y - s / 2f + 0.5f) / (s / 2f);
                     float d = Mathf.Sqrt(dx * dx + dy * dy);
-                    if (d > 1f) { t.SetPixel(x, y, new Color(0, 0, 0, 0)); continue; }
+                    if (d > 1f) { t.SetPixel(x, y, Palette.Clear); continue; }
                     float hl = Mathf.Clamp01(1f - Mathf.Sqrt((dx + 0.35f) * (dx + 0.35f) + (dy - 0.35f) * (dy - 0.35f)) * 1.6f);
                     float rim = Edge(0.8f, 1f, d);
                     float v = Mathf.Lerp(0.85f, 0.55f, rim) + hl * 0.5f;
                     float a = 1f - Edge(0.94f, 1f, d);
-                    t.SetPixel(x, y, new Color(v, v, v, a));
+                    t.SetPixel(x, y, Palette.Grey(v, a));
                 }
             t.Apply();
             return t;
         }
 
         /// <summary>The one mana orb color (generic mana, AMENDMENTS 2026-10-10).</summary>
-        public static readonly Color Mana = new Color(0.42f, 0.78f, 1f);
+        public static readonly Color Mana = Palette.Mana;
 
         public static Color HexColor(string hex, Color fallback)
         {

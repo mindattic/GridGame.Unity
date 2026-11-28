@@ -22,13 +22,13 @@ namespace GridGame.App
         {
             switch (r)
             {
-                case ComboRank.D: return new Color(0.62f, 0.7f, 0.82f);
-                case ComboRank.C: return new Color(0.45f, 0.9f, 0.55f);
-                case ComboRank.B: return new Color(0.35f, 0.8f, 1f);
-                case ComboRank.A: return new Color(0.78f, 0.5f, 1f);
-                case ComboRank.S: return new Color(1f, 0.84f, 0.25f);
-                case ComboRank.SS: return new Color(1f, 0.55f, 0.15f);
-                case ComboRank.SSS: return new Color(1f, 0.22f, 0.3f);
+                case ComboRank.D: return Palette.Combo.D;
+                case ComboRank.C: return Palette.Combo.C;
+                case ComboRank.B: return Palette.Combo.B;
+                case ComboRank.A: return Palette.Combo.A;
+                case ComboRank.S: return Palette.Combo.S;
+                case ComboRank.SS: return Palette.Combo.SS;
+                case ComboRank.SSS: return Palette.Combo.SSS;
                 default: return Palette.TextDim;
             }
         }

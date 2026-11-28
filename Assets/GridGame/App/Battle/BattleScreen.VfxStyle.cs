@@ -19,7 +19,7 @@ namespace GridGame.App
     {
         private static readonly VfxStyleDef FallbackStyle = new VfxStyleDef
         {
-            Id = "Fallback", Core = "#D9E0F2", Shape = "mote", Motion = "burst", Cue = "battle.hit", Count = 6, Size = 18, Reach = 110, Time = "Standard",
+            Id = "Fallback", Core = Palette.Vfx.FallbackCore, Shape = "mote", Motion = "burst", Cue = "battle.hit", Count = 6, Size = 18, Reach = 110, Time = "Standard",
         };
 
         /// <summary>The tier of the hits being played: a pincer's or the resolving ability's, reset at every new action.</summary>

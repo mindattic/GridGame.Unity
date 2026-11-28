@@ -9,7 +9,7 @@ namespace GridGame.App
     /// partner (its damage number follows as the echo's own DamagedEvent).</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color LinkColor = new Color(0.70f, 0.42f, 1f);
+        private static readonly Color LinkColor = Palette.Vfx.Link;
 
         private IEnumerator LinkedAnim(UnitsLinkedEvent e)
         {

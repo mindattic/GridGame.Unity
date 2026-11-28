@@ -336,7 +336,7 @@ namespace GridGame.App
             if (d == null) return false;
             var row = Ui.El("row", body);
             row.style.alignItems = Align.Center;
-            var col = Art.HexColor(d.Color, d.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+            var col = Art.HexColor(d.Color, d.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
             var pip = Ui.StatusPip(d.Id, string.IsNullOrEmpty(d.Letter) ? d.Name.Substring(0, 1) : d.Letter, col, 72, row);
             pip.style.marginRight = Space.S16;
             var c = Ui.El("col grow", row);
@@ -417,7 +417,7 @@ namespace GridGame.App
             {
                 var r = Ui.El("row", body);
                 r.style.marginTop = Space.S8;
-                var col = Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+                var col = Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
                 var pip = Ui.StatusPip(b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter, col, 40, r);
                 pip.style.marginRight = Space.S8;
                 var t = GlossaryText.Create($"{TermOf(b.Def.Name)} — {Ui.BuffEffect(b.Def)} ({b.Remaining} left)", "t-caption", r, false);

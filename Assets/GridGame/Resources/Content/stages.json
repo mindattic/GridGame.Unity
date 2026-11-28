@@ -4820,6 +4820,10 @@
     "Background": null,
     "Music": "Battle",
     "IsTest": false,
+    "Lessons": [
+      { "Id": "read", "Wave": 0 },
+      { "Id": "spell", "Wave": 0, "FocusRole": "Mage" }
+    ],
     "Waves": [
       {
         "Enemies": [
@@ -4928,6 +4932,9 @@
     "Background": null,
     "Music": "Battle",
     "IsTest": false,
+    "Lessons": [
+      { "Id": "plate", "Wave": 0 }
+    ],
     "Blocks": [
       { "X": 1, "Y": 0 },
       { "X": 3, "Y": 0 }
@@ -4952,6 +4959,9 @@
     "Background": null,
     "Music": "Battle",
     "IsTest": false,
+    "Lessons": [
+      { "Id": "plate", "Wave": 0 }
+    ],
     "Blocks": [
       { "X": 1, "Y": 0 },
       { "X": 3, "Y": 0 }

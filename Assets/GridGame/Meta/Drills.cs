@@ -11,7 +11,8 @@ namespace GridGame.Meta
     /// on its own fixed seed as a tutorial battle, so its lessons may stage their situations. It is practice: nothing is
     /// earned, spent or worn (no XP, gold, loot, item use or durability wear; wounds stay as they were) and campaign
     /// progress never moves. The Bestiary still counts the foes seen and defeated, and a win marks the drill cleared
-    /// (<see cref="SaveData.ClearedDrills"/>).
+    /// (<see cref="SaveData.ClearedDrills"/>). GG-T2138: campaign.json's Prologue battles are drills too, but story battles:
+    /// a win pays its gold, loot and XP (<see cref="Commit"/>); a practice replay (<see cref="Report"/>) still pays nothing.
     /// </summary>
     public static class Drills
     {
@@ -70,14 +71,32 @@ namespace GridGame.Meta
                 if (id != null) s.ClearedDrills.Add(id);
         }
 
-        /// <summary>Commits a finished drill: only the Bestiary and, on a win, the drill's clear.</summary>
+        /// <summary>GG-T2138: <paramref name="stageId"/> is one of campaign.json's Prologue battles.</summary>
+        public static bool IsPrologue(ContentDb c, string stageId)
+        {
+            var prologue = c?.Campaign?.Prologue;
+            return prologue != null && prologue.Count > 0 && ReferenceEquals(OrderOf(c, stageId), prologue);
+        }
+
+        /// <summary>Commits a finished drill: only the Bestiary and, on a win, the drill's clear. GG-T2138: a Prologue battle
+        /// is a story battle, so its win also pays its gold, loot and XP, and its scripted withdrawal (GG-T2070) counts as
+        /// played so the story goes on. A Tutorial drill earns nothing.</summary>
         public static BattleReport Commit(ContentDb c, SaveData s, BattleState battle)
         {
             var r = battle.Results;
             var rep = Report(battle);
+            bool prologue = IsPrologue(c, battle.Stage.Id);
             foreach (var id in r.Seen) BattleFactory.Entry(s, id).Seen = true;
             foreach (var kv in r.Kills) BattleFactory.Entry(s, kv.Key).Defeated += kv.Value;
-            if (rep.Victory)
+            if (rep.Victory && prologue)
+            {
+                rep.Gold = r.Coins;
+                s.Gold += r.Coins;
+                s.LifetimeCoins += r.Coins;
+                BattleFactory.GrantItems(c, s, rep, r.Items);
+                BattleFactory.GrantXp(s, battle, r, rep);
+            }
+            if (rep.Victory || (rep.Withdrawn && prologue))
             {
                 s.ClearedDrills ??= new HashSet<string>();
                 rep.FirstClear = s.ClearedDrills.Add(battle.Stage.Id);
@@ -96,6 +115,8 @@ namespace GridGame.Meta
                 Victory = battle.Phase == BattlePhase.Victory,
                 Escaped = battle.Phase == BattlePhase.Escaped,
                 Retreated = battle.Phase == BattlePhase.Retreated,
+                Withdrawn = battle.Phase == BattlePhase.Withdrawn,
+                WithdrawLine = battle.Phase == BattlePhase.Withdrawn ? battle.Stage.Withdraw?.Line : null,
                 StageId = battle.Stage.Id,
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,

@@ -86,7 +86,8 @@ namespace GridGame.App
                 Ui.Tappable(cell, () => { slot = idx; Refresh(); });
             }
             var slotName = slot < unlocked ? EntryName(h.Bar[slot]) : null;
-            Ui.Para(slotName == null ? $"Slot {slot + 1}: empty" : $"Slot {slot + 1}: {slotName}", barW, "gold").name = "abilities-slot-name";
+            bool swap = slotName != null && h.Bar[slot].StartsWith("weapon:");
+            Ui.Para(slotName == null ? $"Slot {slot + 1}: empty" : $"Slot {slot + 1}: {slotName}", swap ? RowIcon.Line("battle-weapon-swap", barW) : barW, "gold").name = "abilities-slot-name";
             // GG-T298: what this hero does when it joins a pincer as a supporter.
             var support = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, C.Class(h.ClassId).Support), "kit-text gold", barW);
             support.name = "abilities-support";
@@ -312,7 +313,7 @@ namespace GridGame.App
         {
             if (entry == null) return null;
             if (entry.StartsWith("item:")) { var it = C.TryItem(entry.Substring(5)); return it == null ? null : $"{it.Name} ×{S.Count(it.Id)}"; }  // GG-T711: one line, shrunk to fit the bar cell by TextFit; it wraps (GG-T701) only below the type floor
-            if (entry.StartsWith("weapon:")) { var w = C.TryItem(entry.Substring(7)); return w == null ? null : $"⭾ {w.Name}"; }
+            if (entry.StartsWith("weapon:")) { var w = C.TryItem(entry.Substring(7)); return w?.Name; }
             return C.TryAbility(entry)?.Name;
         }
 

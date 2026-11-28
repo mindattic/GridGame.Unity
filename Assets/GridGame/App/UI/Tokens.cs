@@ -23,6 +23,7 @@ namespace GridGame.App
         public static readonly Color Gray = Color.gray;
         /// <summary>The loud fallback for a colour that should never be missing, so it shows in a capture.</summary>
         public static readonly Color Missing = Color.magenta;
+        public static readonly Color Clear = Color.clear;
         /// <summary>A multiplier over 1: an image tinted with it flashes overbright, then eases back to White.</summary>
         public static readonly Color Overbright = new Color(3f, 3f, 3f);
         public static readonly Color Ink = new Color(0.055f, 0.055f, 0.07f);
@@ -44,7 +45,7 @@ namespace GridGame.App
         public static readonly Color Info = new Color(0.86f, 0.88f, 1f);
         /// <summary>A tappable glossary [term] (GG-T300): the same light blue class cards always marked keywords with.</summary>
         public static readonly Color Term = new Color(0.61f, 0.78f, 1f);
-        public static readonly Color Mana = Art.Mana;
+        public static readonly Color Mana = new Color(0.42f, 0.78f, 1f);
         // GG-T673: the battle's mana orbs, their bloom and their trails, sampled from the blue Manalith art (GG-T674,
         // owner: "it's blue like mana is expected to be"): near-black navy glass, indigo liquid, a lighter violet bloom and
         // the art's red-pink glint.
@@ -190,9 +191,228 @@ namespace GridGame.App
 
         public static Color WithA(this Color c, float a) => new Color(c.r, c.g, c.b, a);
 
+        /// <summary>A computed grey <paramref name="v"/> (a generated texture's shade, a dimmed portrait).</summary>
+        public static Color Grey(float v, float a = 1f) => new Color(v, v, v, a);
+
         /// <summary>A #RRGGBB content color (vfxstyle.json), or <paramref name="fallback"/> when absent or malformed.</summary>
         public static Color Hex(string hex, Color fallback) =>
             hex != null && ColorUtility.TryParseHtmlString(hex, out var c) ? c : fallback;
+
+        /// <summary>GG-T2139: battle effect colours (sparks, rings, glows, marks, cut-ins, combat text), grouped by what
+        /// they show. A computed alpha stays at the call site: <c>Vfx.Spark.WithA(1f - k)</c>.</summary>
+        public static class Vfx
+        {
+            /// <summary>Hex colours of the vfxstyle fallbacks used before content loads (VfxStyleDef takes strings).</summary>
+            public const string FallbackCore = "#D9E0F2", SmokeCore = "#E6E8EE", SmokeGlow = "#FFFFFF", SmokeAccent = "#C9CCD6";
+            /// <summary>The selected hero's glow.</summary>
+            public static readonly Color SelectGlow = new Color(1f, 0.9f, 0.5f);
+            /// <summary>A harmful aim, an empty hold, no gap on the timeline.</summary>
+            public static readonly Color Harmful = new Color(1f, 0.3f, 0.25f);
+            /// <summary>A helpful aim and its border.</summary>
+            public static readonly Color Helpful = new Color(0.4f, 0.9f, 0.5f);
+            /// <summary>A threatened tile.</summary>
+            public static readonly Color Danger = new Color(1f, 0.25f, 0.2f);
+            /// <summary>A threatening unit's glow, a trap tile, taunting.</summary>
+            public static readonly Color Threat = new Color(1f, 0.3f, 0.2f);
+            /// <summary>A charged line attack's tiles.</summary>
+            public static readonly Color LineDanger = new Color(1f, 0.2f, 0.15f);
+            /// <summary>A debuff whose content colour does not parse.</summary>
+            public static readonly Color Debuff = new Color(0.8f, 0.4f, 0.9f);
+            /// <summary>A buff whose colour does not parse, support, timers.</summary>
+            public static readonly Color Sky = new Color(0.6f, 0.85f, 1f);
+            public static readonly Color Afterimage = new Color(0.62f, 0.88f, 1f);
+            public static readonly Color AnchorSteel = new Color(0.62f, 0.72f, 0.84f);
+            public static readonly Color AnchorRim = new Color(1f, 0.84f, 0.45f);
+            public static readonly Color Vine = new Color(0.37f, 0.55f, 0.23f);
+            public static readonly Color Bark = new Color(0.61f, 0.48f, 0.27f);
+            /// <summary>A hero cut-in band.</summary>
+            public static readonly Color BandHero = new Color(0.16f, 0.36f, 0.95f);
+            /// <summary>A foe cut-in band.</summary>
+            public static readonly Color BandFoe = new Color(0.85f, 0.15f, 0.2f);
+            /// <summary>Multiplier: a cut-in's dark under-band.</summary>
+            public static readonly Color UnderBandShade = new Color(0.5f, 0.5f, 0.6f);
+            /// <summary>Multiplier: a cut-in's window.</summary>
+            public static readonly Color CutInShade = new Color(0.25f, 0.25f, 0.35f);
+            /// <summary>Near-black behind a cut-in or wave veil.</summary>
+            public static readonly Color Void = new Color(0.01f, 0.01f, 0.05f);
+            public static readonly Color FoeCallout = new Color(1f, 0.82f, 0.78f);
+            /// <summary>Overbright: a foe portrait's flash.</summary>
+            public static readonly Color FoeFlash = new Color(3f, 2.4f, 2.4f);
+            public static readonly Color SupportCallout = new Color(0.6f, 0.92f, 1f);
+            public static readonly Color Emp = new Color(0.35f, 0.9f, 1f);
+            /// <summary>A foe's beat or pincer line.</summary>
+            public static readonly Color FoeText = new Color(1f, 0.55f, 0.5f);
+            public static readonly Color FoeBeat = new Color(1f, 0.22f, 0.18f);
+            /// <summary>Buffs.json floating #9FD3F0.</summary>
+            public static readonly Color Float = new Color(0.62f, 0.83f, 0.94f);
+            /// <summary>An ability that removes debuffs.</summary>
+            public static readonly Color Purge = new Color(0.55f, 1f, 0.55f);
+            /// <summary>An ability that strips buffs.</summary>
+            public static readonly Color Strip = new Color(1f, 0.4f, 0.5f);
+            /// <summary>White-hot sparks.</summary>
+            public static readonly Color Spark = new Color(1f, 0.95f, 0.75f);
+            /// <summary>Armour plate, heavy tint.</summary>
+            public static readonly Color Steel = new Color(0.72f, 0.76f, 0.84f);
+            public static readonly Color Shatter = new Color(1f, 0.85f, 0.5f);
+            public static readonly Color Shard = new Color(0.78f, 0.82f, 0.9f);
+            public static readonly Color Well = new Color(0.55f, 0.30f, 0.95f);
+            public static readonly Color WellEye = new Color(0.12f, 0.04f, 0.2f, 0.9f);
+            public static readonly Color Burning = new Color(1f, 0.45f, 0.1f);
+            public static readonly Color Frozen = new Color(0.6f, 0.9f, 1f);
+            public static readonly Color Poisoned = new Color(0.5f, 1f, 0.3f);
+            public static readonly Color Sleep = new Color(0.7f, 0.7f, 1f);
+            public static readonly Color EdgeNeutral = new Color(0.8f, 0.8f, 0.9f);
+            public static readonly Color EdgeBronze = new Color(0.86f, 0.62f, 0.36f);
+            public static readonly Color HeroTrail = new Color(1f, 0.9f, 0.45f);
+            public static readonly Color FoeDrag = new Color(1f, 0.55f, 0.2f);
+            public static readonly Color Roar = new Color(0.55f, 0.80f, 1f);
+            public static readonly Color Fear = new Color(0.69f, 0.49f, 0.91f);
+            public static readonly Color Link = new Color(0.70f, 0.42f, 1f);
+            public static readonly Color Magnet = new Color(0.45f, 0.78f, 1f);
+            public static readonly Color Twist = new Color(0.7f, 0.35f, 1f);
+            public static readonly Color Armored = new Color(0.7f, 0.7f, 0.75f);
+            public static readonly Color Crit = new Color(1f, 0.85f, 0.2f);
+            public static readonly Color HeroHurt = new Color(1f, 0.5f, 0.45f);
+            public static readonly Color HeroHurtFeed = new Color(1f, 0.65f, 0.6f);
+            public static readonly Color HurtTint = new Color(1f, 0.55f, 0.55f);
+            public static readonly Color HealGlow = new Color(0.4f, 1f, 0.5f);
+            public static readonly Color HeroDown = new Color(1f, 0.45f, 0.4f);
+            public static readonly Color FoePincer = new Color(1f, 0.3f, 0.3f);
+            public static readonly Color Bond = new Color(1f, 0.6f, 0.8f);
+            public static readonly Color DimHero = new Color(0.02f, 0.03f, 0.08f);
+            public static readonly Color DimFoe = new Color(0.12f, 0.0f, 0.02f);
+            public static readonly Color Shove = new Color(1f, 0.6f, 0.4f);
+            public static readonly Color AmpRing = new Color(1f, 0.8f, 0.3f);
+            public static readonly Color FoeTurn = new Color(1f, 0.6f, 0.5f);
+            public static readonly Color FoeCast = new Color(1f, 0.7f, 0.65f);
+            public static readonly Color GoldBurst = new Color(1f, 0.88f, 0.5f);
+            public static readonly Color Coin = new Color(1f, 0.82f, 0.25f);
+            public static readonly Color Loot = new Color(0.7f, 1f, 0.8f);
+            /// <summary>A guest joining, a guest's tag.</summary>
+            public static readonly Color Ally = new Color(0.6f, 1f, 0.75f);
+            public static readonly Color Revive = new Color(0.75f, 1f, 0.75f);
+            public static readonly Color Egg = new Color(0.85f, 1f, 0.75f);
+            public static readonly Color Wave = new Color(1f, 0.55f, 0.3f);
+            public static readonly Color Rage = new Color(0.88f, 0.27f, 0.17f);
+            /// <summary>Overbright.</summary>
+            public static readonly Color RageFlush = new Color(1.6f, 0.38f, 0.3f);
+            public static readonly Color Steam = new Color(0.94f, 0.95f, 0.97f);
+            public static readonly Color Dust = new Color(0.74f, 0.64f, 0.5f);
+            public static readonly Color RageCallout = new Color(1f, 0.55f, 0.42f);
+            /// <summary>Overbright.</summary>
+            public static readonly Color RageFlash = new Color(3f, 2.2f, 2.2f);
+            public static readonly Color Chi = new Color(0.55f, 1f, 0.82f);
+            public static readonly Color Trap = new Color(1f, 0.45f, 0.3f);
+            public static readonly Color Lure = new Color(1f, 0.78f, 0.38f);
+            public static readonly Color LureTrail = new Color(1f, 0.9f, 0.6f);
+            public static readonly Color Fire = new Color(1f, 0.45f, 0.15f);
+            public static readonly Color Rubble = new Color(0.25f, 0.18f, 0.12f);
+            public static readonly Color BreakThrough = new Color(0.85f, 0.65f, 0.4f);
+            public static readonly Color RuleBreak = new Color(1f, 0.3f, 0.75f);
+            public static readonly Color Sabotage = new Color(0.55f, 0.95f, 1f);
+            public static readonly Color Log = new Color(0.55f, 0.35f, 0.17f);
+            public static readonly Color Swipe = new Color(1f, 0.82f, 0.35f);
+            public static readonly Color GapRoomy = new Color(0.35f, 0.85f, 0.45f);
+            public static readonly Color GapTight = new Color(1f, 0.72f, 0.2f);
+            public static readonly Color Smoke = new Color(0.62f, 0.64f, 0.7f);
+            public static readonly Color VaultDust = new Color(0.78f, 0.70f, 0.56f);
+            public static readonly Color VaultPole = new Color(0.92f, 0.86f, 0.70f);
+            public static readonly Color Corpse = new Color(0.42f, 0.38f, 0.38f);
+            public static readonly Color SteelShadow = new Color(0.3f, 0.32f, 0.4f);
+            public static readonly Color Rivet = new Color(0.35f, 0.37f, 0.45f);
+            public static readonly Color Crack = new Color(0.5f, 0.06f, 0.05f, 0.92f);
+            public static readonly Color Dimmed = new Color(0.5f, 0.5f, 0.55f);
+            public static readonly Color RockTint = new Color(0.85f, 0.85f, 0.9f);
+            public static readonly Color Rock = new Color(0.32f, 0.33f, 0.38f);
+            public static readonly Color RockLight = new Color(0.78f, 0.8f, 0.86f, 0.9f);
+            public static readonly Color RockSide = new Color(0.45f, 0.47f, 0.53f);
+            public static readonly Color RockDark = new Color(0.16f, 0.17f, 0.2f);
+            public static readonly Color AmpRim = new Color(1f, 0.95f, 0.7f);
+            public static readonly Color AmpFill = new Color(1f, 0.72f, 0.15f, 0.85f);
+            public static readonly Color CurseText = new Color(0.75f, 0.35f, 1f, 0.85f);
+            public static readonly Color CurseBack = new Color(0.45f, 0.1f, 0.6f, 0.25f);
+            public static readonly Color Pit = new Color(0.03f, 0.02f, 0.02f, 0.92f);
+            public static readonly Color Iron = new Color(0.62f, 0.66f, 0.74f);
+            public static readonly Color Sheen = new Color(0.86f, 0.89f, 0.95f);
+            /// <summary>Combat text outline.</summary>
+            public static readonly Color CritEdge = new Color(0.35f, 0.1f, 0f);
+            public static readonly Color Overkill = new Color(1f, 0.42f, 0.18f);
+            public static readonly Color OverkillEdge = new Color(0.3f, 0f, 0f);
+            public static readonly Color DebuffText = new Color(0.86f, 0.45f, 1f);
+            public static readonly Color Tick = new Color(0.75f, 0.95f, 0.45f);
+            public static readonly Color TimerEnd = new Color(1f, 0.9f, 0.55f);
+            public static readonly Color WarmEdge = new Color(0.3f, 0.1f, 0f);
+            public static readonly Color Expire = new Color(0.72f, 0.72f, 0.78f);
+            public static readonly Color Immune = new Color(0.82f, 0.84f, 0.9f);
+            public static readonly Color Weak = new Color(1f, 0.6f, 0.2f);
+            public static readonly Color WeakEdge = new Color(0.3f, 0.05f, 0f);
+            public static readonly Color Resist = new Color(0.75f, 0.85f, 0.95f);
+            public static readonly Color ComboEdge = new Color(0.3f, 0.12f, 0f);
+            public static readonly Color Wood = new Color(0.62f, 0.45f, 0.26f);
+            public static readonly Color WoodWorn = new Color(0.3f, 0.2f, 0.12f);
+            /// <summary>A silenced pip.</summary>
+            public static readonly Color Silenced = new Color(1f, 0.25f, 0.25f);
+            /// <summary>The CRUCIBLE results title.</summary>
+            public static readonly Color Crucible = new Color(1f, 0.6f, 0.3f);
+        }
+
+        /// <summary>The combo rank badge, D to SSS.</summary>
+        public static class Combo
+        {
+            public static readonly Color D = new Color(0.62f, 0.7f, 0.82f);
+            public static readonly Color C = new Color(0.45f, 0.9f, 0.55f);
+            public static readonly Color B = new Color(0.35f, 0.8f, 1f);
+            public static readonly Color A = new Color(0.78f, 0.5f, 1f);
+            public static readonly Color S = new Color(1f, 0.84f, 0.25f);
+            public static readonly Color SS = new Color(1f, 0.55f, 0.15f);
+            public static readonly Color SSS = new Color(1f, 0.22f, 0.3f);
+        }
+
+        /// <summary>Tints over a screen's full-bleed background art.</summary>
+        public static class Backdrop
+        {
+            public static readonly Color Battle = new Color(0.78f, 0.78f, 0.86f);
+            public static readonly Color Credits = new Color(0.25f, 0.25f, 0.32f);
+            public static readonly Color Hub = new Color(0.45f, 0.5f, 0.7f);
+            public static readonly Color Mercenary = new Color(0.4f, 0.42f, 0.55f);
+            public static readonly Color Results = new Color(0.45f, 0.45f, 0.55f);
+        }
+
+        /// <summary>Generated textures and scene rigs: placeholder art, the card back, the moon, the fog, the coach shade.</summary>
+        public static class Scene
+        {
+            /// <summary>The missing-art texture.</summary>
+            public static readonly Color Placeholder = new Color(0.35f, 0.2f, 0.45f);
+            /// <summary>The arrow glyph's lower shade.</summary>
+            public static readonly Color ArrowShade = new Color(0.78f, 0.78f, 1f);
+            public static readonly Color ArrowEdge = new Color(0.05f, 0.05f, 0.15f);
+            public static readonly Color SkullFill = new Color(0.42f, 0.04f, 0.05f, 0.95f);
+            public static readonly Color CardBack = new Color(0.10f, 0.09f, 0.20f);
+            public static readonly Color CardLine = new Color(0.22f, 0.20f, 0.38f);
+            public static readonly Color CardTrim = new Color(0.78f, 0.66f, 0.36f);
+            public static readonly Color CoachShade = new Color(0f, 0f, 0.04f);
+            public static readonly Color ManalithBlue = new Color(0.365f, 0.392f, 0.639f);
+            /// <summary>Multiplier: the moon's albedo.</summary>
+            public static readonly Color Regolith = new Color(1f, 0.985f, 0.95f);
+            public static readonly Color FogGround = new Color(0.035f, 0.05f, 0.11f);
+            public static readonly Color FogDeep = new Color(0.16f, 0.22f, 0.47f, 0.85f);
+            /// <summary>Manalith blue #7590C8.</summary>
+            public static readonly Color FogMana = new Color(0.46f, 0.56f, 0.78f, 0.42f);
+            public static readonly Color FogGlint = new Color(0.66f, 0.77f, 0.94f, 0.16f);
+            public static readonly Color ShapeInk = new Color(0f, 0f, 0.05f, 0.9f);
+        }
+
+        /// <summary>The skill hexagon's own palette (docs/design/skill-hexagon/style.css).</summary>
+        public static class SkillHex
+        {
+            public static readonly Color Bg = Hex("#0d0f14", Missing);
+            public static readonly Color Panel = Hex("#151821", Missing);
+            public static readonly Color Line = Hex("#2a2f3d", Missing);
+            public static readonly Color Fg = Hex("#e6e8ee", Missing);
+            public static readonly Color Muted = Hex("#9097a8", Missing);
+            public static readonly Color Accent = Hex("#7fd1ff", Missing);
+            public static readonly Color Hot = Hex("#ffcf6b", Missing);
+        }
     }
 
     /// <summary>
@@ -426,7 +646,7 @@ namespace GridGame.App
     }
 
     /// <summary>Aspect-agnostic layout units (GG-T272): fractions of the safe-area stage, which grows from 1170×2532 up to
-    /// 3:4 (1899 wide) or 9:23 (2990 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
+    /// 3:4 (1899 wide) or 9:23 (3000 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
     /// current screen on <see cref="GameApp.StageResized"/> (the battle re-lays itself out).</summary>
     public static class Fit
     {
@@ -489,6 +709,8 @@ namespace GridGame.App
         /// <summary>GG-T761: a Manapunk conduit's Quake light style steps ConduitStep seconds a letter (10 Hz), and the
         /// tube idles a random ConduitIdleMin..ConduitIdleMax seconds between bursts of power.</summary>
         public const float ConduitStep = 0.1f, ConduitIdleMin = 2.5f, ConduitIdleMax = 9f;
+        /// <summary>TestMode pacing: a beat before camp runs, and the time a camp result stays readable.</summary>
+        public const float TestModeSettle = 1f, TestModeRead = 1.5f;
     }
 
     /// <summary>GG-T668: a damage number strikes the target (falls onto it big and fast, squashes, settles, holds, drops

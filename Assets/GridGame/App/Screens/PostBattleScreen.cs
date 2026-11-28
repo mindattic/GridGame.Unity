@@ -59,7 +59,7 @@ namespace GridGame.App
             var c = App.Content;
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, ThemeOf(c, report, stageId), 3);
-            bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.45f, 0.55f);
+            bg.style.unityBackgroundImageTintColor = Palette.Backdrop.Results;
             var col = Ui.El("fill col", root);
             Fit.Columnize(col, Space.S32); // the results sit in the centred content column (GG-T398)
 
@@ -177,6 +177,7 @@ namespace GridGame.App
                 StoryBeats.AfterResults(report.Victory, stageId);
             };
             bool exitPrimary = nextId == null && !canRetry;
+            if (!report.Victory && !report.Retreated && !report.Escaped && report.LastHits.Count > 0) LastHitsBlock(c, col);
             var footer = Ui.Footer(col, "results-footer");
             var cont = FooterButton(ending ? "Continue" : "To Camp", ending ? RowKind.Enter : RowKind.Station, () => { if (continued) return; continued = true; onContinue(); }, exitPrimary, footer);
             cont.name = "continue";
@@ -187,6 +188,34 @@ namespace GridGame.App
             Ui.El("", col).style.height = Kit.Gap;
             if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
             else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+        }
+
+        /// <summary>How many of the blows that ended a lost battle the results list (GG-T1956).</summary>
+        internal const int DefeatHitsShown = 3;
+
+        /// <summary>GG-T1956 (UX review §6, item 15): on a defeat, the last blows your heroes took, oldest first, just above
+        /// Retry: who hit whom with what, the damage, and "Down" on a blow that knocked a hero out.</summary>
+        private void LastHitsBlock(ContentDb c, VisualElement col)
+        {
+            var w = Ui.Panel(col, null, false, "results-last-hits");
+            Ui.Margin(w, top: Space.S16);
+            Ui.Section("What ended the battle", w);
+            int i = 0;
+            foreach (var hit in report.LastHits)
+            {
+                string target = c.TryClass(hit.TargetClass)?.Name ?? "Your hero";
+                string with = c.TryAbility(hit.AbilityId)?.Name;
+                string label = hit.BuffId != null ? $"{c.TryBuff(hit.BuffId)?.Name ?? "A status"} hit {target}"
+                    : hit.Trap ? $"A trap hit {target}"
+                    : hit.AttackerClass == null ? (with != null ? $"{with} hit {target}" : $"{target} took a blow")
+                    : $"{c.TryClass(hit.AttackerClass)?.Name ?? "A foe"} hit {target}" + (with != null ? $" with {with}" : "");
+                var row = Ui.MenuRow(label, $"{Ui.Count(hit.Amount)} HP" + (hit.Knockout ? " · Down" : ""), null, w);
+                row.name = "results-last-hit-" + i++;
+                if (hit.AttackerClass != null) row.KindIcon(RowKind.Hero, hit.AttackerClass);
+                else if (hit.BuffId != null) row.KindIcon(RowKind.Status, hit.BuffId);
+                else row.KindIcon(RowKind.Status, Art.UiIcon("stat-hp"));
+                if (hit.Knockout) row.Q<Label>("value")?.AddToClassList("bad");
+            }
         }
 
         /// <summary>A footer button: they share the footer's width evenly; <paramref name="primary"/> is the one primary.</summary>
@@ -267,7 +296,7 @@ namespace GridGame.App
         {
             var title = Ui.Text("CRUCIBLE", "t-display shadow", col);
             Fonts.UseDisplay(title);
-            title.style.color = new Color(1f, 0.6f, 0.3f);
+            title.style.color = Palette.Vfx.Crucible;
             var waves = Ui.Text($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", "t-h1 shadow gold", col);
             waves.name = "crucible-waves";
             waves.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -355,24 +384,31 @@ namespace GridGame.App
             string nextId = idx >= 0 && idx + 1 < drills.Count && c.TryStage(drills[idx + 1]) != null ? drills[idx + 1] : null;
 
             bool first = idx == 0 && !report.Practice; // GG-T1958: The Trap plays before the crawl; its win is the first VICTORY
-            var title = Ui.Text(!report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
+            bool fellBack = report.Withdrawn && !report.Practice; // GG-T2138: a prologue battle's scripted withdrawal goes on
+            bool passed = report.Victory || fellBack;
+            var title = Ui.Text(fellBack ? "FALL BACK" : !report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
             title.name = "drill-title";
             Fonts.UseDisplay(title);
-            title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
+            title.style.color = passed ? Palette.Gold : Palette.Bad;
             string where = idx >= 0 ? $"Drill {idx + 1} of {drills.Count} · {NameOf(c, report, stageId)}" : NameOf(c, report, stageId);
             Ui.Text(where, "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
 
             var w = Ui.Panel(col, null, true);
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
-            var t = Ui.Text(!report.Victory ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
+            var t = Ui.Text(fellBack && !string.IsNullOrEmpty(report.WithdrawLine) ? report.WithdrawLine
+                : !passed ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
                 : first ? "That's the trap, Commander. Catch a foe between two of us and it falls."
                 : nextId != null ? "Drill cleared. We're ready for the next, Commander."
                 : "That's all we know, Commander. Lead us out.", "kit-text", list);
             t.name = "drill-line";
             t.style.whiteSpace = WhiteSpace.Normal;
+            // GG-T2138: a prologue battle is a story battle and pays out like one.
+            if (report.Gold > 0) Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
+            if (report.XpEach > 0) Ui.MenuRow("XP each", $"+{report.XpEach}", null, list).WithKindIcon(RowKind.Hero).name = "results-xp";
             TurnsRow(list);
             ComboRows(c, list);
+            if (report.Items.Count > 0) RevealItems(report.Items, c, list);
 
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
@@ -381,7 +417,7 @@ namespace GridGame.App
                 onContinue = () => App.Router.Back(); // GG-T1647: practice returns to Settings, never touching the onboarding
                 RowIcon.IconButton("Back to Settings", RowKind.Enter, Go, "btn--primary", row).name = "continue";
             }
-            else if (!report.Victory)
+            else if (!passed)
             {
                 onContinue = () => StageLauncher.Launch(stageId, true);
                 RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";
@@ -417,7 +453,7 @@ namespace GridGame.App
                 RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
             }
             Ui.El("", col).style.height = Space.S48;
-            reveals.Add(App.StartCoroutine(TitleCue(title, report.Victory)));
+            reveals.Add(App.StartCoroutine(TitleCue(title, passed)));
 
             void Go()
             {
@@ -620,7 +656,7 @@ namespace GridGame.App
                 cell.style.alignItems = Align.Center;
                 cell.style.justifyContent = Justify.Center;
                 Ui.Pad(cell, top: Space.S8, bottom: Space.S8);
-                cell.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)).style.marginRight = 0;
+                cell.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)).style.marginRight = Space.S0;
                 Ui.Caption($"×{n}", cell).AddToClassList(Ui.RarityClass(it.Rarity));
                 Ui.Pressable(cell);
                 var shown = it;

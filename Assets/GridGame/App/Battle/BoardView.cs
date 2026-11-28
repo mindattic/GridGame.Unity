@@ -72,7 +72,7 @@ namespace GridGame.App
             Art = Ui.PortraitThumb(artHost, u.IsCorpse && u.CorpseOf != null ? u.CorpseOf : u.Def.Id, breed: u.Breed);
             if (u.IsCorpse)
             {
-                Art.style.unityBackgroundImageTintColor = new Color(0.42f, 0.38f, 0.38f);
+                Art.style.unityBackgroundImageTintColor = Palette.Vfx.Corpse;
                 Frame.style.opacity = 0.8f;
             }
 
@@ -100,17 +100,17 @@ namespace GridGame.App
             tileSize = tile;
             Plate = new VisualElement { name = "plate-" + u.Id, pickingMode = PickingMode.Ignore };
             Plate.style.position = Position.Absolute;
-            Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
+            Plate.style.backgroundColor = Palette.Vfx.Steel;
             Plate.style.borderTopWidth = Plate.style.borderBottomWidth = Plate.style.borderLeftWidth = Plate.style.borderRightWidth = 3;
             Plate.style.borderTopColor = Plate.style.borderLeftColor = Palette.Text;
-            Plate.style.borderBottomColor = Plate.style.borderRightColor = new Color(0.3f, 0.32f, 0.4f);
+            Plate.style.borderBottomColor = Plate.style.borderRightColor = Palette.Vfx.SteelShadow;
             Plate.style.borderTopLeftRadius = Plate.style.borderTopRightRadius = Plate.style.borderBottomLeftRadius = Plate.style.borderBottomRightRadius = Radius.R6;
             Plate.style.display = DisplayStyle.None;
             for (int i = 0; i < 3; i++)
             {
                 var rivet = new VisualElement { name = "rivet", pickingMode = PickingMode.Ignore };
                 rivet.style.width = rivet.style.height = Size.Bar;
-                rivet.style.backgroundColor = new Color(0.35f, 0.37f, 0.45f);
+                rivet.style.backgroundColor = Palette.Vfx.Rivet;
                 rivet.style.borderTopLeftRadius = rivet.style.borderTopRightRadius = rivet.style.borderBottomLeftRadius = rivet.style.borderBottomRightRadius = Radius.R4;
                 Plate.Add(rivet);
             }
@@ -123,7 +123,7 @@ namespace GridGame.App
             WeaponCrack.style.left = Space.S16; WeaponCrack.style.bottom = Space.S64;
             WeaponCrack.style.width = WeaponCrack.style.height = Size.Crack;
             WeaponCrack.style.borderTopLeftRadius = WeaponCrack.style.borderTopRightRadius = WeaponCrack.style.borderBottomLeftRadius = WeaponCrack.style.borderBottomRightRadius = Radius.R12;
-            WeaponCrack.style.backgroundColor = new Color(0.5f, 0.06f, 0.05f, 0.92f);
+            WeaponCrack.style.backgroundColor = Palette.Vfx.Crack;
             WeaponCrack.style.borderTopWidth = WeaponCrack.style.borderBottomWidth = WeaponCrack.style.borderLeftWidth = WeaponCrack.style.borderRightWidth = 2;
             WeaponCrack.style.borderTopColor = WeaponCrack.style.borderBottomColor = WeaponCrack.style.borderLeftColor = WeaponCrack.style.borderRightColor = Palette.Bad;
             WeaponCrack.style.display = DisplayStyle.None;
@@ -165,7 +165,7 @@ namespace GridGame.App
             FloatShadow.style.position = Position.Absolute;
             FloatShadow.style.left = FloatShadow.style.right = tile * u.W * 0.16f;
             FloatShadow.style.bottom = -Space.S4; FloatShadow.style.height = tile * 0.2f;
-            FloatShadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.4f);
+            FloatShadow.style.backgroundColor = Palette.Black.WithA(0.4f);
             FloatShadow.style.borderTopLeftRadius = FloatShadow.style.borderTopRightRadius =
                 FloatShadow.style.borderBottomLeftRadius = FloatShadow.style.borderBottomRightRadius = tile * 0.1f;
             FloatShadow.style.display = DisplayStyle.None;
@@ -196,7 +196,7 @@ namespace GridGame.App
             tag.AddToClassList("shadow");
             tag.style.position = Position.Absolute; tag.style.left = Space.S8; tag.style.top = Space.S8;
             tag.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(tag);
-            tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : new Color(0.6f, 1f, 0.75f);
+            tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : Palette.Vfx.Ally;
             Frame.Add(tag);
         }
 
@@ -306,7 +306,7 @@ namespace GridGame.App
                 Art.style.transitionDuration = ease;
             }
             actedBadge.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
-            Art.style.unityBackgroundImageTintColor = on ? new Color(0.5f, 0.5f, 0.55f) : Palette.White;
+            Art.style.unityBackgroundImageTintColor = on ? Palette.Vfx.Dimmed : Palette.White;
             Frame.style.opacity = on ? 0.7f : 1f;
         }
 
@@ -394,7 +394,7 @@ namespace GridGame.App
             if (stunned) statuses.Add(("stunned", "!", Palette.Gold, 1f)); // pushback stun isn't a buff, but it's why it isn't moving
             foreach (var b in u.Buffs)
                 statuses.Add((b.Def.Id, string.IsNullOrEmpty(b.Def.Letter) ? b.Def.Name.Substring(0, 1) : b.Def.Letter,
-                    App.Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f)),
+                    App.Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff),
                     Mathf.Clamp01(b.Remaining / (float)Mathf.Max(1, b.Def.Duration))));
             ShowStatus();
             SetFloating(u.IsFloating && u.Alive);
@@ -449,7 +449,7 @@ namespace GridGame.App
             glowColor = c;
             glowAlpha = alpha;
             Glow.style.borderTopColor = Glow.style.borderBottomColor = Glow.style.borderLeftColor = Glow.style.borderRightColor = c;
-            Glow.style.backgroundColor = new Color(c.r, c.g, c.b, 0.12f);
+            Glow.style.backgroundColor = c.WithA(0.12f);
             Glow.style.opacity = alpha;
         }
 
@@ -528,7 +528,7 @@ namespace GridGame.App
                     bool light = (x + y) % 2 == 0;
                     t.style.backgroundImage = new StyleBackground(App.Art.BoardTile(theme));
                     // Owner direction 2026-10-11: lighter and lower-contrast so the stage background reads clearly through the board.
-                    t.style.unityBackgroundImageTintColor = light ? Palette.White.WithA(0.34f) : new Color(0.78f, 0.82f, 0.9f, 0.24f);
+                    t.style.unityBackgroundImageTintColor = light ? Palette.White.WithA(0.34f) : Palette.Vfx.Shard.WithA(0.24f);
                     TileLayer.Add(t);
                     tiles[x, y] = t;
 
@@ -579,7 +579,7 @@ namespace GridGame.App
                 shadow.style.position = Position.Absolute;
                 shadow.style.left = c.X * Tile + 14; shadow.style.top = c.Y * Tile + 22;
                 shadow.style.width = Tile - 22; shadow.style.height = Tile - 22;
-                shadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.45f);
+                shadow.style.backgroundColor = Palette.Black.WithA(0.45f);
                 SetRadius(shadow, Radius.R26);
                 TileLayer.Add(shadow);
                 var rock = new VisualElement { name = $"block-{c.X}-{c.Y}", pickingMode = PickingMode.Ignore };
@@ -587,13 +587,13 @@ namespace GridGame.App
                 rock.style.left = c.X * Tile + 8; rock.style.top = c.Y * Tile + 8;
                 rock.style.width = Tile - 16; rock.style.height = Tile - 22;
                 rock.style.backgroundImage = new StyleBackground(App.Art.BoardTile(theme));
-                rock.style.unityBackgroundImageTintColor = new Color(0.85f, 0.85f, 0.9f, 1f);
-                rock.style.backgroundColor = new Color(0.32f, 0.33f, 0.38f, 1f);
+                rock.style.unityBackgroundImageTintColor = Palette.Vfx.RockTint;
+                rock.style.backgroundColor = Palette.Vfx.Rock;
                 SetRadius(rock, Radius.R26);
                 rock.style.borderTopWidth = 6; rock.style.borderLeftWidth = rock.style.borderRightWidth = 4; rock.style.borderBottomWidth = 12;
-                rock.style.borderTopColor = new Color(0.78f, 0.8f, 0.86f, 0.9f);
-                rock.style.borderLeftColor = rock.style.borderRightColor = new Color(0.45f, 0.47f, 0.53f, 1f);
-                rock.style.borderBottomColor = new Color(0.16f, 0.17f, 0.2f, 1f);
+                rock.style.borderTopColor = Palette.Vfx.RockLight;
+                rock.style.borderLeftColor = rock.style.borderRightColor = Palette.Vfx.RockSide;
+                rock.style.borderBottomColor = Palette.Vfx.RockDark;
                 TileLayer.Add(rock);
             }
         }
@@ -616,8 +616,8 @@ namespace GridGame.App
                 amp.style.width = amp.style.height = Tile * 0.5f;
                 amp.style.rotate = new Rotate(45f);
                 amp.style.borderTopWidth = amp.style.borderBottomWidth = amp.style.borderLeftWidth = amp.style.borderRightWidth = 6;
-                amp.style.borderTopColor = amp.style.borderBottomColor = amp.style.borderLeftColor = amp.style.borderRightColor = new Color(1f, 0.95f, 0.7f);
-                amp.style.backgroundColor = new Color(1f, 0.72f, 0.15f, 0.85f);
+                amp.style.borderTopColor = amp.style.borderBottomColor = amp.style.borderLeftColor = amp.style.borderRightColor = Palette.Vfx.AmpRim;
+                amp.style.backgroundColor = Palette.Vfx.AmpFill;
                 amp.style.borderTopLeftRadius = amp.style.borderTopRightRadius = amp.style.borderBottomLeftRadius = amp.style.borderBottomRightRadius = Radius.R10;
                 var glow = new VisualElement { pickingMode = PickingMode.Ignore };
                 glow.style.position = Position.Absolute;
@@ -768,7 +768,7 @@ namespace GridGame.App
             glow.style.position = Position.Absolute;
             glow.style.left = glow.style.top = glow.style.right = glow.style.bottom = -Space.S32;
             glow.style.backgroundImage = new StyleBackground(App.Art.Glow);
-            glow.style.unityBackgroundImageTintColor = new Color(c.r, c.g, c.b, 0.85f);
+            glow.style.unityBackgroundImageTintColor = c.WithA(0.85f);
             root.Add(glow);
             var disc = new VisualElement { name = "disc", pickingMode = PickingMode.Ignore };
             disc.style.position = Position.Absolute;
@@ -851,8 +851,8 @@ namespace GridGame.App
                 e.style.width = Tile; e.style.height = Tile;
                 e.style.unityTextAlign = TextAnchor.MiddleCenter;
                 e.style.fontSize = TileGlyphFont;
-                e.style.color = new Color(0.75f, 0.35f, 1f, 0.85f);
-                e.style.backgroundColor = new Color(0.45f, 0.1f, 0.6f, 0.25f);
+                e.style.color = Palette.Vfx.CurseText;
+                e.style.backgroundColor = Palette.Vfx.CurseBack;
                 MarkLayer.Add(e);
                 trapMarks.Add(e);
             }
@@ -901,7 +901,7 @@ namespace GridGame.App
                 // GG-T846: an owned mark's edge wears its painter's team colour (the party blue, a foe red).
                 var edge = kv.Value.OwnerTeam == Team.Hero ? TeamHero : kv.Value.OwnerTeam == Team.Enemy ? Palette.TeamFoe : col;
                 // A hole (GG-T368) is a near-black pit with its rim in the state's colour; other blocks a heavy wash.
-                var fill = def != null && def.Pit ? new Color(0.03f, 0.02f, 0.02f, 0.92f) : col.WithA(kv.Value.Blocks ? 0.55f : 0.3f);
+                var fill = def != null && def.Pit ? Palette.Vfx.Pit : col.WithA(kv.Value.Blocks ? 0.55f : 0.3f);
                 var e = RegionCell(kv.Key, fill, edge, def?.Glyph, kv.Value.Blocks ? 6f : 3f, !faint && !regionSeen.Contains(key));
                 regionCellAt[kv.Key] = e;
                 // GG-T846: hidden outline and hatch pulse (no life ring or countdown on the tile, GG-T1817).
@@ -1127,7 +1127,7 @@ namespace GridGame.App
     /// over a round steel body with a lighter sheen, so it reads as weight at pip size.</summary>
     public sealed class WeightBadge : VisualElement
     {
-        private static readonly Color Iron = new Color(0.62f, 0.66f, 0.74f), Sheen = new Color(0.86f, 0.89f, 0.95f);
+        private static readonly Color Iron = Palette.Vfx.Iron, Sheen = Palette.Vfx.Sheen;
 
         public WeightBadge()
         {
@@ -1214,7 +1214,7 @@ namespace GridGame.App
                 float perim = 2f * (r.width + r.height) - 8f * rad + 2f * Mathf.PI * rad;
                 float start = perim > 0f ? (r.width * 0.5f - rad) / perim : 0f;
                 var style = ShapeStyle.Indicator.Tint(color).Thick(w);
-                style.Line = new Color(style.Line.r, style.Line.g, style.Line.b, style.Line.a * color.a);
+                style.Line = style.Line.WithA(style.Line.a * color.a);
                 Shapes.RoundedRect(p, r, rad, style, start: start, portion: f);
             }
             foreach (var e in ShapeList)
@@ -1350,7 +1350,7 @@ namespace GridGame.App
                 var normal = new Vector2(-tan.y, tan.x);
                 // The tail stays nearly full width and fades out as a whole, never tapering to a point.
                 float half = width * Mathf.Lerp(0.88f, 1f, fade[i]) * 0.5f;
-                var c = new Color(color.r, color.g, color.b, color.a * alpha * fade[i] * fade[i]);
+                var c = color.WithA(color.a * alpha * fade[i] * fade[i]);
                 var l = pts[i] - normal * half;
                 var r = pts[i] + normal * half;
                 verts[i * 2] = new Vertex { position = new Vector3(l.x, l.y, Vertex.nearZ), tint = c };

@@ -55,7 +55,10 @@ namespace GridGame.App
                 tile.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
                 tile.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : null); // GG-T718: the worn piece, else the Item emblem
                 Ui.Text(ItemUi.SlotName(sl), "kit-tile-label", tile);
-                var value = Ui.Text(it == null ? "Empty" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), "kit-tile-value", tile);
+                var valueRow = it != null && (mastery || enchanted) ? Ui.El("icon-line", tile) : tile;
+                if (it != null && mastery) valueRow.Add(RowIcon.SetIcon("cur-masterwork", RowIcon.InlineClass));
+                var value = Ui.Text(it == null ? "Empty" : it.Name, "kit-tile-value", valueRow);
+                if (it != null && enchanted) valueRow.Add(RowIcon.SetIcon("itemcat-enchanted", RowIcon.InlineClass));
                 value.name = "value";
                 if (it != null) value.AddToClassList(Ui.RarityClass(it.Rarity));
                 else value.AddToClassList("dim");
@@ -96,7 +99,7 @@ namespace GridGame.App
             }
             // GG-T179: the worn piece's armor enchant goes with it if it's swapped out.
             if (h.Armor.TryGetValue(slot, out var cur) && ArmorEnchanting.PassiveOf(C, cur.Enchant) is AbilityDef ench)
-                GlossaryText.Create($"✦ Enchanted: {ench.Name} — {ench.Description}", "kit-text gold", cmp);
+                GlossaryText.Create($"Enchanted: {ench.Name} — {ench.Description}", "kit-text gold", RowIcon.Line("itemcat-enchanted", cmp));
             // GG-T182: set progress for the set(s) this slot's current and previewed pieces belong to — "2/5 → 3/5"
             // when the preview would change it, with each bonus tier lit once it's reached.
             if (Array.IndexOf(BattleEngine.ArmorSlots, slot) >= 0)
@@ -117,7 +120,7 @@ namespace GridGame.App
             if (Equipment.Equipped(h, slot) != null)
                 Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot), cue: "ui.equip"), list).KindIcon(RowKind.Close);
             // GG-T52: the bag listing is shape-only (Equipment.Candidates with no hero) so a piece the hero
-            // owns but isn't proficient in still shows up — locked, with a 🔒 and the passive that would
+            // owns but isn't proficient in still shows up — locked, with the lock icon and the passive that would
             // unlock it — instead of silently disappearing as if it were never picked up.
             var cands = Equipment.Candidates(C, S, slot);
             if (cands.Count == 0) Ui.Empty("Nothing in your bag fits this slot. Forge gear at the Blacksmith.", list);
@@ -125,13 +128,14 @@ namespace GridGame.App
             {
                 var item = it;
                 var gate = Equipment.ProficiencyGate(C, h, item);
-                var value = gate != null ? $"🔒 {gate}" : $"×{S.Count(item.Id)}";
+                var value = gate ?? $"×{S.Count(item.Id)}";
                 var row = ItemUi.Row(item, value, () =>
                 {
                     if (previewId == item.Id) { previewId = null; Done(Equipment.Equip(C, S, h, slot, item.Id), cue: "ui.equip"); }
                     else { previewId = item.Id; Refresh(); App.Toast("Tap again to equip"); }
                 }, list, gate == null, Equipment.IsMasterwork(S, item.Id),
                 rowName: (gate == null ? "equip-ok-" : "equip-locked-") + item.Id);
+                if (gate != null) RowIcon.Prefix(row.Q<Label>("value"), "chrome-locked");
                 if (item.Id == previewId) Ui.Select(row);
             }
         }

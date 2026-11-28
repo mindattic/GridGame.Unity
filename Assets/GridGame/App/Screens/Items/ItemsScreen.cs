@@ -30,15 +30,16 @@ namespace GridGame.App
             s == EquipmentSlot.Earring1 ? "Earring I" : s == EquipmentSlot.Earring2 ? "Earring II" :
             s == EquipmentSlot.Ring1 ? "Ring I" : s == EquipmentSlot.Ring2 ? "Ring II" : s.ToString();
 
-        public static string Glyph(ItemDef i)
+        /// <summary>The item's category set icon id (<see cref="Art.UiIcon"/>, docs/ICONS.md <c>itemcat-*</c>).</summary>
+        public static string CategoryIconId(ItemDef i)
         {
             switch (i.Type)
             {
-                case ItemType.Equipment: return i.Slot == EquipmentSlot.Weapon ? "†" : Array.IndexOf(BattleEngine.ArmorSlots, i.Slot) >= 0 ? "◆" : "✧";
-                case ItemType.Consumable: return "✚";
-                case ItemType.CraftingMaterial: return "◈";
-                case ItemType.RecipeScroll: case ItemType.Tome: return "❖";
-                default: return "✦";
+                case ItemType.Equipment: return i.Slot == EquipmentSlot.Weapon ? "itemcat-weapon" : Array.IndexOf(BattleEngine.ArmorSlots, i.Slot) >= 0 ? "itemcat-armor" : "itemcat-accessory";
+                case ItemType.Consumable: return "itemcat-consumable";
+                case ItemType.CraftingMaterial: return "itemcat-material";
+                case ItemType.RecipeScroll: case ItemType.Tome: return "itemcat-recipe";
+                default: return "itemcat-enchanted";
             }
         }
 
@@ -67,15 +68,15 @@ namespace GridGame.App
             return string.Join("   ", parts);
         }
 
-        /// <summary>Standard item row: glyph · rarity-colored name · right value. <paramref name="masterwork"/> prefixes a ★ (GG-T46).
+        /// <summary>Standard item row: icon · rarity-colored name · right value. <paramref name="masterwork"/> prefixes the masterwork icon (GG-T46).
         /// <paramref name="nameOverride"/> replaces the item's own name in the label (GG-T198: lets a recipe row show
         /// "Result — key inputs" instead of the bare item name, e.g. when two recipes share a result).</summary>
         public static VisualElement Row(ItemDef i, string value, Action onClick, VisualElement parent, bool enabled = true, bool masterwork = false, string nameOverride = null, string rowName = null)
         {
             string label = nameOverride ?? i.Name;
-            if (masterwork) label = "★ " + label;
             var row = Ui.MenuRow(label, value, onClick, parent, null, enabled);
             row.KindIcon(RowKind.Item, Art.ItemIcon(i.Id)); // GG-T717 (§26.7): its pixel icon, else the Item emblem
+            if (masterwork) RowIcon.Prefix(row.Q<Label>("label"), "cur-masterwork");
             if (rowName != null) row.name = rowName; // GG-T448: an automation id for screens (e.g. Equip) that otherwise have none
             row.Q<Label>("label").AddToClassList(Ui.RarityClass(i.Rarity));
             // Hold any item row to read the whole item — stats, set, slot — without selecting it (GG-T252); a row whose
@@ -106,7 +107,7 @@ namespace GridGame.App
         }
 
         /// <summary>Armor set progress lines (GG-T182): "Wayfarer's set 2/5" (or "2/5 → 3/5" for an Equip preview)
-        /// then one line per bonus tier, ✔ and green once that many pieces are worn.</summary>
+        /// then one line per bonus tier, with the cleared icon and green once that many pieces are worn.</summary>
         /// <remarks><paramref name="compact"/> folds the tiers onto one wrapped line so the Equip screen's bag list
         /// keeps its room (GG-T193).</remarks>
         public static void SetLines(VisualElement parent, SetProgress progress, int nowWorn, bool compact = false)
@@ -122,7 +123,7 @@ namespace GridGame.App
                 return;
             }
             Ui.Para($"{set.Name} set  {count}", parent, tone);
-            foreach (var b in set.Bonuses) Ui.Para(Tier(b), parent, worn >= b.Pieces ? "good" : "dim");
+            foreach (var b in set.Bonuses) Ui.Para($"{b.Pieces} pieces: {ArmorSets.Describe(b)}", worn >= b.Pieces ? RowIcon.Line("chrome-cleared", parent) : parent, worn >= b.Pieces ? "good" : "dim");
         }
     }
 

@@ -51,10 +51,10 @@ namespace GridGame.App
         private IEnumerator BuriedChargePop(TileRevealedEvent tr)
         {
             var at = BoardView.CenterOf(tr.At);
-            board.Mark(tr.At, new Color(1f, 0.3f, 0.2f), 0.75f);
+            board.Mark(tr.At, Palette.Vfx.Threat, 0.75f);
             Emit(StyleOf(DamageType.Physical), at, 0.6f, quiet: true);
             App.Audio.Sfx("battle.trap", 0.9f, 1.7f); // the click
-            Text.Countdown(at, 0, new Color(1f, 0.45f, 0.3f), zero: "Click!");
+            Text.Countdown(at, 0, Palette.Vfx.Trap, zero: "Click!");
             board.SyncRegion(State);
             yield return Tween.Wait(Timing.Standard);
             board.ClearMarks();
@@ -77,7 +77,7 @@ namespace GridGame.App
         /// </summary>
         private IEnumerator FlareShotVfx(Unit caster, AbilityDef a, Coord anchor, int radius, VfxStyleDef style)
         {
-            var glow = new Color(1f, 0.78f, 0.38f);
+            var glow = Palette.Vfx.Lure;
             Vector2 from = ViewCenter(caster), to = BoardView.CenterOf(anchor);
             App.Audio.Sfx("battle.cast", 0.6f, 1.3f);
             yield return Tween.Run(Timing.Emphasis, k =>
@@ -87,7 +87,7 @@ namespace GridGame.App
                 for (int i = 1; i <= 3; i++)
                 {
                     float back = Mathf.Max(0f, k - 0.06f * i);
-                    board.Lines.Dot(ProjectilePoint(ProjectileMotion.Bezier, from, to, back), 14f - 3f * i, new Color(1f, 0.9f, 0.6f, 0.55f - 0.15f * i));
+                    board.Lines.Dot(ProjectilePoint(ProjectileMotion.Bezier, from, to, back), 14f - 3f * i, Palette.Vfx.LureTrail.WithA(0.55f - 0.15f * i));
                 }
             });
             board.Lines.ClearLines();
@@ -101,8 +101,8 @@ namespace GridGame.App
                 yield return Tween.Run(Timing.Emphasis, k =>
                 {
                     board.Lines.Rings.Clear();
-                    board.Lines.Ring(to, 30f + reach * Ease.Out(k), new Color(glow.r, glow.g, glow.b, 0.9f * (1f - k)), 10f);
-                    board.Lines.Ring(to, 18f + 0.5f * reach * k, new Color(1f, 0.95f, 0.75f, 0.6f * (1f - k)), 6f);
+                    board.Lines.Ring(to, 30f + reach * Ease.Out(k), glow.WithA(0.9f * (1f - k)), 10f);
+                    board.Lines.Ring(to, 18f + 0.5f * reach * k, Palette.Vfx.Spark.WithA(0.6f * (1f - k)), 6f);
                 });
                 board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
             }
@@ -205,7 +205,7 @@ namespace GridGame.App
 
         private IEnumerator HazardLandedAnim(HazardLandedEvent hl)
         {
-            foreach (var t in hl.Tiles) board.Mark(t, new Color(1f, 0.45f, 0.15f), 0.6f);
+            foreach (var t in hl.Tiles) board.Mark(t, Palette.Vfx.Fire, 0.6f);
             if (!hl.Rearmed) { hazardTiles.Remove(hl.EntryId); bombShown.Remove(hl.EntryId); }
             if (hl.Tiles.Count > 0) Text.Countdown(HazardCenter(hl.Tiles), 0, zero: HazardName(hl.EventId, hl.RuleId) + "!");
             if (hl.EventId == "mineblast" && hl.Tiles.Count > 0) // GG-T876: the boom after the click
@@ -458,11 +458,11 @@ namespace GridGame.App
         /// "Broke through!" over it, then its <see cref="FellEvent"/> plays the fall.</summary>
         private IEnumerator BrokeThroughAnim(BrokeThroughEvent bt)
         {
-            board.Mark(bt.At, new Color(0.25f, 0.18f, 0.12f), 0.85f);
+            board.Mark(bt.At, Palette.Vfx.Rubble, 0.85f);
             Emit(StyleOf(DamageType.Physical), BoardView.CenterOf(bt.At), 0.8f, quiet: true);
             App.Audio.Sfx("battle.explosion", 0.8f, 0.35f);
             App.Audio.Sfx("battle.shatter", 0.7f, 0.5f);
-            Text?.Show(bt.At, CombatTextKind.Callout, "Broke through!", 0.3f, new Color(0.85f, 0.65f, 0.4f));
+            Text?.Show(bt.At, CombatTextKind.Callout, "Broke through!", 0.3f, Palette.Vfx.BreakThrough);
             if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 10f, Timing.Standard));
             board.SyncRegion(State);
             yield return Tween.Wait(Timing.Quick);

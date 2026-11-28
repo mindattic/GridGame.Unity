@@ -14,11 +14,11 @@ namespace GridGame.App
     {
         private static readonly VfxStyleDef SubstitutionSmoke = new VfxStyleDef
         {
-            Id = "SubstitutionSmoke", Core = "#E6E8EE", Glow = "#FFFFFF", Accent = "#C9CCD6", Shape = "smoke", Motion = "billow",
+            Id = "SubstitutionSmoke", Core = Palette.Vfx.SmokeCore, Glow = Palette.Vfx.SmokeGlow, Accent = Palette.Vfx.SmokeAccent, Shape = "smoke", Motion = "billow",
             Cue = "battle.whoosh", Count = 9, Size = 44, Reach = 70, Time = "Quick",
         };
 
-        private static readonly Color LogColor = new Color(0.55f, 0.35f, 0.17f);
+        private static readonly Color LogColor = Palette.Vfx.Log;
 
         private IEnumerator SubstitutionAnim(SubstitutedEvent e)
         {
