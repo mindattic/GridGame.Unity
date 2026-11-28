@@ -40,7 +40,7 @@ namespace GridGame.App
             public Label Inner;
             public string Source;
             public string Hidden;
-            public bool Ellipsis;
+            public bool Wrapped;
             public bool Running;
             public bool ShadowMoved;
             public TextShadow Shadow;
@@ -102,8 +102,8 @@ namespace GridGame.App
                 states.Add(e, st);
                 e.AddToClassList(HostClass);
             }
-            if (ReduceMotion) { ToEllipsis(e, st, source); return; }
-            if (st.Ellipsis) { UndoEllipsis(e); st.Ellipsis = false; }
+            if (ReduceMotion) { ToWrapped(e, st, source); return; }
+            if (st.Wrapped) { UndoWrapped(e); st.Wrapped = false; }
             Show(e, st, source);
             Sync(e, st);
             if (!st.Running && GameApp.I != null) GameApp.I.StartCoroutine(Loop(e, st));
@@ -214,20 +214,18 @@ namespace GridGame.App
             }
         }
 
-        private static void ToEllipsis(TextElement e, State st, string source)
+        private static void ToWrapped(TextElement e, State st, string source)
         {
             if (st.Clip != null) RemoveOverlay(e, st, true);
-            if (st.Ellipsis) return;
-            st.Ellipsis = true;
+            if (st.Wrapped) return;
+            st.Wrapped = true;
             st.Source = source;
-            e.style.overflow = Overflow.Hidden;
-            e.style.textOverflow = TextOverflow.Ellipsis;
+            e.style.whiteSpace = WhiteSpace.Normal; // owner: text is never cut with '...'; reduced motion wraps it instead of scrolling
         }
 
-        private static void UndoEllipsis(TextElement e)
+        private static void UndoWrapped(TextElement e)
         {
-            e.style.overflow = StyleKeyword.Null;
-            e.style.textOverflow = StyleKeyword.Null;
+            e.style.whiteSpace = WhiteSpace.NoWrap;
         }
 
         private static void RemoveOverlay(TextElement e, State st, bool restoreText)
@@ -245,8 +243,8 @@ namespace GridGame.App
         private static void Drop(TextElement e, State st, bool restoreText)
         {
             RemoveOverlay(e, st, restoreText);
-            if (st.Ellipsis) UndoEllipsis(e);
-            st.Ellipsis = false;
+            if (st.Wrapped) UndoWrapped(e);
+            st.Wrapped = false;
             e.RemoveFromClassList(HostClass);
             states.Remove(e);
         }
@@ -254,7 +252,7 @@ namespace GridGame.App
         private static void SetQuietly(TextElement e, string text) => ((INotifyValueChanged<string>)e).SetValueWithoutNotify(text);
 
         private static bool Alive(TextElement e, State st, Label inner) =>
-            e.panel != null && st.Clip != null && st.Inner == inner && !st.Ellipsis && st.Clip.parent == e.parent;
+            e.panel != null && st.Clip != null && st.Inner == inner && !st.Wrapped && st.Clip.parent == e.parent;
 
         private static IEnumerator Hold(TextElement e, State st, float seconds)
         {

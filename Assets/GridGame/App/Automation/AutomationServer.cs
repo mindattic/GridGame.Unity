@@ -1205,7 +1205,6 @@ namespace GridGame.App.Automation
                 var size = l.MeasureTextSize(l.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
                 float k = GameApp.StageWidth / sb.width;
                 if (l.resolvedStyle.whiteSpace == WhiteSpace.NoWrap && size.x > l.contentRect.width + 4 && l.contentRect.width > 0 && !l.ClassListContains(Marquee.HostClass)
-                    && !(l.ClassListContains(TextFit.EllipsisClass) && l.resolvedStyle.textOverflow == TextOverflow.Ellipsis) // GG-T728/T1143: shrunk to the floor, then the engine's own ellipsis
                     && !(l.parent != null && l.parent.ClassListContains(Marquee.BoxClass)))
                     problems.Add($"text overflows ({size.x:0}>{l.contentRect.width:0}) '{Trim(l.text)}'");
             }
