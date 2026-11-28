@@ -406,7 +406,7 @@
    "eclipse"
   ],
   "charge_fireball": [
-   "lorc/fireball",
+   "carl-olsen/flame",
    "fire"
   ],
   "charge_ice": [
@@ -506,7 +506,7 @@
    "steel"
   ],
   "vanguard_bulwark": [
-   "delapouite/shield-bash",
+   "delapouite/barricade",
    "steel"
   ],
   "myrmidon_phalanx": [
@@ -542,7 +542,7 @@
    "heal"
   ],
   "doctor_triage": [
-   "lorc/heart-bottle",
+   "delapouite/health-potion",
    "heal"
   ],
   "monk_peace": [
@@ -786,7 +786,7 @@
    "bronze"
   ],
   "warlord_battle_cry": [
-   "lorc/wolf-howl",
+   "lorc/rally-the-troops",
    "crimson"
   ],
   "warlord_rally_point": [
@@ -798,7 +798,7 @@
    "silver"
   ],
   "deathguard_mana_siphon": [
-   "lorc/checked-shield",
+   "lorc/magnet",
    "steel"
   ],
   "deathguard_venomous_grip": [
@@ -810,11 +810,11 @@
    "heal"
   ],
   "aegiswardens_preemptiveward": [
-   "lorc/beams-aura",
+   "lorc/magic-shield",
    "holy"
   ],
   "aegiswardens_cleansingvigil": [
-   "lorc/beams-aura",
+   "delapouite/holy-water",
    "holy"
   ],
   "aegiswardens_sanctuaryrite": [
@@ -822,27 +822,27 @@
    "holy"
   ],
   "hexmenders_thornedhex": [
-   "delapouite/healing",
+   "lorc/thorny-vine",
    "heal"
   ],
   "hexmenders_harmintohope": [
-   "delapouite/healing",
+   "lorc/death-zone",
    "heal"
   ],
   "hexmenders_mirrorcurse": [
-   "delapouite/healing",
+   "lorc/mirror-mirror",
    "heal"
   ],
   "skirmishmenders_guardiansrush": [
-   "delapouite/healing",
+   "lorc/magic-shield",
    "heal"
   ],
   "skirmishmenders_flowingcurrent": [
-   "delapouite/healing",
+   "lorc/droplets",
    "heal"
   ],
   "skirmishmenders_coveringwithdrawal": [
-   "delapouite/healing",
+   "delapouite/backward-time",
    "heal"
   ],
   "primalpack_challenge": [
@@ -862,7 +862,7 @@
    "bronze"
   ],
   "tempoweave_stumble": [
-   "lorc/snail",
+   "lorc/quake-stomp",
    "earth"
   ],
   "tempoweave_swap": [
@@ -870,7 +870,7 @@
    "arcane"
   ],
   "fieldeng_mine": [
-   "lorc/thunderball",
+   "lorc/grenade",
    "spark"
   ],
   "fieldeng_patch": [
@@ -878,11 +878,11 @@
    "steel"
   ],
   "fieldeng_overdrive": [
-   "lorc/sprint",
+   "lorc/cog",
    "gold"
   ],
   "hexweaver_festeringmark": [
-   "lorc/poison-gas",
+   "lorc/bleeding-wound",
    "poison"
   ],
   "hexweaver_curseoffate": [
@@ -894,7 +894,7 @@
    "heal"
   ],
   "spellblade_quickstrike": [
-   "lorc/crossed-swords",
+   "delapouite/swords-power",
    "steel"
   ],
   "spellblade_overchannel": [
@@ -922,7 +922,7 @@
    "steel"
   ],
   "berserker_skullrattle": [
-   "lorc/crossed-swords",
+   "lorc/skull-crack",
    "steel"
   ],
   "berserker_lastmanswinging": [
@@ -930,7 +930,7 @@
    "steel"
   ],
   "duelist_probingthrust": [
-   "lorc/checked-shield",
+   "lorc/stiletto",
    "steel"
   ],
   "duelist_guardstance": [
@@ -938,11 +938,11 @@
    "steel"
   ],
   "duelist_decisivecut": [
-   "lorc/checked-shield",
+   "delapouite/katana",
    "steel"
   ],
   "skirmisher_blindside": [
-   "darkzaitzev/smoke-bomb",
+   "darkzaitzev/robber-hand",
    "shadow"
   ],
   "skirmisher_hitandrun": [
@@ -950,23 +950,23 @@
    "shadow"
   ],
   "skirmisher_runningriot": [
-   "lorc/sprint",
+   "lorc/boots",
    "gold"
   ],
   "combobrawler_openingjab": [
-   "lorc/magnifying-glass",
+   "lorc/pointing",
    "silver"
   ],
   "combobrawler_onetwoflurry": [
-   "lorc/magnifying-glass",
+   "lorc/fist",
    "silver"
   ],
   "combobrawler_knockoutcombo": [
-   "lorc/sprint",
+   "lorc/punch",
    "gold"
   ],
   "attrition_bloodletting": [
-   "delapouite/healing",
+   "skoll/fangs",
    "heal"
   ],
   "attrition_dreadaura": [
@@ -982,7 +982,7 @@
    "earth"
   ],
   "duelist_exploit_opening": [
-   "lorc/magnifying-glass",
+   "lorc/sword-clash",
    "silver"
   ],
   "duelist_cut_the_casting_hand": [
@@ -994,11 +994,11 @@
    "shadow"
   ],
   "shadowstep_smoke_veil": [
-   "lorc/ghost",
+   "lorc/cowled",
    "shadow"
   ],
   "shadowstep_vanishing_cut": [
-   "lorc/ghost",
+   "lorc/dripping-blade",
    "shadow"
   ],
   "opportunist_exploit": [
@@ -1006,7 +1006,7 @@
    "silver"
   ],
   "opportunist_chain_the_opening": [
-   "lorc/magnifying-glass",
+   "lorc/linked-rings",
    "silver"
   ],
   "opportunist_collect_the_debt": [
@@ -1014,11 +1014,11 @@
    "heal"
   ],
   "brawler_guard_break": [
-   "lorc/checked-shield",
+   "lorc/broken-shield",
    "steel"
   ],
   "brawler_wide_cleave": [
-   "lorc/teleport",
+   "lorc/axe-swing",
    "arcane"
   ],
   "brawler_second_wind": [
@@ -1030,7 +1030,7 @@
    "heal"
   ],
   "sprint": [
-   "lorc/sprint",
+   "delapouite/metal-boot",
    "gold"
   ],
   "opportunist": [
@@ -1042,7 +1042,7 @@
    "steel"
   ],
   "adrenaline_rush": [
-   "lorc/sprint",
+   "delapouite/biceps",
    "gold"
   ],
   "focus_breath": [
@@ -1070,7 +1070,7 @@
    "gold"
   ],
   "pressure_point": [
-   "lorc/teleport",
+   "lorc/pointing",
    "arcane"
   ],
   "ranged_quickshot": [
@@ -1166,7 +1166,7 @@
    "arcane"
   ],
   "haste_field": [
-   "lorc/sprint",
+   "lorc/tornado",
    "gold"
   ],
   "drain_life": [
@@ -1334,7 +1334,7 @@
    "bone"
   ],
   "mending_touch": [
-   "delapouite/healing",
+   "lorc/chained-heart",
    "heal"
   ],
   "inner_calm": [
@@ -1718,7 +1718,7 @@
    "shadow"
   ],
   "lancer_polevault": [
-   "lorc/thrown-spear",
+   "lorc/spear-hook",
    "steel"
   ],
   "ripper_flay": [

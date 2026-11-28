@@ -50,7 +50,8 @@ namespace GridGame.App
             var head = Ui.Panel(body, null, false, "hex-head");
             Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", head, h.SkillPoints > 0 ? "gold" : "dim").name = "hex-points";
             var have = StatLine(board.StatTotals(owned));
-            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")}{(have.Length > 0 ? " · " + have : "")} · earn 1 a level", head, "dim");
+            int bought = SkillHexProgress.Refundable(C, h).Count;
+            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(have.Length > 0 ? " · " + have : "")} · earn 1 a level", head, "dim");
 
             var frame = Ui.Panel(body, null, true, "hex-board");
             var host = SkillHexView.Host(board, zoom, out var view);
