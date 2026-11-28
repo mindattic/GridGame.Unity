@@ -14,7 +14,7 @@ namespace GridGame.Tests
             new MoveCommand { HeroId = s.Units.First(u => u.Def.Id == "cleric").Id, Path = new List<Coord> { new Coord(2, 1) } };
 
         private static List<(int, int)> Meters(BattleState s) =>
-            s.SpellMana.OrderBy(kv => kv.Key).SelectMany(kv => kv.Value.Select(p => (kv.Key, p))).ToList();
+            new List<(int, int)> { (0, s.PartyMana) };
 
         [Test]
         public void A_pincer_preview_shows_damage_on_the_flanked_foe()
