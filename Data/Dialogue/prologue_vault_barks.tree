@@ -1,0 +1,12 @@
+dialogue prologue_vault_barks
+title: The Trap
+trigger: Prologue Drill level=1
+speaker knight knight
+speaker barbarian barbarian
+
+node orbs knight
+  My orb. It's been dead for a year and it's lit. Hold the door.
+  -> squeeze
+
+node squeeze barbarian
+  Get one between us and it's finished. Same as wolves.

@@ -1,0 +1,18 @@
+dialogue prologue_waystone
+title: The Sleeping Stone
+trigger: Prologue Waystone
+backdrop: greenvalley
+speaker commander $commander
+speaker redmage redmage
+speaker knight knight
+
+node unfold commander
+  The rock unfolds. Halcyon plates slide apart, and a Ward-Engine rises out of the hill to face you.
+  -> lock
+
+node lock knight
+  It shrugged off a sword. Check what it's weak to before we waste another swing.
+  -> bolt
+
+node bolt redmage
+  Lightning. It's built to answer lightning. Stand back.
