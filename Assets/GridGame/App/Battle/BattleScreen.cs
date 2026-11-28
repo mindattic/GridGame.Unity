@@ -89,7 +89,10 @@ namespace GridGame.App
         /// <summary>Where the announcement overlay sits (§9.0, GG-T1824): no row of its own, an empty anchor on the board's
         /// top edge that the billboard reads its place from; it takes no input.</summary>
         private VisualElement bannerViewport;
-        private const float BannerTop = BoardTop + Space.S8, TopBarHeight = 110f;
+        // Row heights (§9.0, GG-T1894): the top bar hugs the safe top and every gap between rows is tightened, so the description
+        // panel gets the height back (the board keeps its 180-px tiles). The icon-only slots need no room for a name.
+        private const float TopBarTop = Space.S8, TopBarHeight = 110f, BarHeight = 140f;
+        private const float BannerTop = BoardTop + Space.S8;
         /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
         private const float BannerViewportHeight = Size.Target - Space.S24;
         // The HUD rows under the board, top to bottom, a gutter apart (§9.0): the ability bar (five icon-only slots), then
@@ -99,8 +102,8 @@ namespace GridGame.App
         // GG-T706 (owner 2026-11-23): the ability bar is always the row under the board. GG-T523's side columns beside the
         // board on a 2:3 / 3:4 stage are gone: those shapes are now letterboxed at 9:16 (bible §26.3), so no stage is wide
         // enough for them.
-        /// <summary>The description panel starts a target gap (POL-C3, 24) under the ability row.</summary>
-        private static float DescriptionTop => BarTop + Size.Slot + Space.S24;
+        /// <summary>The description panel starts 16 px under the ability row (GG-T1894).</summary>
+        private static float DescriptionTop => BarTop + BarHeight + Space.S16;
         private Label waveLabel, coinLabel, timerLabel;
         /// <summary>The newest ShowBanner line (automation reads it); the line itself is a billboard row that fades.</summary>
         private string bannerText = "";
@@ -304,7 +307,7 @@ namespace GridGame.App
         {
             var bar = Ui.El("row", root);
             bar.style.position = Position.Absolute;
-            bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = Space.S32; bar.style.height = TopBarHeight;
+            bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = TopBarTop; bar.style.height = TopBarHeight;
             RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
             // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
             // shrinks to an ellipsis first (GG-T1143), the wave never does.
@@ -379,7 +382,7 @@ namespace GridGame.App
         {
             if (abilityBar == null) return;
             var bar = abilityBar;
-            bar.style.top = BarTop; bar.style.height = Size.Slot;
+            bar.style.top = BarTop; bar.style.height = BarHeight;
             // Row padding + each cell's 12-px margin: slots sit 24 px apart (POL-C3), the row's edge equals that gap
             // (POL-C8), and the cells still line up with the description panel at inset + Fit.Edge (GG-T651, GG-T656).
             bar.style.left = bar.style.right = inset + Fit.Edge - 2 * Space.TargetHalfGap;
@@ -392,7 +395,7 @@ namespace GridGame.App
         {
             cell.style.flexGrow = 1;
             cell.style.flexBasis = 0;
-            cell.style.height = Size.Slot;
+            cell.style.height = BarHeight;
             cell.style.marginLeft = cell.style.marginRight = Space.TargetHalfGap;
             cell.style.marginTop = cell.style.marginBottom = Space.S0;
         }
@@ -405,7 +408,7 @@ namespace GridGame.App
             // Exactly five slots fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit that
             // row"); even gutters on the space scale, and the
             // cells, not the gaps, take a wider stage (POL-C1/C8). Laid out by LayoutAbilityBar.
-            bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
+            bar.style.top = BarTop; bar.style.height = BarHeight; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
             for (int i = 0; i < 5; i++)
             {
@@ -427,7 +430,7 @@ namespace GridGame.App
         private static VisualElement HudCell(VisualElement bar)
         {
             var cell = Ui.El("col center", bar);
-            cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.height = Size.Slot;
+            cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.height = BarHeight;
             cell.style.marginLeft = cell.style.marginRight = Space.S8;
             cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 18;
             cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 4;
@@ -820,7 +823,7 @@ namespace GridGame.App
             var host = Ui.El("col description-panel", root);
             host.name = "description-panel";
             host.style.position = Position.Absolute;
-            host.style.top = DescriptionTop; host.style.bottom = Space.S24; // left/right/top: ApplyStageLayout (the HUD column)
+            host.style.top = DescriptionTop; host.style.bottom = Space.S16; // left/right/top: ApplyStageLayout (the HUD column)
             var win = Ui.Window(null, host, "window--compact description-panel__window");
             win.name = "description-window";
             panel = InfoPage(win, "description");

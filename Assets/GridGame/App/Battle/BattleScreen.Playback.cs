@@ -1592,7 +1592,7 @@ namespace GridGame.App
         private string lastActionLabel;
 
         /// <summary>Where a mana mote lands by default: the middle of the ability bar (its spell bars, §3.1.0).</summary>
-        private Vector2 BarCenter() => new Vector2(GameApp.StageWidth / 2f, BarTop + Size.Slot / 2f);
+        private Vector2 BarCenter() => new Vector2(GameApp.StageWidth / 2f, BarTop + BarHeight / 2f);
 
         private VisualElement FlyingOrb()
         {
