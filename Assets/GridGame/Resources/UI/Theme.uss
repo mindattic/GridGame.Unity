@@ -870,5 +870,9 @@
 .mana-pool .mana-pool__count { transition-property: opacity; transition-duration: 0.15s; }
 .description-panel .description-panel__window { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-height: 0; margin: 0; padding: var(--space-8) var(--space-24); }
 .description-panel .description-panel__page { flex-grow: 1; flex-shrink: 1; }
-.description-panel .description-panel__page .unity-scroll-view__content-container { width: 100%; max-width: var(--measure-text); align-self: center; }
+/* GG-T1907: the page starts at the window's 24-px inset (no centred dead band); rows (the confirm card's Cancel / Cast,
+   the ability header) use the full width, while each line of text keeps the 720-px measure (POL-A5, GG-T1899). */
+.description-panel .description-panel__page .unity-scroll-view__content-container { width: 100%; }
+.description-panel .description-panel__page .unity-label { max-width: var(--measure-text); }
+.description-panel .description-panel__page .glossary-text { max-width: var(--measure-text); }
 .description-panel .description-panel__page .btn { margin-top: 0; margin-bottom: 0; }

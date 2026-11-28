@@ -59,7 +59,7 @@ namespace GridGame.App
             if (full > 0)
             {
                 int have = ShownMana(hero.Id, slot);
-                parts.Add(have >= full ? $"charged: {full} / {full} mana" : $"charging: {have} / {full} mana, fills with every gain");
+                parts.Add(have >= full ? $"{full} / {full} mana · ready" : $"{have} / {full} mana · fills with every gain");
             }
             var status = BattleEngine.GetSlotStatus(State, hero.Id, slot);
             if (status == SlotStatus.Ready) { if (TargetingSlot != slot) parts.Add($"tap to aim with {hero.Name}"); }
@@ -193,12 +193,17 @@ namespace GridGame.App
                 if (t.KillChance > 0f) parts.Add(t.KillChance >= 1f ? "KO" : $"KO {Mathf.RoundToInt(t.KillChance * 100)}%");
                 foreach (var kv in t.StatusChance)
                     parts.Add($"{App.Content.TryBuff(kv.Key)?.Name ?? kv.Key}{(kv.Value < 1f ? $" {Mathf.RoundToInt(kv.Value * 100)}%" : "")}");
-                var l = Ui.Text($"{u.Name}: {string.Join(" · ", parts)}", "t-caption", parent);
+                // Each value stays whole on its line: a damage range or a status name never breaks (GG-T1903).
+                var l = Ui.Text($"{u.Name}: {string.Join(" · ", parts.Select(x => $"<nobr>{x}</nobr>"))}", "t-caption", parent);
                 l.name = "confirm-outcome";
                 l.style.whiteSpace = WhiteSpace.Normal;
             }
             if (p.ManaMax > 0)
-                Ui.Text($"Mana +{Range(p.ManaMin, p.ManaMax)} to every spell{(p.FillsMax > 0 ? $" · fills {Range(p.FillsMin, p.FillsMax)}" : "")}", "t-caption", parent).style.color = Palette.Mana;
+            {
+                var m = Ui.Text($"Mana <nobr>+{Range(p.ManaMin, p.ManaMax)}</nobr> to every spell{(p.FillsMax > 0 ? $" · fills <nobr>{Range(p.FillsMin, p.FillsMax)}</nobr>" : "")}", "t-caption", parent);
+                m.style.color = Palette.Mana;
+                m.style.whiteSpace = WhiteSpace.Normal;
+            }
         }
 
         /// <summary>Small damage tags over the foes a drop would pincer (and its KO odds), refreshed per drag step.</summary>
