@@ -292,7 +292,7 @@ namespace GridGame.App
             bar.schedule.Execute(() => bar.parent?.RegisterCallback<GeometryChangedEvent>(Fit));
         }
 
-        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Campaign, Heroes, Summon and Shop off
+        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Journey, Heroes, Recruit and Shop off
         /// <see cref="NavBadges.Tabs"/>, sharing the stage's width, each <see cref="Kit.NavHeight"/> tall. Under a gesture
         /// bar its band reaches the screen's bottom edge, its tabs staying above the inset (like <see cref="Header"/>). The
         /// lit tab is the page directly above the hub on the stack (<paramref name="current"/> with no hub on it); a
@@ -381,7 +381,7 @@ namespace GridGame.App
                     // GG-T2061: new gear in the bag opens Equip on the hero it upgrades.
                     var gear = AutoEquip.FirstNew(GameApp.I.Content, s);
                     return gear != null ? new EquipScreen(gear.Value.Hero.ClassId) : (GameScreen)new StatusScreen(lead);
-                case CampMenu.Summon: return new SummonScreen();
+                case CampMenu.Summon: return !CampUnlocks.SummonOpen(s) && Mercenaries.Open(s) ? new MercenaryScreen() : (GameScreen)new SummonScreen();
                 case CampMenu.Shop: return new ShopHubScreen();
                 case CampMenu.Diamonds: return new DiamondStoreScreen();
                 case CampMenu.Respec: return new RespecScreen();
@@ -1105,7 +1105,7 @@ namespace GridGame.App
     /// lights up, or the share the pool is short shows red. Under Reduce Motion the fill jumps and the glow holds still.</summary>
     public sealed class PartyManaBar : VisualElement
     {
-        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Color.white, 0.45f);
+        private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Palette.White, 0.45f);
         /// <summary>Points between two ticks (a 1-cost spell's price).</summary>
         public const int TickEvery = 100;
         /// <summary>How long a spend takes to drain the fill.</summary>

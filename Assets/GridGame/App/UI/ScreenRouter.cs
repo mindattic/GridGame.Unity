@@ -249,7 +249,7 @@ namespace GridGame.App
             {
                 fade.AddToClassList("fade--on");
                 fade.pickingMode = PickingMode.Position;
-                yield return new WaitForSecondsRealtime(0.2f);
+                yield return new WaitForSecondsRealtime(Timing.ScreenFade);
             }
             // Apply this change, then every change queued while the fade was going on, in call order,
             // and mount only the resulting top screen once.
