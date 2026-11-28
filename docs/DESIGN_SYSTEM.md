@@ -45,6 +45,8 @@ Code reads `Tokens.cs`; USS reads `Theme.uss` `:root`. A literal colour, size, s
 | Term | #9CC7FF | `Palette.Term` | a tappable glossary [term] |
 | Danger | #3C1A26 face, #963659 rim, #FFB0B8 text | `.btn--danger` | destructive buttons only |
 | Hero, Foe, Boss | #78ABFF, #EB454A, #DB66FF | `--color-hero`, `-enemy`, `-boss` | team keylines and timeline marks, always with a shape |
+| Team marks in code | Hero #78ABFF (CB #57B5E8), Foe #EB454A (CB #F57A0A), Boss #DB66FF (CB #BF4D05) | `Palette.TeamHero`, `TeamFoe`, `TeamBoss` | the battle base plates (hero rounded, foe and boss notched, GG-T1948, GG-T2128), keylines and turn icons; each swaps to its CB value under the Colorblind palette |
+| Next actor | #40EDE0 (CB #CC78A6) | `Palette.NextActorRing` | the next actor's board ring; never gold, never a team colour, never the enemy intent red |
 | Veil | #05050C at 0.72 | `.veil` | behind every modal and sheet |
 
 Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-gauge-*`) are gameplay colours and stay the same in every theme. Each hue family has one meaning (POL-B4). The reference page lists every USS colour token.

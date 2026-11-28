@@ -191,6 +191,7 @@ namespace GridGame.App
             foreach (var (label, b, a) in StatRows(before, after))
             {
                 var row = Ui.Field(label, $"{b:0} to {a:0} · +{a - b:0}", statColumn, "good", "levelup-stat-" + label.ToLowerInvariant());
+                row.Q<Label>("value").style.whiteSpace = WhiteSpace.NoWrap; // the column grows row by row; a short value never wraps
                 reveals.Add(App.StartCoroutine(Tween.Pop(row, 1.15f, 0.15f)));
                 yield return Tween.Wait(Timing.Instant);
             }

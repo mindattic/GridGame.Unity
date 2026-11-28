@@ -145,6 +145,8 @@ namespace GridGame.App.Dev
                 ["mono_heap_mb"] = Mb(Profiler.GetMonoUsedSizeLong()),
                 ["cold_start_s"] = Ms(ColdStartSeconds),
                 ["target_fps"] = Application.targetFrameRate,
+                ["player_fps"] = ThermalStepDown.PlayerCap,
+                ["thermal_hot"] = ThermalStepDown.Hot,
                 ["render_interval"] = OnDemandRendering.renderFrameInterval,
                 ["dev_build"] = Debug.isDebugBuild,
             };
@@ -187,7 +189,8 @@ namespace GridGame.App.Dev
             hudNext = Time.unscaledTime + HudRefreshSeconds;
             float avg = hudMs / Mathf.Max(1, hudFrames);
             string uiPart = UiValid ? $"  UI {UiFrameMs():0.0} ms" : "";
-            hud.text = $"{1000f / Mathf.Max(0.01f, avg):0} fps  {avg:0.0} ms{uiPart}\nGC {hudGcKb / Mathf.Max(1, hudFrames):0.0} KB/f  Tex {Mb(TextureBytes):0} MB";
+            int target = Application.targetFrameRate;
+            hud.text = $"{1000f / Mathf.Max(0.01f, avg):0}/{(target > 0 ? target.ToString() : "vsync")} fps  {avg:0.0} ms{uiPart}\nGC {hudGcKb / Mathf.Max(1, hudFrames):0.0} KB/f  Tex {Mb(TextureBytes):0} MB";
             hudMs = 0f; hudGcKb = 0f; hudFrames = 0;
         }
     }

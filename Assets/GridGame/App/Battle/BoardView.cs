@@ -207,13 +207,14 @@ namespace GridGame.App
             Frame.Add(tag);
         }
 
-        /// <summary>GG-T1948: heroes and guests stand on the hero plate, foes on the notched foe plate; a neutral, a tamed
-        /// monster, a wanderer and a corpse keep their own keyline and stand on none. Base is null until the ctor builds it.</summary>
+        /// <summary>GG-T1948: heroes and guests stand on the hero plate, foes on the notched foe plate and a boss
+        /// (<see cref="Unit.IsBossLike"/>, GG-T2128) on the notched boss plate; a neutral, a tamed monster, a wanderer and a
+        /// corpse keep their own keyline and stand on none. Base is null until the ctor builds it.</summary>
         private void SetPlinth(Unit u, bool? independent = null)
         {
             if (Base == null) return;
             bool tamed = independent ?? u.IsIndependent;
-            Base.Set(u.IsCorpse || u.IsNeutral || tamed ? Plinth.Side.None : u.IsHero && independent != false ? Plinth.Side.Hero : Plinth.Side.Foe);
+            Base.Set(u.IsCorpse || u.IsNeutral || tamed ? Plinth.Side.None : u.IsHero && independent != false ? Plinth.Side.Hero : u.IsBossLike ? Plinth.Side.Boss : Plinth.Side.Foe);
         }
 
         private VisualElement cardBack;
@@ -1171,12 +1172,12 @@ namespace GridGame.App
     /// <summary>
     /// GG-T1948 (UX review §1.4 #5): the base plate under a token, so side reads by shape as well as colour. A hero stands
     /// on a rounded plate in the hero blue, a foe on a plate in the foe red with two corners notched off (both follow the
-    /// Colorblind palette). Each is a filled, outlined slab whose darker front edge shows under the card, more of it while
-    /// the token is lifted.
+    /// Colorblind palette); a boss (GG-T2128) keeps the foe's notches on a plate in the boss purple. Each is a filled,
+    /// outlined slab whose darker front edge shows under the card, more of it while the token is lifted.
     /// </summary>
     public sealed class Plinth : VisualElement
     {
-        public enum Side { None, Hero, Foe }
+        public enum Side { None, Hero, Foe, Boss }
         private const float Inset = 3f, Depth = 6f, HeroRadius = 24f, FoeRadius = 10f, Notch = 28f, EdgeShade = 0.55f;
         private Side side;
         private bool drawnColorblind;
@@ -1192,7 +1193,7 @@ namespace GridGame.App
                 if (side == Side.None || r.width <= 0f) return;
                 var p = ctx.painter2D;
                 drawnColorblind = Palette.Colorblind;
-                var c = side == Side.Hero ? Palette.TeamHero : Palette.TeamFoe;
+                var c = side == Side.Hero ? Palette.TeamHero : side == Side.Boss ? Palette.TeamBoss : Palette.TeamFoe;
                 var edge = new Color(c.r * EdgeShade, c.g * EdgeShade, c.b * EdgeShade);
                 var top = new Rect(r.xMin + Inset, r.yMin + Inset, r.width - Inset * 2f, r.height - Inset * 2f - Depth);
                 var front = new Rect(top.x, top.y + Depth, top.width, top.height);
