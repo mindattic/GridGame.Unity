@@ -25,7 +25,7 @@ namespace GridGame.App
         // width (bible §26.3) so a wider phone centres the board and stretches the timeline instead of leaving a gap.
         // §9.0 (GG-T1822, GG-T2118): fixed rows, nothing stacked between them: the top bar, the board a gutter under it, the
         // timeline under the board (the thumb zone, GG-T2118), the party mana strip, the action row, the description panel.
-        private const float BoardTop = TopBarTop + TopBarHeight + Space.S8;
+        private static float BoardTop => TopBarTop + TopBarHeight + Space.S8;
         private static float BoardLeft => (GameApp.StageWidth - BoardView.Tile * BattleConfig.Cols) / 2f;
         // The timeline's geometry lives with it in BattleScreen.Timeline.cs (GG-T287).
 
@@ -38,13 +38,17 @@ namespace GridGame.App
         // Row heights (§9.0, GG-T1894): the top bar hugs the safe top and every gap between rows is tightened, so the description
         // panel gets the height back (the board keeps its 180-px tiles). GG-T1921: the action row's three buttons are one tap
         // target tall, so the description panel takes the rest of the five slots' row.
-        private const float TopBarTop = Space.S8, TopBarHeight = 110f, BarHeight = Size.Target;
-        private const float BannerTop = BoardTop + Space.S8;
+        private const float TopBarTop = Space.S8, BarHeight = Size.Target;
+        /// <summary>GG-T2143: the top bar hugs its content, never less than 110 px: the title line (the type size, which grows on a
+        /// narrow phone, GG-T2114) over the boss gauge (boss waves, GG-T1952), then the turn strip (GG-T1943). The board and the rows
+        /// under it move down by what it grows; the description panel, which stretches to the bottom, gives the height.</summary>
+        private static float TopBarHeight => Mathf.Max(110f, Mathf.Ceil(TypeScale.Base * 1.25f + Size.Bar + Space.S8 + Space.S4 + Size.IconS));
+        private static float BannerTop => BoardTop + Space.S8;
         /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
         private const float BannerViewportHeight = Size.Target - Space.S24;
         // The HUD rows under the timeline, top to bottom, a gutter apart (§9.0): the party mana strip and the action row, then
         // the description panel, which stretches to the safe bottom and so alone absorbs a taller stage (§26.3).
-        private const float BoardBottom = BoardTop + BoardView.Tile * BattleConfig.Rows;
+        private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => TimelineBottom + Space.S24; // 24 px from the timeline's diamonds, also targets (GG-T656, POL-C3)
         /// <summary>The thin party mana strip (GG-T1921) sits in the gap between the timeline and the action row, full width.</summary>
         private static float ManaStripTop => TimelineBottom + Space.S8;
@@ -590,14 +594,18 @@ namespace GridGame.App
                 TutorialCard(panel);
                 return;
             }
-            if (u == null) return;
-            // Idle (§9.0): one line for the selected hero, then its card and every skill's readout.
-            if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable)
+            if (u == null)
             {
-                var idle = Ui.Text($"{u.Name}: tap Abilities to pick a move · hold it to repeat the last one · drag {u.Name} or tap a tile to move", "small gold", panel);
-                idle.name = "idle-prompt";
-                idle.style.whiteSpace = WhiteSpace.Normal;
-                idle.style.marginBottom = Space.S8;
+                if (CanCommand() && BattleEngine.HeroesLeftToAct(State).Count > 0) IdlePrompt(PanelCopy(PanelState.NoHero));
+                return;
+            }
+            // Idle (§9.0): one verb-first line for the selected hero (GG-T1953), then its skills and its card.
+            if (u.Id == SelectedHeroId && u.IsHero && u.IsCommandable && CanCommand())
+            {
+                var left = BattleEngine.HeroesLeftToAct(State);
+                var s = !left.Contains(u) ? (left.Count > 0 ? PanelState.Acted : (PanelState?)null)
+                    : BattleEngine.CanMove(State, u.Id) && HasPincerSpots(u) ? PanelState.Trap : PanelState.NoTrap;
+                if (s.HasValue) IdlePrompt(PanelCopy(s.Value, u.Name));
             }
             // GG-T2111: a commandable hero's skills come right under the instruction, so a short panel (9:20, 3:4) shows the
             // instruction and the first skill and scrolls to the hero's card, instead of clipping the skills below it.
@@ -668,6 +676,14 @@ namespace GridGame.App
             }
         }
 
+        private void IdlePrompt(string text)
+        {
+            var idle = Ui.Text(text, "small gold", panel);
+            idle.name = "idle-prompt";
+            idle.style.whiteSpace = WhiteSpace.Normal;
+            idle.style.marginBottom = Space.S8;
+        }
+
         private static string SideName(Coord f) => f.Y > 0 ? "front (facing down)" : f.Y < 0 ? "front (facing up)" : f.X > 0 ? "front (facing right)" : "front (facing left)";
 
         private static VisualElement StatusRow(VisualElement parent, string icon, string letter, Color color, string name, string what)
@@ -720,8 +736,7 @@ namespace GridGame.App
                 btns.style.marginTop = Space.S8;
                 var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
                 cancel.name = "confirm-cancel";
-                string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
-                var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns, confirmTap: false);
+                var ok = RowIcon.IconButton(CommitVerb(a), RowKind.Confirm, ConfirmPending, "btn--primary", btns, confirmTap: false);
                 ok.name = "confirm-action";
             }
             InspectCard.Ability(panel, a, state: SlotState(hero, slot, a));
@@ -739,9 +754,9 @@ namespace GridGame.App
         {
             switch (TargetResolver.AimOf(a))
             {
-                case Aim.Multi: return $"{a.Name}: tap up to {a.MaxPicks} highlighted {(a.Filter == TargetFilter.AllyOnly ? "allies" : AimNoun(a) + "s")}, then Confirm";
-                case Aim.Direction: return $"{a.Name}: tap an arrow to pick a way";
-                default: return $"{a.Name}: tap a highlighted {AimNoun(a)}";
+                case Aim.Multi: return PanelCopy(PanelState.AimMulti, a: a, n: a.MaxPicks);
+                case Aim.Direction: return PanelCopy(PanelState.AimDirection, a: a);
+                default: return PanelCopy(PanelState.AimUnit, a: a);
             }
         }
 

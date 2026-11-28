@@ -647,17 +647,17 @@ namespace GridGame.App
                 {
                     SelectHero(caster.Id);
                     if (abilitiesButton != null) App.StartCoroutine(Tween.Pop(abilitiesButton, 1.12f, 0.35f));
-                    Advise($"Hint: {caster.Name} can use {ab.Name}");
+                    Advise(PanelCopy(PanelState.HintUse, caster.Name, ab));
                 }
                 return;
             }
-            if (decision is ShieldCommand) { Advise("Hint: nothing good to do? Press GUARD"); return; }
+            if (decision is ShieldCommand) { Advise(PanelCopy(PanelState.HintGuard)); return; }
             var cmd = decision as MoveCommand;
             if (cmd == null || cmd.Path.Count == 0) return;
             var pv = BattleEngine.PreviewMove(State, cmd.HeroId, cmd.Path);
             // The Moving lesson promises a glowing path even when no pincer is reachable yet (the opening board of
             // the first battle): demo the bot's best positioning move instead of falling back to a bare tip.
-            if (pv.Pincers.Count == 0 && !TutorialDemoMove) { Advise("Tip: trap an enemy between two heroes"); return; }
+            if (pv.Pincers.Count == 0 && !TutorialDemoMove) { Advise(PanelCopy(PanelState.HintTrap)); return; }
             var hero = State.UnitById(cmd.HeroId);
             var dest = cmd.Path[cmd.Path.Count - 1];
             board.ClearMarks();
@@ -668,7 +668,7 @@ namespace GridGame.App
             var route = new List<Vector2> { BoardView.CenterOf(hero.Pos) };
             foreach (var step in cmd.Path) route.Add(BoardView.CenterOf(step));
             board.Lines.PathArrow(route, ShapeStyle.Indicator);
-            Advise($"Hint: drag {hero.Name} to the glowing tile");
+            Advise(PanelCopy(PanelState.HintDrag, hero.Name));
         }
 
         private void ClearHint()

@@ -114,8 +114,14 @@ namespace GridGame.Tests
 
         public static Unit At(BattleState s, int x, int y) => s.UnitAt(new Coord(x, y));
 
-        /// <summary>A whole mana grant of <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points to every spell meter (§3.1.0), undamped. Heroes need real Spell slots to hold a meter.</summary>
+        /// <summary>A whole mana grant of <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points into the party pool (§3.1.0), undamped, capped at its capacity.</summary>
         public static void GrantMana(BattleState s, int orbs) => BattleEngine.GainMana(s, orbs * BattleConfig.ManaPointsPerOrb, "test");
+
+        /// <summary>The party pool's points (§3.1.0).</summary>
+        public static int ManaIn(BattleState s) => s.PartyMana;
+
+        /// <summary>Fills the party pool to <see cref="BattleConfig.PartyManaCapacity"/> (§3.1.0).</summary>
+        public static void ManaFull(BattleState s) => s.SetPartyMana(BattleConfig.PartyManaCapacity);
 
         public static Unit Hero(BattleState s, string cls) => s.Units.First(u => u.IsHero && u.Def.Id == cls);
 
@@ -203,8 +209,7 @@ namespace GridGame.Tests
             foreach (var p in s.Pickups)
                 Assert.That(seen.ContainsKey(p.At), Is.False, $"Pickup {p.Id} at {p.At} under unit {(seen.ContainsKey(p.At) ? seen[p.At] : -1)}");
             AssertItemsApart(s);
-            s.CountMeters(out int fullMeters, out int totalMeters);
-            Assert.That(fullMeters, Is.InRange(0, totalMeters));
+            Assert.That(s.PartyMana, Is.InRange(0, BattleConfig.PartyManaCapacity), "the party pool stays within 0..capacity");
             foreach (var e in s.Timeline)
             {
                 if (e.Kind == TimelineKind.Hazard) { Assert.That(e.RemainingTicks, Is.GreaterThan(0), $"rule event {e.Id} sits at the edge unresolved"); continue; } // GG-T359: no owner

@@ -643,7 +643,7 @@ namespace GridGame.App
                 var cell = Ui.El("col", grid);
                 cell.name = "loot-" + it.Id;
                 cell.style.width = Length.Percent(100f / LootColumns);
-                cell.style.minHeight = Size.Target;
+                cell.style.minHeight = Kit.Row;
                 cell.style.alignItems = Align.Center;
                 cell.style.justifyContent = Justify.Center;
                 Ui.Pad(cell, top: Space.S8, bottom: Space.S8);

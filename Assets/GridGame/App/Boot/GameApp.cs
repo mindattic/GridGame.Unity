@@ -331,6 +331,8 @@ namespace GridGame.App
             float logicalH = widthLimits ? fit.x / screenAspect : fit.y;
             // GG-T770: the one GUI text size from this scale, dpi and stage width (GG-T551 legibility floor included).
             GuiType.SetScreen(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi, size.x);
+            // GG-T2144: rows and buttons at least 48 dp / 44 pt at this scale.
+            TapTarget.SetScreen(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi);
 
             Stage.style.width = size.x; Stage.style.height = size.y;
             Stage.style.left = (logicalW - size.x) / 2f;

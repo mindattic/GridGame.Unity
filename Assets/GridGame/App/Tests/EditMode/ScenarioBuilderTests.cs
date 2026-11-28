@@ -88,5 +88,35 @@ namespace GridGame.App.Tests
                 Assert.That(DialogueRunner.PendingBeat(C, r.Save, r.Target.StageId)?.Id, Is.Null, target);
             }
         }
+
+        [Test]
+        public void A_prologue_stage_resolves_as_a_drill_target()
+        {
+            var t = ScenarioBuilder.Resolve(C, "stage:prologue-bridge-a");
+            Assert.That(t.Kind, Is.EqualTo(ScenarioKind.Battle));
+            Assert.That(t.StageId, Is.EqualTo("prologue-bridge-a"));
+            Assert.That(t.Drill, Is.True);
+            Assert.That(t.StageIndex, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void A_prologue_target_clears_the_earlier_prologue_battles_and_fields_the_stage_party()
+        {
+            var r = ScenarioBuilder.Build(C, ScenarioDef.ForTarget("stage:prologue-vault"));
+            Assert.That(r.Save.Party.Count, Is.EqualTo(C.Stage("prologue-vault").PartySize));
+            r = ScenarioBuilder.Build(C, ScenarioDef.ForTarget("stage:prologue-bridge-a"));
+            var order = C.Campaign.Prologue;
+            int at = order.IndexOf("prologue-bridge-a");
+            Assert.That(order.Take(at).All(id => r.Save.ClearedDrills.Contains(id)), Is.True);
+            Assert.That(r.Save.ClearedDrills.Contains("prologue-bridge-a"), Is.False);
+            Assert.That(r.Save.ClearedStages.Count, Is.EqualTo(0));
+            Assert.That(r.Save.Roster.Any(h => h.ClassId == "redmage"), Is.False);
+        }
+
+        [Test]
+        public void A_name_that_is_no_stage_is_still_refused()
+        {
+            Assert.Throws<System.ArgumentException>(() => ScenarioBuilder.Resolve(C, "stage:prologue-nope"));
+        }
     }
 }

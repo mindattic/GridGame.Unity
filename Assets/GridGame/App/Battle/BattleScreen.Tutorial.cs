@@ -909,7 +909,7 @@ namespace GridGame.App
                     : valid.Where(t => State.UnitAt(t) is Unit u && u.IsHero).OrderBy(t => State.UnitAt(t).HpFraction).FirstOrDefault();
                 target = valid.Contains(pick) ? pick : valid[0];
             }
-            string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+            string verb = CommitVerb(a);
             var path = ActionTree.PathTo(ActionTree.For(State, hero), slot);
             if (path == null) return null;
             bool Aiming() => coachCommitted || (SelectedHeroId == id && TargetingSlot == slot);
@@ -934,7 +934,7 @@ namespace GridGame.App
                 marks.Add(new CoachStep { Caption = node.IsMove ? $"Tap {a.Name}." : d == 0 ? $"Tap the {node.Name} tab." : $"Open {node.Name}.",
                     Element = () => sheetVeil?.Q(el), Done = () => Aiming() || SheetAt(depth), Valid = Ready });
             }
-            marks.Add(new CoachStep { Caption = $"Tap {CommitVerb(hero, slot, a)}.", Element = () => sheetVeil?.Q("abilities-commit"), Done = Aiming, Valid = Ready });
+            marks.Add(new CoachStep { Caption = $"Tap {CommitVerb(a)}.", Element = () => sheetVeil?.Q("abilities-commit"), Done = Aiming, Valid = Ready });
             if (target is Coord t)
             {
                 var who = State.UnitAt(t);

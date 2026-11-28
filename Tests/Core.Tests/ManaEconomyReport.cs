@@ -10,21 +10,24 @@ using static GridGame.Tests.TestKit;
 namespace GridGame.Tests
 {
     /// <summary>
-    /// Mana economy instrument (§3.1, GG-T247): bots play every campaign stage once per seed with natural progression (a loss moves on; hard-won XP keeps) and report how full
-    /// the shared bank runs — share of player turns at cap, orbs that faded at cap, average bank, when the bar first
-    /// fills, where orbs come from and which abilities spend them. Explicit: run on purpose, it is the tuning dashboard.
+    /// Mana economy instrument (§3.1.0, GG-T247, GG-T1915): bots play every campaign stage once per seed with natural progression (a loss moves on; hard-won XP keeps) and report how full
+    /// the party pool runs — share of player turns at capacity, grant points lost past capacity, average pool, when the bar
+    /// first fills, where granted points come from and which spells spend them. Explicit: run on purpose, it is the tuning dashboard.
     /// </summary>
     [Explicit("measurement instrument (GG-T247); run with --filter ManaEconomyReport")]
     public class ManaEconomyReport
     {
         private sealed class Tally
         {
-            public int Battles, Wins, Turns, TurnsAtCap, TurnsAfford2, BankSum, Landed, Faded, Spent, BattlesFull, FirstFullTurnSum;
+            public int Battles, Wins, Turns, TurnsAtCap, TurnsAfford2, PoolSum, Landed, Wasted, Casts, Spent, BattlesFull, FirstFullTurnSum;
             /// <summary>Per-battle shares summed, so one long losing grind can't swamp the pooled turn counts.</summary>
             public float AtCapShareSum, Afford2ShareSum;
             public readonly Dictionary<string, int> BySource = new Dictionary<string, int>();
             public readonly Dictionary<string, int> SpendBy = new Dictionary<string, int>();
         }
+
+        /// <summary>The price of a 2-cost spell: the pool can pay for a mid spell.</summary>
+        private const int Afford2 = 2 * BattleConfig.ManaPointsPerOrb;
 
         [Test]
         public void Mana_economy_table()
@@ -38,9 +41,9 @@ namespace GridGame.Tests
                 for (int seed = 1; seed <= seeds; seed++) PlayCampaign(c, randomness, seed, t);
                 int n = System.Math.Max(1, t.Turns), b = System.Math.Max(1, t.Battles);
                 sb.AppendLine($"── {label}: {t.Battles} battles, {t.Wins} won, every stage played once per seed, {t.Turns} player turns");
-                sb.AppendLine($"   per battle: bank at cap {100f * t.AtCapShareSum / b:0.0}% of its turns · ≥2 orbs {100f * t.Afford2ShareSum / b:0.0}%");
-                sb.AppendLine($"   bank at cap {100f * t.TurnsAtCap / n:0.0}% of turns · ≥2 orbs {100f * t.TurnsAfford2 / n:0.0}% · avg bank {(float)t.BankSum / n:0.00}");
-                sb.AppendLine($"   orbs landed {t.Landed} · faded at cap {t.Faded} ({100f * t.Faded / System.Math.Max(1, t.Landed + t.Faded):0.0}%) · spent {t.Spent}");
+                sb.AppendLine($"   per battle: pool at capacity {100f * t.AtCapShareSum / b:0.0}% of its turns · ≥{Afford2} points {100f * t.Afford2ShareSum / b:0.0}%");
+                sb.AppendLine($"   pool at capacity {100f * t.TurnsAtCap / n:0.0}% of turns · ≥{Afford2} points {100f * t.TurnsAfford2 / n:0.0}% · avg pool {(float)t.PoolSum / n:0.0}/{BattleConfig.PartyManaCapacity}");
+                sb.AppendLine($"   grant points landed {t.Landed} · lost past capacity {t.Wasted} ({100f * t.Wasted / System.Math.Max(1, t.Landed + t.Wasted):0.0}%) · {t.Casts} casts spent {t.Spent}");
                 sb.AppendLine($"   battles that filled the bar {100f * t.BattlesFull / System.Math.Max(1, t.Battles):0.0}% · first full at turn {(t.BattlesFull > 0 ? (float)t.FirstFullTurnSum / t.BattlesFull : 0):0.0} (avg)");
                 sb.AppendLine("   sources: " + string.Join(", ", t.BySource.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value}")));
                 sb.AppendLine("   spenders: " + string.Join(", ", t.SpendBy.OrderByDescending(kv => kv.Value).Take(15).Select(kv => $"{kv.Key} {kv.Value}")));
@@ -68,21 +71,20 @@ namespace GridGame.Tests
                             switch (ev[i])
                             {
                                 case ManaGainedEvent o when o.Kind == ManaGainKind.Grant:
-                                    if (o.Meters.Count > 0) { t.Landed += o.Orbs; t.BySource[o.Reason] = (t.BySource.TryGetValue(o.Reason, out var v) ? v : 0) + o.Orbs; }
-                                    else t.Faded += o.Orbs;
+                                    t.Landed += o.Amount; t.Wasted += o.Wasted;
+                                    t.BySource[o.Reason] = (t.BySource.TryGetValue(o.Reason, out var v) ? v : 0) + o.Amount;
                                     break;
                                 case SpellManaSpentEvent sp:
                                     // A spell pays at command time, before its CastQueued/AbilityResolved in the same list.
-                                    t.Spent++;
+                                    t.Casts++; t.Spent += sp.Points;
                                     var key = SpellAfter(ev, i) ?? "?";
                                     t.SpendBy[key] = t.SpendBy.TryGetValue(key, out var w) ? w + 1 : 1;
                                     break;
                                 case PlayerControlEvent _:
                                     turn++; t.Turns++;
-                                    int bank = state.ReadySpellCount;
-                                    t.BankSum += bank;
-                                    if (state.AllSpellsFull) { t.TurnsAtCap++; atCap++; if (firstFull < 0) firstFull = turn; }
-                                    if (bank >= 2) { t.TurnsAfford2++; afford2++; }
+                                    t.PoolSum += state.PartyMana;
+                                    if (state.PartyManaFull) { t.TurnsAtCap++; atCap++; if (firstFull < 0) firstFull = turn; }
+                                    if (state.PartyMana >= Afford2) { t.TurnsAfford2++; afford2++; }
                                     break;
                             }
                         }

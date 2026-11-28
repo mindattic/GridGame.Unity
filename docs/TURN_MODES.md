@@ -49,7 +49,7 @@ is the most fun, I can see all of them being viable game modes."
 | Pincers and chains | Whether the core verb (pincers) still happens, and how often it is a combo. |
 | Guards (forced and chosen) | Whether the player is locked out, or chooses to wait. |
 | Ability, spell and item uses | Whether the AbilityBar stays relevant. |
-| Mana by source | Whether the orb economy (BIBLE §3.1) holds in the mode. |
+| Mana by source | Whether the party mana pool economy (BIBLE §3.1) holds in the mode. |
 | Bot refusals | Rule friction: commands the engine refused. |
 
 ## Reading the numbers ("fun" is a judgement, not a metric)
