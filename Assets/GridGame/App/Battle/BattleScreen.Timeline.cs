@@ -1020,6 +1020,7 @@ namespace GridGame.App
             float t = Time.unscaledTime;
             TickTapArrow(t);
             TickPincerSpots(t);
+            TickEnemyIntent();
             // GG-T672: advance each ramping foe icon's beat by its own current rate (slow and faint at half way, quick and
             // full under ImminentSeconds); accumulating phase keeps a quickening beat continuous.
             float dt = lastPulseTime < 0f ? 0f : Mathf.Clamp(t - lastPulseTime, 0f, 0.1f);

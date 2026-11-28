@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GridGame.Core.Content;
 
 namespace GridGame.Core.Battle
 {
@@ -31,6 +32,13 @@ namespace GridGame.Core.Battle
             foreach (var t in Targets) if (t.UnitId == unitId) return t;
             return null;
         }
+    }
+
+    /// <summary>GG-T1947: one foe's coming turn as the party window sees it: who it will hurt, and by how much.</summary>
+    public sealed class EnemyIntent
+    {
+        public int ActorId;
+        public List<OutcomeTarget> Targets = new List<OutcomeTarget>();
     }
 
     /// <summary>
@@ -83,6 +91,68 @@ namespace GridGame.Core.Battle
                 fills.Add(filled);
             }
 
+            result.Targets = Aggregate(perSample, samples);
+            Span(mana, out result.ManaMin, out result.ManaMax);
+            Span(fills, out result.FillsMin, out result.FillsMax);
+            return result;
+        }
+
+        /// <summary>
+        /// GG-T1947 (UX review §1.4 #4): what the next <paramref name="actors"/> foes to arrive on the bar would do to the
+        /// party if the window closed now. Each sample runs the shared clock forward on its own clone, with its own rolls,
+        /// to just past the last of those foes' arrivals, so each foe's own brain picks and strikes exactly as it will; only
+        /// the damage each one deals to a hero counts. Foes in bar order; one that hits nobody has no targets.
+        /// </summary>
+        public static List<EnemyIntent> Intent(BattleState s, int actors = 2, int samples = 6)
+        {
+            var result = new List<EnemyIntent>();
+            var next = new List<(int ticks, TimelineEntry e)>();
+            foreach (var e in s.Timeline)
+            {
+                if (e.Kind == TimelineKind.Hazard || !(s.UnitById(e.OwnerId) is Unit o) || !o.Alive || o.Team != Team.Enemy) continue;
+                int t = BattleEngine.TicksUntilAct(s, e);
+                if (t >= 0 && t < BattleConfig.MaxAdvanceTicks) next.Add((t, e));
+            }
+            next.Sort((a, b) => a.ticks != b.ticks ? a.ticks.CompareTo(b.ticks)
+                : a.e.Kind != b.e.Kind ? BattleRunner.ArrivalRank(a.e.Kind).CompareTo(BattleRunner.ArrivalRank(b.e.Kind)) : a.e.Id.CompareTo(b.e.Id));
+            int horizon = 0;
+            foreach (var (t, e) in next)
+            {
+                if (result.Count >= actors) break;
+                if (result.Exists(x => x.ActorId == e.OwnerId)) continue;
+                result.Add(new EnemyIntent { ActorId = e.OwnerId });
+                horizon = t;
+            }
+            if (result.Count == 0) return result;
+
+            var perActor = new Dictionary<int, List<Dictionary<int, Sample>>>();
+            foreach (var x in result) perActor[x.ActorId] = new List<Dictionary<int, Sample>>(samples);
+            for (int i = 0; i < samples; i++)
+            {
+                var copy = s.Clone();
+                if (i > 0) copy.Rng = new Rng(unchecked((int)(s.Clock * 31 + i * 7919 + 17)));
+                List<BattleEvent> events;
+                try { events = BattleEngine.RunClock(copy, horizon + 1); }
+                catch (TileConflictException) { return new List<EnemyIntent>(); }
+                var hits = new Dictionary<int, Dictionary<int, Sample>>();
+                foreach (var id in perActor.Keys) hits[id] = new Dictionary<int, Sample>();
+                foreach (var e in events)
+                {
+                    if (!(e is DamagedEvent d) || !hits.TryGetValue(d.SourceId, out var mine) || !(s.UnitById(d.TargetId) is Unit t) || !t.IsHero) continue;
+                    var x = Get(mine, d.TargetId);
+                    x.Damage += d.Amount;
+                    if (d.HpAfter <= 0) x.Died = true;
+                }
+                foreach (var kv in hits) perActor[kv.Key].Add(kv.Value);
+            }
+            foreach (var x in result) x.Targets = Aggregate(perActor[x.ActorId], samples);
+            return result;
+        }
+
+        /// <summary>Folds per-sample hits into one range per unit hit in any sample.</summary>
+        private static List<OutcomeTarget> Aggregate(List<Dictionary<int, Sample>> perSample, int samples)
+        {
+            var targets = new List<OutcomeTarget>();
             var ids = new HashSet<int>();
             foreach (var hs in perSample) foreach (var id in hs.Keys) ids.Add(id);
             foreach (var id in ids)
@@ -106,11 +176,9 @@ namespace GridGame.Core.Battle
                 }
                 t.KillChance = kills / (float)samples;
                 foreach (var kv in statusCounts) t.StatusChance[kv.Key] = kv.Value / (float)samples;
-                result.Targets.Add(t);
+                targets.Add(t);
             }
-            Span(mana, out result.ManaMin, out result.ManaMax);
-            Span(fills, out result.FillsMin, out result.FillsMax);
-            return result;
+            return targets;
         }
 
         private static void Span(List<int> values, out int min, out int max)
