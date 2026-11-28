@@ -104,7 +104,7 @@ namespace GridGame.App
             // The follow-up (a launch retry, a page refresh) belongs to the screen the refill was started on: if the
             // player has left it by the time the job lands, the refill still applies but nothing launches from elsewhere.
             var from = GameApp.I.Router.Current;
-            TimedJobView.Begin(now => (RestedPool.BeginRefill(GameApp.I.Save, now, out var job), job), "Resting the party…",
+            TimedJobView.Begin(now => (RestedPool.BeginRefill(GameApp.I.Save, now, out var job), job), "Resting the party",
                 r => { if (r.Ok && GameApp.I.Router.Current == from) then?.Invoke(); });
         }
 

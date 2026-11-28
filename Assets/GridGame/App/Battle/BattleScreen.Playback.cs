@@ -201,7 +201,7 @@ namespace GridGame.App
                 case HastenedEvent hs: return HastenAnim(hs);
                 case TempoChangedEvent tc: return TempoAnim(tc);
                 case TurnStartedEvent ts: FlushTallies(); return TurnAnim(ts);
-                case TurnSkippedEvent sk: App.Audio.Sfx(sk.Reason == "asleep" ? "status.sleep" : "ui.cancel", sk.Reason == "asleep" ? 0.8f : 0.5f); return FloatText(sk.UnitId, CombatTextKind.StatusTick, sk.Reason == "asleep" ? "Zzz…" : "…", 0.35f);
+                case TurnSkippedEvent sk: App.Audio.Sfx(sk.Reason == "asleep" ? "status.sleep" : "ui.cancel", sk.Reason == "asleep" ? 0.8f : 0.5f); return FloatText(sk.UnitId, CombatTextKind.StatusTick, sk.Reason == "asleep" ? "Zzz" : "Skipped", 0.35f);
 
                 case CastQueuedEvent cq: return CastQueuedAnim(cq);
                 case CastStaggeredEvent cs: return StaggerAnim(cs);
@@ -1857,7 +1857,7 @@ namespace GridGame.App
             if (caster != null) yield return Gather(caster, castColor);
             if (caster != null) { StartChannel(caster.Id, castColor); App.Audio.Sfx("battle.channel", 0.7f); }
             SyncTimeline(null);
-            yield return FloatText(cq.CasterId, CombatTextKind.Timer, cq.IsCharge ? "Charging…" : "Casting…", 0.3f);
+            yield return FloatText(cq.CasterId, CombatTextKind.Timer, cq.IsCharge ? "Charging" : "Casting", 0.3f);
         }
 
         private IEnumerator ClutchAnim(ClutchEvent c)
