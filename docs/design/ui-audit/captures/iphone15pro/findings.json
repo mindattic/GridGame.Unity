@@ -3,7 +3,7 @@
  "device": "iphone15pro",
  "name": "iPhone 15 Pro",
  "shape": "iphone-island-393",
- "captured": "2026-11-28T06:47:08",
+ "captured": "2026-11-28T09:37:44",
  "frame": {
   "type": "island",
   "corner": 165,
@@ -15,7 +15,12 @@
   "r": 56
  },
  "screens": 41,
- "errors": {},
+ "errors": {
+  "components": "not captured",
+  "results-defeat": "not captured",
+  "results-drill": "not captured",
+  "levelup": "not captured"
+ },
  "totals": {
   "overflow": 0,
   "clipped": 0,
@@ -625,8 +630,8 @@
      "text": "Create",
      "ratio": 2.17,
      "need": 4.5,
-     "fg": "#272e44",
-     "bg": "#506088"
+     "fg": "#272e43",
+     "bg": "#506087"
     }
    ],
    "contrastUnderCutout": [],

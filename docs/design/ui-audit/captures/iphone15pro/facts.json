@@ -1,6 +1,6 @@
 {
  "device": "iphone15pro",
- "captured": "2026-11-28T06:47:08",
+ "captured": "2026-11-28T09:37:44",
  "screens": {
   "title": {
    "screen": "title",
@@ -23753,9 +23753,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#121220",
-       "ratio": 14.93,
-       "worstStop": 14.93,
+       "bg": "#121221",
+       "ratio": 14.92,
+       "worstStop": 14.92,
        "need": 4.5,
        "pass": true
       }
@@ -23799,9 +23799,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#141422",
-       "ratio": 13.29,
-       "worstStop": 13.29,
+       "bg": "#141423",
+       "ratio": 13.28,
+       "worstStop": 13.28,
        "need": 4.5,
        "pass": true
       }
@@ -25201,7 +25201,7 @@
       "contrast": null
      },
      {
-      "text": "Version 1.0.0 (build 34669638, developme\u2026",
+      "text": "Version 1.0.0 (build 27eb433f, developme\u2026",
       "rect": [
        120.0,
        6183.0,
@@ -25285,7 +25285,7 @@
       "rect": [
        628.0,
        8188.0,
-       225.0,
+       227.0,
        66.0
       ],
       "size": {
@@ -25427,9 +25427,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#12111c",
-       "ratio": 7.61,
-       "worstStop": 7.61,
+       "bg": "#12111d",
+       "ratio": 7.6,
+       "worstStop": 7.6,
        "need": 4.5,
        "pass": true
       }
@@ -26304,9 +26304,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#191827",
-       "ratio": 17.48,
-       "worstStop": 17.48,
+       "bg": "#191826",
+       "ratio": 17.5,
+       "worstStop": 17.5,
        "need": 4.5,
        "pass": true
       }
@@ -26419,9 +26419,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#252a34",
-       "ratio": 14.39,
-       "worstStop": 14.39,
+       "bg": "#262a33",
+       "ratio": 14.37,
+       "worstStop": 14.37,
        "need": 4.5,
        "pass": true
       }
@@ -28146,9 +28146,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#25243a",
-       "ratio": 12.15,
-       "worstStop": 12.15,
+       "bg": "#25243b",
+       "ratio": 12.14,
+       "worstStop": 12.14,
        "need": 4.5,
        "pass": true
       }
@@ -28157,7 +28157,7 @@
       "text": "Cancel",
       "rect": [
        593.0,
-       600.0,
+       635.0,
        138.0,
        66.0
       ],
@@ -28180,7 +28180,7 @@
       "text": "Create",
       "rect": [
        916.0,
-       600.0,
+       635.0,
        139.0,
        66.0
       ],
@@ -28191,8 +28191,8 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#272e44",
-       "bg": "#506088",
+       "fg": "#272e43",
+       "bg": "#506087",
        "ratio": 2.17,
        "worstStop": 2.17,
        "need": 4.5,
@@ -28252,13 +28252,13 @@
      {
       "rule": "POL-C9",
       "subject": "profile-name",
-      "detail": "empty band 1822px > 15% of 2541"
+      "detail": "empty band 1787px > 15% of 2541"
      }
     ],
     "fill": {
      "minX": 23.0,
      "maxX": 1147.0,
-     "band": 1822.0,
+     "band": 1787.0,
      "main": 1124.0
     }
    },
@@ -28410,10 +28410,10 @@
      {
       "text": "Commander",
       "rect": [
-       72.0,
-       591.0,
-       1027.0,
-       70.0
+       68.0,
+       581.0,
+       1034.0,
+       124.0
       ],
       "size": {
        "px": 40,
@@ -28422,10 +28422,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#ffffff",
-       "bg": "#101015",
-       "ratio": 18.97,
-       "worstStop": 18.97,
+       "fg": "#f4f4f6",
+       "bg": "#0e0e12",
+       "ratio": 17.54,
+       "worstStop": 17.54,
        "need": 4.5,
        "pass": true
       }
@@ -28434,7 +28434,7 @@
       "text": "Music, sound, difficulty and the rest ar\u2026",
       "rect": [
        120.0,
-       695.0,
+       730.0,
        1001.0,
        126.0
       ],
@@ -28446,9 +28446,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#1d1b2c",
-       "ratio": 6.86,
-       "worstStop": 6.86,
+       "bg": "#1c1b2b",
+       "ratio": 6.88,
+       "worstStop": 6.88,
        "need": 4.5,
        "pass": true
       }
@@ -28457,7 +28457,7 @@
       "text": "Create",
       "rect": [
        916.0,
-       860.0,
+       895.0,
        139.0,
        66.0
       ],
@@ -28529,13 +28529,13 @@
      {
       "rule": "POL-C9",
       "subject": "create-profile",
-      "detail": "empty band 1563px > 15% of 2541"
+      "detail": "empty band 1526px > 15% of 2541"
      }
     ],
     "fill": {
      "minX": 23.0,
      "maxX": 1147.0,
-     "band": 1563.0,
+     "band": 1526.0,
      "main": 1124.0
     }
    },

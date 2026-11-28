@@ -3,7 +3,7 @@
  "device": "iphone17pro",
  "name": "iPhone 17 Pro",
  "shape": "iphone-402",
- "captured": "2026-11-28T06:49:40",
+ "captured": "2026-11-28T09:35:19",
  "frame": {
   "type": "island",
   "corner": 186,
@@ -15,7 +15,12 @@
   "r": 56
  },
  "screens": 41,
- "errors": {},
+ "errors": {
+  "components": "not captured",
+  "results-defeat": "not captured",
+  "results-drill": "not captured",
+  "levelup": "not captured"
+ },
  "totals": {
   "overflow": 0,
   "clipped": 0,

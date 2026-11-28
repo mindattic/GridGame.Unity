@@ -3,7 +3,7 @@
  "device": "galaxys25",
  "name": "Galaxy S25",
  "shape": "galaxy-fhd",
- "captured": "2026-11-28T06:52:18",
+ "captured": "2026-11-28T09:37:01",
  "frame": {
   "type": "punch",
   "corner": 90,
@@ -15,7 +15,12 @@
   "r": 27
  },
  "screens": 41,
- "errors": {},
+ "errors": {
+  "components": "not captured",
+  "results-defeat": "not captured",
+  "results-drill": "not captured",
+  "levelup": "not captured"
+ },
  "totals": {
   "overflow": 0,
   "clipped": 0,
@@ -644,8 +649,8 @@
      "text": "Create",
      "ratio": 2.17,
      "need": 4.5,
-     "fg": "#272e44",
-     "bg": "#506088"
+     "fg": "#272e43",
+     "bg": "#506087"
     }
    ],
    "contrastUnderCutout": [],

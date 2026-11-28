@@ -1,6 +1,6 @@
 {
  "device": "galaxys25",
- "captured": "2026-11-28T06:52:18",
+ "captured": "2026-11-28T09:37:01",
  "screens": {
   "title": {
    "screen": "title",
@@ -25588,7 +25588,7 @@
       "contrast": null
      },
      {
-      "text": "Version 1.0.0 (build 34669638, developme\u2026",
+      "text": "Version 1.0.0 (build 27eb433f, developme\u2026",
       "rect": [
        120.0,
        6112.0,
@@ -25672,7 +25672,7 @@
       "rect": [
        628.0,
        8116.0,
-       225.0,
+       227.0,
        66.0
       ],
       "size": {
@@ -25699,9 +25699,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#222638",
-       "ratio": 12.06,
-       "worstStop": 12.06,
+       "bg": "#222538",
+       "ratio": 12.17,
+       "worstStop": 12.17,
        "need": 4.5,
        "pass": true
       }
@@ -25814,9 +25814,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11101c",
-       "ratio": 7.66,
-       "worstStop": 7.66,
+       "bg": "#11101d",
+       "ratio": 7.63,
+       "worstStop": 7.63,
        "need": 4.5,
        "pass": true
       }
@@ -26875,9 +26875,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#12111d",
-       "ratio": 18.69,
-       "worstStop": 18.69,
+       "bg": "#12121d",
+       "ratio": 18.58,
+       "worstStop": 18.58,
        "need": 4.5,
        "pass": true
       }
@@ -27128,8 +27128,8 @@
       "contrast": {
        "fg": "#e6e6ee",
        "bg": "#222638",
-       "ratio": 12.06,
-       "worstStop": 12.06,
+       "ratio": 12.12,
+       "worstStop": 12.12,
        "need": 4.5,
        "pass": true
       }
@@ -27242,9 +27242,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11101c",
-       "ratio": 7.66,
-       "worstStop": 7.66,
+       "bg": "#11111d",
+       "ratio": 7.61,
+       "worstStop": 7.61,
        "need": 4.5,
        "pass": true
       }
@@ -28533,9 +28533,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#25243b",
-       "ratio": 12.14,
-       "worstStop": 12.14,
+       "bg": "#26243b",
+       "ratio": 12.1,
+       "worstStop": 12.1,
        "need": 4.5,
        "pass": true
       }
@@ -28544,7 +28544,7 @@
       "text": "Cancel",
       "rect": [
        593.0,
-       529.0,
+       564.0,
        138.0,
        66.0
       ],
@@ -28567,7 +28567,7 @@
       "text": "Create",
       "rect": [
        916.0,
-       529.0,
+       564.0,
        139.0,
        66.0
       ],
@@ -28578,8 +28578,8 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#272e44",
-       "bg": "#506088",
+       "fg": "#272e43",
+       "bg": "#506087",
        "ratio": 2.17,
        "worstStop": 2.17,
        "need": 4.5,
@@ -28639,13 +28639,13 @@
      {
       "rule": "POL-C9",
       "subject": "profile-name",
-      "detail": "empty band 1894px > 15% of 2541"
+      "detail": "empty band 1859px > 15% of 2541"
      }
     ],
     "fill": {
      "minX": 23.0,
      "maxX": 1147.0,
-     "band": 1894.0,
+     "band": 1859.0,
      "main": 1124.0
     }
    },
@@ -28764,9 +28764,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#26243c",
-       "ratio": 12.08,
-       "worstStop": 12.08,
+       "bg": "#26253c",
+       "ratio": 11.98,
+       "worstStop": 11.98,
        "need": 4.5,
        "pass": true
       }
@@ -28797,10 +28797,10 @@
      {
       "text": "Commander",
       "rect": [
-       72.0,
-       519.0,
-       1027.0,
-       68.0
+       68.0,
+       509.0,
+       1034.0,
+       124.0
       ],
       "size": {
        "px": 40,
@@ -28809,10 +28809,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#ffffff",
-       "bg": "#101015",
-       "ratio": 18.97,
-       "worstStop": 18.97,
+       "fg": "#f4f4f6",
+       "bg": "#0e0e12",
+       "ratio": 17.54,
+       "worstStop": 17.54,
        "need": 4.5,
        "pass": true
       }
@@ -28821,7 +28821,7 @@
       "text": "Music, sound, difficulty and the rest ar\u2026",
       "rect": [
        120.0,
-       622.0,
+       659.0,
        1001.0,
        126.0
       ],
@@ -28833,9 +28833,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#1d1b2c",
-       "ratio": 6.86,
-       "worstStop": 6.86,
+       "bg": "#1c1b2b",
+       "ratio": 6.88,
+       "worstStop": 6.88,
        "need": 4.5,
        "pass": true
       }
@@ -28844,7 +28844,7 @@
       "text": "Create",
       "rect": [
        916.0,
-       788.0,
+       823.0,
        139.0,
        66.0
       ],
@@ -28916,13 +28916,13 @@
      {
       "rule": "POL-C9",
       "subject": "create-profile",
-      "detail": "empty band 1634px > 15% of 2541"
+      "detail": "empty band 1600px > 15% of 2541"
      }
     ],
     "fill": {
      "minX": 23.0,
      "maxX": 1147.0,
-     "band": 1634.0,
+     "band": 1600.0,
      "main": 1124.0
     }
    },
