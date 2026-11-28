@@ -112,6 +112,10 @@
     --color-btn-danger-lip: rgb(96, 18, 26);
     --color-btn-danger-hover: rgb(178, 40, 52);
     --color-btn-danger-pressed: rgb(110, 20, 28);
+    /* GG-T2162: every disabled button (any variant) is a flat, muted face with no lip and full-opacity text, 6.7:1 */
+    --color-btn-disabled: rgb(52, 58, 86);
+    --color-btn-disabled-rim: rgb(104, 110, 136);
+    --color-btn-disabled-text: rgb(200, 200, 208);
     --color-badge: rgba(4, 6, 20, 0.92); /* a role badge's dark plate */
     --color-chrome: rgba(4, 8, 30, 0.85); /* the header and bottom nav */
     --color-label: rgb(170, 184, 255); /* an inactive tab, nav tab or tile label */
@@ -372,8 +376,10 @@
 .slot { transition-property: scale, translate, opacity; transition-duration: 0.07s, 0.07s, 0.15s; }
 .slot--targeting { scale: 1.06 1.06; }
 .slot.is-pressed { scale: 0.92 0.92; translate: 0 10px; }
-.btn--disabled { opacity: 0.6; }
 .btn--small { min-height: var(--size-target); font-size: var(--type-base); padding: 0 var(--space-24); border-bottom-width: 9px; }
+/* GG-T2162: disabled is a muted face that lost its lip (no elevation, the non-colour cue) with legible text at full opacity,
+   4.5:1 or better in every theme; it outranks the variant, hover and small rules, so primary, danger, small and icon match. */
+.btn.btn--disabled { opacity: 1; border-color: var(--color-btn-disabled-rim); border-bottom-width: 4px; background-color: var(--color-btn-disabled); color: var(--color-btn-disabled-text); }
 .btn--small.is-pressed { border-bottom-width: 3px; translate: 0 6px; }
 .btn--icon { width: var(--size-target); padding: 0; }
 
@@ -714,6 +720,7 @@
 .theme-chrono .btn--danger { background-color: rgb(150, 30, 40); border-bottom-color: rgb(96, 18, 26); }
 .theme-chrono .btn--danger:hover { background-color: rgb(178, 40, 52); }
 .theme-chrono .btn--danger.is-pressed { background-color: rgb(110, 20, 28); }
+.theme-chrono .btn.btn--disabled { border-color: rgb(118, 118, 124); background-color: rgb(62, 62, 66); color: rgb(200, 200, 204); }
 
 /* ── Granite (default, GG-T404): owner 2026-11-17, "split the difference and get a gray/blue Final Fantasy/Chrono
    Trigger hybrid theme ... its own identity but also harken back". The Chrono frame and ramp cooled to a steel slate (GG-T407,
@@ -779,6 +786,7 @@
 .theme-granite .btn--danger { background-color: rgb(150, 30, 40); border-bottom-color: rgb(96, 18, 26); }
 .theme-granite .btn--danger:hover { background-color: rgb(178, 40, 52); }
 .theme-granite .btn--danger.is-pressed { background-color: rgb(110, 20, 28); }
+.theme-granite .btn.btn--disabled { border-color: rgb(118, 129, 137); background-color: rgb(64, 70, 74); color: rgb(196, 212, 224); }
 
 /* ── Slate: Chrono Trigger's default window — gray-blue gradient, light bevel frame, white text ── */
 .theme-slate .window {
@@ -837,6 +845,7 @@
 .theme-slate .btn--danger { background-color: rgb(150, 30, 40); border-bottom-color: rgb(96, 18, 26); }
 .theme-slate .btn--danger:hover { background-color: rgb(178, 40, 52); }
 .theme-slate .btn--danger.is-pressed { background-color: rgb(110, 20, 28); }
+.theme-slate .btn.btn--disabled { border-color: rgb(112, 122, 154); background-color: rgb(58, 64, 86); color: rgb(200, 206, 222); }
 
 /* ── Menu theme: Dark (GG-T186; retinted 2026-11-21 to GridGame.Gallery's own CSS, owner: "we tried FF, then
    Chrono, then back to FF - none of these where right; but the colors in all these apps is better") ───────────
@@ -888,6 +897,7 @@
 .theme-dark .btn--danger.is-pressed { background-color: rgb(44, 18, 22); }
 .theme-dark .btn--small { border-bottom-width: 5px; }
 .theme-dark .btn--small.is-pressed { border-bottom-width: 2px; translate: 0 3px; }
+.theme-dark .btn.btn--disabled { border-color: rgb(60, 60, 70); border-bottom-width: 2px; background-color: rgb(30, 30, 36); color: rgb(160, 160, 166); }
 
 .theme-dark .role-badge { background-color: rgb(21, 21, 26); border-width: 2px; border-radius: var(--radius-6); }
 
@@ -964,6 +974,7 @@
 .theme-manapunk .btn--danger.is-pressed { background-color: rgb(44, 18, 28); }
 .theme-manapunk .btn--small { border-bottom-width: 5px; }
 .theme-manapunk .btn--small.is-pressed { border-bottom-width: 2px; translate: 0 3px; }
+.theme-manapunk .btn.btn--disabled { border-color: rgb(52, 54, 63); border-bottom-width: 2px; background-color: rgb(30, 29, 46); color: rgb(164, 163, 188); }
 
 .theme-manapunk .role-badge { background-color: rgb(12, 12, 22); border-width: 2px; border-radius: var(--radius-6); }
 

@@ -51,7 +51,7 @@ Code reads `Tokens.cs`; USS reads `Theme.uss` `:root`. A literal colour, size, s
 
 Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-gauge-*`) are gameplay colours and stay the same in every theme. Each hue family has one meaning (POL-B4). The reference page lists every USS colour token.
 
-**Base-theme surfaces (GG-T2135).** Every colour a Theme.uss rule outside `:root` uses is a `--color-*` token: the stage and letterbox (`--color-stage`, `--color-letterbox`, `--color-black`, `--color-clear`), the selected well (`--color-well`, `--color-well-edge`), hover and press tints (`--color-hover`, `--color-press`, `--color-card`, `--color-card-selected`, `--color-mana-tint`, `--color-mana-faint`), the button family (`--color-btn`, `-lip`, `-hover`, `-pressed`, and the same for `-primary` and `-danger`, plus `--color-btn-primary-rim`), chrome (`--color-chrome`, `--color-toast`, `--color-badge`, `--color-tab`, `--color-tab-active`, `--color-label`, `--color-alert`, `--color-scrollbar`, `--color-thumb`, `--color-gauge-rim`, `--color-pip-rim`, `--color-title`, `--color-mana-core`, `--color-continue`), and the team keylines that had no variable (`--color-tamed`, `--color-wanderer`, `--color-cb-hero`, `-foe`, `-boss`). USS cannot add alpha to a variable, so each translucent tint is its own token. A `.theme-*` block still overrides by selector.
+**Base-theme surfaces (GG-T2135).** Every colour a Theme.uss rule outside `:root` uses is a `--color-*` token: the stage and letterbox (`--color-stage`, `--color-letterbox`, `--color-black`, `--color-clear`), the selected well (`--color-well`, `--color-well-edge`), hover and press tints (`--color-hover`, `--color-press`, `--color-card`, `--color-card-selected`, `--color-mana-tint`, `--color-mana-faint`), the button family (`--color-btn`, `-lip`, `-hover`, `-pressed`, and the same for `-primary` and `-danger`, plus `--color-btn-primary-rim`, and the disabled face `--color-btn-disabled`, `-disabled-rim`, `-disabled-text`, GG-T2162), chrome (`--color-chrome`, `--color-toast`, `--color-badge`, `--color-tab`, `--color-tab-active`, `--color-label`, `--color-alert`, `--color-scrollbar`, `--color-thumb`, `--color-gauge-rim`, `--color-pip-rim`, `--color-title`, `--color-mana-core`, `--color-continue`), and the team keylines that had no variable (`--color-tamed`, `--color-wanderer`, `--color-cb-hero`, `-foe`, `-boss`). USS cannot add alpha to a variable, so each translucent tint is its own token. A `.theme-*` block still overrides by selector.
 
 Palette additions for code: `Palette.Black`, `Palette.Gray` (the fallback when a content colour does not parse), `Palette.Missing` (magenta, for a colour that must never be missing), `Palette.Overbright` (3, 3, 3: an image flashes overbright and eases back to White), `Palette.FoeTint` (a foe's cut-in portrait), `Palette.PlateRim` (a dialogue nameplate whose speaker is not talking) and `Palette.ManalithRock`.
 
@@ -119,7 +119,16 @@ Every tappable goes through `Ui.Pressable`, which sinks it and plays the `ui.pre
 - **Default**: at rest.
 - **Pressed** (`.is-pressed`, while the finger is down): the control sinks. Buttons drop onto their lip; rows and cards scale to 95 to 98.5 % and darken.
 - **Selected-pressed** (`.menu-row--selected`, `.tap--selected`; GG-T1923, GG-T1942): after the first tap of a select-then-confirm control. A darker inset well (black at 0.38), a 3-px frame in the frame colour with a dark top edge, a 3-px sink at 98.5 %. A button stays sunk on its lip with a dark top edge. One thing is selected per screen.
-- **Disabled** (`.menu-row--disabled`, `.btn--disabled`): text and icon at 0.6 opacity (still 4.5:1). It does not sink, and a tap toasts the reason when there is one.
+- **Disabled** (`.menu-row--disabled`, `.btn--disabled`): a menu row's text and icon at 0.6 opacity (still 4.5:1). A button of any variant (normal, primary, danger, small, icon) is not faded: it takes one muted face with a dim rim and full-opacity text, and loses its lip, so it sits flat with no elevation (the non-colour cue, GG-T2162). It does not sink, and a tap toasts the reason when there is one.
+
+  | Theme | Face | Text | Text contrast |
+  |---|---|---|---|
+  | Classic (base, `--color-btn-disabled`, `-text`) | #343A56 | #C8C8D0 | 6.7:1 |
+  | Chrono | #3E3E42 | #C8C8CC | 6.4:1 |
+  | Granite | #40464A | #C4D4E0 | 6.3:1 |
+  | Slate | #3A4056 | #C8CEDE | 6.5:1 |
+  | Dark | #1E1E24 | #A0A0A6 | 6.4:1 |
+  | Manapunk | #1E1D2E | #A4A3BC | 6.7:1 |
 
 | Component | Builder | Classes | Select-then-confirm | Notes |
 |---|---|---|---|---|
