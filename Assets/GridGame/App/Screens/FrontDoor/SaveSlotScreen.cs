@@ -168,7 +168,7 @@ namespace GridGame.App
         private static void AskDrills(Action go)
         {
             var c = App.Content;
-            bool any = c.Campaign?.Tutorial?.Any(id => c.TryStage(id) != null) == true;
+            bool any = Drills.NewGameOrder(c).Any(id => c.TryStage(id) != null);
             if (!any || DemoMode.Active) { go(); return; }
             bool veteran = App.Settings?.DrillsFinished == true;
             void Skip()

@@ -33,19 +33,24 @@ namespace GridGame.Core.Content
     /// Founding (GG-T1318) plays once, after the opening crawl, with the starting party ("$party:N"); no Id.
     /// Joined (GG-T1318) is a hero's first talk at Camp after joining by a non-story route (a hero not in
     /// SaveData.MetHeroes): "$hero" is the joined hero, and <see cref="DialogueTrigger.Id"/> is their hero class, a
-    /// factions.json faction id, or null (the generic one), picked like a Wanderer talk.</summary>
-    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer, Trust, Cohesion, Founding, Joined }
+    /// factions.json faction id, or null (the generic one), picked like a Wanderer talk.
+    /// Prologue (GG-T2066, docs/STORY_SLICE.md) plays on a prologue onboarding step: <see cref="DialogueTrigger.Id"/> is one of
+    /// <see cref="DialogueDef.PrologueSteps"/>, and a Drill step names its drill (1-3) in <see cref="DialogueTrigger.Level"/>.
+    /// A step may have several (its conversation and its barks), played in file order.</summary>
+    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer, Trust, Cohesion, Founding, Joined, Prologue }
 
     public sealed class DialogueTrigger
     {
         public DialogueTriggerKind Kind;
         /// <summary>ThemeStart: the theme id. StageCleared: the stage id. Talk: who it's with — a hero class id,
         /// "party" (any party member; speaker class "$with" is them) or "npc:&lt;id&gt;" (a joined Camp NPC).
-        /// Trust / Cohesion: the hero class id (Cohesion: the pair's first hero). Joined: a hero class id, a faction id or null.</summary>
+        /// Trust / Cohesion: the hero class id (Cohesion: the pair's first hero). Joined: a hero class id, a faction id or null.
+        /// Prologue: the onboarding step (<see cref="DialogueDef.PrologueSteps"/>).</summary>
         public string Id;
         /// <summary>Cohesion only: the pair's second hero class id.</summary>
         public string Other;
-        /// <summary>LevelReached: the hero level (2+) that fires it. Trust / Cohesion: the bond tier (1-5) that opens it.</summary>
+        /// <summary>LevelReached: the hero level (2+) that fires it. Trust / Cohesion: the bond tier (1-5) that opens it.
+        /// Prologue Drill: the drill (1-3).</summary>
         public int Level;
     }
 
@@ -150,6 +155,10 @@ namespace GridGame.Core.Content
         /// <summary>GG-T537: the keeperless Camp stations an OpenStation effect may name (Summon Circle with the Diamond Store,
         /// Bounties with the Mercenaries, the Crucible, the Caravan).</summary>
         public static readonly string[] Stations = { "summon", "bounties", "crucible", "caravan" };
+        /// <summary>GG-T2066: the prologue onboarding steps a Prologue dialogue may name, in play order (docs/STORY_SLICE.md).</summary>
+        public static readonly string[] PrologueSteps = { "Wake", "Drill", "Crawl", "Travel", "Tithe", "Bridge", "Camp", "Rematch", "Glint", "Waystone" };
+        /// <summary>GG-T2066: the prologue's tutorial drills, the Level a Prologue Drill dialogue may name.</summary>
+        public const int PrologueDrills = 3;
 
         /// <summary>Wanderer talks (GG-T342): the two endings the <see cref="OutcomeNext"/> marker resolves to.</summary>
         public const string JoinNode = "join", PartNode = "part", OutcomeNext = "$outcome";

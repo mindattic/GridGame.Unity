@@ -34,14 +34,14 @@
     "Totem": "magic", "Wand": "magic"
   },
   "Enemies": {
-    "bat": "bite", "bluelion": "claw", "captain": "slash", "ceramicknight": "slash", "cyberzombie": "claw",
+    "bat": "bite", "bluelion": "claw", "captain": "slash", "collector": "slash", "ceramicknight": "slash", "cyberzombie": "claw",
     "cyclops": "slam", "demonlord": "claw", "flyingmonkey": "claw", "frog": "lash", "ganger": "slash", "ghost": "magic",
     "goblinthug": "blunt", "hag": "claw", "hag00": "magic", "hag01": "magic", "icemauler": "claw", "lurker": "claw",
     "mannequin": "blunt", "marshshambler": "slam", "mechaarmor": "slash", "moorcaptain": "slash", "mountaintroll": "slam", "naga": "bite",
     "nighthunter": "claw", "oni": "slam", "phantom": "magic", "purpleprototype": "claw", "raider": "blunt",
     "reaper": "slash", "sandmaw": "bite", "scorpion": "sting", "skelepede": "sting", "slime": "slam", "soldier": "slash",
     "steppinrazor": "claw", "swampmistress": "lash", "techgremlin": "claw", "templar": "slash", "toad": "lash",
-    "treegolem": "slam", "undead": "claw", "vulture": "claw", "werewolf": "claw", "wolf": "bite", "yeti": "slam",
+    "treegolem": "slam", "undead": "claw", "vulture": "claw", "ward_engine": "slam", "werewolf": "claw", "wolf": "bite", "yeti": "slam",
     "gravestone": "slam", "bonepile": "slam", "corpse": "slam", "nagaegg": "slam",
     "hexsniper": "claw", "hexwarden": "magic", "hexstalker": "claw", "chronomancer": "magic", "hierarch": "magic",
     "harpy01": "blunt", "harpy02": "blunt", "harpy03": "blunt", "voidsentinel": "magic", "lich": "magic",

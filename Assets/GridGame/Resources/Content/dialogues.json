@@ -5529,5 +5529,228 @@
       { "Id": "e", "Speaker": "boss", "Next": "f" },
       { "Id": "f", "Speaker": "commander" }
     ]
+  },
+  {
+    "Id": "prologue_bridge",
+    "Title": "The Toll Bridge",
+    "Trigger": { "Kind": "Prologue", "Id": "Bridge" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "collector", "Class": "captain", "Name": "Tithe Collector", "Portrait": "captain" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" }
+    ],
+    "Nodes": [
+      { "Id": "toll", "Speaker": "collector", "Next": "answer" },
+      { "Id": "answer", "Speaker": "barbarian" }
+    ]
+  },
+  {
+    "Id": "prologue_bridge_barks",
+    "Title": "Every blow clangs",
+    "Trigger": { "Kind": "Prologue", "Id": "Bridge" },
+    "Speakers": [
+      { "Id": "collector", "Class": "captain", "Name": "Tithe Collector", "Portrait": "captain" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "clang", "Speaker": "barbarian", "Next": "laugh" },
+      { "Id": "laugh", "Speaker": "collector", "Next": "back" },
+      { "Id": "back", "Speaker": "knight" }
+    ]
+  },
+  {
+    "Id": "prologue_camp",
+    "Title": "Camp at the Ford",
+    "Trigger": { "Kind": "Prologue", "Id": "Camp" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "cleric", "Class": "cleric" }
+    ],
+    "Nodes": [
+      { "Id": "dusk", "Speaker": "commander", "Next": "meal" },
+      { "Id": "meal", "Speaker": "cleric", "Next": "knight" },
+      { "Id": "knight", "Speaker": "knight", "Next": "through" },
+      { "Id": "through", "Speaker": "barbarian" }
+    ]
+  },
+  {
+    "Id": "prologue_glint",
+    "Title": "The Glint",
+    "Trigger": { "Kind": "Prologue", "Id": "Glint" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "redmage", "Class": "redmage" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "tome", "Speaker": "redmage", "Next": "glint" },
+      { "Id": "glint", "Speaker": "commander", "Next": "nothing" },
+      { "Id": "nothing", "Speaker": "knight", "Next": "them" },
+      { "Id": "them", "Speaker": "redmage" }
+    ]
+  },
+  {
+    "Id": "prologue_mouth_bark",
+    "Title": "The Vault Mouth",
+    "Trigger": { "Kind": "Prologue", "Id": "Drill", "Level": 3 },
+    "Speakers": [
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "hurt", "Speaker": "cleric", "Next": "cover" },
+      { "Id": "cover", "Speaker": "knight" }
+    ]
+  },
+  {
+    "Id": "prologue_rematch",
+    "Title": "The Rematch",
+    "Trigger": { "Kind": "Prologue", "Id": "Rematch" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "redmage", "Class": "redmage" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "shattered", "Speaker": "commander", "Next": "mage" },
+      { "Id": "mage", "Speaker": "redmage", "Next": "axe" },
+      { "Id": "axe", "Speaker": "barbarian", "Next": "wagon" },
+      { "Id": "wagon", "Speaker": "knight", "Next": "join" },
+      { "Id": "join", "Speaker": "redmage" }
+    ]
+  },
+  {
+    "Id": "prologue_road",
+    "Title": "The Road to Tithe",
+    "Trigger": { "Kind": "Prologue", "Id": "Travel" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" }
+    ],
+    "Nodes": [
+      { "Id": "sky", "Speaker": "commander", "Next": "road" },
+      { "Id": "road", "Speaker": "knight", "Next": "heather" },
+      { "Id": "heather", "Speaker": "barbarian" }
+    ]
+  },
+  {
+    "Id": "prologue_stair_bark",
+    "Title": "The Clock",
+    "Trigger": { "Kind": "Prologue", "Id": "Drill", "Level": 2 },
+    "Speakers": [
+      { "Id": "barbarian", "Class": "barbarian" }
+    ],
+    "Nodes": [
+      { "Id": "bat", "Speaker": "barbarian" }
+    ]
+  },
+  {
+    "Id": "prologue_stone_wakes",
+    "Title": "The Stone Wakes",
+    "Trigger": { "Kind": "Prologue", "Id": "Waystone" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "circle", "Speaker": "commander", "Next": "ease" },
+      { "Id": "ease", "Speaker": "cleric", "Next": "more" },
+      { "Id": "more", "Speaker": "knight" }
+    ]
+  },
+  {
+    "Id": "prologue_tithe",
+    "Title": "The Hamlet of Tithe",
+    "Trigger": { "Kind": "Prologue", "Id": "Tithe" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "merchant", "Name": "Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      { "Id": "arrive", "Speaker": "commander", "Next": "monthly" },
+      { "Id": "monthly", "Speaker": "knight", "Next": "bridge" },
+      { "Id": "bridge", "Speaker": "cleric", "Next": "merchant" },
+      { "Id": "merchant", "Speaker": "merchant", "Next": "plan" },
+      { "Id": "plan", "Speaker": "knight" }
+    ]
+  },
+  {
+    "Id": "prologue_vault_barks",
+    "Title": "The Trap",
+    "Trigger": { "Kind": "Prologue", "Id": "Drill", "Level": 1 },
+    "Speakers": [
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" }
+    ],
+    "Nodes": [
+      { "Id": "orbs", "Speaker": "knight", "Next": "squeeze" },
+      { "Id": "squeeze", "Speaker": "barbarian" }
+    ]
+  },
+  {
+    "Id": "prologue_vault_door",
+    "Title": "Whatever you are",
+    "Trigger": { "Kind": "Prologue", "Id": "Crawl" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "cleric", "Class": "cleric" }
+    ],
+    "Nodes": [
+      { "Id": "look", "Speaker": "commander", "Next": "knight" },
+      { "Id": "knight", "Speaker": "knight", "Next": "cleric" },
+      { "Id": "cleric", "Speaker": "cleric", "Next": "barbarian" },
+      { "Id": "barbarian", "Speaker": "barbarian", "Next": "follow" },
+      { "Id": "follow", "Speaker": "knight" }
+    ]
+  },
+  {
+    "Id": "prologue_wake",
+    "Title": "Cold Open",
+    "Trigger": { "Kind": "Prologue", "Id": "Wake" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" }
+    ],
+    "Nodes": [
+      { "Id": "cold", "Speaker": "commander", "Next": "light" },
+      { "Id": "light", "Speaker": "commander", "Next": "door" },
+      { "Id": "door", "Speaker": "barbarian", "Next": "lights" },
+      { "Id": "lights", "Speaker": "knight" }
+    ]
+  },
+  {
+    "Id": "prologue_waystone",
+    "Title": "The Sleeping Stone",
+    "Trigger": { "Kind": "Prologue", "Id": "Waystone" },
+    "Backdrop": "greenvalley",
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "redmage", "Class": "redmage" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "unfold", "Speaker": "commander", "Next": "lock" },
+      { "Id": "lock", "Speaker": "knight", "Next": "bolt" },
+      { "Id": "bolt", "Speaker": "redmage" }
+    ]
   }
 ]

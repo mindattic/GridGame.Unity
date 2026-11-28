@@ -98,6 +98,9 @@ namespace GridGame.Meta
         public bool TutorialDone;
         /// <summary>Camp stations whose first-use tip has been shown (GG-T173, <see cref="CampTips"/>).</summary>
         public HashSet<string> SeenCampTips = new HashSet<string>();
+        /// <summary>Bag pieces already shown as upgrades on Heroes › Equip, so the Heroes tab's New badge clears (GG-T2061,
+        /// <see cref="AutoEquip.FirstNew"/>).</summary>
+        public HashSet<string> SeenGear = new HashSet<string>();
         /// <summary>A `-testmode` throwaway save (GG-T93): enemy levels follow the party (Progression.StageRecommendedLevel).</summary>
         public bool TestMode;
         /// <summary>New Game+ cycle (0 = first run). Unlocked by clearing the last campaign stage (US-332).</summary>

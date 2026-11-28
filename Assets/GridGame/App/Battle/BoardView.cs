@@ -42,7 +42,7 @@ namespace GridGame.App
             // Rounded-square outline matching the tile frame (GG-T732); SetGlow tints it, a beat pulses it.
             Glow = new VisualElement { pickingMode = PickingMode.Ignore };
             Glow.style.position = Position.Absolute;
-            Glow.style.left = Glow.style.top = Glow.style.right = Glow.style.bottom = -5f;
+            Glow.style.left = Glow.style.top = Glow.style.right = Glow.style.bottom = -Size.GlowRing;
             float gr = tile * 0.4f + 5f;
             Glow.style.borderTopLeftRadius = Glow.style.borderTopRightRadius = Glow.style.borderBottomLeftRadius = Glow.style.borderBottomRightRadius = gr;
             Glow.style.borderTopWidth = Glow.style.borderBottomWidth = Glow.style.borderLeftWidth = Glow.style.borderRightWidth = 5f;
@@ -104,14 +104,14 @@ namespace GridGame.App
             Plate.style.borderTopWidth = Plate.style.borderBottomWidth = Plate.style.borderLeftWidth = Plate.style.borderRightWidth = 3;
             Plate.style.borderTopColor = Plate.style.borderLeftColor = Palette.Text;
             Plate.style.borderBottomColor = Plate.style.borderRightColor = new Color(0.3f, 0.32f, 0.4f);
-            Plate.style.borderTopLeftRadius = Plate.style.borderTopRightRadius = Plate.style.borderBottomLeftRadius = Plate.style.borderBottomRightRadius = 6;
+            Plate.style.borderTopLeftRadius = Plate.style.borderTopRightRadius = Plate.style.borderBottomLeftRadius = Plate.style.borderBottomRightRadius = Radius.R6;
             Plate.style.display = DisplayStyle.None;
             for (int i = 0; i < 3; i++)
             {
                 var rivet = new VisualElement { name = "rivet", pickingMode = PickingMode.Ignore };
                 rivet.style.width = rivet.style.height = Size.Bar;
                 rivet.style.backgroundColor = new Color(0.35f, 0.37f, 0.45f);
-                rivet.style.borderTopLeftRadius = rivet.style.borderTopRightRadius = rivet.style.borderBottomLeftRadius = rivet.style.borderBottomRightRadius = 4;
+                rivet.style.borderTopLeftRadius = rivet.style.borderTopRightRadius = rivet.style.borderBottomLeftRadius = rivet.style.borderBottomRightRadius = Radius.R4;
                 Plate.Add(rivet);
             }
             Plate.style.justifyContent = Justify.SpaceAround; Plate.style.alignItems = Align.Center;
@@ -122,7 +122,7 @@ namespace GridGame.App
             WeaponCrack.style.position = Position.Absolute;
             WeaponCrack.style.left = Space.S16; WeaponCrack.style.bottom = Space.S64;
             WeaponCrack.style.width = WeaponCrack.style.height = Size.Crack;
-            WeaponCrack.style.borderTopLeftRadius = WeaponCrack.style.borderTopRightRadius = WeaponCrack.style.borderBottomLeftRadius = WeaponCrack.style.borderBottomRightRadius = 12;
+            WeaponCrack.style.borderTopLeftRadius = WeaponCrack.style.borderTopRightRadius = WeaponCrack.style.borderBottomLeftRadius = WeaponCrack.style.borderBottomRightRadius = Radius.R12;
             WeaponCrack.style.backgroundColor = new Color(0.5f, 0.06f, 0.05f, 0.92f);
             WeaponCrack.style.borderTopWidth = WeaponCrack.style.borderBottomWidth = WeaponCrack.style.borderLeftWidth = WeaponCrack.style.borderRightWidth = 2;
             WeaponCrack.style.borderTopColor = WeaponCrack.style.borderBottomColor = WeaponCrack.style.borderLeftColor = WeaponCrack.style.borderRightColor = Palette.Bad;
@@ -536,7 +536,7 @@ namespace GridGame.App
                     m.style.position = Position.Absolute;
                     m.style.left = x * Tile + 4; m.style.top = y * Tile + 4;
                     m.style.width = Tile - 8; m.style.height = Tile - 8;
-                    m.style.borderTopLeftRadius = m.style.borderTopRightRadius = m.style.borderBottomLeftRadius = m.style.borderBottomRightRadius = 18;
+                    m.style.borderTopLeftRadius = m.style.borderTopRightRadius = m.style.borderBottomLeftRadius = m.style.borderBottomRightRadius = Radius.R18;
                     m.style.opacity = 0;
                     MarkLayer.Add(m);
                     marks[x, y] = m;
@@ -580,7 +580,7 @@ namespace GridGame.App
                 shadow.style.left = c.X * Tile + 14; shadow.style.top = c.Y * Tile + 22;
                 shadow.style.width = Tile - 22; shadow.style.height = Tile - 22;
                 shadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-                SetRadius(shadow, 26);
+                SetRadius(shadow, Radius.R26);
                 TileLayer.Add(shadow);
                 var rock = new VisualElement { name = $"block-{c.X}-{c.Y}", pickingMode = PickingMode.Ignore };
                 rock.style.position = Position.Absolute;
@@ -589,7 +589,7 @@ namespace GridGame.App
                 rock.style.backgroundImage = new StyleBackground(App.Art.BoardTile(theme));
                 rock.style.unityBackgroundImageTintColor = new Color(0.85f, 0.85f, 0.9f, 1f);
                 rock.style.backgroundColor = new Color(0.32f, 0.33f, 0.38f, 1f);
-                SetRadius(rock, 26);
+                SetRadius(rock, Radius.R26);
                 rock.style.borderTopWidth = 6; rock.style.borderLeftWidth = rock.style.borderRightWidth = 4; rock.style.borderBottomWidth = 12;
                 rock.style.borderTopColor = new Color(0.78f, 0.8f, 0.86f, 0.9f);
                 rock.style.borderLeftColor = rock.style.borderRightColor = new Color(0.45f, 0.47f, 0.53f, 1f);
@@ -618,7 +618,7 @@ namespace GridGame.App
                 amp.style.borderTopWidth = amp.style.borderBottomWidth = amp.style.borderLeftWidth = amp.style.borderRightWidth = 6;
                 amp.style.borderTopColor = amp.style.borderBottomColor = amp.style.borderLeftColor = amp.style.borderRightColor = new Color(1f, 0.95f, 0.7f);
                 amp.style.backgroundColor = new Color(1f, 0.72f, 0.15f, 0.85f);
-                amp.style.borderTopLeftRadius = amp.style.borderTopRightRadius = amp.style.borderBottomLeftRadius = amp.style.borderBottomRightRadius = 10;
+                amp.style.borderTopLeftRadius = amp.style.borderTopRightRadius = amp.style.borderBottomLeftRadius = amp.style.borderBottomRightRadius = Radius.R10;
                 var glow = new VisualElement { pickingMode = PickingMode.Ignore };
                 glow.style.position = Position.Absolute;
                 glow.style.left = glow.style.top = glow.style.right = glow.style.bottom = -Space.S32;

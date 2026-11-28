@@ -101,10 +101,10 @@ namespace GridGame.App
                 var at = centre + corners[k] * (BoardRadius + 40f);
                 var label = new Label(id) { pickingMode = PickingMode.Ignore };
                 label.style.position = Position.Absolute;
-                label.style.left = at.x - 50f;
-                label.style.top = at.y - 21f;
-                label.style.width = 100f;
-                label.style.height = 42f;
+                label.style.left = at.x - Size.HexLabelW / 2f;
+                label.style.top = at.y - Size.HexLabelH / 2f;
+                label.style.width = Size.HexLabelW;
+                label.style.height = Size.HexLabelH;
                 label.style.unityTextAlign = TextAnchor.MiddleCenter;
                 label.style.fontSize = 30;
                 Fonts.UseHeavy(label);

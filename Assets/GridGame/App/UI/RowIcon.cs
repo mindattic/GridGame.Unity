@@ -182,7 +182,7 @@ namespace GridGame.App
             b.style.justifyContent = Justify.Center;
             var icon = b.KindIcon(kind);
             icon.style.width = icon.style.height = Size.IconS;
-            if (string.IsNullOrEmpty(text)) { icon.style.marginRight = 0; return b; }
+            if (string.IsNullOrEmpty(text)) { icon.style.marginRight = Space.S0; return b; }
             icon.style.marginRight = Space.S8;
             var label = Ui.Text(text, null, b);
             label.pickingMode = PickingMode.Ignore;

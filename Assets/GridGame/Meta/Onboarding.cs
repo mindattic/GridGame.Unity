@@ -12,7 +12,7 @@ namespace GridGame.Meta
     public sealed class OnboardingSave
     {
         public OnboardingStep Step;
-        /// <summary>The drill's index in campaign.json Tutorial while <see cref="Step"/> is <see cref="OnboardingStep.Drill"/>.</summary>
+        /// <summary>The drill's index in the new-game drill order (<see cref="Drills.NewGameOrder"/>) while <see cref="Step"/> is <see cref="OnboardingStep.Drill"/>.</summary>
         public int Drill;
     }
 
@@ -73,7 +73,7 @@ namespace GridGame.Meta
                 case OnboardingStep.Drill:
                     int n = System.Math.Max(0, o.Drill);
                     if (c == null) return new OnboardingResume(OnboardingStep.Drill, n);
-                    IReadOnlyList<string> tutorial = c.Campaign?.Tutorial;
+                    IReadOnlyList<string> tutorial = Drills.NewGameOrder(c);
                     string id = tutorial != null && n < tutorial.Count ? tutorial[n] : null;
                     return id != null && c.TryStage(id) != null
                         ? new OnboardingResume(OnboardingStep.Drill, n, id)
