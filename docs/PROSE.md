@@ -103,7 +103,9 @@ go to Prose, never to `dialogues.json`.
 
 Trigger kinds: `ThemeStart`, `StageCleared`, `Talk`, `Recruit`, `LevelReached`, `StageStart`, `Wanderer`, and the bond
 and roster kinds `Trust` (`Id` hero, tier in `level=`, GG-T1298), `Cohesion` (`Id` and `Other`, tier in `level=`,
-GG-T1298), `Founding` (no `Id`) and `Joined` (`Id` a hero class or faction, or none; binds `$hero`, GG-T1593).  A `Cohesion` tree writes
+GG-T1298), `Founding` (no `Id`), `Joined` (`Id` a hero class or faction, or none; binds `$hero`, GG-T1593) and
+`Prologue` (`Id` a prologue onboarding step from `DialogueDef.PrologueSteps`, a drill's number in `level=`, GG-T2066;
+the trees are `Data/Dialogue/prologue_*.tree`, the beats in [STORY_SLICE.md](STORY_SLICE.md)).  A `Cohesion` tree writes
 `trigger: Cohesion knight mage level=2`.
 
 ## Placeholder conversations (GG-T387, 2026-11-16)

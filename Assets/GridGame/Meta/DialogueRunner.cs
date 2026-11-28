@@ -653,6 +653,13 @@ namespace GridGame.Meta
             s == null || s.TestMode ? null : c.DialogueOrder.FirstOrDefault(d => d.Trigger?.Kind == DialogueTriggerKind.Founding
                 && !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && CanBind(s, d));
 
+        /// <summary>GG-T2066: the Prologue dialogues for onboarding <paramref name="step"/> (a Drill's <paramref name="drill"/>,
+        /// 1-3), in file order, not yet seen and with their conditions holding. Never on a Test Mode save.</summary>
+        public static List<DialogueDef> PrologueScenes(ContentDb c, SaveData s, string step, int drill = 0) =>
+            s == null || s.TestMode ? new List<DialogueDef>() : c.DialogueOrder.Where(d => d.Trigger?.Kind == DialogueTriggerKind.Prologue
+                && d.Trigger.Id == step && d.Trigger.Level == (step == "Drill" ? drill : 0)
+                && !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && CanBind(s, d)).ToList();
+
         /// <summary>GG-T1318: the next Joined scene to play at Camp, or null: for the first roster hero with Trust who isn't in
         /// <see cref="SaveData.MetHeroes"/> (a hero who joined by a non-story route), the scene written for their class, else
         /// their faction's (<see cref="ContentDb.FactionOf"/>), else the generic one (no Id), its conditions holding with

@@ -6869,6 +6869,547 @@
         ]
       }
     },
+    "dialogue:prologue_bridge": {
+      "key": "dialogue:prologue_bridge",
+      "id": "conversation-prologue-bridge",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d2385d9fd41c4a95a9dcbe97680fd4ef7679a5db1890746524e9808f4dc241d5",
+      "about": [],
+      "speakers": [
+        "$collector",
+        "$barbarian"
+      ],
+      "payload": {
+        "title": "The Toll Bridge",
+        "start": "toll",
+        "nodes": [
+          {
+            "id": "toll",
+            "speaker": "$collector",
+            "line": "Moorfolk with lit orbs. The Captain will pay well for those. Hand them over, and the strange one with you.",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "$barbarian",
+            "line": "Come and take them."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_bridge_barks": {
+      "key": "dialogue:prologue_bridge_barks",
+      "id": "conversation-prologue-bridge-barks",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7b862508eba998ede7a82635b00f355f85463a7ab4eb66614dda91429315d9c9",
+      "about": [],
+      "speakers": [
+        "$barbarian",
+        "$collector",
+        "$knight"
+      ],
+      "payload": {
+        "title": "Every blow clangs",
+        "start": "clang",
+        "nodes": [
+          {
+            "id": "clang",
+            "speaker": "$barbarian",
+            "line": "It just rings. My axe bounces off that plate.",
+            "next": "laugh"
+          },
+          {
+            "id": "laugh",
+            "speaker": "$collector",
+            "line": "Choir steel, Moorfolk. You could hit it till spring.",
+            "next": "back"
+          },
+          {
+            "id": "back",
+            "speaker": "$knight",
+            "line": "We can't break that today. Fall back to the ford. Everyone, now."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_camp": {
+      "key": "dialogue:prologue_camp",
+      "id": "conversation-prologue-camp",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:01b2759d467b29a5198750a0a42728fed849d28df552989ce54489aadd227564",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$cleric",
+        "$knight",
+        "$barbarian"
+      ],
+      "payload": {
+        "title": "Camp at the Ford",
+        "start": "dusk",
+        "nodes": [
+          {
+            "id": "dusk",
+            "speaker": "$commander",
+            "line": "Dusk comes down over the reeds at the ford. Nobody follows you from the bridge.",
+            "next": "meal"
+          },
+          {
+            "id": "meal",
+            "speaker": "$cleric",
+            "line": "Eat something and sleep. Nobody is hurt worse than tired, and tired mends by morning.",
+            "next": "knight"
+          },
+          {
+            "id": "knight",
+            "speaker": "$knight",
+            "line": "He showed us his plate and his flanks and dared us to try. Going round him gets us nowhere.",
+            "next": "through"
+          },
+          {
+            "id": "through",
+            "speaker": "$barbarian",
+            "line": "I don't need to go round it. I need to go through it. Show me where a plate like that is weakest, and I'll learn the swing tonight."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_glint": {
+      "key": "dialogue:prologue_glint",
+      "id": "conversation-prologue-glint",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f23c46f150dcc146fb694f17c878bbee8ef9bd4bbcb368552f404be8290e77a1",
+      "about": [],
+      "speakers": [
+        "$redmage",
+        "$commander",
+        "$knight"
+      ],
+      "payload": {
+        "title": "The Glint",
+        "start": "tome",
+        "nodes": [
+          {
+            "id": "tome",
+            "speaker": "$redmage",
+            "line": "Bolt. A lightning spell, and an old one. The Collector had no idea what he was sitting on.",
+            "next": "glint"
+          },
+          {
+            "id": "glint",
+            "speaker": "$commander",
+            "line": "On a bare hilltop by the road, something catches the light. It glints at you, and only at you.",
+            "next": "nothing"
+          },
+          {
+            "id": "nothing",
+            "speaker": "$knight",
+            "line": "There's nothing there. Grass and a rock.",
+            "next": "them"
+          },
+          {
+            "id": "them",
+            "speaker": "$redmage",
+            "line": "There is for them. Look at the orbs. Take us up there."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_mouth_bark": {
+      "key": "dialogue:prologue_mouth_bark",
+      "id": "conversation-prologue-mouth-bark",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e84048ec593d01b69ba063857ed61e5ae364e1f11325356b1efac94975cc1fa5",
+      "about": [],
+      "speakers": [
+        "$cleric",
+        "$knight"
+      ],
+      "payload": {
+        "title": "The Vault Mouth",
+        "start": "hurt",
+        "nodes": [
+          {
+            "id": "hurt",
+            "speaker": "$cleric",
+            "line": "It caught me on the way up. I can mend it, if someone keeps that glob off me.",
+            "next": "cover"
+          },
+          {
+            "id": "cover",
+            "speaker": "$knight",
+            "line": "Heal yourself. I'll stand in front."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_rematch": {
+      "key": "dialogue:prologue_rematch",
+      "id": "conversation-prologue-rematch",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ff51ab44fbbd860981588bb89a42d5df802fa37e8b407c865de7ead9e9600cb9",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$redmage",
+        "$barbarian",
+        "$knight"
+      ],
+      "payload": {
+        "title": "The Rematch",
+        "start": "shattered",
+        "nodes": [
+          {
+            "id": "shattered",
+            "speaker": "$commander",
+            "line": "The Collector's plate lies in pieces on the bridge. His keys hang at his belt.",
+            "next": "mage"
+          },
+          {
+            "id": "mage",
+            "speaker": "$redmage",
+            "line": "You took his plate off with an axe. I like you already.",
+            "next": "axe"
+          },
+          {
+            "id": "axe",
+            "speaker": "$barbarian",
+            "line": "Took all night to learn. Worth it.",
+            "next": "wagon"
+          },
+          {
+            "id": "wagon",
+            "speaker": "$knight",
+            "line": "His chest is on the white wagon. Gold, a flask, a book. And the wagon is ours now too.",
+            "next": "join"
+          },
+          {
+            "id": "join",
+            "speaker": "$redmage",
+            "line": "He kept that book from me for a month. Let me read it, and I'll show you what it's for."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_road": {
+      "key": "dialogue:prologue_road",
+      "id": "conversation-prologue-road",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2c17875dd259f2ea5e819b626542d16355b7755e3e0ed4c9d5519180fc704fe2",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$knight",
+        "$barbarian"
+      ],
+      "payload": {
+        "title": "The Road to Tithe",
+        "start": "sky",
+        "nodes": [
+          {
+            "id": "sky",
+            "speaker": "$commander",
+            "line": "Wind, heather and a grey sky. Far off, the Manalith hangs over the moor, bigger than the Moorfolk say it used to be.",
+            "next": "road"
+          },
+          {
+            "id": "road",
+            "speaker": "$knight",
+            "line": "Tithe is down this road. Half a day if the weather holds.",
+            "next": "heather"
+          },
+          {
+            "id": "heather",
+            "speaker": "$barbarian",
+            "line": "Something's moving in the heather. Wolves. Stay close to the cart."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_stair_bark": {
+      "key": "dialogue:prologue_stair_bark",
+      "id": "conversation-prologue-stair-bark",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f72d35ecf49dbfaff1117f2e9334229fa780e46c96523f05729b43503a5421dd",
+      "about": [],
+      "speakers": [
+        "$barbarian"
+      ],
+      "payload": {
+        "title": "The Clock",
+        "start": "bat",
+        "nodes": [
+          {
+            "id": "bat",
+            "speaker": "$barbarian",
+            "line": "A bat on the stair. Take your time and line it up. Nothing moves while you think."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_stone_wakes": {
+      "key": "dialogue:prologue_stone_wakes",
+      "id": "conversation-prologue-stone-wakes",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:77e5b02a08778c7e7a5c076d4b1937436cfe1c08d1f521fe61598864dd8d471c",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$cleric",
+        "$knight"
+      ],
+      "payload": {
+        "title": "The Stone Wakes",
+        "start": "circle",
+        "nodes": [
+          {
+            "id": "circle",
+            "speaker": "$commander",
+            "line": "The stone hums awake. A circle of light rolls out over the moor, and the fog lifts off every road it touches.",
+            "next": "ease"
+          },
+          {
+            "id": "ease",
+            "speaker": "$cleric",
+            "line": "Look up. The Manalith. It eased, just a hair.",
+            "next": "more"
+          },
+          {
+            "id": "more",
+            "speaker": "$knight",
+            "line": "If one stone does that, there are more of them out there. Only you can see them. Lead the way."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_tithe": {
+      "key": "dialogue:prologue_tithe",
+      "id": "conversation-prologue-tithe",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:071b35b4f773a58bf5479b63616dde4e326b38d98516216a8101f52207842884",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$knight",
+        "$cleric",
+        "$merchant"
+      ],
+      "payload": {
+        "title": "The Hamlet of Tithe",
+        "start": "arrive",
+        "nodes": [
+          {
+            "id": "arrive",
+            "speaker": "$commander",
+            "line": "A dozen turf roofs around a well, and every door shut. Grey paint on every wall where the colour used to be.",
+            "next": "monthly"
+          },
+          {
+            "id": "monthly",
+            "speaker": "$knight",
+            "line": "The Captain's Tithe Collector takes the colour every month now. Paint, cloth, flowers, anything bright. He says the Choir needs it.",
+            "next": "bridge"
+          },
+          {
+            "id": "bridge",
+            "speaker": "$cleric",
+            "line": "He's holding a Red Mage at the toll bridge. She wouldn't pay, and he wants the whole hamlet to see what that costs.",
+            "next": "merchant"
+          },
+          {
+            "id": "merchant",
+            "speaker": "$merchant",
+            "line": "If you're going to that bridge, I've one Healing Potion left. Take it. I'd rather it went your way than his.",
+            "next": "plan"
+          },
+          {
+            "id": "plan",
+            "speaker": "$knight",
+            "line": "One potion. Give it to whoever stands in front. That's me."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_vault_barks": {
+      "key": "dialogue:prologue_vault_barks",
+      "id": "conversation-prologue-vault-barks",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:6c62e7fd1a9dad53d331b0e4d533e9f4c0c3af95ebe321e61073e60e1e701520",
+      "about": [],
+      "speakers": [
+        "$knight",
+        "$barbarian"
+      ],
+      "payload": {
+        "title": "The Trap",
+        "start": "orbs",
+        "nodes": [
+          {
+            "id": "orbs",
+            "speaker": "$knight",
+            "line": "My orb. It's been dead for a year and it's lit. Hold the door.",
+            "next": "squeeze"
+          },
+          {
+            "id": "squeeze",
+            "speaker": "$barbarian",
+            "line": "Get one between us and it's finished. Same as wolves."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_vault_door": {
+      "key": "dialogue:prologue_vault_door",
+      "id": "conversation-prologue-vault-door",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b2c6a8f2bccd2ab4cd5a41282f076f8ae3d50a149834282d3c0205f8882249b5",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$knight",
+        "$cleric",
+        "$barbarian"
+      ],
+      "payload": {
+        "title": "Whatever you are",
+        "start": "look",
+        "nodes": [
+          {
+            "id": "look",
+            "speaker": "$commander",
+            "line": "Three Moorfolk stand in the broken doorway, slime on their boots and dead Mana Orbs at their belts. All three orbs are glowing.",
+            "next": "knight"
+          },
+          {
+            "id": "knight",
+            "speaker": "$knight",
+            "line": "I saw the lights come on when you moved. Every lamp in the vault, and then our orbs.",
+            "next": "cleric"
+          },
+          {
+            "id": "cleric",
+            "speaker": "$cleric",
+            "line": "Nobody has slept in these tanks since Halcyon fell. Nobody was supposed to wake up in one.",
+            "next": "barbarian"
+          },
+          {
+            "id": "barbarian",
+            "speaker": "$barbarian",
+            "line": "There'll be more slimes on the stair, drawn by the leak. We can talk at the top.",
+            "next": "follow"
+          },
+          {
+            "id": "follow",
+            "speaker": "$knight",
+            "line": "Whatever you are, our orbs work near you. Come with us."
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_wake": {
+      "key": "dialogue:prologue_wake",
+      "id": "conversation-prologue-wake",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:480f75997ed846799f7f1c6962c94275d634917dcdc0f733bc44034c918a7012",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$barbarian",
+        "$knight"
+      ],
+      "payload": {
+        "title": "Cold Open",
+        "start": "cold",
+        "nodes": [
+          {
+            "id": "cold",
+            "speaker": "$commander",
+            "line": "A heartbeat, slow and far away. Frost cracks on the glass in front of your face.",
+            "next": "light"
+          },
+          {
+            "id": "light",
+            "speaker": "$commander",
+            "line": "Cold. Then light. Then voices.",
+            "next": "door"
+          },
+          {
+            "id": "door",
+            "speaker": "$barbarian",
+            "line": "Put your back into it. The door's half open and the slimes are already in the pipes.",
+            "next": "lights"
+          },
+          {
+            "id": "lights",
+            "speaker": "$knight",
+            "line": "Wait. The lamps in here just came on. Who's down there?"
+          }
+        ]
+      }
+    },
+    "dialogue:prologue_waystone": {
+      "key": "dialogue:prologue_waystone",
+      "id": "conversation-prologue-waystone",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b9c9281473c60137f426e0ac698e94166fe874b086f5b032126f2318f5d82a9e",
+      "about": [],
+      "speakers": [
+        "$commander",
+        "$knight",
+        "$redmage"
+      ],
+      "payload": {
+        "title": "The Sleeping Stone",
+        "start": "unfold",
+        "nodes": [
+          {
+            "id": "unfold",
+            "speaker": "$commander",
+            "line": "The rock unfolds. Halcyon plates slide apart, and a Ward-Engine rises out of the hill to face you.",
+            "next": "lock"
+          },
+          {
+            "id": "lock",
+            "speaker": "$knight",
+            "line": "It shrugged off a sword. Check what it's weak to before we waste another swing.",
+            "next": "bolt"
+          },
+          {
+            "id": "bolt",
+            "speaker": "$redmage",
+            "line": "Lightning. It's built to answer lightning. Stand back."
+          }
+        ]
+      }
+    },
     "dialogue:quest_after_grown_not_forged": {
       "key": "dialogue:quest_after_grown_not_forged",
       "id": "conversation-quest-after-grown-not-forged",
