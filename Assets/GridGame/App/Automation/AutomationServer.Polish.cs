@@ -123,6 +123,7 @@ namespace GridGame.App.Automation
                     x = Mathf.Round(r.x), y = Mathf.Round(r.y), w = Mathf.Round(r.width), h = Mathf.Round(r.height),
                     size = Mathf.Round(size),
                     color = new[] { Round3(c.r), Round3(c.g), Round3(c.b), Round3(c.a * Opacity(t)) },
+                    fading = Opacity(t) > 0.02f && Opacity(t) < 0.98f,
                     large = size >= 54f || (isHeavy && size >= 42f),
                 });
             }
@@ -138,6 +139,8 @@ namespace GridGame.App.Automation
             {
                 if (!visibleOf.TryGetValue(e, out var r)) continue; // scrolled fully out of view: nothing to tap
                 var rFull = full;
+                // GG-T2161: a pressed or selected control scales itself down (.is-pressed 0.95); that is a look, not a smaller target.
+                if (e.layout.width >= 1 && e.layout.height >= 1) { float sl = LayoutScale(e) * k; rFull = new Rect(full.x, full.y, e.layout.width * sl, e.layout.height * sl); }
                 string subj = TargetName(e);
                 // GG-T655: the same pixel-snap tolerance as the gaps (GG-T284): a Size.Target (132) control drawn at a
                 // non-integer scale reads 130-131 design px, which isn't a smaller target. Every listed failure was that.

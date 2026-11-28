@@ -228,6 +228,17 @@ def near_uniform(png):
     return max(ImageStat.Stat(img).stddev[0], 0.0) < 3.0
 
 
+def unfaded(name, timeout=4.0):
+    """GG-T2161: a toast or any other element mid-fade reads as a low-contrast text; wait until no text is fading."""
+    end = time.time() + timeout
+    while time.time() < end:
+        texts = (harness.call("layout", timeout=10).get("polish") or {}).get("texts") or []
+        if not any(t.get("fading") for t in texts):
+            return
+        time.sleep(0.25)
+    print(f"  {name}: text still fading after {timeout:.0f}s", flush=True)
+
+
 def page_name(name, page):
     return name if page == 1 else f"{name}-p{page}"
 
@@ -236,6 +247,7 @@ def capture_one(device, name, method, facts):
     run = f"uiaudit-{device}-{name}"
     for attempt in range(4):
         settled(name)
+        unfaded(name)
         src = harness.shot(run)
         if not near_uniform(src):
             break

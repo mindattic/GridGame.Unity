@@ -444,7 +444,7 @@
     color: var(--color-label);
 }
 .tab--active { background-color: var(--color-tab-active); color: var(--color-white); }
-.tab--locked { opacity: 0.4; }
+.tab--locked { opacity: 0.8; } /* a dimmed tab still keeps 4.5:1 in every theme (GG-T2161); 0.4 read 2.2:1 */
 
 /* ── Gauges ──────────────────────────────────────────────────────────────── */
 .gauge { height: 20px; border-radius: var(--radius-10); background-color: var(--color-shade); border-width: 2px; border-color: var(--color-gauge-rim); overflow: hidden; }
