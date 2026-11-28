@@ -1902,6 +1902,7 @@ namespace GridGame.App
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
+            Ui.Para(Coach.LoopLine, help).name = "settings-loop-line";
             var t = Ui.Para(
                 "• Drag a hero tile by tile. Anyone in the way swaps into the tile you left.\n" +
                 "• Trap enemies in a straight line between two heroes to PINCER them. Allies next to the attackers join in.\n" +

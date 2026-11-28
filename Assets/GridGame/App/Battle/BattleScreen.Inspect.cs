@@ -287,6 +287,7 @@ namespace GridGame.App
                 examineCard = null;
             }
             if (examineNote != null) PanelLine(panel, examineNote, "tiny dim", "examine-note");
+            else PanelLine(panel, Coach.LoopLine, "tiny dim", "examine-loop-line");
             var rules = State.Region?.Rules;
             if (rules == null) return;
             foreach (var id in rules)
