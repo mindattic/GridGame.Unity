@@ -6,14 +6,14 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>GG-T189 (§2.5), GG-T1807 (§3.1.0): Guard ends the turn early and banks the unused turn time as a damped
-    /// mana gain to every spell meter.</summary>
+    /// <summary>GG-T189 (§2.5), GG-T1915 (§3.1.0): Guard ends the turn early and banks the unused turn time as one damped
+    /// earned gain into the party mana pool.</summary>
     public class GuardBankTests
     {
         private static Unit Wolf(BattleState s) => s.Units.First(u => u.Def.Id == "wolf" && u.Alive);
 
-        /// <summary>A knight with Fireball (full at 2 x 100) and a cleric with Heal (full at 1 x 100), the wolf
-        /// <paramref name="wolfIp"/> into its bar.</summary>
+        /// <summary>A knight with Fireball (2 x 100) and a cleric with Heal (1 x 100), the wolf <paramref name="wolfIp"/>
+        /// into its bar.</summary>
         private static (BattleState s, Unit knight, Unit cleric) Party(int wolfIp)
         {
             var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
@@ -27,9 +27,6 @@ namespace GridGame.Tests
 
         private static ManaGainedEvent GuardGain(List<BattleEvent> ev) =>
             ev.OfType<ManaGainedEvent>().SingleOrDefault(g => g.Reason == "guard");
-
-        private static ManaMeterDelta Delta(ManaGainedEvent g, Unit u, int slot) =>
-            g.Meters.SingleOrDefault(d => d.UnitId == u.Id && d.Slot == slot);
 
         [Test]
         public void Guard_conversion_is_proportional_to_time_left_and_capped()
@@ -57,24 +54,21 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Guard_adds_the_same_points_to_every_spell_meter()
+        public void Guard_adds_its_charge_to_the_party_pool()
         {
-            var (s, k, c) = Party(0);
+            var (s, _, _) = Party(0);
             int expected = BattleEngine.GuardCharge(s);
             Assert.That(expected, Is.GreaterThan(0));
-            Assert.That(BattleEngine.DampedCharge(s, expected), Is.EqualTo(expected), "no meter is full, so nothing is damped");
+            Assert.That(BattleEngine.DampedCharge(s, expected), Is.EqualTo(expected), "the pool is empty, so nothing is damped");
 
             var ev = BattleEngine.Apply(s, new ShieldCommand());
 
             var g = GuardGain(ev);
             Assert.That(g, Is.Not.Null);
-            Assert.That(g.Amount, Is.EqualTo(expected));
             Assert.That(g.Kind, Is.EqualTo(ManaGainKind.Earned));
-            Assert.That(g.Meters.Count, Is.EqualTo(2), "one meter per Spell slot of every living hero");
-            Assert.That(Delta(g, k, 0).After, Is.EqualTo(System.Math.Min(expected, s.ManaFull(k, 0))));
-            Assert.That(Delta(g, c, 0).After, Is.EqualTo(System.Math.Min(expected, s.ManaFull(c, 0))));
-            Assert.That(Delta(g, k, 0).Full, Is.EqualTo(2 * BattleConfig.ManaPointsPerOrb), "Fireball costs 2");
-            Assert.That(Delta(g, c, 0).Full, Is.EqualTo(1 * BattleConfig.ManaPointsPerOrb), "Heal costs 1, so the same points fill it twice as fast");
+            Assert.That(g.Amount, Is.EqualTo(expected));
+            Assert.That((g.Before, g.After, g.Capacity, g.Wasted), Is.EqualTo((0, expected, BattleConfig.PartyManaCapacity, 0)));
+            Assert.That(ManaIn(s), Is.EqualTo(expected), "one gain into the one pool");
             Assert.That(ev.Any(e => e is ManaGainedEvent m && m.Kind == ManaGainKind.Grant), Is.False, "Guard grants no orb");
         }
 
@@ -88,51 +82,68 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Guard_is_damped_by_the_share_of_full_meters()
+        public void Guard_is_damped_by_how_full_the_pool_is()
         {
-            var (s, k, c) = Party(0);
-            s.SetMana(c.Id, 0, s.ManaFull(c, 0)); // one of the two meters is full
+            var (s, _, _) = Party(0);
+            int before = BattleConfig.PartyManaCapacity / 2;
+            s.SetPartyMana(before);
             int raw = BattleEngine.GuardCharge(s);
-            int expected = System.Math.Max(1, (int)System.Math.Round(raw * (1f - BattleConfig.ChargeFullnessDamping * (1 / 2f))));
+            int expected = System.Math.Max(1, (int)System.Math.Round(raw * (1f - BattleConfig.ChargeFullnessDamping * (before / (float)BattleConfig.PartyManaCapacity))));
+            Assert.That(expected, Is.LessThan(raw));
 
             var ev = BattleEngine.Apply(s, new ShieldCommand());
 
             var g = GuardGain(ev);
-            Assert.That(g.Amount, Is.EqualTo(expected));
             Assert.That(g.Kind, Is.EqualTo(ManaGainKind.Earned));
-            Assert.That(Delta(g, k, 0).Delta, Is.EqualTo(System.Math.Min(expected, s.ManaFull(k, 0))));
-            Assert.That(Delta(g, c, 0), Is.Null, "a full meter takes nothing");
+            Assert.That(g.Amount, Is.EqualTo(expected));
+            Assert.That((g.Before, g.After), Is.EqualTo((before, before + expected)));
+            Assert.That(ManaIn(s), Is.EqualTo(before + expected));
         }
 
         [Test]
-        public void Guard_fills_a_meter_only_to_its_full_and_spills_nothing()
+        public void Guard_readies_a_spell_whose_price_the_pool_now_reaches()
         {
             var (s, k, c) = Party(0);
-            int gain = BattleEngine.GuardCharge(s);
             const int room = 1;
+            s.SetPartyMana(s.SpellPrice(c, 0) - room);
+            int gain = BattleEngine.DampedCharge(s, BattleEngine.GuardCharge(s));
             Assert.That(gain, Is.GreaterThan(room));
-            s.SetMana(c.Id, 0, s.ManaFull(c, 0) - room);
+            Assert.That(ManaIn(s) + gain, Is.LessThan(s.SpellPrice(k, 0)), "not enough for the Fireball");
+
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+
+            Assert.That(GuardGain(ev).Amount, Is.EqualTo(gain));
+            Assert.That(s.SpellReady(c, 0), Is.True);
+            Assert.That(s.SpellReady(k, 0), Is.False);
+            Assert.That(ev.OfType<SpellReadyEvent>().Select(r => (r.UnitId, r.Slot)), Is.EqualTo(new[] { (c.Id, 0) }), "only the Heal crossed its price");
+        }
+
+        [Test]
+        public void Guard_fills_the_pool_only_to_capacity()
+        {
+            var (s, _, _) = Party(0);
+            const int room = 1;
+            s.SetPartyMana(BattleConfig.PartyManaCapacity - room);
+            int gain = BattleEngine.DampedCharge(s, BattleEngine.GuardCharge(s));
+            Assert.That(gain, Is.GreaterThan(room));
 
             var ev = BattleEngine.Apply(s, new ShieldCommand());
 
             var g = GuardGain(ev);
-            Assert.That(Delta(g, c, 0).Delta, Is.EqualTo(room));
-            Assert.That(Delta(g, c, 0).After, Is.EqualTo(s.ManaFull(c, 0)));
-            Assert.That(g.Readied.Select(d => (d.UnitId, d.Slot)), Is.EqualTo(new[] { (c.Id, 0) }));
-            Assert.That(ev.OfType<SpellReadyEvent>().Count(r => r.UnitId == c.Id && r.Slot == 0), Is.EqualTo(1));
-            Assert.That(Delta(g, k, 0).Delta, Is.EqualTo(gain), "the Heal's leftover does not spill into the Fireball");
+            Assert.That(g.Amount, Is.EqualTo(room));
+            Assert.That(g.After, Is.EqualTo(BattleConfig.PartyManaCapacity));
+            Assert.That(g.Wasted, Is.EqualTo(gain - room), "the points past capacity are lost");
+            Assert.That(ManaIn(s), Is.EqualTo(BattleConfig.PartyManaCapacity));
         }
 
         [Test]
-        public void Guard_earns_nothing_while_every_spell_meter_is_full()
+        public void Guard_earns_nothing_while_the_pool_is_full()
         {
-            var (s, k, c) = Party(0);
-            s.SetMana(k.Id, 0, s.ManaFull(k, 0));
-            s.SetMana(c.Id, 0, s.ManaFull(c, 0));
+            var (s, _, _) = Party(0);
+            ManaFull(s);
             var ev = BattleEngine.Apply(s, new ShieldCommand());
             Assert.That(GuardGain(ev), Is.Null);
-            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(s.ManaFull(k, 0)));
-            Assert.That(s.ManaIn(c.Id, 0), Is.EqualTo(s.ManaFull(c, 0)));
+            Assert.That(ManaIn(s), Is.EqualTo(BattleConfig.PartyManaCapacity));
         }
 
         [Test]

@@ -49,12 +49,12 @@ namespace GridGame.App
             Ui.RoleBadge(Ui.RoleOf(h, def), stats).style.alignSelf = Align.FlexStart;
             Ui.Para(Ui.RoleBlurb(Ui.RoleOf(h, def)), stats, "dim");
             GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", stats).name = "hero-support"; // GG-T298
-            Ui.Heading($"HP  {hp} / {u.MaxHp}", stats);
+            Ui.Heading($"HP  {hp} / {u.MaxHp}", RowIcon.Line("stat-hp", stats));
             Ui.Gauge(hp / (float)u.MaxHp, stats);
             var (lvl, into) = GridGame.Core.Rules.Formulas.LevelFromTotalXp(h.TotalXp);
-            Ui.Heading($"Level {lvl}", stats, "gold");
-            Ui.Caption($"Next: {GridGame.Core.Rules.Formulas.XpToNext(lvl) - into} XP", stats, "dim");
-            Ui.Caption($"Skill points: {h.SkillPoints}", stats, "dim");
+            Ui.Heading($"Level {lvl}", RowIcon.Line("stat-level", stats), "gold");
+            Ui.Caption($"Next: {GridGame.Core.Rules.Formulas.XpToNext(lvl) - into} XP", RowIcon.Line("cur-xp", stats), "dim");
+            Ui.Caption($"Skill points: {h.SkillPoints}", RowIcon.Line("cur-skill-points", stats), "dim");
 
             // GG-T48: base (pre-gear) vs. gear-bought vs. total, instead of just the effective total.
             // GG-T1043: the skill hexagon's owned passives get their own Board column (they were folded into Base).
@@ -67,7 +67,7 @@ namespace GridGame.App
             float statCol = Size.ColumnL * 1.15f, talentCol = Size.ColumnL * 1.5f;
             var statHead = Ui.El("row", stats);
             statHead.name = "status-stat-head";
-            Ui.Caption("", statHead).style.width = Size.Column;
+            Ui.Caption("", statHead).style.width = HeroIcons.StatColumn;
             Ui.Caption("Base", statHead, "dim").style.width = statCol;
             Ui.Caption("Talents", statHead, "dim").style.width = talentCol;
             Ui.Caption("Gear", statHead, "dim").style.width = statCol;
@@ -77,7 +77,7 @@ namespace GridGame.App
             void Stat(string n, float b, float bb, float t)
             {
                 var r = Ui.El("row", stats);
-                Ui.Caption(n, r, "dim").style.width = Size.Column;
+                HeroIcons.StatLabel(n, r, HeroIcons.StatColumn);
                 Ui.Caption($"{b:0}", r, "dim").style.width = statCol;
                 Delta(r, bb - b, talentCol);
                 Delta(r, t - bb, statCol);
@@ -91,7 +91,7 @@ namespace GridGame.App
             BondsUi.TrustAndBonds(C, S, h.ClassId, sheet); // GG-T1299
 
             Ui.Section("Gear", sheet);
-            void G(string label, string id, int dur = -1, int repairs = 0, float mastery = 1f, string enchant = null)
+            void G(EquipmentSlot slot, string label, string id, int dur = -1, int repairs = 0, float mastery = 1f, string enchant = null)
             {
                 var it = C.TryItem(id);
                 string name = it == null ? "—" : it.Name +
@@ -100,6 +100,7 @@ namespace GridGame.App
                 var passive = it != null ? ArmorEnchanting.PassiveOf(C, enchant) : null;
                 string tone = it != null ? Ui.RarityClass(it.Rarity) : "dim";
                 var field = Ui.Field(label, name, sheet, tone);
+                RowIcon.Prefix(field.Q<Label>(className: "kit-field__label"), HeroIcons.Slot(slot));
                 if (it != null && mastery > 1f) RowIcon.Prefix(field.Q<Label>("value"), "cur-masterwork");
                 if (passive != null)
                 {
@@ -110,14 +111,14 @@ namespace GridGame.App
                     Ui.Text(passive.Name, "kit-field__value " + tone, field);
                 }
             }
-            G("Weapon", h.WeaponId, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery);
+            G(EquipmentSlot.Weapon, "Weapon", h.WeaponId, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery);
             foreach (var slot in BattleEngine.ArmorSlots)
             {
                 h.Armor.TryGetValue(slot, out var piece);
-                G(slot.ToString(), piece?.ItemId, piece?.Durability ?? -1, piece?.Repairs ?? 0, piece?.Mastery ?? 1f, piece?.Enchant);
+                G(slot, slot.ToString(), piece?.ItemId, piece?.Durability ?? -1, piece?.Repairs ?? 0, piece?.Mastery ?? 1f, piece?.Enchant);
             }
             foreach (var slot in Equipment.JewelrySlots)
-                G(ItemUi.SlotName(slot), h.Jewelry.TryGetValue(slot, out var jid) ? jid : null);
+                G(slot, ItemUi.SlotName(slot), h.Jewelry.TryGetValue(slot, out var jid) ? jid : null);
             // GG-T1826: a unit's description and lore live here and in the Bestiary, not in battle.
             if (!string.IsNullOrEmpty(def.Description) || !string.IsNullOrEmpty(def.Lore))
             {

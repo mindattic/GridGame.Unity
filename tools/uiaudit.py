@@ -114,6 +114,19 @@ def sample_contrast(img, sb, t):
             "pass": ratio >= need}
 
 
+HIDDEN_FRACTION = 0.5
+
+
+def hidden_reason(t):
+    """GG-T2155: text mostly clipped by a scroll viewport or covered by a later-drawn overlay has no readable pixels
+    behind its rect, so it is reported as covered and never sampled for contrast."""
+    if t.get("clipped", 0) >= HIDDEN_FRACTION:
+        return "clipped"
+    if t.get("covered", 0) >= HIDDEN_FRACTION:
+        return "covered"
+    return None
+
+
 def dims(detail):
     m = re.match(r"\s*(\d+)x(\d+)", detail or "")
     return (float(m.group(1)), float(m.group(2))) if m else None
@@ -133,8 +146,10 @@ def measure(device, name, method, png):
     img = Image.open(png).convert("RGB")
     texts = []
     for t in pol.get("texts") or []:
+        hidden = hidden_reason(t)
         texts.append({"text": t["t"], "rect": [t["x"], t["y"], t["w"], t["h"]], "size": u.both(t["size"]),
-                      "large": t["large"], "contrast": sample_contrast(img, sb, t)})
+                      "large": t["large"], "covered": hidden,
+                      "contrast": None if hidden else sample_contrast(img, sb, t)})
     sizes = [t["size"]["px"] for t in texts]
     ratios = [t["contrast"] for t in texts if t["contrast"]]
 
@@ -169,6 +184,7 @@ def measure(device, name, method, png):
             "min": u.both(min(sizes)) if sizes else None, "median": u.both(statistics.median(sizes)) if sizes else None,
             "underCaptionFloor": sum(1 for s in sizes if s < CAPTION_FLOOR - 0.5),
             "contrastSamples": len(ratios), "contrastFails": sum(1 for r in ratios if not r["pass"]),
+            "coveredCount": sum(1 for t in texts if t["covered"]),
             "minContrast": min((r["ratio"] for r in ratios), default=None),
             "items": texts,
         },

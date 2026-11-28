@@ -1,0 +1,27 @@
+dialogue greenvalley_smith
+title: A smith who said no
+trigger: StageCleared greenvalley-03
+speaker smith - name=Blacksmith portrait=tinkerer
+speaker commander $commander
+
+node hail smith
+  That's a Choir wagon. And you're not Choir.
+  -> reply
+
+node reply commander
+  You noticed. Are you going to turn us in?
+  -> ask
+
+node ask smith
+  The Choir asked me to forge their tithe chains. I said no. I'll fix your gear if you take me with you.
+  * Deal. -> joined
+    do: JoinNpc blacksmith
+  * Prove you're any good. -> proof
+
+node proof smith
+  Hand me your worst blade. There. Sharper than when you bought it.
+  do: JoinNpc blacksmith
+  -> joined
+
+node joined smith
+  The Captain's beaten, and the tithe still goes up the old road to the Still. Let's go and see where it ends.

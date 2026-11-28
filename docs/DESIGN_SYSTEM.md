@@ -20,7 +20,7 @@ The theme is **Manapunk** (§11.5): smoked-glass panes, pewter rails, one mana-b
 | R4 | **No hand cursor on mobile.** The pointing hand is for PC builds and the editor only. On a phone no row, note or label keeps a gutter for it. | §11.5 (GG-T1923) | `Ui.ShowsCursor`, `.no-cursor`, `Kit.Indent` (8 px on touch, 72 on PC) |
 | R5 | **No truncation.** Text shrinks to fit (down to the 30-px floor), then wraps, hyphenating cleanly, or for a single line becomes a marquee. No ellipsis except under Reduce Motion, no clipped glyph, no word broken by hand. | §26.6 (GG-T305, GG-T711) | `TextFit`, `Marquee`, `LineBreaker` (automatic on every label) |
 | R6 | **Every arrow is a filled, outlined shape**: a Bezier curve or an orthogonal path (right angles, rounded corners), with the head part of the same outline. No stroked lines, no double strokes, no font arrows. | §11.6 (GG-T735 to GG-T737), §9.0 (GG-T2118) | `Shapes.Arrow`, `Shapes.BezierArrow`, `Shapes.OrthoArrow`, `Shapes.OrthoPathArrow`, `Shapes.DashedArrow` |
-| R7 | **Touch targets are at least 132 × 132 design px** (44 pt on the reference phone), with at least 24 px between neighbours. | POLISH POL-C2, POL-C3; §26.7 | `Size.Target`, `--size-target`, `Kit.Row`, `Space.TargetHalfGap` |
+| R7 | **Touch targets are at least 132 × 132 design px** (44 pt on the reference phone), and at least 48 dp on Android and 44 pt on iOS on every screen (GG-T2144: `TapTarget` grows them on narrow logical widths), with at least 24 px between neighbours. | POLISH POL-C2, POL-C3; §26.7 | `Size.Target`, `TapTarget`, `--size-target`, `Kit.Row`, `Space.TargetHalfGap` |
 | R8 | **30-px text floor.** No text is drawn below 30 design px, and the live floor rises further on small or low-dpi screens (12 screen px or 9 dp). All GUI text is one size, `TypeScale.Base` (40 to 56 px). Emphasis is weight and colour, never size. | §26.6 (GG-T770, GG-T1878), POL-A2 | `TypeFloor.ShrinkMin` = 30, `TypeFloor.ShrinkFloor`, `GuiType` |
 | R9 | **Hero thumbnails; full art only on tap.** Every small actor image is the baked 320-px thumbnail. The full 1024 portrait appears only in story scenes, reveals, and when the player taps a thumbnail. | §12.1 (GG-T713, GG-T1804) | `Ui.Thumb`, `Ui.PortraitThumb`, `Art.Thumb`, `ArtPreview.Open` |
 
@@ -71,8 +71,9 @@ Grouped code colours (GG-T2139), each at the exact value its call sites drew bef
 ### 2.3 Space and size
 
 - **Space** (`Space`, `--space-*`): 4, 8, 12, 16, 24, 32, 48, 64, 96. 12 exists only as half of the 24-px gap between targets. `--space-16-framed` (13) is a selected card's padding: 16 less its 3-px frame, so selecting it does not move its content.
-- **Kit** (`Kit`): page gutter 24 (`Fit.Edge`), gap 16, window padding 16 / 24, row 132, header 150, nav 132, indent 8 (touch) or 72 (PC), card portrait 120, detail pane at most 45 % of the column.
-- **Size** (`Size`): target 132, icon roles per [ICONS.md](ICONS.md) (inline `IconInline` 32, button `IconButton` 48, row `Icon` 64, nav `IconNav` 72; USS `--size-icon-inline`, `--size-icon-button`, `--size-icon`, `--size-icon-nav`), icon M 56, icon S 40, chip 50, thumb 120, avatar 96, party slot 180, medallion 140, slot 196, cell 170, card 300, portrait 360 × 400, art 420 × 620. Lines: underline 2, hairline 3, track 6, bar 8, gauge 14, HP bar 18.
+- **Kit** (`Kit`): page gutter 24 (`Fit.Edge`), gap 16, window padding 16 / 24, row and nav one live tap target (`Kit.Row`, `Kit.NavHeight` = `TapTarget.Current`, 132 or more), header 150, indent 8 (touch) or 72 (PC), card portrait 120, detail pane at most 45 % of the column.
+- **Tap target** (`TapTarget`, GG-T2144): `Size.Target` 132 is the floor; `TapTarget.Current` is the design height that reaches 48 dp (Android, at the display's own density) or 44 pt (iOS) at the live stage scale, rounded up to 4 px (132 to 200). The UI root takes one `tap-target-N` class, which sets `--size-target`, so every row, button, tab and nav tab follows with no per-screen code; code reads `Kit.Row`. The battle HUD rows keep 132 (BIBLE 9.0). Per-device values: [DEVICES.md](devices/DEVICES.md#tap-target-per-device-gg-t2144).
+- **Size** (`Size`): target 132 (the floor), icon roles per [ICONS.md](ICONS.md) (inline `IconInline` 32, button `IconButton` 48, row `Icon` 64, nav `IconNav` 72; USS `--size-icon-inline`, `--size-icon-button`, `--size-icon`, `--size-icon-nav`), icon M 56, icon S 40, chip 50, thumb 120, avatar 96, party slot 180, medallion 140, slot 196, cell 170, card 300, portrait 360 × 400, art 420 × 620. Lines: underline 2, hairline 3, track 6, bar 8, gauge 14, HP bar 18.
 
 ### 2.4 Radii
 
@@ -161,7 +162,7 @@ All of them sit on `GameApp.I.Overlay` above a `.veil` (#05050C at 0.72) that sw
 | Bottom sheet | `Ui.Sheet(name, onClose, full, heightPct)`, `Ui.CloseSheet`; the Abilities sheet (`BattleScreen.AbilitySheet`, GG-T1914, GG-T1920) | full width, rising from the thumb zone. Header with the hero thumbnail, name, HP and Close; tabs; a breadcrumb (`Abilities › Ninjutsu › Smokebomb`). The board stays visible behind it | Close, Back, a tap on the veil | rows are select-then-confirm; the commit button (Perform, Cast, Use) is single |
 | Inspect card | `InspectCard.Attach(e, build)`, `InspectCard.Tap` | a floating card beside its anchor | lift the finger, tap elsewhere | press and hold inspects anything (POL-D1) |
 | Art preview | `ArtPreview.Open(classId)` | the full 1024 portrait over the veil | a tap anywhere, Back | n/a (R9) |
-| Toast | `Ui.Toast(text, seconds)` (`GameApp.Toast` forwards) | a small pane above the nav, never over content | times out (1.8 s) | n/a |
+| Toast | `Ui.Toast(text, seconds)` (`GameApp.Toast` forwards) | a small pane in the band just under the header (`Size.ToastTop` below the safe top), out of the thumb zone so it never covers an action; taps pass through, and a second one stacks under the first (GG-T2156). A page that grants something on arrival names it inline instead (the Summon starter Tickets under the wallet) | times out (1.8 s) | n/a |
 | Pause menu | hamburger, then `OpenMenu` | a sheet of menu rows | Resume, Back | rows are select-then-confirm |
 
 A sheet rises from the bottom (`Timing.Standard`, `Ease.Out`) and drops away faster (`Timing.Quick`). A dialog fades in and scales up from 96 % (`Timing.Quick`, `Ease.Back`).
@@ -171,7 +172,7 @@ A sheet rises from the bottom (`Timing.Standard`, `Ease.Out`) and drops away fas
 The stage is in design px and scales uniformly: at least 1170 × 2532 (`GameApp.DesignWidth`, `DesignHeight`), up to 1424 wide (9:16) or 3000 tall (about 9:23). The safe areas come off the top and bottom.
 
 - **Columns**: one content column, `Fit.Column`, with a 24-px gutter (`Fit.Edge`) on each side. Inside it, a 4-column grid with 24-px gutters is the default for card grids, and the battle action row's three cells share the width evenly. Grids keep even gutters (POL-C8).
-- **Vertical bands, top to bottom**: safe top, header or top bar (150), body (flex), footer (132, optional), nav (132), safe bottom.
+- **Vertical bands, top to bottom**: safe top, header or top bar (150), the toast band (toasts only, over the body's top, GG-T2156), body (flex), footer (132, optional), nav (132), safe bottom.
 - **Thumb zone**: primary actions sit in the **bottom 45 %** of the safe stage (POL-C4). Lists anchor to the lower half (GG-T1853). The commit button, the footer, the nav, the battle action row and the timeline (GG-T2118) live there. The top-left corner (hamburger, Back) is the hard-to-reach corner on purpose: those taps are deliberate, not frequent.
 
 Per device shape, from `tools/devices.json` (the representative device of each shape; the reference device, `iphone15pro`, is in `iphone-island-393`). "132 px is" and "30 px is" convert design px into the device's own pt or dp.
@@ -211,7 +212,7 @@ Per device shape, from `tools/devices.json` (the representative device of each s
 | Show heroes as their thumbnail and open the full art on tap | Show a shrunken 1024 portrait in a list or on a card | R9 |
 | Keep one primary button per screen, in the thumb zone | Stack three price buttons on every row; float the commit button at the top | POL-C4, POL-C7 |
 | Take every colour, space and duration from a token | Write `new Color(…)`, `12px` or `0.3f` in a screen | POL-A1, B1, C1, E1 |
-| Pin the footer and toasts above the nav | Let a footer or toast sit under the nav or over a row | REVIEW §2.3 |
+| Pin the footer above the nav; let toasts drop from under the header | Let a footer sit under the nav, or a toast sit over the thumb zone's actions | REVIEW §2.3, GG-T2156 |
 
 ## 7. What the UX review asks of the kit
 

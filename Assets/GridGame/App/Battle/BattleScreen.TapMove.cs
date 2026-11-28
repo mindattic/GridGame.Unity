@@ -134,18 +134,18 @@ namespace GridGame.App
             int tiles = tapMovePath.Count;
             int pincers = tapMovePreview?.Pincers.Count ?? 0;
             string what = pincers > 1 ? $" · PINCER ×{pincers}" : pincers == 1 ? " · PINCER" : "";
-            var summary = Ui.Text($"Move {hero.Name} {tiles} tile{(tiles == 1 ? "" : "s")}{what}", "small gold", col);
+            var summary = Ui.Text(PanelCopy(PanelState.TapMove, hero.Name, n: tiles, extra: what), "small gold", col);
             summary.name = "move-confirm-summary";
             summary.style.whiteSpace = WhiteSpace.Normal;
             PincerOutcome(col, hero);
-            // Cancel left, Go right (L7), as the ability confirm card.
+            // Cancel left, Move right (L7), as the ability confirm card.
             var btns = Ui.El("row", col);
             btns.name = "move-confirm-buttons";
             btns.style.justifyContent = Justify.SpaceBetween;
             btns.style.marginTop = Space.S8;
             var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelTapMove, "btn--small", btns);
             cancel.name = "move-confirm-cancel";
-            var ok = RowIcon.IconButton("Go", RowKind.Confirm, ConfirmTapMove, "btn--primary", btns, confirmTap: false);
+            var ok = RowIcon.IconButton("Move", RowKind.Confirm, ConfirmTapMove, "btn--primary", btns, confirmTap: false);
             ok.name = "move-confirm-action";
         }
 

@@ -44,6 +44,13 @@ def window_size(device):
     return int(w * k) // 2 * 2, int(h * k) // 2 * 2
 
 
+def tap_px(device, k):
+    """GG-T2144: window px of the platform's minimum tap target (48 dp on Android, 44 pt on iOS) for a device drawn at k
+    window px per device px; the player reads it as -tapPx, since a desktop player's dpi is the monitor's."""
+    _, per_unit, unit = devices.metrics(device)
+    return (44 if unit == "pt" else 48) * per_unit * k
+
+
 def newest_asset():
     newest = 0.0
     for base, _, files in os.walk(os.path.join(ROOT, "Assets")):
@@ -138,10 +145,10 @@ def start(arg, device, run):
     if os.path.exists(log):
         os.remove(log)
     ww, wh = window_size(device)
-    _, dh, top, bottom = DEVICES[device]
+    dw, dh, top, bottom = DEVICES[device]
     cmd = [harness.EXE, "-automation", str(harness.PORT), "-artifacts", art, "-saveRoot", saves,
            "-screen-width", str(ww), "-screen-height", str(wh), "-screen-fullscreen", "0",
-           "-logFile", log, "-scenario", arg]
+           "-logFile", log, "-scenario", arg, "-tapPx", f"{tap_px(device, ww / dw):.2f}"]
     proc = subprocess.Popen(cmd, cwd=ROOT, close_fds=True,
                             creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
     for _ in range(120):

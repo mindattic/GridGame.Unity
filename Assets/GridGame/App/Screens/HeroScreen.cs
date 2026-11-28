@@ -123,24 +123,18 @@ namespace GridGame.App
                 string id = h.ClassId;
                 bool inParty = S.Party.Contains(id);
                 bool sel = id == HeroId;
-                var card = Ui.El("card" + (sel ? " card--selected" : ""), row);
+                var card = Ui.El("card" + (sel ? " tap--selected" : ""), row); // R3: the picked hero pressed in
                 card.name = "hero-pick-" + id;
                 card.style.flexDirection = FlexDirection.Column;
                 card.style.alignItems = Align.Center;
                 card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = cardW;
                 Ui.Margin(card, Space.TargetHalfGap, Space.S16, Space.TargetHalfGap, Space.TargetHalfGap);
                 Ui.Pad(card, Space.S8, Space.S8, Space.S8, Space.S8);
-                var bw = sel ? 4f : 0f;
-                card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = bw;
-                card.style.borderTopColor = card.style.borderBottomColor = card.style.borderLeftColor = card.style.borderRightColor = Palette.Gold;
                 var thumb = Ui.Thumb(id, card, Kit.Thumb);
-                var lv = Ui.Caption($"Lv {Progression.Level(h)}", thumb, "gold");
+                var lv = Ui.Badge($"Lv {Progression.Level(h)}", thumb, "gold");
                 lv.name = "hero-level";
-                lv.pickingMode = PickingMode.Ignore;
                 lv.style.position = Position.Absolute;
                 lv.style.left = lv.style.bottom = Space.S0;
-                lv.style.backgroundColor = Palette.Shade;
-                Ui.Pad(lv, Space.S8, Space.S0, Space.S8, Space.S0);
                 if (NextAbility.Ready(C, S, id)) RowIcon.Badge(thumb, RowKind.New);
                 var name = Ui.Caption(C.TryClass(id)?.Name ?? id, card, inParty ? "t-heavy" : "t-heavy dim");
                 Ui.Margin(name, top: Space.S8);
@@ -160,6 +154,45 @@ namespace GridGame.App
             // Keep the picked hero in view when the roster runs wider than the strip.
             if (picked != null) strip.schedule.Execute(() => strip.ScrollTo(picked)).ExecuteLater(30);
         }
+    }
+
+    /// <summary>The Heroes screens' set icons (docs/ICONS.md): a stat's icon beside its short name, an equipment slot's
+    /// category icon beside its name.</summary>
+    internal static class HeroIcons
+    {
+        /// <summary>The stat icon for a short stat name (STR, VIT, AGI, SPD, INT, WIS, LCK, HP); null for anything else.</summary>
+        public static string Stat(string abbr)
+        {
+            switch (abbr)
+            {
+                case "STR": return "stat-strength";
+                case "VIT": return "stat-vitality";
+                case "AGI": return "stat-agility";
+                case "SPD": return "stat-speed";
+                case "INT": return "stat-intelligence";
+                case "WIS": return "stat-wisdom";
+                case "LCK": return "stat-luck";
+                case "HP": return "stat-hp";
+                default: return null;
+            }
+        }
+
+        /// <summary>The item category icon of an equipment slot: weapon, armor or accessory.</summary>
+        public static string Slot(EquipmentSlot slot) =>
+            slot == EquipmentSlot.Weapon ? "itemcat-weapon" : System.Array.IndexOf(GridGame.Core.Battle.BattleEngine.ArmorSlots, slot) >= 0 ? "itemcat-armor" : "itemcat-accessory";
+
+        /// <summary>A stat's short name led by its icon, in a line <paramref name="width"/> wide (the icon's room included).</summary>
+        public static Label StatLabel(string abbr, VisualElement parent, float width, string classes = "dim")
+        {
+            var id = Stat(abbr);
+            var line = id != null ? RowIcon.Line(id, parent) : parent;
+            var label = Ui.Caption(abbr, line, classes);
+            (id != null ? line : label).style.width = width;
+            return label;
+        }
+
+        /// <summary>The width of a stat name column that leads with its inline icon.</summary>
+        public const float StatColumn = Size.Column + Size.IconInline + Space.S8;
     }
 
     /// <summary>Opens the <see cref="HeroScreen"/> on Status (Camp's party cards, `-start status`).</summary>

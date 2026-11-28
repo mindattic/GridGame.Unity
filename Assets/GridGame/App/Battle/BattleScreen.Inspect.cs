@@ -270,11 +270,11 @@ namespace GridGame.App
             SyncPanel();
         }
 
-        /// <summary>The panel in Examine mode: the prompt, then the examined card, else the region rules in play, each a tap
-        /// to read it.</summary>
+        /// <summary>The panel in Examine mode: the prompt, then the examined card, else the turn rules, the gesture tips
+        /// (GG-T1953) and the region rules in play, each a tap to read it.</summary>
         private void ExaminePanel()
         {
-            var head = Ui.Text(examineCard == null ? "Examine: tap anything" : "Examine: tap anything else · tap Info to close", "small gold", panel);
+            var head = Ui.Text(PanelCopy(examineCard == null ? PanelState.Examine : PanelState.ExamineCard), "small gold", panel);
             head.name = "examine-prompt";
             head.style.whiteSpace = WhiteSpace.Normal;
             head.style.marginBottom = Space.S8;
@@ -287,7 +287,11 @@ namespace GridGame.App
                 examineCard = null;
             }
             if (examineNote != null) PanelLine(panel, examineNote, "tiny dim", "examine-note");
-            else PanelLine(panel, Coach.LoopLine, "tiny dim", "examine-loop-line");
+            else
+            {
+                PanelLine(panel, Coach.LoopLine, "tiny dim", "examine-loop-line");
+                foreach (var tip in ExamineTips) PanelLine(panel, tip, "tiny dim", "examine-tip");
+            }
             var rules = State.Region?.Rules;
             if (rules == null) return;
             foreach (var id in rules)
