@@ -110,8 +110,8 @@ namespace GridGame.App
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
             new Lesson { Id = "chain", Title = "Chain them", DemoMove = true, Waits = true, Scene = "chain",
-                Short = "Commander, one order can set off several pincers at once: a CHAIN. Every link strikes and earns more mana.",
-                Text = "Commander, one drag can set off several pincers in a row — a CHAIN. Every link strikes, and every link earns more mana than the last.",
+                Short = "Commander, one order can set off several pincers at once: a CHAIN. Every link strikes and fills our mana bar.",
+                Text = "Commander, one drag can set off several pincers in a row — a CHAIN. Every link strikes, and every link adds more to our mana bar than the last.",
                 Example = "Example: line both foes up between us, then drag the last of us in.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.ChainIndex >= 1),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Count(p => p.A.IsHero) >= 2), "Drag the {0} along the dotted line: the drop closes two pincers at once.") },
@@ -122,11 +122,11 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.Supporters.Count > 0),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero && p.SupportersA.Count + p.SupportersB.Count > 0)), "Drag the {0} along the dotted line: the third hero joins in as a supporter.") },
             new Lesson { Id = "spell", Title = "Call a spell", FocusSlot = 0, Waits = true, Scene = "spell",
-                Short = "Commander, tap one of us, a lit spell, a target, then Cast. A spell charges on the timeline, then lands.",
-                Text = "Commander, to call a spell tap one of us, a lit spell, then a target, then Cast. A spell charges first — its bar fills as time moves — then it flies and lands.",
-                Example = "Example: the Healer → Heal → a hurt ally → Cast.",
+                Short = "Commander, the thin bar above Abilities is the whole party's mana, and every action fills it. A spell lights once the bar holds its cost.",
+                Text = "Commander, the thin bar above Abilities, Info and GUARD is the whole party's mana. Every action fills it: pincers, chain links, kills, breaking a cast, GUARD. A spell lights once the bar holds its cost, and casting spends that cost from the bar. To call one, tap one of us, Abilities, the spell, a target, then Cast; it charges on the timeline, then lands. Skills cost no mana and recharge after use, and items come in stacks.",
+                Example = "Example: the Healer → Abilities → Heal → a hurt ally → Cast.",
                 Done = (b, c, e) => e.Exists(x => x is CastQueuedEvent q && !q.IsCharge),
-                Marks = b => b.SlotMarks(a => a.Kind == AbilityKind.Spell, preferHeal: true) },
+                Marks = b => b.ManaBarMarks(b.SlotMarks(a => a.Kind == AbilityKind.Spell, preferHeal: true)) },
             new Lesson { Id = "buffs", Title = "Buffs & debuffs", Patience = 3, Waits = true, Scene = "buffs",
                 Short = "Commander, coloured pips on a token are its buffs (blue) and debuffs (purple). Tap it to read them.",
                 Text = "Commander, watch the coloured pips on a token: its buffs (blue) and debuffs (purple), like poison, haste, shields, slows. Hold one of us or a foe, or a pip in the panel, to read exactly what each does and how long it lasts.",
@@ -147,11 +147,11 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is BuffAppliedEvent a && a.BuffId == "taunting"),
                 Marks = b => b.SlotMarks(a => (a.Id ?? "").Contains("taunt")) },
             new Lesson { Id = "guard", Title = "Guard us", Patience = 2,
-                Short = "Commander, GUARD gives up our turn: time skips to the next enemy with all of us shielded. Call it when there's no good move or no time. Time we don't use is banked as mana.",
-                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action. The turn time we leave unused is banked as mana.",
-                ShortHeroTimeline = "Commander, GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Call it when there's no good move or no time. Time we don't use is banked as mana.",
-                TextHeroTimeline = "Commander, GUARD gives up the acting hero's turn: that hero is shielded and the clock runs on to the next hero's icon, foes acting on the way. Call it when there is no good move, or when the gap before the next icon is too short for any action.",
-                Example = "Example: tap GUARD at the top right.",
+                Short = "Commander, GUARD defends and adds mana: time skips to the next enemy with all of us shielded, and the time we don't use fills our mana bar. Call it when there's no good move or no time.",
+                Text = "Commander, GUARD gives up what is left of our turn: the clock skips to the next enemy turn with all of us shielded. Call it when there is no good move, or when the gap before the next enemy is too short for any action. The turn time we leave unused flows into our mana bar.",
+                ShortHeroTimeline = "Commander, GUARD defends and adds mana: the acting hero is shielded, the clock runs on to the next hero's icon, and the time we don't use fills our mana bar. Call it when there's no good move or no time.",
+                TextHeroTimeline = "Commander, GUARD gives up the acting hero's turn: that hero is shielded and the clock runs on to the next hero's icon, foes acting on the way. Call it when there is no good move, or when the gap before the next icon is too short for any action. The turn time we leave unused flows into our mana bar.",
+                Example = "Example: tap GUARD at the bottom right.",
                 Done = (b, c, e) => c is ShieldCommand,
                 Marks = b => b.GuardMarks() },
             new Lesson { Id = "pickup", Title = "Grab pickups", Waits = true, Scene = "pickup",
@@ -522,13 +522,13 @@ namespace GridGame.App
             if (Coach.Pending(s, "battle-guard") && BattleEngine.TooLittleTime(State))
             {
                 RunSystem("battle-guard", "Guard", TurnRules.HeroesOnTimeline(State) // GG-T815 (§2.13.3): Guard shields only the acting hero
-                    ? "Too little time for this hero to act before the next icon. GUARD gives its turn up, shielded."
-                    : "Too little time for any hero to act before the next enemy. GUARD gives the turn up with every hero shielded.", GuardMarks());
+                    ? "Too little time for this hero to act before the next icon. GUARD gives its turn up, shielded, and the time left fills the mana bar."
+                    : "Too little time for any hero to act before the next enemy. GUARD gives the turn up with every hero shielded, and the time left fills the mana bar.", GuardMarks());
                 return;
             }
             if (Coach.Pending(s, "battle-potion") && PotionPick() is (Unit hero, int slot))
             {
-                RunSystem("battle-potion", "Potions", "A potion on a hero's bar acts at once and uses no spell bar. Drink one before a hurt hero falls.", CastMarks(hero, slot));
+                RunSystem("battle-potion", "Potions", "A potion acts at once and costs no mana; each drink spends one from its stack. Drink one before a hurt hero falls.", CastMarks(hero, slot));
                 return;
             }
             if (comboLanded >= ComboRank.B)
@@ -909,7 +909,7 @@ namespace GridGame.App
                     : valid.Where(t => State.UnitAt(t) is Unit u && u.IsHero).OrderBy(t => State.UnitAt(t).HpFraction).FirstOrDefault();
                 target = valid.Contains(pick) ? pick : valid[0];
             }
-            string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
+            string verb = CommitVerb(a);
             var path = ActionTree.PathTo(ActionTree.For(State, hero), slot);
             if (path == null) return null;
             bool Aiming() => coachCommitted || (SelectedHeroId == id && TargetingSlot == slot);
@@ -934,7 +934,7 @@ namespace GridGame.App
                 marks.Add(new CoachStep { Caption = node.IsMove ? $"Tap {a.Name}." : d == 0 ? $"Tap the {node.Name} tab." : $"Open {node.Name}.",
                     Element = () => sheetVeil?.Q(el), Done = () => Aiming() || SheetAt(depth), Valid = Ready });
             }
-            marks.Add(new CoachStep { Caption = $"Tap {CommitVerb(hero, slot, a)}.", Element = () => sheetVeil?.Q("abilities-commit"), Done = Aiming, Valid = Ready });
+            marks.Add(new CoachStep { Caption = $"Tap {CommitVerb(a)}.", Element = () => sheetVeil?.Q("abilities-commit"), Done = Aiming, Valid = Ready });
             if (target is Coord t)
             {
                 var who = State.UnitAt(t);
@@ -977,8 +977,21 @@ namespace GridGame.App
 
         private List<CoachStep> GuardMarks() => guardButton == null ? null : new List<CoachStep>
         {
-            new CoachStep { Caption = "Tap GUARD.", Element = () => guardButton, Done = () => coachCommitted },
+            new CoachStep { Caption = "This thin bar is the party's mana. GUARD adds the time you leave to it (tap it).", Element = () => partyManaHost, Info = true },
+            new CoachStep { Caption = "Tap GUARD: it shields and adds mana.", Element = () => guardButton, Done = () => coachCommitted },
         };
+
+        /// <summary>GG-T1934: the spell lesson opens on the party mana bar and the action row before the cast's own marks.</summary>
+        private List<CoachStep> ManaBarMarks(List<CoachStep> cast)
+        {
+            if (cast == null || partyManaHost == null) return cast;
+            cast.InsertRange(0, new[]
+            {
+                new CoachStep { Caption = "This thin bar is the whole party's mana. Every action fills it, and a spell spends its cost from it (tap it).", Element = () => partyManaHost, Info = true },
+                new CoachStep { Caption = "Abilities holds every spell, skill and item; Info reads the field; GUARD defends and adds mana (tap the row).", Element = () => abilityBar, Info = true },
+            });
+            return cast;
+        }
 
         private List<CoachStep> PlateMarks()
         {
