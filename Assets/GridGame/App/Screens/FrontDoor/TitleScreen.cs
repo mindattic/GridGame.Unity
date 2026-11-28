@@ -37,7 +37,7 @@ namespace GridGame.App
             conduit.name = "title-conduit";
             conduit.style.width = Fit.C(56f);
             Stage(conduit);
-            var tag = Ui.Text("Slide. Flank. Strike.", "h2 shadow dim", col);
+            var tag = Ui.Heading("Slide. Flank. Strike.", col, "dim");
             Ui.Margin(tag, top: Space.S16, bottom: Fit.H(4f));
             Ui.Scrim(tag); // GG-T1887
             Stage(tag);
@@ -73,7 +73,7 @@ namespace GridGame.App
             credits.KindIcon(RowKind.Lore);
             Ui.SelectFirst(menu);
 
-            var ver = Ui.Text($"v{Application.version}", "tiny dim corner-tag", root); // GG-T1794: POL-C9 skips corner tags
+            var ver = Ui.Caption($"v{Application.version}", root, "dim corner-tag"); // GG-T1794: POL-C9 skips corner tags
             ver.style.position = Position.Absolute;
             ver.style.right = Space.S32; ver.style.bottom = Space.S24;
             Ui.Scrim(ver);
@@ -86,7 +86,7 @@ namespace GridGame.App
             var card = Ui.El("card card-tap col title-continue", parent);
             card.name = "title-continue";
             card.style.width = Fit.C(TitleColumnPct);
-            Fonts.UseHeavy(Ui.Text("Continue", "h2", card));
+            Ui.Heading("Continue", card);
             Ui.Caption(Commander.Name(s, App.Profile?.Name), card, "gold");
             var next = HubScreen.NextStage(App.Content, s);
             var stage = next != null ? App.Content.TryStage(next)?.Name : null;
@@ -141,7 +141,7 @@ namespace GridGame.App
         {
             Debug.Log($"[Title] continue slot {slot}");
             var s = App.Saves.Load(slot, App.Content);
-            if (s == null) { App.Toast("That save is damaged"); return; }
+            if (s == null) { App.Toast("That save can't be read. Try another slot."); return; }
             // GG-T608: a newer cloud copy of this slot is offered first (no-op without a signed-in cloud).
             App.Cloud.BeforeLoad(App, slot, s, chosen =>
             {
