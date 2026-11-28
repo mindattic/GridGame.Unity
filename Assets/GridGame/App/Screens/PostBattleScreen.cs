@@ -177,6 +177,7 @@ namespace GridGame.App
                 StoryBeats.AfterResults(report.Victory, stageId);
             };
             bool exitPrimary = nextId == null && !canRetry;
+            if (!report.Victory && !report.Retreated && !report.Escaped && report.LastHits.Count > 0) LastHitsBlock(c, col);
             var footer = Ui.Footer(col, "results-footer");
             var cont = FooterButton(ending ? "Continue" : "To Camp", ending ? RowKind.Enter : RowKind.Station, () => { if (continued) return; continued = true; onContinue(); }, exitPrimary, footer);
             cont.name = "continue";
@@ -187,6 +188,34 @@ namespace GridGame.App
             Ui.El("", col).style.height = Kit.Gap;
             if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
             else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+        }
+
+        /// <summary>How many of the blows that ended a lost battle the results list (GG-T1956).</summary>
+        internal const int DefeatHitsShown = 3;
+
+        /// <summary>GG-T1956 (UX review §6, item 15): on a defeat, the last blows your heroes took, oldest first, just above
+        /// Retry: who hit whom with what, the damage, and "Down" on a blow that knocked a hero out.</summary>
+        private void LastHitsBlock(ContentDb c, VisualElement col)
+        {
+            var w = Ui.Panel(col, null, false, "results-last-hits");
+            Ui.Margin(w, top: Space.S16);
+            Ui.Section("What ended the battle", w);
+            int i = 0;
+            foreach (var hit in report.LastHits)
+            {
+                string target = c.TryClass(hit.TargetClass)?.Name ?? "Your hero";
+                string with = c.TryAbility(hit.AbilityId)?.Name;
+                string label = hit.BuffId != null ? $"{c.TryBuff(hit.BuffId)?.Name ?? "A status"} hit {target}"
+                    : hit.Trap ? $"A trap hit {target}"
+                    : hit.AttackerClass == null ? (with != null ? $"{with} hit {target}" : $"{target} took a blow")
+                    : $"{c.TryClass(hit.AttackerClass)?.Name ?? "A foe"} hit {target}" + (with != null ? $" with {with}" : "");
+                var row = Ui.MenuRow(label, $"{Ui.Count(hit.Amount)} HP" + (hit.Knockout ? " · Down" : ""), null, w);
+                row.name = "results-last-hit-" + i++;
+                if (hit.AttackerClass != null) row.KindIcon(RowKind.Hero, hit.AttackerClass);
+                else if (hit.BuffId != null) row.KindIcon(RowKind.Status, hit.BuffId);
+                else row.KindIcon(RowKind.Status, Art.UiIcon("stat-hp"));
+                if (hit.Knockout) row.Q<Label>("value")?.AddToClassList("bad");
+            }
         }
 
         /// <summary>A footer button: they share the footer's width evenly; <paramref name="primary"/> is the one primary.</summary>

@@ -244,7 +244,7 @@ namespace GridGame.App
             if (talk != null) bar.Add(talk);
             if (DiamondExchange.Have(s) > 0 || showZeroShards)
             {
-                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
+                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar, tex: Art.UiIcon("cur-shards"));
                 shards.name = "header-shards";
                 shards.tooltip = ShardText.Store;
                 if (onShards == null) shards.pickingMode = PickingMode.Ignore;
@@ -253,7 +253,7 @@ namespace GridGame.App
             if (SummonTickets.Have(s) > 0 || showZeroTickets)
             {
                 int t = SummonTickets.Have(s);
-                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
+                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar, tex: Art.UiIcon("cur-summon-tickets"));
                 tickets.name = "header-tickets";
                 tickets.pickingMode = PickingMode.Ignore;
                 chips.Add((tickets, tickets.Q<Label>(), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}", Count(t), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}"));
@@ -261,6 +261,11 @@ namespace GridGame.App
             var more = RowIcon.IconButton($"+{chips.Count}", RowKind.Menu, null, "btn--small", bar);
             more.name = "header-more";
             more.style.display = DisplayStyle.None;
+            foreach (var c in chips) { var ci = c.chip.Q(className: RowIcon.Class); ci.style.width = ci.style.height = Size.IconInline; }
+            var goldIcon = RowIcon.SetIcon("cur-gold", "header-gold-icon");
+            goldIcon.name = "header-gold-icon";
+            goldIcon.style.width = goldIcon.style.height = Size.IconInline;
+            bar.Add(goldIcon);
             Text(Gold(s.Gold), "header-gold shadow", bar).name = "header-gold";
 
             int mode = 0;
@@ -292,7 +297,7 @@ namespace GridGame.App
             bar.schedule.Execute(() => bar.parent?.RegisterCallback<GeometryChangedEvent>(Fit));
         }
 
-        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Campaign, Heroes, Summon and Shop off
+        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Journey, Heroes, Recruit and Shop off
         /// <see cref="NavBadges.Tabs"/>, sharing the stage's width, each <see cref="Kit.NavHeight"/> tall. Under a gesture
         /// bar its band reaches the screen's bottom edge, its tabs staying above the inset (like <see cref="Header"/>). The
         /// lit tab is the page directly above the hub on the stack (<paramref name="current"/> with no hub on it); a
@@ -315,7 +320,7 @@ namespace GridGame.App
                 t.name = "nav-" + tab.Id;
                 t.EnableInClassList("kit-navtab--active", tab.Id == lit);
                 t.EnableInClassList("kit-navtab--locked", !tab.Open);
-                var icon = t.KindIcon(NavKind(tab.Id));
+                var icon = t.KindIcon(NavKind(tab.Id), Art.UiIcon("nav-" + tab.Id));
                 if (!tab.Open) RowIcon.Badge(icon, RowKind.Locked);
                 Marquee(Text(tab.Label, "kit-navtab-label", t));
                 if (!string.IsNullOrEmpty(tab.Badge)) Text(tab.Badge, "kit-navtab-badge", t).name = "nav-badge";
@@ -381,7 +386,7 @@ namespace GridGame.App
                     // GG-T2061: new gear in the bag opens Equip on the hero it upgrades.
                     var gear = AutoEquip.FirstNew(GameApp.I.Content, s);
                     return gear != null ? new EquipScreen(gear.Value.Hero.ClassId) : (GameScreen)new StatusScreen(lead);
-                case CampMenu.Summon: return new SummonScreen();
+                case CampMenu.Summon: return !CampUnlocks.SummonOpen(s) && Mercenaries.Open(s) ? new MercenaryScreen() : (GameScreen)new SummonScreen();
                 case CampMenu.Shop: return new ShopHubScreen();
                 case CampMenu.Diamonds: return new DiamondStoreScreen();
                 case CampMenu.Respec: return new RespecScreen();

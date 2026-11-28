@@ -12,7 +12,7 @@ check("UI tree is laid out at device resolution", h.call("stagebounds")["w"] > 0
 h.call("clicktext", text="Start Campaign"); time.sleep(2)
 h.call("clicktext", text="Slot 1"); time.sleep(3)
 check("touch input reaches the menu (New Game → Slot 1 → camp)", h.call("state")["screen"] == "hub")
-h.call("clicktext", text="Adventure"); time.sleep(2)
+h.call("clicktext", text="Journey"); time.sleep(2)
 h.enter_stage("The Tithe Moors I"); time.sleep(3)
 if h.call("state")["screen"] == "crawl": h.call("clicktext", text="Skip"); time.sleep(3)
 check("a battle starts", h.call("state")["screen"] == "battle")
