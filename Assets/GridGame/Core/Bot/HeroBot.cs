@@ -500,7 +500,7 @@ namespace GridGame.Core.Bot
         }
 
         /// <summary>True while <paramref name="o"/> charges a spell that would lower the party's tempo (a Chronomancer's Drag),
-        /// or a siphon that would drain mana the party's spell meters still hold (GG-T332, §3.1.0).</summary>
+        /// or a siphon that would drain mana the party pool still holds (GG-T332, §3.1.0).</summary>
         internal static bool ChargesTempoDrain(BattleState s, Unit o)
         {
             foreach (var e in s.Timeline)
@@ -519,7 +519,7 @@ namespace GridGame.Core.Bot
             if (a.Echoes)
             {
                 // GG-T388: an Echo is worth what the move it repeats is worth from here, a touch less (it spends the turn
-                // and the cooldown); nothing to repeat, or a copied spell its meters can't pay, is worth nothing.
+                // and the cooldown); nothing to repeat, or a copied spell the party pool can't pay, is worth nothing.
                 var plan = Echo.For(s, caster, s.UnitAt(anchor));
                 if (plan == null) return 0f;
                 var copy = plan.Value.Ability;
@@ -569,7 +569,7 @@ namespace GridGame.Core.Bot
             {
                 foreach (var u in s.Units) if (u.Team == Team.Hero && !u.Alive && !u.IsCorpse) { score += 40f; break; }
             }
-            if (a.GrantsOrbs > 0) score += MeterFill(s, a.GrantsOrbs * BattleConfig.ManaPointsPerOrb) * 3f - (s.AllSpellsFull ? 6f : 0f);
+            if (a.GrantsOrbs > 0) score += PoolFill(s, a.GrantsOrbs * BattleConfig.ManaPointsPerOrb) / (float)BattleConfig.ManaPointsPerOrb * 3f - (s.PartyManaFull ? 6f : 0f);
             if (a.StepBack > 0 && caster.HpFraction < 0.6f)
                 foreach (var e in s.LivingList(Team.Enemy)) if (e.IsAdjacentTo(caster)) { score += 3f; break; }
             foreach (var t in targets)
@@ -591,7 +591,7 @@ namespace GridGame.Core.Bot
                     else if (curse != null && curse.Roots) score += BrambleSnare.Value(s, t) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T881: root a Kiter, a fleeing foe, a Line charger or a hooker
                     else if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
                     if (curse != null) score += ShredValue(t, curse) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T864: Flay a plated or tough foe
-                    if (a.StealsMana) score += s.AllSpellsFull ? 0f : 3f;
+                    if (a.StealsMana) score += 3f * PoolHeadroom(s);
                     if (a.HastenU > 0) score -= 5f;
                     if (!ReadsBar) { if (a.Pushback > 0f) score += 3f; } // GG-T183: shoving a foe back on the timeline buys the party a turn
                     else if (!kills)
@@ -1325,40 +1325,23 @@ namespace GridGame.Core.Bot
         private float GuardValue(BattleState s)
         {
             if (stalled >= 3) return float.NegativeInfinity;
-            float v = MeterFill(s, BattleEngine.DampedCharge(s, BattleEngine.GuardCharge(s))) * 4f; // §3.1.0: the share of each unfilled meter it adds
+            float v = PoolFill(s, BattleEngine.DampedCharge(s, BattleEngine.GuardCharge(s))) / (float)BattleConfig.ManaPointsPerOrb * 4f; // §3.1.0: the orbs' worth it adds to the pool
             foreach (var f in s.LivingList(Team.Enemy))
                 if (EnemyActTicks(s, f) == TurnRules.NextFoeTicks(s) && Threatens(s, f)) { v += 1f; break; }
             return v;
         }
 
-        /// <summary>§3.1.0: whole meters' worth of fill a gain of <paramref name="points"/> would add, summed over every
-        /// spell meter of every living hero (each capped at its own full); 0 when every meter is full.</summary>
-        internal static float MeterFill(BattleState s, int points)
-        {
-            float fill = 0f;
-            if (points <= 0) return fill;
-            foreach (var u in s.Units)
-            {
-                if (!u.IsHero || !u.Alive) continue;
-                for (int i = 0; i < u.Bar.Count; i++)
-                {
-                    int full = s.ManaFull(u, i);
-                    if (full > 0) fill += Math.Min(points, full - s.ManaIn(u.Id, i)) / (float)full;
-                }
-            }
-            return fill;
-        }
+        /// <summary>§3.1.0: the points a gain of <paramref name="points"/> would actually add to the party pool, up to its
+        /// capacity; 0 when the pool is full.</summary>
+        internal static int PoolFill(BattleState s, int points) =>
+            points <= 0 ? 0 : Math.Min(points, Math.Max(0, BattleConfig.PartyManaCapacity - s.PartyMana));
 
-        /// <summary>§3.1.0: any living hero's spell meter holds points (what a foe's siphon would take).</summary>
-        private static bool AnyMana(BattleState s)
-        {
-            foreach (var u in s.Units)
-            {
-                if (!u.IsHero || !u.Alive) continue;
-                for (int i = 0; i < u.Bar.Count; i++) if (s.ManaFull(u, i) > 0 && s.ManaIn(u.Id, i) > 0) return true;
-            }
-            return false;
-        }
+        /// <summary>§3.1.0: the pool's free share, 0 (full) .. 1 (empty).</summary>
+        private static float PoolHeadroom(BattleState s) =>
+            Math.Max(0, BattleConfig.PartyManaCapacity - s.PartyMana) / (float)BattleConfig.PartyManaCapacity;
+
+        /// <summary>§3.1.0: the party pool holds points (what a foe's siphon would take).</summary>
+        private static bool AnyMana(BattleState s) => s.PartyMana > 0;
 
         private static bool FightIsClose(BattleState s)
         {

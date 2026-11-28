@@ -1,7 +1,7 @@
 """
 GG-T1837: capture every screen for the screen-by-screen UI audit (docs/research/MobileGameAccessibility.md section 3).
 
-    python tools/uiaudit.py [--device iphone17pro|pixel9|ipad|all] [--screens hub,battle,...] [--dry-run] [--build]
+    python tools/uiaudit.py [--device iphone15pro|<device>|<shape>|shapes|all] [--screens hub,battle,...] [--dry-run] [--build]
 
 Walks the StartScreens ids (Assets/GridGame/App/Automation/StartScreens.cs, plus the results screens) with `goto`, then
 the scenario-only spots (battle, boss, overworld, camp on the road, skill hex, summon, caravan) with the in-session
@@ -9,10 +9,13 @@ the scenario-only spots (battle, boss, overworld, camp on the road, skill hex, s
 docs/design/ui-audit/captures/<device>/<screen>.png and an entry in that folder's facts.json: tap targets and text sizes
 in pt/dp and mm (design px through the stage scale and the device's ppi), text contrast sampled from the screenshot,
 safe-area intrusions and the whole polish measure. Refuses to start while any other GridGame player is running.
+Devices come from tools/devices.json (tools/devices.py): a device or shape id, "shapes" (one in-target device per shape)
+or "all" (every in-target device).
 """
 import argparse, json, os, re, shutil, statistics, subprocess, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import devices
 import harness
 import scenario
 from polish import contrast
@@ -21,13 +24,9 @@ ROOT = harness.ROOT
 OUT = os.path.join(ROOT, "docs", "design", "ui-audit", "captures")
 START_SCREENS = os.path.join(ROOT, "Assets", "GridGame", "App", "Automation", "StartScreens.cs")
 
-# name: (ppi, device px per point, unit); sizes from MobileGameAccessibility.md section 1.
-METRICS = {
-    "iphone17pro": (460, 3.0, "pt"),
-    "pixel9": (422, 2.625, "dp"),
-    "ipad": (264, 2.0, "pt"),
-}
-AUDIT_DEVICES = ["iphone17pro", "pixel9", "ipad"]
+# device id: (ppi, device px per point, unit), from tools/devices.json.
+METRICS = {d: devices.metrics(d) for d in devices.DEVICES}
+AUDIT_DEVICES = devices.TARGET
 
 # The screen the player is launched on, with a mid-game save that has every Camp station.
 HOME_SPEC = {"target": "screen:hub", "allFeatures": True, "level": 20, "gold": 5000}
@@ -285,18 +284,22 @@ def audit_device(device, items, settle):
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--device", default="iphone17pro", choices=AUDIT_DEVICES + ["all"])
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 epilog="shapes (--device <shape> audits its representative device):\n" + devices.shapes_help())
+    ap.add_argument("--device", default=devices.DEFAULT, help="a device id, a shape id, shapes or all (listed below)")
     ap.add_argument("--screens", help="comma-separated capture names (default: every screen)")
     ap.add_argument("--dry-run", action="store_true", help="list what would be captured, launch nothing")
     ap.add_argument("--settle", type=float, default=1.5, help="seconds to wait after each screen opens")
     ap.add_argument("--build", action="store_true", help="rebuild the Windows dev player if it is stale")
     a = ap.parse_args()
-    devices = AUDIT_DEVICES if a.device == "all" else [a.device]
+    try:
+        targets = devices.resolve(a.device)
+    except ValueError as e:
+        ap.error(str(e))
     items = plan([s.strip() for s in a.screens.split(",") if s.strip()] if a.screens else None)
 
     if a.dry_run:
-        for d in devices:
+        for d in targets:
             w, h, top, bottom = scenario.DEVICES[d]
             print(f"{d} ({w}x{h}, safe {top}/{bottom}, window {'x'.join(map(str, scenario.window_size(d)))}): {len(items)} screens")
             for name, method, arg in items:
@@ -308,7 +311,7 @@ def main():
         sys.exit("a GridGame player is already running (" + ", ".join(f"PID {p}" for p, _ in others)
                  + "); one game instance at a time, and this tool never closes someone else's. Try again once it is closed.")
     scenario.ensure_build(a.build)
-    for d in devices:
+    for d in targets:
         audit_device(d, items, a.settle)
 
 
