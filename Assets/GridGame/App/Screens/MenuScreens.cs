@@ -259,7 +259,9 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header(newGame ? "Start Campaign" : "Load", () => App.Router.Back(), col, out _);
-            var w = Ui.Panel(Ui.PageBody(col), newGame ? "Choose a slot" : "Choose a save");
+            var body = Ui.PageBody(col);
+            body.style.justifyContent = Justify.FlexEnd; // GG-T1853: the slot rows sit in the thumb zone, the header above
+            var w = Ui.Panel(body, newGame ? "Choose a slot" : "Choose a save");
             for (int i = 0; i < SaveStore.Slots; i++)
             {
                 int slot = i;
