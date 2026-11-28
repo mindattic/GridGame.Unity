@@ -53,7 +53,7 @@ namespace GridGame.App
                 bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
                 var tile = Ui.El("kit-tile equip-tile", slotGrid);
                 tile.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
-                tile.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : null); // GG-T718: the worn piece, else the Item emblem
+                tile.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : Art.UiIcon(HeroIcons.Slot(sl))); // GG-T718: the worn piece, else the slot's category icon
                 Ui.Text(ItemUi.SlotName(sl), "kit-tile-label", tile);
                 var valueRow = it != null && (mastery || enchanted) ? Ui.El("icon-line", tile) : tile;
                 if (it != null && mastery) valueRow.Add(RowIcon.SetIcon("cur-masterwork", RowIcon.InlineClass));
@@ -85,7 +85,7 @@ namespace GridGame.App
             var (now, then) = Equipment.Compare(C, h, slot, thenId);
             var grid = Ui.El("row", cmp);
             grid.style.flexWrap = Wrap.Wrap;
-            void Cell(string n, float a, float b) { var c = Ui.El("row", grid); c.style.width = Length.Percent(25); Ui.Caption(n, c, "dim").style.width = Size.Column; Ui.Caption(Ui.Delta(a, b), c); }
+            void Cell(string n, float a, float b) { var c = Ui.El("row", grid); c.style.width = Length.Percent(25); HeroIcons.StatLabel(n, c, HeroIcons.StatColumn); Ui.Caption(Ui.Delta(a, b), c); }
             Cell("STR", now.Strength, then.Strength); Cell("VIT", now.Vitality, then.Vitality); Cell("AGI", now.Agility, then.Agility); Cell("SPD", now.Speed, then.Speed);
             Cell("INT", now.Intelligence, then.Intelligence); Cell("WIS", now.Wisdom, then.Wisdom); Cell("LCK", now.Luck, then.Luck);
             var curItem = C.TryItem(curId);

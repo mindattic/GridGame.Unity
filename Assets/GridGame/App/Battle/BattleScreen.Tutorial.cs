@@ -909,7 +909,7 @@ namespace GridGame.App
                     : valid.Where(t => State.UnitAt(t) is Unit u && u.IsHero).OrderBy(t => State.UnitAt(t).HpFraction).FirstOrDefault();
                 target = valid.Contains(pick) ? pick : valid[0];
             }
-            string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+            string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
             var path = ActionTree.PathTo(ActionTree.For(State, hero), slot);
             if (path == null) return null;
             bool Aiming() => coachCommitted || (SelectedHeroId == id && TargetingSlot == slot);
