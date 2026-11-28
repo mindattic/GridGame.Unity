@@ -112,7 +112,7 @@
     --color-btn-danger-lip: rgb(96, 18, 26);
     --color-btn-danger-hover: rgb(178, 40, 52);
     --color-btn-danger-pressed: rgb(110, 20, 28);
-    --color-badge: rgba(4, 6, 20, 0.75); /* a role badge's dark plate */
+    --color-badge: rgba(4, 6, 20, 0.92); /* a role badge's dark plate */
     --color-chrome: rgba(4, 8, 30, 0.85); /* the header and bottom nav */
     --color-label: rgb(170, 184, 255); /* an inactive tab, nav tab or tile label */
     --color-alert: rgb(214, 48, 64); /* a nav tab's count badge */
@@ -417,8 +417,8 @@
 
 /* ── Camp hub tiles (GG-T1612): a wrapping grid of destination tiles, styled like the nav tabs ── */
 .kit-pillar { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; padding: 0 var(--space-12); }
-.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; height: 160px; margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
-.kit-tile > .menu-icon { width: 56px; height: 56px; margin: 0; }
+.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; min-height: 160px; padding: var(--space-8) var(--space-4); margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
+.kit-tile > .menu-icon { width: var(--size-icon); height: var(--size-icon); margin: 0; } /* row role, docs/ICONS.md (GG-T2085) */
 .kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
 .kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
@@ -455,7 +455,7 @@
 /* ── Toast / dialog ──────────────────────────────────────────────────────── */
 .toast {
     position: absolute;
-    left: 120px; right: 120px; bottom: 260px;
+    left: 120px; right: 120px; top: 166px;
     padding: var(--space-24) var(--space-32);
     border-radius: var(--radius-18);
     border-width: 4px;
@@ -576,6 +576,9 @@
 .kit-chip--tap { min-height: var(--size-target); margin: var(--space-12); padding: 0 var(--space-24); }
 .kit-chip--tap.is-pressed { scale: 0.95 0.95; translate: 0 6px; background-color: var(--color-press); }
 .kit-chip--selected { background-color: var(--color-well); border-width: 3px; border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
+/* GG-T2087: a station's ready chip at the end of a recipe row, centred on the row, its rim in the label's Good green. */
+.menu-row > .kit-chip { align-self: center; flex-shrink: 0; }
+.kit-chip--good { border-color: var(--color-good); }
 .kit-segmented { flex-direction: row; flex-wrap: nowrap; align-items: stretch; padding: 0 var(--space-12); }
 .kit-segment { flex-grow: 1; flex-shrink: 1; flex-basis: 0; padding: 0 var(--space-16); white-space: normal; }
 .kit-segment--selected { border-bottom-width: 3px; border-top-color: var(--color-well-edge); translate: 0 6px; background-color: var(--color-btn-pressed); }
@@ -669,7 +672,7 @@
 .theme-chrono .card { background-color: rgba(255, 255, 255, 0.06); }
 .theme-chrono .card--selected { background-color: rgba(255, 255, 255, 0.16); }
 .theme-chrono .thumb { background-color: rgb(52, 52, 56); }
-.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.8); }
+.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.92); }
 
 .theme-chrono .header {
     background-color: rgba(40, 40, 44, 0.94);
@@ -734,7 +737,7 @@
 .theme-granite .card { background-color: rgba(219, 240, 255, 0.06); }
 .theme-granite .card--selected { background-color: rgba(219, 240, 255, 0.16); }
 .theme-granite .thumb { background-color: rgb(58, 64, 68); }
-.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.8); }
+.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.92); }
 
 .theme-granite .header {
     background-color: rgba(47, 52, 55, 0.94);

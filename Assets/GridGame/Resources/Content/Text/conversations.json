@@ -5609,7 +5609,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9f2983a6bcad80a4653f7679f14eb6dccf745d625edb26b12366314fb4c2fce2",
+      "hash": "sha256:dd2c0bb667d3554224ea83748b5d48fe9c63ef6a47496f2cc3467a1700399dca",
       "about": [
         "character-blacksmith"
       ],
@@ -5657,7 +5657,7 @@
           {
             "id": "joined",
             "speaker": "character-blacksmith",
-            "line": "Let's go before the Captain hears I'm missing."
+            "line": "The Captain's beaten, and the tithe still goes up the old road to the Still. Let's go and see where it ends."
           }
         ]
       }

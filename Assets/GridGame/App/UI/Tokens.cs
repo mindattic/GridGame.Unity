@@ -174,7 +174,7 @@ namespace GridGame.App
         {
             switch (role)
             {
-                case "Tank": return new Color(0.95f, 0.36f, 0.3f);
+                case "Tank": return new Color(1f, 0.45f, 0.38f); // GG-T2154: 4.5:1+ on the badge plate even over bright art
                 case "Healer": return new Color(0.4f, 0.9f, 0.5f);
                 case "Mage": return new Color(0.55f, 0.6f, 1f);
                 case "Striker": return new Color(1f, 0.66f, 0.25f);
@@ -684,8 +684,9 @@ namespace GridGame.App
         public const float Underline = 2, Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
         // How far a board tile's glow ring sits outside the tile.
         public const float GlowRing = 5;
-        // A toast's height above the stage bottom, and how much higher each one already showing pushes the next.
-        public const float ToastLift = 260, ToastStack = 170;
+        // A toast's top below the safe top (just under the header, GG-T2156), and how much lower each one already showing
+        // pushes the next.
+        public const float ToastTop = Kit.HeaderHeight + Kit.Gap, ToastStack = 170;
         // Icons and pictures. The menu icon set's roles (docs/ICONS.md): IconInline in text and chips, IconButton in
         // header and dialog buttons, Icon leading a row or tile, IconNav on the bottom nav tabs.
         public const float IconInline = 32, IconButton = 48, IconNav = 72;
