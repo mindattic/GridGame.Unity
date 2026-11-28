@@ -1724,7 +1724,7 @@ namespace GridGame.App
         private void GrantLine(ManaGainedEvent g)
         {
             string label = (g.Reason == "item" || g.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(g.Reason);
-            if (g.Meters.Count > 0) Feed($"{label}: +{g.Orbs * BattleConfig.ManaPointsPerOrb} mana", Palette.Mana);
+            if (g.Meters.Count > 0) Feed($"{label}: +{g.Amount + g.Wasted} mana", Palette.Mana);
             else Feed($"{label}: the party mana was already full", Palette.Gold);
         }
 

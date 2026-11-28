@@ -25,7 +25,7 @@ namespace GridGame.Core.Battle
             S.Permadeath = setup.Permadeath;
             S.Cohesion = setup.Cohesion == null ? new Dictionary<string, int>() : new Dictionary<string, int>(setup.Cohesion); // GG-T1308
             S.UnlockedSlots = setup.UnlockedSlots;
-            carriedOrbs = Math.Max(0, setup.StartOrbs);
+            startMana = Math.Max(0, setup.StartMana);
             S.Purse = Math.Max(0, setup.Purse);
             S.WandererSpec = setup.Wanderer;
             S.Bounties = setup.Bounties == null ? new List<BountyMark>() : setup.Bounties.ConvertAll(b => b.Clone()); // GG-T431
@@ -242,7 +242,7 @@ namespace GridGame.Core.Battle
         }
 
         private int pendingStartOrbs;
-        private int carriedOrbs;
+        private int startMana;
         private readonly List<int> startProtected = new List<int>();
 
         /// <summary>Gear with BattleStartManaOrbs (Mage/Wizard Robe) seeds orbs, capped by the bank (§24.8).</summary>
@@ -250,8 +250,8 @@ namespace GridGame.Core.Battle
         {
             GrantOrbs(pendingStartOrbs, -1, "battle start");
             pendingStartOrbs = 0;
-            GrantOrbs(carriedOrbs, -1, "carried");
-            carriedOrbs = 0;
+            GrantMana(startMana, -1, "carried");
+            startMana = 0;
         }
 
         // ─────────────────────────────────────────────────────────────────────────────

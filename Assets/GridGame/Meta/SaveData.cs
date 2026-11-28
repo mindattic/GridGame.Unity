@@ -25,7 +25,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 28;
+        public const int CurrentVersion = 29;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -669,12 +669,13 @@ namespace GridGame.Meta
     public static class SaveMigrations
     {
         /// <summary>GG-T1790: travel replaced expeditions. A save loaded mid-expedition is on the road with the orbs it
-        /// carried (wounds stay as saved); the legacy <see cref="SaveData.Expedition"/> is then cleared. Any version.</summary>
+        /// carried, as <see cref="BattleConfig.ManaPointsPerOrb"/> points each (GG-T1927; wounds stay as saved); the legacy
+        /// <see cref="SaveData.Expedition"/> is then cleared. Any version.</summary>
         public static void DrainExpedition(SaveData s)
         {
             if (s.Expedition == null) return;
             s.World ??= new WorldSave();
-            s.World.CarriedOrbs = Math.Max(0, s.Expedition.CarriedOrbs);
+            s.World.CarriedMana = Math.Max(0, s.Expedition.CarriedOrbs) * BattleConfig.ManaPointsPerOrb;
             s.World.Camped = false;
             s.Expedition = null;
         }
@@ -1017,6 +1018,14 @@ namespace GridGame.Meta
             // out once (below, after Notes.Clear).
             bool beforeOrbRetire = s.Version < 28;
             if (s.Version < 28) s.Version = 28;
+            // GG-T1927 (§3.1.0): mana carried on the road is party pool points. An older save's carried whole orbs become
+            // ManaPointsPerOrb points each.
+            if (s.Version < 29)
+            {
+                s.World.CarriedMana = Math.Max(0, s.World.CarriedOrbs ?? 0) * BattleConfig.ManaPointsPerOrb;
+                s.Version = 29;
+            }
+            s.World.CarriedOrbs = null;
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();

@@ -84,7 +84,7 @@ namespace GridGame.App.Automation
                 Victory = true, StageId = PreviewStage(app), Gold = 214, XpEach = 38,
             };
             // GG-T1786: "results-mid" is a win on the road (orbs carried, the Medic Wagon's patch); the other a win back at camp.
-            if (mid) { Meta.TravelRules.SetOut(app.Save); app.Save.World.CarriedOrbs = 4; r.CarriedOrbs = 4; r.MedicHealed = 18; }
+            if (mid) { Meta.TravelRules.SetOut(app.Save); app.Save.World.CarriedMana = 400; r.CarriedMana = 400; r.MedicHealed = 18; }
             else
             {
                 Meta.TravelRules.MakeCamp(app.Save);

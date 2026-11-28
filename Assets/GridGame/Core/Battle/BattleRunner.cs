@@ -584,7 +584,14 @@ namespace GridGame.Core.Battle
         private void GrantOrbs(int orbs, int sourceId, string reason)
         {
             if (orbs <= 0) return;
-            int points = orbs * BattleConfig.ManaPointsPerOrb;
+            GrantMana(orbs * BattleConfig.ManaPointsPerOrb, sourceId, reason, orbs);
+        }
+
+        /// <summary>A whole grant of <paramref name="points"/> (§3.1.0), the same way as <see cref="GrantOrbs"/>; a grant made
+        /// in points (mana carried on the road, Mana Casks, Well Rested) reports 0 <paramref name="orbs"/>.</summary>
+        private void GrantMana(int points, int sourceId, string reason, int orbs = 0)
+        {
+            if (points <= 0) return;
             if (!GainMana(points, sourceId, reason, e => e.Orbs = orbs))
                 Emit(new ManaGainedEvent
                 {

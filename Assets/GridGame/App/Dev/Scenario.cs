@@ -26,6 +26,8 @@ namespace GridGame.App.Dev
         public JToken Gold;
         public int? Food;
         public bool? OnTheRoad;
+        /// <summary>Whole orbs of mana carried on the road; each is <see cref="GridGame.Core.Battle.BattleConfig.ManaPointsPerOrb"/>
+        /// points of <see cref="GridGame.Meta.WorldSave.CarriedMana"/> (GG-T1927).</summary>
         public int? CarriedOrbs;
         /// <summary>Every Camp NPC joined, so every station is open.</summary>
         public bool AllFeatures;

@@ -347,45 +347,45 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Build_adds_mana_casks_to_start_orbs()
+        public void Build_adds_mana_casks_to_start_mana()
         {
             var c = Real; var s = Progression.NewGame(c, "MC");
             s.Gold = 10000;
             var stageId = c.CampaignStages()[0].Id;
-            int before = BattleFactory.Build(c, s, stageId, 1).StartOrbs;
+            int before = BattleFactory.Build(c, s, stageId, 1).StartMana;
             Assert.That(CaravanUpgrades.Buy(c, s, "mana_casks").Ok, Is.True);
-            Assert.That(BattleFactory.Build(c, s, stageId, 1).StartOrbs, Is.EqualTo(before + 1));
+            Assert.That(BattleFactory.Build(c, s, stageId, 1).StartMana, Is.EqualTo(before + 100));
         }
 
         // ── Travel (GG-T1790) ──
 
         [Test]
-        public void StartOrbs_is_zero_at_camp_even_with_orbs_recorded()
+        public void StartMana_is_zero_at_camp_even_with_mana_recorded()
         {
             var c = Real; var s = Progression.NewGame(c, "OT");
             var stage = c.Campaign.Themes[0].Stages[0];
-            s.World.CarriedOrbs = 5; // a stale count at camp never seeds a battle
-            Assert.That(BattleFactory.Build(c, s, stage, 1).StartOrbs, Is.EqualTo(0));
+            s.World.CarriedMana = 450; // a stale count at camp never seeds a battle
+            Assert.That(BattleFactory.Build(c, s, stage, 1).StartMana, Is.EqualTo(0));
             TravelRules.SetOut(s);
-            s.World.CarriedOrbs = 5;
-            Assert.That(BattleFactory.Build(c, s, stage, 1).StartOrbs, Is.EqualTo(5));
+            s.World.CarriedMana = 450;
+            Assert.That(BattleFactory.Build(c, s, stage, 1).StartMana, Is.EqualTo(450));
         }
 
         [Test]
-        public void Making_camp_on_the_road_lets_the_carried_orbs_go()
+        public void Making_camp_on_the_road_lets_the_carried_mana_go()
         {
             // GG-T1786: the results screen's To Camp (and the Rest row) make camp through TravelRules.MakeCamp.
             var c = Real; var s = Progression.NewGame(c, "AB");
             TravelRules.SetOut(s);
-            s.World.CarriedOrbs = 3;
+            s.World.CarriedMana = 300;
             TravelRules.MakeCamp(s);
             Assert.That(s.World.Camped, Is.True);
-            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(0));
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(TravelRules.StartMana(s), Is.EqualTo(0));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(0));
         }
 
         [Test]
-        public void A_win_on_the_road_reports_the_carried_orbs_and_the_medic_heal()
+        public void A_win_on_the_road_reports_the_carried_mana_and_the_medic_heal()
         {
             var c = Real; var s = Progression.NewGame(c, "MW");
             s.Gold = 10000;
@@ -393,8 +393,9 @@ namespace GridGame.Tests
             var st = FightWithCoins(c, s, c.Campaign.Themes[0].Stages[0], 10);
             GrantMana(st, 3);
             var rep = BattleFactory.Commit(c, s, st);
-            Assert.That(rep.CarriedOrbs, Is.EqualTo(st.ReadySpellCount));
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(st.ReadySpellCount));
+            Assert.That(rep.ManaLeft, Is.EqualTo(st.PartyMana));
+            Assert.That(rep.CarriedMana, Is.EqualTo(st.PartyMana));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(st.PartyMana));
             Assert.That(rep.MedicHealed, Is.GreaterThanOrEqualTo(0));
         }
 

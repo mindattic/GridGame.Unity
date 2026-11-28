@@ -201,7 +201,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_win_on_the_road_carries_its_orbs_and_wounds_into_the_next_battle_with_rest_closed()
+        public void A_win_on_the_road_carries_its_mana_and_wounds_into_the_next_battle_with_rest_closed()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex");
             Assert.That(s.World.Camped, Is.True, "a new game starts at camp");
@@ -210,20 +210,20 @@ namespace GridGame.Tests
             GrantMana(b1, 4);
             var rep = BattleFactory.Commit(c, s, b1);
             Assert.That(TravelRules.OnTheRoad(s), Is.True);
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(b1.ReadySpellCount));
-            Assert.That(rep.CarriedOrbs, Is.EqualTo(b1.ReadySpellCount));
-            Assert.That(rep.OrbDust, Is.EqualTo(0), "carried orbs stay orbs");
+            Assert.That(s.World.CarriedMana, Is.EqualTo(b1.PartyMana));
+            Assert.That(rep.CarriedMana, Is.EqualTo(b1.PartyMana));
+            Assert.That(rep.OrbDust, Is.EqualTo(0), "carried mana settles at the battle that keeps it");
             s.Roster[0].Hp = 1;
             Assert.That(CampRestService.Rest(s, out _).Ok, Is.False, "no camp rest on the road");
             Assert.That(s.Roster[0].Hp, Is.EqualTo(1), "wounds stay on the road");
             var setup = BattleFactory.Build(c, s, theme.Stages[1], 3);
-            Assert.That(setup.StartOrbs, Is.EqualTo(s.World.CarriedOrbs));
+            Assert.That(setup.StartMana, Is.EqualTo(s.World.CarriedMana));
             var b2 = BattleEngine.Create(c, setup, new List<BattleEvent>());
-            Assert.That(b2.ReadySpellCount >= setup.StartOrbs, Is.True, "carried orbs seed the next battle's bank");
+            Assert.That(b2.PartyMana >= System.Math.Min(setup.StartMana, BattleConfig.PartyManaCapacity), Is.True, "carried mana seeds the next battle's pool");
         }
 
         [Test]
-        public void A_defeat_on_the_road_falls_back_to_camp_with_no_orbs()
+        public void A_defeat_on_the_road_falls_back_to_camp_with_no_mana()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex3");
             var theme = c.Campaign.Themes[0];
@@ -233,9 +233,9 @@ namespace GridGame.Tests
             Assume.That(TravelRules.OnTheRoad(s), Is.True);
             var lost = BattleFactory.Commit(c, s, Fight(c, s, theme.Stages[1], false));
             Assert.That(s.World.Camped, Is.True);
-            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
-            Assert.That(lost.CarriedOrbs, Is.EqualTo(0));
-            Assert.That(BattleFactory.Build(c, s, theme.Stages[0], 3).StartOrbs, Is.EqualTo(0));
+            Assert.That(s.World.CarriedMana, Is.EqualTo(0));
+            Assert.That(lost.CarriedMana, Is.EqualTo(0));
+            Assert.That(BattleFactory.Build(c, s, theme.Stages[0], 3).StartMana, Is.EqualTo(0));
         }
 
         [Test]
@@ -493,9 +493,9 @@ namespace GridGame.Tests
             Assert.That(c.Caravan.Count >= 5, Is.True);
             s.Gold = 10000;
             var stage0 = c.Campaign.Themes[0].Stages[0];
-            int orbsBefore = BattleFactory.Build(c, s, stage0, 1).StartOrbs;
+            int manaBefore = BattleFactory.Build(c, s, stage0, 1).StartMana;
             Assert.That(CaravanUpgrades.Buy(c, s, "mana_casks").Ok, Is.True);
-            Assert.That(BattleFactory.Build(c, s, stage0, 1).StartOrbs, Is.EqualTo(orbsBefore + 1));
+            Assert.That(BattleFactory.Build(c, s, stage0, 1).StartMana, Is.EqualTo(manaBefore + 100));
             Assert.That(10000 - c.Caravan["mana_casks"].Levels[0].Cost == s.Gold, Is.True);
 
             // Armory: cheaper repairs.
