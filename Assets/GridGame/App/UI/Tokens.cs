@@ -98,6 +98,9 @@ namespace GridGame.App
         public static readonly Color CbBoss = new Color(0.75f, 0.3f, 0.02f);
         /// <summary>A foe's mark (keyline, timeline icon): enemy red, or the colourblind orange.</summary>
         public static Color TeamFoe => Colorblind ? CbFoe : Enemy;
+        /// <summary>A boss's mark (keyline, timeline icon, the notched base plate of GG-T2128): boss purple, or the colourblind
+        /// burnt orange. Apart from the next actor ring (aqua, or reddish purple under Colorblind palette) and the enemy
+        /// intent red.</summary>
         public static Color TeamBoss => Colorblind ? CbBoss : Boss;
         public static Color TeamCast(bool hero) => Colorblind ? (hero ? CbHero : CbFoe) : hero ? CastHero : CastEnemy;
         /// <summary>A hero's mark (base plate, turn ring): hero blue, or the colourblind sky blue.</summary>
