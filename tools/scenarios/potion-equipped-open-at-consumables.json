@@ -1,0 +1,7 @@
+{
+  "target": "stage:greenvalley-01",
+  "consumables": {
+    "knight": { "healing_potion_basic": 1 }
+  },
+  "open": "abilities:consumables"
+}

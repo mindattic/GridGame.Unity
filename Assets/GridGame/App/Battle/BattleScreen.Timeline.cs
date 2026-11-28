@@ -69,16 +69,17 @@ namespace GridGame.App
         private static float TrackX1 => TrayX0 - Space.S16 - IconSpan / 2f;
 
         // ── The recovery tray (GG-T319): after acting, a turn icon spends its recovery OFF the bar, here, between the
-        // track's right end and the stage edge. Its diamonds sit in a diamond lattice (left = back on the bar soonest), shrunk
-        // and dimmed, each traced by a countdown ring; when one runs out the icon slides onto the bar at its entry. ──
-        private const float TrayScale = 0.58f;
-        /// <summary>The lattice step: two ringed tray diamonds a step apart along a diagonal sit edge to edge.</summary>
-        private const float TrayCell = 66f;
-        private static float TrayW => 2f * TrayCell;
+        // track's right end and the stage edge. GG-T1954 (UX review #12): the tray is one "+N resting" chip, not a lattice
+        // of dimmed diamonds; an icon flies into the chip, hides while it recovers, and flies back out onto the bar at its
+        // entry when its recovery runs out. A tap on the chip lists who rests and when each comes back. ──
+        /// <summary>The scale an icon shrinks to as it flies into the chip (and grows from as it leaves).</summary>
+        private const float TrayScale = 0.35f;
+        /// <summary>Width (design px) the tray keeps at the track's right end for the resting chip.</summary>
+        private const float RestingChipWidth = 240f;
+        private static float TrayW => RestingChipWidth;
         /// <summary>Right edge of the tray: the stage's edge gutter (GUARD lives on the ability bar, GG-T1904).</summary>
         private static float TrayX1 => GameApp.StageWidth - Fit.Edge;
         private static float TrayX0 => TrayX1 - TrayW;
-        private static float TraySocketSide => TrayW / Sqrt2 + Space.S8;
         private static float XOfU(float u) => TrackX0 + Mathf.Clamp01(u) * (TrackX1 - TrackX0);
 
         private VisualElement timelineFrame, timelineBar, timelineIcons, timelineSlot, slotFrame, slotHalo;
@@ -105,7 +106,6 @@ namespace GridGame.App
         /// <summary>GG-T1071: icons mid-pushback: where the slide began (u), how far it has run (0..1), and the Y-axis
         /// turns it spins; LayoutIcons draws them eased from there toward their live u.</summary>
         private readonly Dictionary<int, (float fromU, float k, int turns)> pushSlides = new Dictionary<int, (float, float, int)>();
-        private VisualElement traySocket;
         /// <summary>Off for the very first sync of a build, so the opening layout doesn't fire arrival/glow sounds.</summary>
         private bool timelineSeeded;
 
@@ -150,16 +150,6 @@ namespace GridGame.App
 
             BuildGapLane(frame);
 
-            // The tray's socket: one dark diamond the four-slot lattice fills, echoing the prominence slot at the left.
-            traySocket = new VisualElement { name = "tl-tray", pickingMode = PickingMode.Ignore };
-            traySocket.style.position = Position.Absolute;
-            traySocket.style.width = traySocket.style.height = TraySocketSide;
-            traySocket.style.top = TrackY - TraySocketSide / 2f;
-            traySocket.style.rotate = new Rotate(45f);
-            traySocket.style.backgroundColor = Palette.Ink.WithA(0.45f);
-            SetBorder(traySocket, Radius.R8, 2f, Palette.TextDim.WithA(0.45f));
-            frame.Add(traySocket);
-
             timelineIcons = Ui.El("", frame);
             timelineIcons.name = "timeline-icons";
             timelineIcons.pickingMode = PickingMode.Ignore;
@@ -167,6 +157,8 @@ namespace GridGame.App
             timelineIcons.style.left = timelineIcons.style.top = timelineIcons.style.right = timelineIcons.style.bottom = Space.S0;
             timelineIcons.schedule.Execute(CycleBeat).Every(1200);
             timelineIcons.schedule.Execute(PulseTimeline).Every(33);
+
+            BuildRestingChip(frame);
 
             BuildSlot(frame);
 
@@ -458,7 +450,7 @@ namespace GridGame.App
             timelineBar.style.width = Mathf.Max(0f, XOfU(1f) + IconSpan / 2f - start);
             float bar = Mathf.Max(0.0001f, BattleConfig.BarSeconds);
             foreach (var (d, side, s) in delimiters) d.style.left = XOfU(s / bar) - side / 2f;
-            if (traySocket != null) traySocket.style.left = TrayX0 + TrayW / 2f - TraySocketSide / 2f;
+            if (trayHost != null) trayHost.style.left = TrayX0;
             if (lastAt != null) LayoutIcons(lastAt);
         }
 
@@ -819,11 +811,8 @@ namespace GridGame.App
             float now = Time.unscaledTime;
             foreach (var e in entries)
                 PlaceIcon(e, XOfU(SlideU(e.Id, at[e.Id])), TrackY, e.Id == nextActorEntry ? NextScale : 1f, 0f, now);
-            for (int i = 0; i < tray.Count; i++)
-            {
-                var (cx, cy) = TraySlot(i);
-                PlaceIcon(tray[i], cx, cy, TrayScale, 1f, now);
-            }
+            foreach (var e in tray) PlaceIcon(e, TrayX0 + TrayW / 2f, TrackY, TrayScale, 1f, now);
+            SyncRestingChip(tray.Count);
             var cluster = new List<TimelineEntry>();
             void Flush()
             {
@@ -841,17 +830,7 @@ namespace GridGame.App
                 lastX = x;
             }
             Flush();
-            for (int i = tray.Count - 1; i >= 0; i--) timelineIconViews[tray[i].Id].BringToFront(); // the soonest back on top
             foreach (var id in trayFlights.Keys) if (timelineIconViews.TryGetValue(id, out var fv)) fv.BringToFront();
-        }
-
-        /// <summary>Centre of tray slot <paramref name="i"/>: left, top, bottom, right of the lattice; a fifth and on stack
-        /// a step up on the slots before them.</summary>
-        private static (float x, float y) TraySlot(int i)
-        {
-            float c = TrayCell, depth = i / 4;
-            var (dx, dy) = (i % 4) switch { 0 => (c / 2f, 0f), 1 => (c, -c / 2f), 2 => (c, c / 2f), _ => (1.5f * c, 0f) };
-            return (TrayX0 + dx, TrackY + dy - Space.S8 * depth);
         }
 
         /// <summary>Puts one icon at its target centre and scale, or partway there while a tray flight runs, and draws its
@@ -874,6 +853,9 @@ namespace GridGame.App
                 }
             }
             icon.style.left = x; icon.style.top = y;
+            bool resting = trayK > 0f && !trayFlights.ContainsKey(e.Id); // GG-T1954: inside the chip, out of sight
+            icon.style.display = resting ? DisplayStyle.None : DisplayStyle.Flex;
+            if (resting && tapArrowFrom == icon) ClearTapArrow();
             // GG-T1071: a pushback spins the diamond about its Y axis: its width follows |cos|, its back shows past 90°.
             float w = 1f;
             var back = icon.Q("tl-back");
@@ -992,7 +974,7 @@ namespace GridGame.App
                 var status = owner == null ? null : StatusOf(owner, e);
                 var art = icon.Q("tl-art");
                 bool tray = inTray.Contains(e.Id);
-                if (status == null) { badge?.RemoveFromHierarchy(); if (art != null) art.style.opacity = tray ? 0.6f : 1f; continue; } // a tray icon reads dimmed
+                if (status == null || tray) { badge?.RemoveFromHierarchy(); if (art != null) art.style.opacity = 1f; continue; } // a resting icon hides in the chip
                 if (badge != null && badge.viewDataKey != status.Value.icon) { badge.RemoveFromHierarchy(); badge = null; }
                 if (badge == null)
                 {

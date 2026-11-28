@@ -59,6 +59,7 @@ namespace GridGame.App
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; ResumeBattle(); }
             CloseAbilities(false);
             awayOnSettings = false;
+            Tween.Instant = false; // GG-T1967: a playback cut short never leaves the next screen instant
             // The billboard lives on the Overlay too; without this, each battle left one behind (lines from the
             // last ~1.6 s showing over the PostBattle screen) and they piled up battle after battle (GG-T70).
             billboard?.RemoveFromHierarchy();

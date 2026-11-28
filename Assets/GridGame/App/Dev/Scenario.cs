@@ -44,6 +44,9 @@ namespace GridGame.App.Dev
         public bool FullStage;
         /// <summary>Battle targets: launch the real stage through StageLauncher (crawl, beats, every wave).</summary>
         public bool RealLaunch;
+        /// <summary>GG-T2129: a state the target screen opens on once it is up, with no taps: "abilities:consumables", "info",
+        /// "abilities:spells/fire" (see <see cref="ScenarioOpen"/> and <see cref="ScenarioLander.Openers"/>).</summary>
+        public string Open;
 
         public static ScenarioDef Parse(string json) =>
             JsonConvert.DeserializeObject<ScenarioDef>(json) ?? new ScenarioDef();
@@ -60,5 +63,26 @@ namespace GridGame.App.Dev
         internal static int? Int(JToken t) =>
             t != null && (t.Type == JTokenType.Integer || t.Type == JTokenType.Float) ? (int?)t.Value<int>()
             : t != null && t.Type == JTokenType.String && int.TryParse((string)t, out var n) ? n : (int?)null;
+    }
+
+    /// <summary>GG-T2129: a parsed <see cref="ScenarioDef.Open"/>: the opener's name before the colon (lowercase) and the
+    /// slash-separated path after it, so "abilities:spells/fire" is abilities with ["spells", "fire"].</summary>
+    public sealed class ScenarioOpen
+    {
+        public string What;
+        public List<string> Path = new List<string>();
+
+        /// <summary>Null for a blank spec.</summary>
+        public static ScenarioOpen Parse(string spec)
+        {
+            if (string.IsNullOrWhiteSpace(spec)) return null;
+            var t = spec.Trim();
+            int colon = t.IndexOf(':');
+            var open = new ScenarioOpen { What = (colon < 0 ? t : t.Substring(0, colon)).Trim().ToLowerInvariant() };
+            if (colon >= 0)
+                foreach (var part in t.Substring(colon + 1).Split('/'))
+                    if (part.Trim().Length > 0) open.Path.Add(part.Trim());
+            return open;
+        }
     }
 }

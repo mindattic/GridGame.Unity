@@ -32,6 +32,10 @@ namespace GridGame.App
         /// <see cref="Shake"/>'s magnitude (1 = full, 0 = off).</summary>
         public static float ShakeScale = 1f;
 
+        /// <summary>The pause menu's Instant turns cheat (GG-T1967), set by the battle's playback while it runs: every
+        /// <see cref="Run"/> jumps straight to its end frame and every <see cref="Wait"/> returns at once.</summary>
+        public static bool Instant;
+
         public static float Dt => Paused ? 0f : FixedStep > 0f ? FixedStep : Time.unscaledDeltaTime;
 
         /// <summary>Seconds of unpaused game time since launch, advanced once per frame by GameApp.Update — the
@@ -46,6 +50,7 @@ namespace GridGame.App
 
         public static IEnumerator Run(float seconds, Action<float> step, Func<float, float> ease = null)
         {
+            if (Instant) { step(1f); yield break; }
             float d = Mathf.Max(0.0001f, seconds / Mathf.Max(0.1f, Speed));
             float t = 0f;
             bool first = true;
@@ -68,6 +73,7 @@ namespace GridGame.App
 
         public static IEnumerator Wait(float seconds)
         {
+            if (Instant) yield break;
             float d = seconds / Mathf.Max(0.1f, Speed);
             float t = 0f;
             while (t < d) { yield return null; t += Dt; }

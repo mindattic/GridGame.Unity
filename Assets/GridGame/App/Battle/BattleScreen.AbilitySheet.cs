@@ -170,6 +170,51 @@ namespace GridGame.App
             SyncAbilitiesButton();
         }
 
+        /// <summary>
+        /// GG-T2129: opens the sheet at <paramref name="path"/>, tab then folders then a move, matched to the breadcrumb names
+        /// ignoring case ("Consumables", "Spells/Fire"), the way tapping the tab and rows would. The hero is the selected one
+        /// when its tree holds the path, else the first hero whose does. False while the battle can't take a command yet.
+        /// </summary>
+        public bool OpenAbilitiesAt(IReadOnlyList<string> path)
+        {
+            if (!CanCommand() || State.UnitById(SelectedHeroId) == null) return false;
+            Unit hero = null;
+            List<ActionNode> nodes = null;
+            foreach (var u in State.Units.Where(u => u.IsCommandable && u.Alive).OrderBy(u => u.Id == SelectedHeroId ? 0 : 1))
+            {
+                var n = SheetNodes(ActionTree.For(State, u), path);
+                bool full = n.Count == path.Count && (n.Count == 0 || ActionTree.Moves(n[n.Count - 1]).Any());
+                if (hero == null || full || n.Count > nodes.Count) { hero = u; nodes = n; }
+                if (full) break;
+            }
+            if (nodes.Count < path.Count) Debug.LogWarning($"[Scenario] abilities: no '{path[nodes.Count]}' in {hero.Def?.Id}'s sheet");
+            SelectHero(hero.Id);
+            OpenAbilities();
+            if (!AbilitiesOpen) return false;
+            if (nodes.Count == 0) return true;
+            sheetPath.Clear();
+            sheetPath.AddRange(nodes);
+            var last = nodes[nodes.Count - 1];
+            if (last.IsMove) HighlightMove(hero, last.Slot);
+            RenderSheet();
+            return true;
+        }
+
+        /// <summary>The nodes along <paramref name="path"/> from the tabs down, by name ignoring case, up to the first miss.</summary>
+        private static List<ActionNode> SheetNodes(List<ActionNode> tree, IReadOnlyList<string> path)
+        {
+            var nodes = new List<ActionNode>();
+            var level = tree;
+            foreach (var name in path)
+            {
+                var match = level.FirstOrDefault(n => string.Equals(n.Name, name, System.StringComparison.OrdinalIgnoreCase));
+                if (match == null) break;
+                nodes.Add(match);
+                level = match.Children;
+            }
+            return nodes;
+        }
+
         /// <summary>Closes the sheet; it slides down unless Reduce Motion is on or <paramref name="animate"/> is false.</summary>
         private void CloseAbilities(bool animate = true)
         {

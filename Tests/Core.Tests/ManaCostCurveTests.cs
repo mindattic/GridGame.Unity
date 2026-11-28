@@ -12,7 +12,7 @@ using static GridGame.Tests.TestKit;
 namespace GridGame.Tests
 {
     /// <summary>GG-T373: spell prices on the 1–12 curve (BIBLE §3.1.1), folded onto the 1..4 costs (GG-T673); a cost of N
-    /// fills its spell's meter at N x <see cref="BattleConfig.ManaPointsPerOrb"/> (§3.1.0). Owner 2026-11-08: "with 12 mana
+    /// costs N x <see cref="BattleConfig.ManaPointsPerOrb"/> points from the party pool (§3.1.0). Owner 2026-11-08: "with 12 mana
     /// slots that means some of these spells need to get much more expensive, need to consider balance."</summary>
     public class ManaCostCurveTests
     {
@@ -97,6 +97,17 @@ namespace GridGame.Tests
             Assert.That(costs.Count(c => c <= 2), Is.GreaterThanOrEqualTo(10), "bread-and-butter spells stay cheap");
             Assert.That(costs.Max(), Is.EqualTo(BattleConfig.MaxSpellOrbCost), "an ultimate costs the top tier (GG-T673)");
             Assert.That(costs.Count(c => c >= BattleConfig.MaxSpellOrbCost), Is.GreaterThanOrEqualTo(5), "several spells take the longest to fill");
+        }
+
+        [Test]
+        public void Every_hero_spell_price_fits_the_party_pool()
+        {
+            var over = Real.Abilities.Values.Where(HeroSpell)
+                .Where(a => a.Cost * BattleConfig.ManaPointsPerOrb > BattleConfig.PartyManaCapacity)
+                .Select(a => $"{a.Id} costs {a.Cost * BattleConfig.ManaPointsPerOrb} points").ToList();
+            Assert.That(over, Is.Empty, "a full pool pays any spell (§3.1.0)");
+            Assert.That(BattleConfig.MaxSpellOrbCost * BattleConfig.ManaPointsPerOrb, Is.LessThanOrEqualTo(BattleConfig.PartyManaCapacity),
+                "the top cost tier fits the pool");
         }
 
         [Test]
