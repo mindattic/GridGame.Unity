@@ -17,6 +17,22 @@ namespace GridGame.Meta
     {
         public static bool IsDrill(StageDef stage) => stage?.Lessons != null && stage.Lessons.Count > 0;
 
+        /// <summary>GG-T2075: the drills a new game plays, in order: campaign.json's Prologue battles, else its Tutorial drills.</summary>
+        public static List<string> NewGameOrder(ContentDb c)
+        {
+            var prologue = c?.Campaign?.Prologue;
+            return prologue != null && prologue.Count > 0 ? prologue : c?.Campaign?.Tutorial ?? new List<string>();
+        }
+
+        /// <summary>GG-T2075: the drill list <paramref name="stageId"/> sits in: the Prologue for a prologue battle, else the
+        /// Tutorial (Play a drill's list).</summary>
+        public static List<string> OrderOf(ContentDb c, string stageId)
+        {
+            var prologue = c?.Campaign?.Prologue;
+            return prologue != null && prologue.Exists(id => string.Equals(id, stageId, StringComparison.OrdinalIgnoreCase))
+                ? prologue : c?.Campaign?.Tutorial ?? new List<string>();
+        }
+
         public static bool IsCleared(SaveData s, string stageId) => s?.ClearedDrills != null && stageId != null && s.ClearedDrills.Contains(stageId);
 
         /// <summary>GG-T1398: the save flag Skip tutorial in a drill leaves: the drills were skipped, not cleared.</summary>
@@ -35,13 +51,12 @@ namespace GridGame.Meta
         /// <summary>GG-T1959: the lesson that teaches the turn clock; its drill is The Clock.</summary>
         public const string ClockLesson = "hold";
 
-        /// <summary>GG-T1959: a drill that comes before The Clock in campaign.json's Tutorial order plays untimed, so the
-        /// clock waits even while a hero is held until the drill that teaches it.</summary>
+        /// <summary>GG-T1959: a drill that comes before The Clock in its list's order (Tutorial, or GG-T2075 Prologue) plays
+        /// untimed, so the clock waits even while a hero is held until the drill that teaches it.</summary>
         public static bool BeforeClock(ContentDb c, StageDef stage)
         {
-            if (!IsDrill(stage)) return false;
-            var order = c?.Campaign?.Tutorial;
-            if (order == null) return false;
+            if (!IsDrill(stage) || c == null) return false;
+            var order = OrderOf(c, stage.Id);
             int at = order.FindIndex(id => string.Equals(id, stage.Id, StringComparison.OrdinalIgnoreCase));
             int clock = order.FindIndex(id => c.TryStage(id)?.Lessons?.Any(l => l.Id == ClockLesson) == true);
             return at >= 0 && clock >= 0 && at < clock;
@@ -51,7 +66,7 @@ namespace GridGame.Meta
         public static void MarkAllCleared(ContentDb c, SaveData s)
         {
             s.ClearedDrills ??= new HashSet<string>();
-            foreach (var id in c?.Campaign?.Tutorial ?? Enumerable.Empty<string>())
+            foreach (var id in (c?.Campaign?.Tutorial ?? Enumerable.Empty<string>()).Concat(c?.Campaign?.Prologue ?? Enumerable.Empty<string>()))
                 if (id != null) s.ClearedDrills.Add(id);
         }
 
