@@ -57,7 +57,7 @@ Grouped code colours (GG-T2139), each at the exact value its call sites drew bef
 
 ### 2.2 Type
 
-- **One size**: `TypeScale.Base` (`--type-base`). `GuiType` computes it per screen to draw 14 dp, clamped to 40 to 56 design px, then multiplies by Settings → Text size (100, 115 or 130 %). Nominal 40.
+- **One size**: `TypeScale.Base` (`--type-base`). `GuiType` computes it per screen to draw 15 dp (up to 1.2x more on a screen narrower than 2.56 in, GG-T2114; [per-device table](devices/DEVICES.md)), clamped to 40 to 56 design px, then multiplies by Settings → Text size (100, 115 or 130 %). Nominal 40.
 - **Floor**: 30 design px (`TypeFloor.ShrinkMin`), raised live to 12 screen px or 9 dp (`TypeFloor.ShrinkFloor`). Shrink-to-fit never goes under it.
 - **Roles by weight and colour**: Body (M PLUS Rounded 1c Bold); Heavy (ExtraBold: titles, headings, button and tab labels, names); Display (Cinzel: the wordmark and celebration titles only). A screen uses at most these three (POL-A4), and never faux bold (POL-A3).
 - **Builders**: `Ui.Heading`, `Ui.Name`, `Ui.Para` (anything that wraps), `Ui.Caption` (one line of meta), `Ui.Note`, `Ui.Display`, `Ui.Section`.

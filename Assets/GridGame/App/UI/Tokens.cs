@@ -441,7 +441,7 @@ namespace GridGame.App
     /// <see cref="TargetDp"/> dp (body text on a phone held at reading distance), held between <see cref="MinDesign"/>
     /// and <see cref="MaxDesign"/> so a desktop window or a tablet (lower dpi, further away) never draws smaller than
     /// the reference phone and a tiny dense screen never blows the layout apart; then times Settings → Text size; then
-    /// at least <see cref="TypeFloor"/>'s legibility floor; then at most the size that still fits
+    /// at least <see cref="TypeFloor"/>'s legibility floor (GG-T2114: the target itself grows on a narrow screen, <see cref="ReferenceWidthIn"/>); then at most the size that still fits
     /// <see cref="MinLineChars"/> characters across the stage; rounded to <see cref="Step"/> px for the USS bucket. The
     /// UI root takes the matching <c>type-base-N</c> class (Theme.uss) so every USS-sized label follows with no rebuild;
     /// sizes set in code read <see cref="TypeScale.Base"/> when their screen builds (the router rebuilds on resize).
@@ -449,14 +449,18 @@ namespace GridGame.App
     /// </summary>
     public static class GuiType
     {
-        /// <summary>Physical size of GUI text in dp (1/160 inch): 40 design px on the reference phone.</summary>
-        public const float TargetDp = 14f;
+        /// <summary>Physical size of GUI text in dp (1/160 inch) on the baseline phone (GG-T2114: 15, was 14); 42 design px on the iPhone 15 Pro.</summary>
+        public const float TargetDp = 15f;
         /// <summary>The smallest and largest base in design px before Text size and the floor.</summary>
         public const float MinDesign = 40f, MaxDesign = 56f;
         /// <summary>The bucket step and the range Theme.uss has <c>type-base-N</c> classes for.</summary>
         public const int Step = 2, Lowest = 40, Highest = 72;
         /// <summary>Fewest characters (at about half an em each) a line across the full stage must hold.</summary>
         public const float MinLineChars = 28f, GlyphEm = 0.5f;
+        /// <summary>GG-T2114: the baseline phone's drawn width in inches (iPhone 15 Pro, 1179 px at 460 dpi). A narrower
+        /// screen takes <see cref="TargetDp"/> times this over its own width, up to <see cref="NarrowBoostMax"/>, so a
+        /// narrow phone (Z Fold cover, 2.25 in) reads body text at about 16 dp where the baseline reads 14.</summary>
+        public const float ReferenceWidthIn = 2.56f, NarrowBoostMax = 1.2f;
 
         private static float scale, dpi, stageWidth = 1170f;
         private static int pct = 100;
@@ -470,7 +474,9 @@ namespace GridGame.App
         public static int Compute(float screenPxPerDesignPx, float screenDpi, float stageW, int textPct)
         {
             float d = screenDpi > 0f ? screenDpi : 160f;
-            float physical = screenPxPerDesignPx > 0f ? TargetDp * d / 160f / screenPxPerDesignPx : TypeScale.Nominal;
+            float widthIn = stageW > 0f && screenPxPerDesignPx > 0f && screenDpi > 0f ? stageW * screenPxPerDesignPx / screenDpi : ReferenceWidthIn;
+            float boost = Mathf.Clamp(ReferenceWidthIn / widthIn, 1f, NarrowBoostMax);
+            float physical = screenPxPerDesignPx > 0f ? TargetDp * boost * d / 160f / screenPxPerDesignPx : TypeScale.Nominal;
             float size = Mathf.Clamp(physical, MinDesign, MaxDesign) * TextSize.Clamp(textPct) / 100f;
             size = Mathf.Max(size, TypeFloor.NeedFor(screenPxPerDesignPx, screenDpi));
             if (stageW > 0f) size = Mathf.Min(size, stageW / (MinLineChars * GlyphEm));
