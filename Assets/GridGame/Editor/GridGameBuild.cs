@@ -105,19 +105,23 @@ namespace GridGame.EditorTools
         /// Z Flip main screen at 22:9 (2.44); a lower cap puts both in Android's own black bars.</summary>
         public const float AndroidMaxAspectRatio = 2.6f;
 
+        /// <summary>The serialized androidSupportedAspectRatio value for "Custom" (0 legacy wide screen, 1 native, 2 custom).
+        /// Unity 6 dropped the internal AspectRatioMode enum; PlayerSettings.Android.supportedAspectRatioMode is a plain
+        /// internal int now.</summary>
+        private const int AndroidAspectRatioModeCustom = 2;
+
         /// <summary>GG-T2027: the screen settings both Android builds share. A custom max aspect of
-        /// <see cref="AndroidMaxAspectRatio"/> (Unity's AspectRatioMode.Custom, only settable through the serialized
+        /// <see cref="AndroidMaxAspectRatio"/> (the Custom aspect ratio mode, only settable through the serialized
         /// PlayerSettings); rendering into the display cutout (Unity writes layoutInDisplayCutoutMode shortEdges), with
         /// <c>GameApp.ApplySafeArea</c> keeping content inside <see cref="Screen.safeArea"/>; and a resizeable activity, so
         /// folding or unfolding a Fold hands the running game the new size instead of restarting or letterboxing it.</summary>
         private static void ApplyAndroidScreen()
         {
-            var modes = typeof(PlayerSettings).Assembly.GetType("UnityEditor.AspectRatioMode");
             var so = new SerializedObject(Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings"));
             var mode = so.FindProperty("androidSupportedAspectRatio");
-            if (modes == null || !Enum.IsDefined(modes, "Custom") || mode == null)
-                throw new UnityEditor.Build.BuildFailedException("[Build] Android: can't set PlayerSettings' aspect ratio mode to Custom (AspectRatioMode.Custom / androidSupportedAspectRatio not found)");
-            mode.intValue = Convert.ToInt32(Enum.Parse(modes, "Custom"));
+            if (mode == null)
+                throw new UnityEditor.Build.BuildFailedException("[Build] Android: can't set PlayerSettings' aspect ratio mode to Custom (androidSupportedAspectRatio not found)");
+            mode.intValue = AndroidAspectRatioModeCustom;
             so.ApplyModifiedPropertiesWithoutUndo();
             PlayerSettings.Android.maxAspectRatio = AndroidMaxAspectRatio;
             PlayerSettings.Android.renderOutsideSafeArea = true;
@@ -248,10 +252,11 @@ namespace GridGame.EditorTools
                 throw new UnityEditor.Build.BuildFailedException($"[Build] Android release: target SDK {(target > 0 ? target.ToString() : "unknown (no installed platform found)")} is below Play's required API {PlayRequiredTargetSdk}. Install the Android API {PlayRequiredTargetSdk} platform in Unity Hub (or the SDK Manager) and rebuild (docs/RELEASE_BUILD.md).");
         }
 
-        /// <summary>The highest android-N under the Android SDK's platforms folder (Unity's configured SDK, else ANDROID_SDK_ROOT / ANDROID_HOME), 0 when none.</summary>
+        /// <summary>The highest android-N under the Android SDK's platforms folder (Unity's configured SDK, else the SDK Unity
+        /// Hub installs inside the Android module, else ANDROID_SDK_ROOT / ANDROID_HOME), 0 when none.</summary>
         private static int HighestInstalledPlatform()
         {
-            var roots = new[] { EditorPrefs.GetString("AndroidSdkRoot", ""), Environment.GetEnvironmentVariable("ANDROID_SDK_ROOT"), Environment.GetEnvironmentVariable("ANDROID_HOME") };
+            var roots = new[] { EditorPrefs.GetString("AndroidSdkRoot", ""), Path.Combine(BuildPipeline.GetPlaybackEngineDirectory(BuildTarget.Android, BuildOptions.None), "SDK"), Environment.GetEnvironmentVariable("ANDROID_SDK_ROOT"), Environment.GetEnvironmentVariable("ANDROID_HOME") };
             int best = 0;
             foreach (var root in roots)
             {
