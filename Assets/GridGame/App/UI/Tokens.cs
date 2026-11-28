@@ -584,8 +584,7 @@ namespace GridGame.App
     /// cover 34-36 dp. <see cref="Current"/> is the design height that reaches <see cref="MinDp"/> dp on Android or
     /// <see cref="MinPt"/> pt on iOS on this screen, never under <see cref="Size.Target"/>, rounded up to <see cref="Step"/>
     /// for the USS bucket. The UI root takes the matching <c>tap-target-N</c> class (Theme.uss), so every row, button, tab
-    /// and nav tab sized by <c>--size-target</c> follows; code reads <see cref="Kit.Row"/>. The battle HUD rows keep
-    /// <see cref="Size.Target"/> (BIBLE 9.0).
+    /// and nav tab sized by <c>--size-target</c> follows; code reads <see cref="Kit.Row"/>. The battle HUD action row follows it too (BIBLE 9.0, GG-T2158).
     /// </summary>
     public static class TapTarget
     {

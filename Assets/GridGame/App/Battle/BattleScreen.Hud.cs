@@ -38,7 +38,10 @@ namespace GridGame.App
         // Row heights (§9.0, GG-T1894): the top bar hugs the safe top and every gap between rows is tightened, so the description
         // panel gets the height back (the board keeps its 180-px tiles). GG-T1921: the action row's three buttons are one tap
         // target tall, so the description panel takes the rest of the five slots' row.
-        private const float TopBarTop = Space.S8, BarHeight = Size.Target;
+        private const float TopBarTop = Space.S8;
+        /// <summary>GG-T2158: the action row is one live tap target tall (<see cref="Kit.Row"/>, 48 dp / 44 pt on this screen); the
+        /// description panel, which stretches to the bottom, gives the height. The board's tiles do not change.</summary>
+        private static float BarHeight => Kit.Row;
         /// <summary>GG-T2143: the top bar hugs its content, never less than 110 px: the title line (the type size, which grows on a
         /// narrow phone, GG-T2114) over the boss gauge (boss waves, GG-T1952), then the turn strip (GG-T1943). The board and the rows
         /// under it move down by what it grows; the description panel, which stretches to the bottom, gives the height.</summary>
@@ -76,12 +79,21 @@ namespace GridGame.App
         // HUD construction
         // ─────────────────────────────────────────────────────────────────────────
 
+        private VisualElement menuHit;
+
         private void BuildTopBar(VisualElement root)
         {
             var bar = Ui.El("row", root);
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = TopBarTop; bar.style.height = TopBarHeight;
-            RowIcon.HamburgerButton(OpenMenu, bar); // GG-T754: icon-only pause
+            // GG-T2158: the pause button's hit area is a full tap target, centred on the bar and overhanging it, so the drawn bar
+            // keeps its height; a tap on the margin around the icon opens the menu too.
+            menuHit = Ui.El("col center", bar);
+            menuHit.name = "menu-hit";
+            menuHit.style.alignSelf = Align.Center;
+            menuHit.style.width = menuHit.style.height = Kit.Row;
+            menuHit.RegisterCallback<ClickEvent>(e => { if (e.target == menuHit) OpenMenu(); });
+            RowIcon.HamburgerButton(OpenMenu, menuHit); // GG-T754: icon-only pause
             // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
             // shrinks to the floor, then scrolls (GG-T1143), the wave never does.
             // GG-T1943: under that line, in the same row, the turn strip (BuildTurnStrip), so it costs the board no height.
@@ -232,6 +244,7 @@ namespace GridGame.App
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
             LayoutAbilityBar(inset);
+            if (menuHit != null) menuHit.style.width = menuHit.style.height = Kit.Row;
             if (Root?.Q("description-panel") is VisualElement desc)
             {
                 desc.style.left = desc.style.right = inset + Fit.Edge;
