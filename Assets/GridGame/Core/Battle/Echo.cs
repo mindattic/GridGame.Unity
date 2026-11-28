@@ -63,6 +63,27 @@ namespace GridGame.Core.Battle
             return best == null ? (Plan?)null : new Plan(a, best.Value);
         }
 
+        /// <summary>Paying for a copied spell under per-spell meters (§3.1.0, GG-T1810): the copy costs its full price,
+        /// Cost x <see cref="BattleConfig.ManaPointsPerOrb"/> points, taken from the hero echoer's own spell meter that
+        /// holds the most points, at least that price (ties to the lower slot). That meter loses the price; no other meter
+        /// moves. -1 when none of the echoer's meters holds enough.</summary>
+        public static int PayingSlot(BattleState s, Unit caster, AbilityDef copy)
+        {
+            int price = copy.Cost * BattleConfig.ManaPointsPerOrb, best = -1, bestPoints = 0;
+            for (int i = 0; i < caster.Bar.Count; i++)
+            {
+                if (s.ManaFull(caster, i) <= 0) continue;
+                int points = s.ManaIn(caster.Id, i);
+                if (points >= price && points > bestPoints) { best = i; bestPoints = points; }
+            }
+            return best;
+        }
+
+        /// <summary>Can <paramref name="caster"/> pay for casting <paramref name="copy"/> as an echo? Skills, free spells
+        /// and a foe's copy cost nothing; a hero's copied spell needs a <see cref="PayingSlot"/>.</summary>
+        public static bool CanPay(BattleState s, Unit caster, AbilityDef copy) =>
+            !caster.IsHero || copy.Kind != AbilityKind.Spell || copy.Cost <= 0 || PayingSlot(s, caster, copy) >= 0;
+
         /// <summary>A legal pick that also reaches somebody (a tile pick must catch a unit).</summary>
         private static bool Valid(BattleState s, AbilityDef a, Unit caster, Coord c) =>
             BattleState.InBounds(c) && TargetResolver.IsValidPick(s, a, caster, c) && TargetResolver.Collect(s, a, caster, c).Count > 0;

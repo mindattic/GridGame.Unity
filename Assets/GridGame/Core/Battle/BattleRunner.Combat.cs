@@ -364,8 +364,8 @@ namespace GridGame.Core.Battle
                 float divisor = 1f + BattleConfig.ChargeParticipantPenalty * Math.Max(0, participants - 2);
                 float chainMult = 1f + BattleConfig.ChargeChainBonus * chainIndex;
                 if (share > 0f)
-                    AddCharge(Math.Max(BattleConfig.MinPincerCharge, (int)Math.Round(BattleConfig.PincerChargePerHp * share * chainMult / divisor)), p.A.Id, "pincer", participants, chainIndex + 1);
-                if (amplified != null && amplified.Alive) AddCharge(BattleConfig.AmplifierCharge, amplified.Id, "amplifier");
+                    EarnMana(Math.Max(BattleConfig.MinPincerCharge, (int)Math.Round(BattleConfig.PincerChargePerHp * share * chainMult / divisor)), p.A.Id, "pincer", participants, chainIndex + 1);
+                if (amplified != null && amplified.Alive) EarnMana(BattleConfig.AmplifierCharge, amplified.Id, "amplifier");
             }
             chainBonusDepth = 0;
         }
@@ -425,7 +425,7 @@ namespace GridGame.Core.Battle
                 int before = target.Hp;
                 if (roll.Dodged) Emit(new DodgedEvent { UnitId = target.Id, AttackerId = attacker.Id });
                 else Damage(target, roll.Damage, attacker, roll.Hit, DamageType.Physical);
-                if (roll.Hit == HitKind.Critical && attacker.IsHero) AddCharge(BattleConfig.CritCharge, attacker.Id, "critical");
+                if (roll.Hit == HitKind.Critical && attacker.IsHero) EarnMana(BattleConfig.CritCharge, attacker.Id, "critical");
                 // A crit landed through Blind (its crit chance was cut with its accuracy) is a Clutch (GG-T566).
                 if (roll.Hit == HitKind.Critical && attacker.IsHero && attacker.IsBlinded) Clutch(attacker, ClutchKind.BlindCrit);
                 if (roll.Hit == HitKind.Miss)
@@ -703,7 +703,7 @@ namespace GridGame.Core.Battle
             clutchThisAction = true;
             Emit(new ClutchEvent { EntryId = entryId, CasterId = unit.Id, Kind = kind });
             Announce("Clutch!", unit.Id);
-            if (BattleConfig.ClutchCharge > 0) AddCharge(BattleConfig.ClutchCharge, unit.Id, "clutch");
+            if (BattleConfig.ClutchCharge > 0) EarnMana(BattleConfig.ClutchCharge, unit.Id, "clutch");
             return true;
         }
 
@@ -793,7 +793,7 @@ namespace GridGame.Core.Battle
                 Announce("Interrupted!", caster.Id);
                 if (cast.CasterTeam == Team.Enemy)
                 {
-                    AddCharge(BattleConfig.InterruptCharge, caster.Id, "interrupt");
+                    EarnMana(BattleConfig.InterruptCharge, caster.Id, "interrupt");
                     // GG-T571: cancelled within the last tick window of landing — a LastTickInterrupt Clutch for the hero.
                     float window = BattleConfig.ClutchLastTickSeconds;
                     if (window > 0f && attacker.IsHero && leftBefore <= Formulas.SecondsToTicks(window))

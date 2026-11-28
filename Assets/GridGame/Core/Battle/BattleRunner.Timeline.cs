@@ -92,7 +92,7 @@ namespace GridGame.Core.Battle
             ticksSinceReport++;
             // GG-T673: the orbs refill slowly with time on the battle clock (one charge step every few clock seconds).
             if (BattleConfig.RegenCharge > 0 && S.Clock % (BattleConfig.RegenIntervalSeconds * BattleConfig.TicksPerSecond) == 0)
-                AddCharge(BattleConfig.RegenCharge, -1, "regen");
+                EarnMana(BattleConfig.RegenCharge, -1, "regen");
 
             if (S.PendingSpawns.Count > 0) { BringReinforcementsForward(); ResolvePendingSpawns(); CheckTilesStrict("reinforcements"); }
             if (S.IsOver) return;
@@ -325,7 +325,7 @@ namespace GridGame.Core.Battle
             int n = Math.Min(TurnRules.MaxTimeBankOrbs(S), (int)(S.PendingTimeBankSeconds / BattleConfig.SecondsPerTimeBankOrb)); // §2.13: the mode's cap
             S.PendingTimeBankSeconds = 0f;
             if (n <= 0) return;
-            for (int i = 0; i < n; i++) MintOrb(-1, "time bank");
+            GrantOrbs(n, -1, "time bank");
             Announce($"Banked {n} mana");
         }
     }

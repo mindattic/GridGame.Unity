@@ -101,7 +101,7 @@ namespace GridGame.Core.Battle
             Emit(new CastCancelledEvent { EntryId = cast.Id, CasterId = t.Id, AbilityId = cast.AbilityId, Reason = "interrupted" });
             Announce("Interrupted!", t.Id);
             if (cast.CasterTeam != Team.Enemy) return;
-            AddCharge(BattleConfig.InterruptCharge, t.Id, "interrupt");
+            EarnMana(BattleConfig.InterruptCharge, t.Id, "interrupt");
             float window = BattleConfig.ClutchLastTickSeconds;
             if (window > 0f && caster.IsHero && leftBefore <= Formulas.SecondsToTicks(window))
                 Clutch(caster, ClutchKind.LastTickInterrupt, cast.Id);

@@ -203,7 +203,7 @@ namespace GridGame.Core.Battle
                 }
                 case TriggerEffectKind.ManaCharge:
                     if (!owner.IsHero) return false;
-                    AddCharge((int)e.Amount, owner.Id, "passive");
+                    EarnMana((int)e.Amount, owner.Id, "passive");
                     return true;
                 case TriggerEffectKind.Pushback:
                 {

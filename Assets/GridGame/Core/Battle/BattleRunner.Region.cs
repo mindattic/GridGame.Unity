@@ -276,7 +276,7 @@ namespace GridGame.Core.Battle
                 case RuleEffectKind.GrantOrbs:
                     foreach (var u in RuleUnitsOf(e, ctx))
                         if (u.Alive && u.IsHero)
-                            for (int i = 0; i < e.Amount; i++) MintOrb(u.Id, "rule:" + (ctx.Rule ?? ctx.Event ?? ctx.Ability));
+                            GrantOrbs(e.Amount, u.Id, "rule:" + (ctx.Rule ?? ctx.Event ?? ctx.Ability));
                     break;
                 case RuleEffectKind.MoveUnits: MoveUnits(e, ctx); break;
                 case RuleEffectKind.Schedule: ScheduleRuleEvent(e, ctx); break;
@@ -300,7 +300,7 @@ namespace GridGame.Core.Battle
                 {
                     Unit hero = null;
                     foreach (var u in RuleUnitsOf(e, ctx)) if (u.Alive && u.IsHero) { hero = u; break; }
-                    if (hero != null && e.Amount > 0) AddCharge(e.Amount, hero.Id, "rule:" + (ctx.State ?? ctx.Rule ?? ctx.Event ?? ctx.Ability));
+                    if (hero != null && e.Amount > 0) EarnMana(e.Amount, hero.Id, "rule:" + (ctx.State ?? ctx.Rule ?? ctx.Event ?? ctx.Ability));
                     break;
                 }
                 case RuleEffectKind.SetFlag:

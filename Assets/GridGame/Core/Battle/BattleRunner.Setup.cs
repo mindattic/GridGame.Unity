@@ -255,9 +255,9 @@ namespace GridGame.Core.Battle
         /// <summary>Gear with BattleStartManaOrbs (Mage/Wizard Robe) seeds orbs, capped by the bank (§24.8).</summary>
         private void ApplyBattleStartOrbs()
         {
-            for (int i = 0; i < pendingStartOrbs; i++) MintOrb(-1, "battle start");
+            GrantOrbs(pendingStartOrbs, -1, "battle start");
             pendingStartOrbs = 0;
-            for (int i = 0; i < carriedOrbs; i++) MintOrb(-1, "carried");
+            GrantOrbs(carriedOrbs, -1, "carried");
             carriedOrbs = 0;
         }
 

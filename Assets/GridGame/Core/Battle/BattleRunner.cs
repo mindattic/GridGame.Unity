@@ -430,7 +430,7 @@ namespace GridGame.Core.Battle
             // §3.1.9) — measured before the clock runs. It replaces the drag-timer time bank (§3.1.8), which only a
             // move feeds, so a pending drag remainder is dropped rather than stacked on top.
             S.PendingTimeBankSeconds = 0f;
-            AddCharge(TurnRules.GuardCharge(S, cmd.HeldSeconds), -1, "guard"); // §2.13: what Guard banks is the mode's
+            EarnMana(TurnRules.GuardCharge(S, cmd.HeldSeconds), -1, "guard"); // §2.13: what Guard banks is the mode's
             return true;
         }
 
@@ -568,9 +568,9 @@ namespace GridGame.Core.Battle
         // ─────────────────────────────────────────────────────────────────────────────
 
         /// <summary>An earned mana gain (§3.1.0): damped by the share of full spell meters, then added to every meter. Every
-        /// caller is an earned source; explicit grants (items, pickups, steal, gear) call MintOrb. Earning stops while
+        /// caller is an earned source; whole grants (items, pickups, steal, gear) call GrantOrbs. Earning stops while
         /// every meter is full.</summary>
-        private void AddCharge(int amount, int sourceId, string reason, int participants = 0, int chain = 0)
+        private void EarnMana(int amount, int sourceId, string reason, int participants = 0, int chain = 0)
         {
             if (S.AllSpellsFull) return;
             amount = BattleEngine.DampedCharge(S, amount);
@@ -579,11 +579,14 @@ namespace GridGame.Core.Battle
             GainMana(amount, sourceId, reason);
         }
 
-        /// <summary>A whole-orb grant (§3.1.0): <see cref="BattleConfig.ManaPointsPerOrb"/> points to every meter, undamped.</summary>
-        private void MintOrb(int sourceId, string reason)
+        /// <summary>A whole grant (§3.1.0): <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points to
+        /// every meter as one undamped gain. The orb row still reads one <see cref="OrbMintedEvent"/> per orb (until GG-T1821).</summary>
+        private void GrantOrbs(int orbs, int sourceId, string reason)
         {
-            bool landed = GainMana(BattleConfig.ManaPointsPerOrb, sourceId, reason);
-            Emit(new OrbMintedEvent { SourceUnitId = sourceId, Landed = landed, Reason = reason, Slot = landed ? S.Bank.Count - 1 : -1 });
+            if (orbs <= 0) return;
+            bool landed = GainMana(orbs * BattleConfig.ManaPointsPerOrb, sourceId, reason);
+            for (int i = 0; i < orbs; i++)
+                Emit(new OrbMintedEvent { SourceUnitId = sourceId, Landed = landed, Reason = reason, Slot = landed ? S.Bank.Count - 1 : -1 });
         }
 
         /// <summary>Applies a gain (or a negative siphon) to the spell meters and reports it; false when no meter moved.</summary>
@@ -797,7 +800,7 @@ namespace GridGame.Core.Battle
             // GG-T673: felling a real foe earns mana.
             if (BattleConfig.KillCharge > 0 && u.Team == Team.Enemy && killer != null && killer.IsHero
                 && !u.IsCorpse && !u.IsSnakeSegment && !u.IsRemains && !u.IsEgg && !u.AlreadyLooted)
-                AddCharge(BattleConfig.KillCharge, killer.Id, "kill");
+                EarnMana(BattleConfig.KillCharge, killer.Id, "kill");
             if (u.IsCorpse) { Announce("Cleared away", u.Id); return; }
             if (u.IsRemains) { Announce("Laid to rest", u.Id); return; }
             // A fallen guest is down, not gone (GG-T114): revive them and they can still be recruited.
@@ -861,7 +864,7 @@ namespace GridGame.Core.Battle
                 Emit(new PickupCollectedEvent { PickupEntryId = p.Id, PickupId = p.PickupId, At = p.At, UnitId = hero.Id });
                 if (def == null) continue;
                 if (def.HealFraction > 0f) Heal(hero, Math.Max(1, (int)Math.Round(hero.MaxHp * def.HealFraction)), hero);
-                for (int i = 0; i < def.Orbs; i++) MintOrb(hero.Id, "pickup");
+                GrantOrbs(def.Orbs, hero.Id, "pickup");
                 if (def.HastenU > 0f) Hasten(hero, def.HastenU, "pickup:" + def.Id);
                 var buff = C.TryBuff(def.ApplyBuff);
                 if (buff != null) ApplyBuff(hero, buff, buff.Duration);

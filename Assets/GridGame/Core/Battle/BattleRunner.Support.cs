@@ -125,7 +125,7 @@ namespace GridGame.Core.Battle
                     foreach (var t in targets) if (t.Alive) HastenSeconds(t, mag, "support:" + sup.Id);
                     break;
                 case SupportEffect.Mana:
-                    if (team == Team.Hero) AddCharge(Math.Max(1, (int)Math.Round(mag * BattleConfig.SupportManaFactor)), sup.Id, "support");
+                    if (team == Team.Hero) EarnMana(Math.Max(1, (int)Math.Round(mag * BattleConfig.SupportManaFactor)), sup.Id, "support");
                     break;
                 case SupportEffect.Cleanse:
                     foreach (var t in targets) RemoveBuffsWhere(t, b => b.Def.Kind == BuffKind.Debuff, "cleansed");

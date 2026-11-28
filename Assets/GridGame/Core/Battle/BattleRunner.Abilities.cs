@@ -91,7 +91,7 @@ namespace GridGame.Core.Battle
                 // GG-T388: an Echo with nothing to repeat, or a copied spell the bank can't pay for, costs nothing.
                 var plan = Echo.For(S, hero, S.UnitAt(anchor));
                 if (plan == null) return Refuse(hero, "Nothing to echo");
-                if (plan.Value.Ability.Kind == AbilityKind.Spell && !S.Bank.CanAfford(plan.Value.Ability.Cost)) return Refuse(hero, "Not enough mana");
+                if (!Echo.CanPay(S, hero, plan.Value.Ability)) return Refuse(hero, "Not enough mana");
             }
 
             Emit(new ActionBeganEvent { ActorId = hero.Id, Label = a.Name });
@@ -265,7 +265,7 @@ namespace GridGame.Core.Battle
             if (a.GrantsOrbs > 0 && !a.PoursOrbs)
             {
                 Emit(new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = caster.Pos, Targets = { caster.Id } });
-                for (int i = 0; i < a.GrantsOrbs; i++) MintOrb(caster.Id, "item");
+                GrantOrbs(a.GrantsOrbs, caster.Id, "item");
                 return;
             }
 
@@ -303,7 +303,7 @@ namespace GridGame.Core.Battle
                 {
                     var cs = caster.Effective;
                     float chance = Math.Max(0f, Math.Min(1f, (cs.Luck + 0.5f * cs.Agility) / BattleConfig.StealDivisor));
-                    if (S.Rng.Chance(chance)) { MintOrb(t.Id, "steal"); Announce("Steal!", t.Id); }
+                    if (S.Rng.Chance(chance)) { GrantOrbs(1, t.Id, "steal"); Announce("Steal!", t.Id); }
                     else Announce("Missed!", t.Id);
                     // Mug = Steal + its BaseDamage physical hit, handled by the damage step below.
                 }
@@ -334,8 +334,8 @@ namespace GridGame.Core.Battle
                     Damage(t, dmg, caster, crit ? HitKind.Critical : HitKind.Normal, a.DamageType, wet ? "Shock!" : null);
                     // GG-T673: a hero's skill striking a foe earns mana (spells don't, so mana never feeds itself).
                     if (dmg > 0 && caster.IsHero && t.Team == Team.Enemy && a.Kind == AbilityKind.Skill && BattleConfig.StrikeCharge > 0)
-                        AddCharge(BattleConfig.StrikeCharge, caster.Id, "strike");
-                    if (crit && caster.IsHero) AddCharge(BattleConfig.CritCharge, caster.Id, "critical");
+                        EarnMana(BattleConfig.StrikeCharge, caster.Id, "strike");
+                    if (crit && caster.IsHero) EarnMana(BattleConfig.CritCharge, caster.Id, "critical");
                     if (crit && caster.IsHero && caster.IsBlinded) Clutch(caster, ClutchKind.BlindCrit); // GG-T566
                     if (t.Alive && a.DamageType == DamageType.Lightning && S.Rng.Chance(BattleConfig.LightningBlindChance))
                     {
@@ -384,7 +384,7 @@ namespace GridGame.Core.Battle
             if (a.DrainsOrbs > 0 && targets.Exists(t => t.IsHero && t.Team != caster.Team)) DrainOrbs(caster, a);
             if (a.LifeCost > 0f && caster.Alive && !S.IsOver) GiveEssence(caster, a);
             // GG-T337: Aether Pour (the Sister's since the Aetherist hero was retired, GG-T570) pours aether in — an orb grant riding a heal lands once it has reached someone.
-            if (a.PoursOrbs && !S.IsOver) for (int i = 0; i < a.GrantsOrbs; i++) MintOrb(caster.Id, "aether");
+            if (a.PoursOrbs && !S.IsOver) GrantOrbs(a.GrantsOrbs, caster.Id, "aether");
             if (a.StepBack > 0 && caster.Alive && !S.IsOver) StepAway(caster, a.StepBack);
         }
 
@@ -399,8 +399,8 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>GG-T388: an Echo resolves. It repeats the last Active ability <paramref name="source"/> used, cast by the
-        /// echoer from where it stands at the target <see cref="Echo.For"/> chose; a copied spell takes its orbs from a hero
-        /// echoer's bank (a foe's charge copies for free). Nothing to repeat is a miss.</summary>
+        /// echoer from where it stands at the target <see cref="Echo.For"/> chose; a hero echoer pays a copied spell from one
+        /// of its own meters (<see cref="Echo.PayingSlot"/>; a foe's charge copies for free). Nothing to repeat is a miss.</summary>
         private void ResolveEcho(Unit caster, AbilityDef a, Unit source)
         {
             var plan = Echo.For(S, caster, source);
@@ -409,8 +409,11 @@ namespace GridGame.Core.Battle
             var copy = plan.Value.Ability;
             if (caster.IsHero && copy.Kind == AbilityKind.Spell && copy.Cost > 0)
             {
-                if (!S.Bank.CanAfford(copy.Cost)) { Announce("Not enough mana", caster.Id); return; }
-                S.Bank.Spend(copy.Cost);
+                int slot = Echo.PayingSlot(S, caster, copy);
+                if (slot < 0) { Announce("Not enough mana", caster.Id); return; }
+                int points = copy.Cost * BattleConfig.ManaPointsPerOrb;
+                S.SetMana(caster.Id, slot, S.ManaIn(caster.Id, slot) - points);
+                Emit(new SpellManaSpentEvent { UnitId = caster.Id, Slot = slot, AbilityId = caster.Bar[slot].AbilityId, Points = points });
                 Emit(new OrbsSpentEvent { Count = copy.Cost, CountAfter = S.Bank.Count });
             }
             Announce($"Echo: {copy.Name}!", caster.Id);
@@ -449,13 +452,13 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>GG-T332 (§14.15): a foe's siphon that touched a hero draws up to <see cref="AbilityDef.DrainsOrbs"/>
-        /// orbs out of the party's bank — the Bulwark's aether pack is a portable Still. Spend them first, or interrupt it.</summary>
+        /// orbs out of the party's mana — the Bulwark's aether pack is a portable Still. Under per-spell meters (§3.1.0) it
+        /// takes N x <see cref="BattleConfig.ManaPointsPerOrb"/> points from every meter, floored at 0. Spend them first, or interrupt it.</summary>
         private void DrainOrbs(Unit caster, AbilityDef a)
         {
             if (S.IsOver || caster.Team != Team.Enemy) return;
-            int n = Math.Min(a.DrainsOrbs, S.Bank.Count);
-            if (n <= 0) { Announce("No mana to take", caster.Id); return; }
-            S.Bank.Spend(n);
+            int n = a.DrainsOrbs;
+            if (n <= 0 || !GainMana(-n * BattleConfig.ManaPointsPerOrb, caster.Id, "siphon")) { Announce("No mana to take", caster.Id); return; }
             Emit(new OrbsSpentEvent { Count = n, CountAfter = S.Bank.Count, Drained = true, DrainedById = caster.Id });
             Announce(n == 1 ? "Siphoned an orb!" : $"Siphoned {n} orbs!", caster.Id);
         }
