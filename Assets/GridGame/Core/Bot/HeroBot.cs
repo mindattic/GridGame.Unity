@@ -580,7 +580,9 @@ namespace GridGame.Core.Bot
                 {
                     if (BattleEngine.IsArmored(s, t)) continue;
                     bool kills = false;
-                    if (a.BaseDamage > 0)
+                    if (a.ShattersPlate && t.HasPlate) score += ShatterValue(t); // GG-T2069: Sunder an unyielding plate
+                    bool clangs = a.DamageType == DamageType.Physical && !a.ShattersPlate && BattleRunner.Unyielding(t) && SideFacing(t, caster.Pos);
+                    if (a.BaseDamage > 0 && !clangs) // GG-T2069: an unyielding plate takes a physical skill from its front for 0
                     {
                         int dmg = (int)Math.Round(Formulas.SpellDamage(a, t, false) * Formulas.CasterPower(a, caster) * caster.OutgoingDamageMultiplier);
                         score += Math.Min(t.Hp, dmg) * 0.6f + (t.Hp <= dmg ? 8f : 0f);
@@ -1379,6 +1381,14 @@ namespace GridGame.Core.Bot
             finally { caster.Pos = mine; t.Pos = theirs; }
             v += 0.5f * GravityWell.TrappedValue * Math.Max(0, after - before);
             return v > 0f ? v : -1f;
+        }
+
+        /// <summary>GG-T2069: what shattering this foe's plate outright is worth. An unyielding plate stops every ordinary
+        /// blow from its front, so breaking it is worth more than any hit; an ordinary plate counts by what is left of it.</summary>
+        public static float ShatterValue(Unit t)
+        {
+            if (t == null || !t.HasPlate) return 0f;
+            return BattleRunner.Unyielding(t) ? 20f + t.PlateHp * 0.25f : 3f + t.PlateHp * 0.5f;
         }
 
         /// <summary>GG-T864: what a Shredded-style debuff (plate chip, extra Physical damage taken) is worth on this foe.

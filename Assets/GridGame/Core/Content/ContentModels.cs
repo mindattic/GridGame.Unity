@@ -537,6 +537,10 @@ namespace GridGame.Core.Content
         public Targeting Targeting = Targeting.Auto;
         /// <summary>Armor plate HP on the side it faces (§13.5); 0 = none. Physical blows from that side dent the plate, not the body.</summary>
         public int ArmorPlate;
+        /// <summary>GG-T2069 (§13.5): the plate is unyielding: an ordinary blow from the plated side clangs for 0 and nothing
+        /// dents it (Shredded's chip included); only an ability with <see cref="AbilityDef.ShattersPlate"/> takes it off.
+        /// Needs an ArmorPlate.</summary>
+        public bool PlateUnyielding;
         /// <summary>Movement / decision style (§14.6).</summary>
         public Brain Brain = Brain.Hunter;
         /// <summary>Straight-line attack reach for the Ranged archetype (1 = melee only).</summary>
@@ -713,6 +717,9 @@ namespace GridGame.Core.Content
         /// <summary>GG-T879: seconds each caught foe's held cast slips (a <c>CastStaggeredEvent</c>, no Wisdom shrug); the slip
         /// counts toward the interrupt like a blow's stagger, so a cast pushed past its own length is cancelled.</summary>
         public float CastStagger;
+        /// <summary>GG-T2069 (§13.5): hitting a foe that wears an armor plate shatters the plate outright from any side,
+        /// unyielding or not (a <c>PlateShatteredEvent</c>, then its <c>PlateBrokenEvent</c>), and the hit lands on the body.</summary>
+        public bool ShattersPlate;
         public string Icon;
         public string CastVfx;
         public string ProjectileVfx;

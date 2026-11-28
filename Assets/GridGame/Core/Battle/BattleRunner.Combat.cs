@@ -467,12 +467,18 @@ namespace GridGame.Core.Battle
             return new Coord(0, Math.Sign(dy));
         }
 
-        /// <summary>A physical blow from the plated side dents the plate instead of the body; the plate breaks off at 0.</summary>
+        /// <summary>A physical blow from the plated side dents the plate instead of the body; the plate breaks off at 0.
+        /// GG-T2069: an unyielding plate takes the blow and clangs for 0.</summary>
         private bool PlateAbsorbs(Unit target, Unit attacker, int amount)
         {
             if (!target.HasPlate || attacker == null || attacker.Team == target.Team || amount <= 0) return false;
             var side = strikeFromAfterimage is Coord ghost ? SideOf(target, ghost) : SideOf(target, attacker); // GG-T867
             if (side != target.Facing) return false;
+            if (Unyielding(target))
+            {
+                Emit(new PlateHitEvent { UnitId = target.Id, AttackerId = attacker.Id, Amount = 0, Left = target.PlateHp, Max = target.PlateMax });
+                return true;
+            }
             target.PlateHp = Math.Max(0, target.PlateHp - amount);
             Emit(new PlateHitEvent { UnitId = target.Id, AttackerId = attacker.Id, Amount = amount, Left = target.PlateHp, Max = target.PlateMax });
             if (target.PlateHp == 0)
@@ -481,6 +487,20 @@ namespace GridGame.Core.Battle
                 Announce($"{target.Name}'s armor breaks off!", target.Id);
             }
             return true;
+        }
+
+        /// <summary>GG-T2069: does <paramref name="u"/> wear an unyielding plate (only a ShattersPlate ability breaks it)?</summary>
+        public static bool Unyielding(Unit u) => u.HasPlate && u.Def != null && u.Def.PlateUnyielding;
+
+        /// <summary>GG-T2069 (§13.5): a ShattersPlate ability breaks the plate outright, from any side, unyielding or not.</summary>
+        private void ShatterPlate(Unit target, Unit attacker, string abilityId)
+        {
+            if (!target.HasPlate) return;
+            int left = target.PlateHp;
+            target.PlateHp = 0;
+            Emit(new PlateShatteredEvent { UnitId = target.Id, AttackerId = attacker.Id, AbilityId = abilityId, Left = left });
+            Emit(new PlateBrokenEvent { UnitId = target.Id, AttackerId = attacker.Id });
+            Announce($"{target.Name}'s armor shatters!", target.Id);
         }
 
         /// <summary>An armored unit turns its plate toward the hero it wants.</summary>
