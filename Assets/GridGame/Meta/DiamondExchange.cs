@@ -17,14 +17,15 @@ namespace GridGame.Meta
         /// <summary>The currency's stable wiki/glossary id.</summary>
         public const string Id = "aetherite_shard";
         public const string Name = "Mana Shard", Plural = "Mana Shards";
-        /// <summary>The short form for tight labels (buttons, side windows, counters).</summary>
-        public const string Short = "Shard", ShortPlural = "Shards";
-        /// <summary>The real-money store's name (Camp row, screen title, every "not enough Shards" offer).</summary>
-        public const string Store = "Shard Store";
+        /// <summary>Kept for the call sites that name the currency in a tight label; the same words as <see cref="Name"/>, so the
+        /// player meets one name everywhere (GG-T1974).</summary>
+        public const string Short = Name, ShortPlural = Plural;
+        /// <summary>The real-money store's name (Camp row, screen title, every "not enough Mana Shards" offer).</summary>
+        public const string Store = "Mana Shard Store";
 
         /// <summary>"1 Mana Shard", "250 Mana Shards".</summary>
         public static string Of(int n) => $"{n:N0} {(n == 1 ? Name : Plural)}";
-        /// <summary>"1 Shard", "250 Shards".</summary>
+        /// <summary>The same as <see cref="Of"/>.</summary>
         public static string ShortOf(int n) => $"{n:N0} {(n == 1 ? Short : ShortPlural)}";
     }
 

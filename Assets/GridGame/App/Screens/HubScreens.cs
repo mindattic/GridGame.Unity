@@ -1780,7 +1780,7 @@ namespace GridGame.App
             Ui.Caption(left == 1 ? "Next pull" : $"Within {left} pulls", row, "dim");
         }
 
-        /// <summary>What a pull takes, as its button names it: "1 Summon Ticket", "1,000 Shards", "40 Shards + 360 G".</summary>
+        /// <summary>What a pull takes, as its button names it: "1 Summon Ticket", "1,000 Mana Shards", "40 Mana Shards + 360 G".</summary>
         private string PayText(int tickets, int shards)
         {
             var parts = new List<string>();
@@ -2513,7 +2513,7 @@ namespace GridGame.App
         {
             var row = Ui.MenuRow("Delete all game data", "Erase", () =>
                 Confirm.Show("Delete all game data? Every profile, save slot and setting on this device is erased, and so are their cloud copies. This can't be undone.", "Continue", () =>
-                    Confirm.Show("Purchased Shards, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
+                    Confirm.Show($"Purchased {ShardText.Plural}, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
                         App.DeleteAllData(ok => App.Toast(ok ? "All game data deleted" : "Some game data couldn't be deleted")))), parent);
             row.name = "settings-delete-all-data";
             row.KindIcon(RowKind.Close);

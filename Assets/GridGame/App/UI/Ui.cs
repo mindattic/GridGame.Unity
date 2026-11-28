@@ -248,7 +248,7 @@ namespace GridGame.App
                 shards.name = "header-shards";
                 shards.tooltip = ShardText.Store;
                 if (onShards == null) shards.pickingMode = PickingMode.Ignore;
-                chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
+                chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"{ShardText.ShortPlural} {Count(DiamondExchange.Have(s))}"));
             }
             if (SummonTickets.Have(s) > 0 || showZeroTickets)
             {
