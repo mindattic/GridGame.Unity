@@ -34,14 +34,17 @@ HOME_SPEC = {"target": "screen:hub", "allFeatures": True, "level": 20, "gold": 5
 
 # Scenario-only spots: (capture name, tools/scenarios preset). These replace the bare goto of the same id.
 SCENARIO_SCREENS = [
-    ("battle", "greenvalley-start"),
+    ("battle", "camp-midgame"),
     ("battle-boss", "first-boss"),
     ("overworld", "overworld"),
-    ("camp", "camp-midgame"),
+    ("camp", "greenvalley-start"),
     ("skill-hex", "skill-hex"),
     ("summon", "summon"),
     ("caravan", "caravan"),
 ]
+# The state "screen" each scenario capture must land on: Camp is the Hub screen, and until an overworld map screen exists
+# the overworld preset lands there too.
+LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub"}
 # Screens that move or animate on their own get longer to settle.
 SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon"}
 
@@ -236,6 +239,9 @@ def audit_device(device, items, settle):
                     continue
                 time.sleep(settle * (2 if name in SLOW else 1))
                 capture(device, name, method, facts)
+                want = LANDS_ON.get(name)
+                if want and facts[name].get("landedOn") != want:
+                    print(f"  {name}: landed on {facts[name].get('landedOn')}, expected {want}", flush=True)
             except Exception as e:
                 facts[name] = {"screen": name, "method": method, "error": repr(e)}
                 print(f"  {name}: {e!r}", flush=True)
