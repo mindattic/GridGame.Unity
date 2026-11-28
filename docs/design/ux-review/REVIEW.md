@@ -653,3 +653,32 @@ One line each: summary, then impact. They are grouped by the story they belong u
 
 **Review follow-up**
 40. Recapture pixel9 and ipad and re-check this review's battle and hub verdicts at 9:23 and 3:4 (the folders weren't in the working tree). **Impact: Low.**
+
+---
+
+## Recheck 2026-11-28: battle and hub at 9:20 (pixel9) and 3:4 (ipad) (GG-T1979)
+
+Build: a fresh Windows dev player from `origin/main` (27a2a7fe), which includes the [Abilities][Info][GUARD] row, the Abilities sheet, select-confirm, the party mana core and the dev cheats. Captures: `docs/design/ui-audit/captures/{pixel9,ipad}/` (full set) and `iphone17pro/` (hub and battle only). The earlier "pixel9 and ipad folders missing" limit is lifted. The pixel9 stage measures 584 x 1312 (about 9:20, the narrowest stage the player builds); ipad is a 3:4 window with the game framed at 9:16 and side bars, as §26.3 specifies.
+
+### Battle verdict: Rework still stands
+
+- **Confirmed as predicted:** 9:20 and 3:4 use the same rows as 9:16; ipad is the 9:16 frame with side bars, so no extra layout work is needed there.
+- **Landed since the review:** the action row now exists as [Abilities][Info][GUARD], with a yellow badge dot on Abilities. The old GUARD-in-the-timeline problem is gone.
+- **Still open:**
+  - The row sits above the info panel, not in the bottom thumb zone (2.1 item 7). GUARD is icon-only and Info looks disabled with no reason (GG-T2112).
+  - There is no turn strip ("YOUR TURN") and no visible party mana bar.
+  - At 9:20 and 3:4 the panel shows the header and stats and clips before the Skills section; on ipad the Tip line takes two more lines first. The "keep at least two lines" rule fails (GG-T2111).
+  - Grid lines are still faint (X6).
+- Screenshots: `captures/pixel9/battle.png`, `captures/ipad/battle.png`, `captures/iphone17pro/battle.png`.
+
+### Hub verdict: Rework still stands
+
+- The hub is unchanged: no bottom nav on the root, a full party window at the top, "Rest" and "Make camp" as unequal controls, "Rested / Unlimited" bar, and Heroes, Summon Circle, Merchant, Shard Store, Craft and Journal as tiles that the nav duplicates.
+- The page scrolls at 9:20 and 3:4 and clips the lore panel; the hamburger and gold are now present, so GG-T1845 is fixed.
+- "New ability ready" still wraps or crowds the Heroes tile (ipad wraps to three lines over the icon; GG-T1860 already covers it).
+- Screenshots: `captures/pixel9/hub.png`, `captures/ipad/hub.png`, `captures/iphone17pro/hub.png`.
+
+### Filed
+
+- GG-T2111: battle panel clips its Skills section at 9:20 and 3:4.
+- GG-T2112: battle action row labels, disabled Info and thumb-zone placement.
