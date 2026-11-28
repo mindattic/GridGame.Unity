@@ -554,6 +554,9 @@
 .kit-chip--tap { min-height: var(--size-target); margin: var(--space-12); padding: 0 var(--space-24); }
 .kit-chip--tap.is-pressed { scale: 0.95 0.95; translate: 0 6px; background-color: var(--color-press); }
 .kit-chip--selected { background-color: var(--color-well); border-width: 3px; border-top-color: var(--color-well-edge); translate: 0 3px; scale: 0.985 0.985; }
+/* GG-T2087: a station's ready chip at the end of a recipe row, centred on the row, its rim in the label's Good green. */
+.menu-row > .kit-chip { align-self: center; flex-shrink: 0; }
+.kit-chip--good { border-color: var(--color-good); }
 .kit-segmented { flex-direction: row; flex-wrap: nowrap; align-items: stretch; padding: 0 var(--space-12); }
 .kit-segment { flex-grow: 1; flex-shrink: 1; flex-basis: 0; padding: 0 var(--space-16); white-space: normal; }
 .kit-segment--selected { border-bottom-width: 3px; border-top-color: var(--color-well-edge); translate: 0 6px; background-color: var(--color-btn-pressed); }

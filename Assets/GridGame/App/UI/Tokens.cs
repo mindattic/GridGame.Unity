@@ -266,6 +266,10 @@ namespace GridGame.App
             public static readonly Color Steel = new Color(0.72f, 0.76f, 0.84f);
             public static readonly Color Shatter = new Color(1f, 0.85f, 0.5f);
             public static readonly Color Shard = new Color(0.78f, 0.82f, 0.9f);
+            /// <summary>GG-T1950: the board's grid line, drawn over a <see cref="Palette.Ink"/> keyline on each side. Over the
+            /// battle art dimmed by the board scrim (sky.json BoardScrim, 0.35) the light core alone is 3.8:1 or better against
+            /// every campaign theme's median art, and core or keyline is 3.5:1 or better against any of it.</summary>
+            public static readonly Color GridLine = new Color(0.8f, 0.82f, 0.88f);
             public static readonly Color Well = new Color(0.55f, 0.30f, 0.95f);
             public static readonly Color WellEye = new Color(0.12f, 0.04f, 0.2f, 0.9f);
             public static readonly Color Burning = new Color(1f, 0.45f, 0.1f);

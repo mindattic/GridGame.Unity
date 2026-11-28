@@ -1,5 +1,6 @@
 {
   "Manalith": { "Image": "Sky/manalith-00", "Model": "Manalith/manalith-satellite-00", "Placeholder": false, "Size": 0.2, "X": 0.7, "Y": 0.35, "Rotation": -8 },
+  "BoardScrim": 0.35,
   "Moon": { "Image": "Sky/moon-00", "Model": "procedural", "Size": 0.085, "X": 0.2, "Y": 0.16, "Opacity": 0.92 },
   "Shards": {
     "Images": [
