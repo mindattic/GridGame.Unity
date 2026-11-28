@@ -25,8 +25,8 @@ namespace GridGame.App.Dev
             button = Ui.Button("Note", () => Begin(), "btn--small", app.Overlay);
             button.name = "feedback-note";
             button.style.position = Position.Absolute;
-            button.style.left = 8;
-            button.style.top = 8;
+            button.style.left = Space.S8;
+            button.style.top = Space.S8;
             button.style.opacity = 0.55f;
             button.style.display = DisplayStyle.None;
             app.Ticked += _ =>

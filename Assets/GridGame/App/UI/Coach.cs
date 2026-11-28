@@ -82,6 +82,9 @@ namespace GridGame.App
     public static class Coach
     {
         public const string OffFlag = "lessons:off", SeenPrefix = "lesson:";
+        /// <summary>GG-T1961: the battle loop in one sentence (UX review 1.5), on the first drill's card, atop How to play
+        /// and in Info's Examine empty state.</summary>
+        public const string LoopLine = "Your turn lasts until the next enemy reaches the left. Every hero acts once. Trap a foe between two heroes to hit it, and the trap pushes it back, which buys your team more time.";
         private const float MissingTimeout = 2.5f, BoxPad = 10f, ArrowGap = 28f;
 
         private static CoachLesson lesson;

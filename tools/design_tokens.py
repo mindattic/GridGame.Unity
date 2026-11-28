@@ -65,16 +65,16 @@ def cs_class(cs, name):
 
 def radii(root, uss, cs):
     tokens = {int(re.search(r"\d+", v).group()): k for k, v in root.items() if k.startswith("--radius-")}
-    code = {int(v) for _, v in cs_class(cs, "Radius")}
-    if code != set(tokens):
+    code = {int(v): name for name, v in cs_class(cs, "Radius")}
+    if set(code) != set(tokens):
         raise SystemExit("Tokens.cs Radius %s and Theme.uss --radius-* %s disagree" % (sorted(code), sorted(tokens)))
     body = re.sub(r":root\s*\{.*?\}", "", strip_comments(uss), count=1, flags=re.S)
     uses = {px: [] for px in tokens}
     for selector, block in re.findall(r"([^{}]+)\{([^{}]*)\}", body):
-        for var in set(re.findall(r"var\((--radius-\d+)\)", block)):
-            px = int(var.rsplit("-", 1)[1])
+        for var in set(re.findall(r"var\((--radius-\w+)\)", block)):
+            px = int(re.search(r"\d+", root[var]).group())
             uses[px].extend(s.strip() for s in selector.split(",") if s.strip() not in uses[px])
-    return [{"token": tokens[px], "code": "Radius.R%d" % px, "px": px, "uses": uses[px]} for px in sorted(tokens)]
+    return [{"token": tokens[px], "code": "Radius." + code[px], "px": px, "uses": uses[px]} for px in sorted(tokens)]
 
 
 def shapes(devices, gameapp):

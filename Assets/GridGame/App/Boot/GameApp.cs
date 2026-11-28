@@ -511,7 +511,7 @@ namespace GridGame.App
         {
             var t = Ui.Text(text, "toast shadow", Overlay);
             t.name = "toast";
-            t.style.bottom = 260 + liveToasts * 170; // GG-T1867: a second toast stacks above the first, never over it
+            t.style.bottom = Size.ToastLift + liveToasts * Size.ToastStack; // GG-T1867: a second toast stacks above the first, never over it
             liveToasts++;
             t.style.opacity = 0;
             yield return null;

@@ -46,17 +46,25 @@ namespace GridGame.Core.Content
                     else stageThemeOwner[s] = t.Id;
                 }
             // GG-T1374: the tutorial drills: real stages, never in a theme, each with its lessons; lessons only on a drill.
+            // GG-T2075: the prologue battles are drills too.
             var drills = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var d in db.Campaign.Tutorial ?? new List<string>())
+            void DrillList(string list, List<string> ids)
             {
-                if (d == null || !db.Stages.ContainsKey(d)) { p.Add($"campaign Tutorial: unknown stage '{d}'"); continue; }
-                if (!drills.Add(d)) p.Add($"campaign Tutorial: stage '{d}' listed twice");
-                if (stageThemeOwner.TryGetValue(d, out var owner)) p.Add($"campaign Tutorial: stage '{d}' also belongs to theme '{owner}'");
-                if (db.Stages[d].Lessons.Count == 0) p.Add($"campaign Tutorial: stage '{d}' has no Lessons");
+                var listed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var d in ids ?? new List<string>())
+                {
+                    if (d == null || !db.Stages.ContainsKey(d)) { p.Add($"campaign {list}: unknown stage '{d}'"); continue; }
+                    if (!listed.Add(d)) p.Add($"campaign {list}: stage '{d}' listed twice");
+                    drills.Add(d);
+                    if (stageThemeOwner.TryGetValue(d, out var owner)) p.Add($"campaign {list}: stage '{d}' also belongs to theme '{owner}'");
+                    if (db.Stages[d].Lessons.Count == 0) p.Add($"campaign {list}: stage '{d}' has no Lessons");
+                }
             }
+            DrillList("Tutorial", db.Campaign.Tutorial);
+            DrillList("Prologue", db.Campaign.Prologue);
             foreach (var s in db.Stages.Values)
             {
-                if (s.Lessons.Count > 0 && !drills.Contains(s.Id)) p.Add($"stage {s.Id}: Lessons on a stage not in campaign Tutorial");
+                if (s.Lessons.Count > 0 && !drills.Contains(s.Id)) p.Add($"stage {s.Id}: Lessons on a stage not in campaign Tutorial or Prologue");
                 if (s.PartySize is int ps && (ps < 1 || !drills.Contains(s.Id))) p.Add($"stage {s.Id}: PartySize {ps} needs a drill and at least 1 (GG-T1958)");
                 var seen = new HashSet<string>();
                 foreach (var l in s.Lessons)

@@ -8,8 +8,8 @@ namespace GridGame.Meta
     /// <summary>
     /// The summon banners' rolls (BIBLE §25.10.3, GG-T1419): who a banner can bring (<see cref="Pool"/>), the chance of each
     /// (<see cref="Odds"/>, disclosed before purchase as GG-T503 requires, and the very list <see cref="Roll"/> draws from),
-    /// a seeded roll with the Featured share and hard pity, and the record of each pull (<see cref="Record"/>: the pity
-    /// counters per banner kind and the pull history in <see cref="SaveData.Summon"/>). Engine-free; bots and Test Mode
+    /// a seeded roll with the Featured share, and the record of each pull (<see cref="Record"/>: the pull count
+    /// per banner kind and the pull history in <see cref="SaveData.Summon"/>). Engine-free; bots and Test Mode
     /// never pull (callers refuse them, as <see cref="DiamondSummon.CanDraw"/> does).
     /// </summary>
     public static class Gacha
@@ -74,53 +74,20 @@ namespace GridGame.Meta
                 ? banner.Featured.Where(id => summonable.Contains(id, StringComparer.OrdinalIgnoreCase)).ToList()
                 : new List<string>();
 
-        public static int NewHeroMiss(SaveData s, BannerKind kind) =>
-            s.Summon?.NewHeroMiss != null && s.Summon.NewHeroMiss.TryGetValue(kind, out var n) ? n : 0;
-
         /// <summary>Whether the save has <paramref name="classId"/>, or it is already <paramref name="coming"/> in this batch.</summary>
         private static bool Has(SaveData s, string classId, IEnumerable<string> coming) =>
             s.Hero(classId) != null || (coming != null && coming.Contains(classId, StringComparer.OrdinalIgnoreCase));
 
-        /// <summary>Which hard pity the next pull on <paramref name="banner"/> from <paramref name="pool"/> is under, if any;
-        /// heroes <paramref name="coming"/> earlier in the same multi-pull count as owned.</summary>
-        public static PityDue Due(SaveData s, BannerDef banner, List<string> pool, IEnumerable<string> coming = null)
-        {
-            if (banner == null) return PityDue.None;
-            if (banner.Kind == BannerKind.Featured && banner.FeaturedPity > 0 && Featured(banner, pool).Count > 0
-                && (s.Summon?.FeaturedMiss ?? 0) >= banner.FeaturedPity - 1) return PityDue.Featured;
-            if (banner.NewHeroPity > 0 && NewHeroMiss(s, banner.Kind) >= banner.NewHeroPity - 1 && pool.Any(id => !Has(s, id, coming)))
-                return PityDue.NewHero;
-            return PityDue.None;
-        }
-
-        /// <summary>"New-hero pity is due." and the like, for the line beside the odds; null when no pity is due.</summary>
-        public static string DueLine(PityDue due) => due switch
-        {
-            PityDue.Featured => "Featured pity is due: this pull brings a featured hero.",
-            PityDue.NewHero => "New-hero pity is due: this pull brings a hero you don't have.",
-            _ => null,
-        };
-
         /// <summary>The next pull's odds on <paramref name="banner"/> over <paramref name="pool"/> (its <see cref="Pool"/>, or a
-        /// narrower list a caller draws from): one entry per hero who can come, in pool order, the chances summing to 1. Pity
-        /// due → only the heroes it brings, evenly. Standard (or no banner) → every hero evenly. Featured →
+        /// narrower list a caller draws from): one entry per hero who can come, in pool order, the chances summing to 1.
+        /// Standard (or no banner) → every hero evenly. Featured →
         /// <see cref="BannerDef.FeaturedShare"/> split across the featured heroes, the rest a Standard pull.
-        /// <see cref="Roll"/> draws from exactly this list. <paramref name="coming"/>: as <see cref="Due"/>.</summary>
-        public static List<DrawOdds> Odds(SaveData s, BannerDef banner, List<string> pool, IEnumerable<string> coming = null)
+        /// <see cref="Roll"/> draws from exactly this list.</summary>
+        public static List<DrawOdds> Odds(SaveData s, BannerDef banner, List<string> pool)
         {
             var odds = new List<DrawOdds>(pool.Count);
             if (pool.Count == 0) return odds;
             var featured = Featured(banner, pool);
-            switch (Due(s, banner, pool, coming))
-            {
-                case PityDue.Featured:
-                    foreach (var id in featured) odds.Add(new DrawOdds(id, 1.0 / featured.Count));
-                    return odds;
-                case PityDue.NewHero:
-                    var unowned = pool.Where(id => !Has(s, id, coming)).ToList();
-                    foreach (var id in unowned) odds.Add(new DrawOdds(id, 1.0 / unowned.Count));
-                    return odds;
-            }
             var rest = pool.Where(id => !featured.Contains(id, StringComparer.OrdinalIgnoreCase)).ToList();
             if (featured.Count == 0 || rest.Count == 0)
             {
@@ -160,12 +127,11 @@ namespace GridGame.Meta
         }
 
         /// <summary>Records a pull of <paramref name="classId"/> on <paramref name="banner"/> from <paramref name="pool"/>, before the
-        /// hero lands: the kind's pull count, its new-hero pity (reset by a new hero, or once the pool has no one left to be
-        /// new), the Featured pity (reset by a featured hero; it carries from one Featured banner to the next) and the
+        /// hero lands: the kind's pull count and the
         /// history, newest first, capped at <see cref="HistoryKeep"/>. A hero already owned lands here and now as an
         /// <see cref="Echo"/>. In a multi-pull (<see cref="Pull"/>) <paramref name="coming"/> holds the heroes rolled before
         /// this one: they count as owned, and an Echo is only foreseen here; it lands with the job (<see cref="Land"/>).</summary>
-        public static PullRecord Record(SaveData s, BannerDef banner, List<string> pool, string classId, string paid, DateTime now, IList<string> coming = null)
+        public static PullRecord Record(SaveData s, BannerDef banner, string classId, string paid, DateTime now, IList<string> coming = null)
         {
             s.Summon ??= new SummonState();
             var st = s.Summon;
@@ -175,14 +141,9 @@ namespace GridGame.Meta
             int fragments = 0;
             if (!isNew) result = coming == null ? Echo(s, classId, out fragments) : Foresee(s, classId, coming, out fragments);
             st.Pulls[kind] = (st.Pulls.TryGetValue(kind, out var p) ? p : 0) + 1;
-            bool noneLeft = pool.All(id => Has(s, id, coming) || string.Equals(id, classId, StringComparison.OrdinalIgnoreCase));
-            st.NewHeroMiss[kind] = isNew || noneLeft ? 0 : NewHeroMiss(s, kind) + 1;
-            if (kind == BannerKind.Featured)
-                st.FeaturedMiss = banner.Featured.Contains(classId, StringComparer.OrdinalIgnoreCase) ? 0 : st.FeaturedMiss + 1;
             var rec = new PullRecord
             {
                 Utc = now, BannerId = banner?.Id, ClassId = classId, Result = result, Fragments = fragments, Paid = paid,
-                NewHeroMiss = st.NewHeroMiss[kind], FeaturedMiss = st.FeaturedMiss,
             };
             st.History.Insert(0, rec);
             if (st.History.Count > HistoryKeep) st.History.RemoveRange(HistoryKeep, st.History.Count - HistoryKeep);
@@ -244,8 +205,8 @@ namespace GridGame.Meta
             var coming = new List<string>(count);
             for (int i = 0; i < count; i++)
             {
-                var id = Roll(Odds(s, banner, pool, coming), SeedFor(s, banner));
-                Record(s, banner, pool, id, i < ticketPulls ? TicketText.Of(banner.PullTickets) : DiamondExchange.Label(banner.PullShards), now, coming);
+                var id = Roll(Odds(s, banner, pool), SeedFor(s, banner));
+                Record(s, banner, id, i < ticketPulls ? TicketText.Of(banner.PullTickets) : DiamondExchange.Label(banner.PullShards), now, coming);
                 coming.Add(id);
             }
             job = new PaywallJob
@@ -316,13 +277,10 @@ namespace GridGame.Meta
         }
     }
 
-    public enum PityDue { None, NewHero, Featured }
-
     /// <summary>What a pull gave: a new hero, an Echo of an owned one, or Ticket fragments once its Echoes are full.</summary>
     public enum PullResult { New, Echo, Fragments }
 
-    /// <summary>One pull in <see cref="SummonState.History"/>: when, which banner, who came, new or not, what paid for it,
-    /// and both pity counters after it.</summary>
+    /// <summary>One pull in <see cref="SummonState.History"/>: when, which banner, who came, new or not, and what paid for it.</summary>
     public sealed class PullRecord
     {
         public DateTime Utc;
@@ -332,8 +290,6 @@ namespace GridGame.Meta
         /// <summary>Ticket fragments the pull gave (<see cref="PullResult.Fragments"/>), else 0.</summary>
         public int Fragments;
         public string Paid;
-        public int NewHeroMiss;
-        public int FeaturedMiss;
     }
 
     /// <summary>The save's summon record (GG-T1419, <see cref="Gacha"/>). Save v23: an older save starts with no pulls.</summary>
@@ -341,10 +297,6 @@ namespace GridGame.Meta
     {
         /// <summary>Pulls made on each banner kind (seeds the next roll).</summary>
         public Dictionary<BannerKind, int> Pulls = new Dictionary<BannerKind, int>();
-        /// <summary>Pulls in a row without a new hero, per banner kind (hard pity at <see cref="BannerDef.NewHeroPity"/>).</summary>
-        public Dictionary<BannerKind, int> NewHeroMiss = new Dictionary<BannerKind, int>();
-        /// <summary>Featured pulls in a row without a featured hero; carries to the next Featured banner.</summary>
-        public int FeaturedMiss;
         /// <summary>The last <see cref="Gacha.HistoryKeep"/> pulls, newest first.</summary>
         public List<PullRecord> History = new List<PullRecord>();
         /// <summary>Ticket fragments not yet joined into a Ticket (under <see cref="Gacha.FragmentsPerTicket"/>; GG-T1421).</summary>

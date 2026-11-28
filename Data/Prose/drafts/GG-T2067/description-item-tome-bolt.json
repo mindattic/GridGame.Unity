@@ -1,0 +1,15 @@
+{
+  "schema": "prose-text/1",
+  "id": "description-item-tome-bolt",
+  "universe": "gridgame",
+  "kind": "description",
+  "key": "item:tome_bolt",
+  "about": [
+    "item-tome-bolt"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "short": "A scorched spellbook from the Collector's chest. Read it to teach the Red Mage the spell Bolt."
+  }
+}

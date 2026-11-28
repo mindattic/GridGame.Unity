@@ -199,7 +199,7 @@ namespace GridGame.App
         /// <summary>GG-T1377: "Drill n of 5": this stage's place among campaign.json's Tutorial drills.</summary>
         private string DrillLabel()
         {
-            var drills = App.Content.Campaign?.Tutorial ?? new List<string>();
+            var drills = Drills.OrderOf(App.Content, State.Stage?.Id);
             int n = drills.FindIndex(id => string.Equals(id, State.Stage?.Id, StringComparison.OrdinalIgnoreCase));
             return n < 0 ? "" : $"Drill {n + 1} of {drills.Count} · ";
         }
@@ -219,7 +219,7 @@ namespace GridGame.App
             if (App.Save != null && !practice)
             {
                 foreach (var l in Lessons) Coach.MarkSeen(App.Save, "battle-" + l.Id);
-                if ((App.Content.Campaign?.Tutorial ?? new List<string>()).All(id => DrillLessonsSeen(App.Save, App.Content.TryStage(id))))
+                if (Drills.NewGameOrder(App.Content).All(id => DrillLessonsSeen(App.Save, App.Content.TryStage(id))))
                     App.Save.TutorialDone = true;
                 App.Persist();
             }
@@ -471,7 +471,7 @@ namespace GridGame.App
                 Id = "drill-intro-" + stage.Id,
                 Kicker = DrillLabel().TrimEnd(' ', '·'),
                 Title = stage.Name,
-                Text = stage.Intro,
+                Text = string.Equals(App.Content.Campaign?.Tutorial?.FirstOrDefault(), stage.Id, StringComparison.OrdinalIgnoreCase) ? Coach.LoopLine + "\n\n" + stage.Intro : stage.Intro,
                 Hold = CoachHold,
                 Practice = practice,
                 Finished = how =>

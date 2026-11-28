@@ -312,13 +312,13 @@ namespace GridGame.App
                 loading.style.alignItems = Align.Center;
                 var label = Ui.Text("Loading", "kit-caption", loading);
                 label.style.color = Palette.GoldLight;
-                label.style.marginBottom = 8;
+                label.style.marginBottom = Space.S8;
                 var track = new VisualElement { name = "loading-track", pickingMode = PickingMode.Ignore };
                 track.style.alignSelf = Align.Stretch;
-                track.style.height = 6;
+                track.style.height = Size.Track;
                 track.style.backgroundColor = new Color(1f, 1f, 1f, 0.12f);
-                track.style.borderTopLeftRadius = track.style.borderTopRightRadius = 3;
-                track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = 3;
+                track.style.borderTopLeftRadius = track.style.borderTopRightRadius = Radius.R3;
+                track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = Radius.R3;
                 track.style.overflow = Overflow.Hidden;
                 loading.Add(track);
                 loadingFill = new VisualElement { name = "loading-fill", pickingMode = PickingMode.Ignore };

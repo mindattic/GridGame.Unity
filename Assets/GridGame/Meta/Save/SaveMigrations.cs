@@ -161,6 +161,7 @@ namespace GridGame.Meta
             s.Flags ??= new HashSet<string>();
             s.SeenDialogues ??= new HashSet<string>();
             s.SeenCampTips ??= new HashSet<string>();
+            s.SeenGear ??= new HashSet<string>();
             s.Rested ??= new RestedSave();
             s.Jobs ??= new List<PaywallJob>();
             foreach (var h in s.Roster) while (h.Bar.Count < 5) h.Bar.Add(null);
@@ -329,7 +330,6 @@ namespace GridGame.Meta
             if (s.Version < 23) s.Version = 23;
             s.Summon ??= new SummonState();
             s.Summon.Pulls ??= new Dictionary<BannerKind, int>();
-            s.Summon.NewHeroMiss ??= new Dictionary<BannerKind, int>();
             s.Summon.History ??= new List<PullRecord>();
             // GG-T1626: drill progress. An older save that finished the tutorial has, in effect, cleared every drill.
             bool beforeDrills = s.Version < 24;

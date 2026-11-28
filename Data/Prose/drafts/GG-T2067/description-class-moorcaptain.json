@@ -1,0 +1,16 @@
+{
+  "schema": "prose-text/1",
+  "id": "description-class-moorcaptain",
+  "universe": "gridgame",
+  "kind": "description",
+  "key": "class:moorcaptain",
+  "about": [
+    "class-moorcaptain"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "short": "The Captain himself: a tall knight in black-and-steel plate under the Choir's white surcoat crossed with red straps, closed helm, a sword at the hip.",
+    "long": "The Free Holds' militia captain, who sold the holds' tithe to the Choir and sent his Collector to bleed Tithe dry. He calls it keeping the quota. He holds the last stretch of the moor and strikes twice when no one stands beside him."
+  }
+}

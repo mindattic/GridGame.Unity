@@ -1,0 +1,22 @@
+{
+  "schema": "prose-text/1",
+  "id": "bark-bossphase-moorcaptain-1",
+  "universe": "gridgame",
+  "kind": "bark",
+  "key": "bark:bossphase/moorcaptain/1",
+  "about": [
+    "class-moorcaptain"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "speaker": "class-moorcaptain",
+    "context": "boss phase announcement",
+    "lines": [
+      "The Captain rallies his men!"
+    ]
+  },
+  "speakers": [
+    "class-moorcaptain"
+  ]
+}

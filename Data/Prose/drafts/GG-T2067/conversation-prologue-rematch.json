@@ -1,0 +1,56 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-rematch",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_rematch",
+  "about": [
+    "character-commander",
+    "class-barbarian",
+    "class-knight",
+    "class-redmage"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Rematch",
+    "start": "shattered",
+    "nodes": [
+      {
+        "id": "shattered",
+        "speaker": "character-commander",
+        "line": "The Collector's plate lies in pieces on the bridge. His keys hang at his belt.",
+        "next": "mage"
+      },
+      {
+        "id": "mage",
+        "speaker": "class-redmage",
+        "line": "You took his plate off with an axe. I like you already.",
+        "next": "axe"
+      },
+      {
+        "id": "axe",
+        "speaker": "class-barbarian",
+        "line": "Took all night to learn. Worth it.",
+        "next": "wagon"
+      },
+      {
+        "id": "wagon",
+        "speaker": "class-knight",
+        "line": "His chest is on the white wagon. Gold, a flask, a book. And the wagon is ours now too.",
+        "next": "join"
+      },
+      {
+        "id": "join",
+        "speaker": "class-redmage",
+        "line": "He kept that book from me for a month. Let me read it, and I'll show you what it's for."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-redmage",
+    "class-barbarian",
+    "class-knight"
+  ]
+}

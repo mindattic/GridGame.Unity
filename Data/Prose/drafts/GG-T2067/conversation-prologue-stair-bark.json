@@ -1,0 +1,26 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-stair-bark",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_stair_bark",
+  "about": [
+    "class-barbarian"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Clock",
+    "start": "bat",
+    "nodes": [
+      {
+        "id": "bat",
+        "speaker": "class-barbarian",
+        "line": "A bat on the stair. Take your time and line it up. Nothing moves while you think."
+      }
+    ]
+  },
+  "speakers": [
+    "class-barbarian"
+  ]
+}
