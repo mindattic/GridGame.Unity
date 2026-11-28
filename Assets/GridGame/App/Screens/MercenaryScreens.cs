@@ -81,10 +81,10 @@ namespace GridGame.App
             return $"{mood} · from {Ui.Gold(from)}";
         }
 
-        // ── The hire sheet (GG-T2020): the pitch in full, the lengths as select-then-confirm rows, Haggle and Hire ──
+        // ── The hire sheet (GG-T2020, GG-T2090): the kit's sheet (Ui.Sheet) with the pitch in full, the lengths as a
+        // segmented pick, Haggle and Hire ──
 
-        private const string VeilName = "confirm-veil"; // named like Confirm's, so Android Back closes it and a navigation clears it
-        private VisualElement sheetVeil;
+        private VisualElement sheet;
         private string sheetClass;
         private int chosenTerm;
 
@@ -93,54 +93,28 @@ namespace GridGame.App
             CloseSheet(false);
             sheetClass = m.Class;
             chosenTerm = 0;
-            var veil = sheetVeil = Ui.El("fill veil", App.Overlay);
-            veil.name = VeilName;
-            veil.pickingMode = PickingMode.Position;
-            veil.userData = (System.Action)(() => CloseSheet(true));
-            veil.RegisterCallback<ClickEvent>(e => { if (e.target == veil) CloseSheet(true); });
-            var sheet = Ui.Window(null, veil, "window--compact");
-            sheet.name = "merc-sheet";
-            sheet.style.position = Position.Absolute;
-            sheet.style.left = sheet.style.right = Fit.Inset + Fit.Edge;
-            sheet.style.bottom = GameApp.SafeBottom + Space.S16;
+            VisualElement s = null;
+            s = sheet = Ui.Sheet("merc-sheet", () => { if (sheet == s) { sheet = null; sheetClass = null; } });
             RenderSheet();
-            if (!Tween.Calm)
-            {
-                float h = Fit.H(60);
-                sheet.style.translate = new Translate(0, h);
-                App.StartCoroutine(Tween.Run(Timing.Standard, k => sheet.style.translate = new Translate(0, h * (1f - k)), Ease.Out));
-            }
         }
 
         private void CloseSheet(bool animate)
         {
-            var veil = sheetVeil;
-            sheetVeil = null;
+            var s = sheet;
+            sheet = null;
             sheetClass = null;
-            if (veil == null || veil.parent == null) return;
-            var sheet = veil.Q("merc-sheet");
-            if (!animate || Tween.Calm || sheet == null) { veil.RemoveFromHierarchy(); return; }
-            App.Audio.Sfx("ui.back");
-            veil.pickingMode = PickingMode.Ignore;
-            veil.name = null;
-            float h = sheet.layout.height + GameApp.SafeBottom + Space.S16;
-            App.StartCoroutine(Tween.Run(Timing.Quick, k =>
-            {
-                sheet.style.translate = new Translate(0, h * k);
-                veil.style.opacity = 1f - k;
-                if (k >= 1f) veil.RemoveFromHierarchy();
-            }));
+            if (s != null) Ui.CloseSheet(s, animate);
         }
 
         private void RenderSheet()
         {
-            var sheet = sheetVeil?.Q("merc-sheet");
+            var sh = sheet;
             var m = sheetClass == null ? null : Mercenaries.Board(C, S).FirstOrDefault(x => x.Class == sheetClass);
-            if (sheet == null || sheetVeil.parent == null || m == null) { CloseSheet(false); return; }
-            sheet.Clear();
+            if (sh == null || sh.parent?.parent == null || m == null) { CloseSheet(false); return; }
+            sh.Clear();
             var def = C.Class(m.Class);
 
-            var head = Ui.El("row", sheet);
+            var head = Ui.El("row", sh);
             head.style.alignItems = Align.Center;
             Ui.Thumb(m.Class, head, Size.Avatar);
             var who = Ui.El("col grow", head);
@@ -150,48 +124,45 @@ namespace GridGame.App
             Ui.Name(def.Name, top);
             Ui.RoleBadge(def.Role, top).AddToClassList("merc-role");
             Ui.Caption(m.Temperament.ToString(), who, "dim");
-            RowIcon.IconButton("Close", RowKind.Close, () => CloseSheet(true), null, head).name = "merc-sheet-close";
+            Ui.IconButton(RowKind.Close, () => CloseSheet(true), head).name = "merc-sheet-close";
 
-            var pitch = Ui.Para($"\"{m.Pitch}\"", sheet, "dim");
+            var pitch = Ui.Para($"\"{m.Pitch}\"", sh, "dim");
             pitch.style.flexShrink = 0; pitch.style.minWidth = 0; pitch.style.whiteSpace = WhiteSpace.Normal; // GG-T1897: the full quote wraps to its height, never cut off
-            GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", sheet); // GG-T298
+            GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", sh); // GG-T298
             int adj = Mercenaries.HaggleAdjust(S, m.Class);
-            if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", sheet, adj < 0 ? "gold" : "bad");
-            if (Mercenaries.Walked(S, m.Class)) { Ui.Para("Walked off. Back after the next battle.", sheet, "bad"); return; }
+            if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", sh, adj < 0 ? "gold" : "bad");
+            if (Mercenaries.Walked(S, m.Class)) { Ui.Para("Walked off. Back after the next battle.", sh, "bad"); return; }
 
-            // Select, then confirm: a tap picks a length (the Hire button then names its price); a tap on the picked one, or Hire, hires.
-            var terms = Ui.El("col merc-terms", sheet);
+            // A segment picks a length (a pick is not an action); Hire names its price and is the one commit.
+            var terms = m.Terms.OrderBy(x => x).ToArray();
+            if (!terms.Contains(chosenTerm))
+                chosenTerm = terms.Where(t => S.Gold >= Mercenaries.Price(C, S, m.Class, t)).DefaultIfEmpty(terms[0]).First();
             Button hire = null;
-            foreach (var t in m.Terms.OrderBy(x => x))
+            var seg = Ui.Segmented(terms.Select(t => $"{t} battles").ToArray(), System.Array.IndexOf(terms, chosenTerm),
+                i => { chosenTerm = terms[i]; SyncHire(hire, m); }, sh, "merc-terms");
+            var segs = seg.Query<Button>().ToList();
+            for (int i = 0; i < terms.Length && i < segs.Count; i++)
             {
-                int term = t, price = Mercenaries.Price(C, S, m.Class, t);
-                bool can = S.Gold >= price && !haggling;
-                var row = Ui.MenuRow($"{term} battles", Ui.Gold(price), () => Hire(m, term, price), terms, null, can);
-                row.name = $"merc-hire-{m.Class}-{term}";
-                if (term == chosenTerm) Ui.Select(row);
-                row.RegisterCallback<ClickEvent>(_ =>
-                {
-                    if (!can || hire == null || hire.panel == null) return;
-                    chosenTerm = term;
-                    SyncHire(hire, m, term, price);
-                });
+                segs[i].name = $"merc-hire-{m.Class}-{terms[i]}";
+                Ui.SetEnabled(segs[i], S.Gold >= Mercenaries.Price(C, S, m.Class, terms[i]) && !haggling);
             }
-            Ui.Note("Paid now. The contract runs down every battle, used or not.", sheet);
+            Ui.Note("Paid now. The contract runs down every battle, used or not.", sh);
 
-            var foot = Ui.El("kit-footer", sheet);
+            var foot = Ui.El("kit-footer", sh);
             var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(m)), null, foot, confirmTap: true);
             haggle.name = "merc-haggle-" + m.Class;
             Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
             Ui.El("grow", foot);
-            hire = RowIcon.IconButton("Hire", RowKind.Confirm, () => { if (chosenTerm > 0) Hire(m, chosenTerm, Mercenaries.Price(C, S, m.Class, chosenTerm)); }, "btn--primary", foot, confirmTap: false);
+            hire = RowIcon.IconButton("Hire", RowKind.Confirm, () => Hire(m, chosenTerm, Mercenaries.Price(C, S, m.Class, chosenTerm)), "btn--primary", foot, confirmTap: true);
             hire.name = "merc-hire";
-            SyncHire(hire, m, chosenTerm, chosenTerm > 0 ? Mercenaries.Price(C, S, m.Class, chosenTerm) : 0);
+            SyncHire(hire, m);
         }
 
-        /// <summary>The commit names the picked length's price; nothing is picked until a row is tapped, so it starts off.</summary>
-        private void SyncHire(Button hire, MercenaryDef m, int term, int price)
+        /// <summary>The commit names the picked length's price, and is off when it can't be paid.</summary>
+        private void SyncHire(Button hire, MercenaryDef m)
         {
-            bool ready = term > 0 && m.Terms.Contains(term) && S.Gold >= price && !haggling;
+            int price = Mercenaries.Price(C, S, m.Class, chosenTerm);
+            bool ready = m.Terms.Contains(chosenTerm) && S.Gold >= price && !haggling;
             hire.Q<Label>().text = ready ? $"Hire · {Ui.Gold(price)}" : "Hire"; // the IconButton's label, beside its icon
             Ui.SetEnabled(hire, ready);
         }
@@ -211,7 +182,6 @@ namespace GridGame.App
             if (haggling) yield break;
             haggling = true;
             RenderSheet(); // Hire and Haggle stay off while the merc thinks
-            var sheet = sheetVeil?.Q("merc-sheet");
             App.Audio.Sfx("ui.press");
             if (sheet != null)
             {

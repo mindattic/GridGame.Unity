@@ -158,9 +158,7 @@ namespace GridGame.App
             var bal = Ui.Panel(body, null, false, "diamond-balance");
             var head = Ui.El("row", bal);
             head.style.alignItems = Align.Center;
-            // GG-T745 (§26.7): the Diamond's pixel icon, else the Diamond emblem.
-            var icon = Art.ItemIcon(Crafting.DiamondId);
-            var img = head.KindIcon(RowKind.Diamond, icon);
+            var img = head.KindIcon(RowKind.Diamond);
             img.style.width = img.style.height = Size.Icon;
             img.AddToClassList("icon-gap");
             Ui.Heading(ShardText.Of(have), head, "gold").name = "diamond-count";
@@ -205,7 +203,7 @@ namespace GridGame.App
                     localized |= local != null;
                     var value = DiamondStores.InFlight == pack.ProductId ? "Processing" : local ?? pack.Price;
                     var row = Ui.MenuRow(ShardText.ShortOf(pack.Diamonds), value, () => Buy(store, pack), packs, null, open);
-                    row.KindIcon(RowKind.Diamond, icon); // GG-T745
+                    row.KindIcon(RowKind.Diamond);
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
                 if (store.CanRestore)

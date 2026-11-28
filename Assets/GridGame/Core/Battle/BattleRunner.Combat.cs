@@ -700,7 +700,7 @@ namespace GridGame.Core.Battle
                     if (ip < 0) { entry.StunTicks += (-ip + rate - 1) / rate; ip = 0; }
                     entry.Ip = ip;
                 }
-                Emit(new PushedBackEvent { UnitId = target.Id, FromU = from, ToU = BattleEngine.BarU(S, entry), StunTicks = entry.StunTicks, RecoverTicks = recoverAdded });
+                Emit(new PushedBackEvent { UnitId = target.Id, FromU = from, ToU = BattleEngine.BarU(S, entry), StunTicks = entry.StunTicks, RecoverTicks = recoverAdded, Ticks = ticks });
                 return;
             }
             var cast = S.CastEntryOf(target.Id);

@@ -30,19 +30,15 @@ namespace GridGame.App
         public static void Run(PaywallJob job, string label, Action<Result> onDone = null)
         {
             var app = GameApp.I;
-            var veil = Ui.El("fill veil col center", app.Overlay);
+            // The kit's modal (§4), its veil renamed so Back can't cancel a job that is already paid for.
+            var w = Ui.Modal(label, null, "paywall-window");
+            var veil = w.parent;
             veil.name = VeilName;
-            veil.pickingMode = PickingMode.Position;
-            var w = Ui.Window(null, veil);
-            w.style.width = Length.Percent(66);
-            var title = Ui.Text(label, "h2", w);
-            title.style.whiteSpace = WhiteSpace.Normal;
-            title.style.marginBottom = Space.S16;
             var gauge = Ui.Gauge(0f, w);
             gauge.style.width = Length.Percent(100);
             gauge.name = "paywall-gauge";
-            var left = Ui.Text("", "small dim", w);
-            left.style.marginTop = Space.S8;
+            var left = Ui.Caption("", w, "dim");
+            left.name = "paywall-left";
             app.Audio.Sfx("ui.buy");
             bool finished = false;
             veil.schedule.Execute(() =>
@@ -140,15 +136,15 @@ namespace GridGame.App
             var now = DateTime.UtcNow;
             int pts = RestedPool.Points(s, now);
             w.name = "camp-rested";
-            Ui.Text("Rested", "small dim", w);
+            Ui.Caption("Rested", w, "dim");
             // "Unlimited" is wider than "10/10": one step smaller, and it scrolls if the window is narrower still (GG-T395).
             Ui.Marquee(Ui.Text(RestedPool.Exempt(s) ? "Unlimited" : $"{pts}/{RestedPool.Max}", "kit-name num", w), false);
             Ui.Gauge(RestedPool.Exempt(s) ? 1f : pts / (float)RestedPool.Max, w);
             if (RestedPool.Exempt(s) || pts >= RestedPool.Max) return;
             var next = RestedPool.NextIn(s, now);
-            Ui.Text($"+1 in {(int)next.TotalMinutes}:{next.Seconds:00}", "small dim", w);
+            Ui.Caption($"+1 in {(int)next.TotalMinutes}:{next.Seconds:00}", w, "dim");
             // The price has its own line: the side window is too narrow for "Refill · price" on one button (GG-T400).
-            Ui.Text(Paywall.Tag(PaywallKind.RestedRefill, s), "small dim", w).style.marginTop = Space.S8;
+            Ui.Caption(Paywall.Tag(PaywallKind.RestedRefill, s), w, "dim").style.marginTop = Space.S8;
             var b = RowIcon.IconButton("Refill", RowKind.Shop, () => Refill(refresh), "btn--small", w);
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;
@@ -157,7 +153,7 @@ namespace GridGame.App
             // (GG-T455), "25 Diamonds (or 150 G)", which scrolled in ~110 px and read as fragments ("monds (or"); like the
             // gold one, its price is now a whole line of its own above a short "Refill". Always enabled: short of both,
             // it offers the store.
-            var dp = Ui.Text(DiamondExchange.Label(RestedPool.DiamondRefillPrice), "small dim", w);
+            var dp = Ui.Caption(DiamondExchange.Label(RestedPool.DiamondRefillPrice), w, "dim");
             dp.name = "rested-refill-diamond-price";
             dp.style.whiteSpace = WhiteSpace.Normal;
             dp.style.marginTop = Space.S16;
