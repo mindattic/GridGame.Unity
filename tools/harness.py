@@ -6,6 +6,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py aspects          # GG-T169/T706: title/hub/battle; 9:23..9:16 fill, 10:16/2:3/3:4, 9:25 and 1:1 framed
     python tools/harness.py aspects devices  # GG-T724/T2026: the same per in-target screen shape (tools/devices.json) plus the framed fold inners
     python tools/harness.py aspects DEVICE   # GG-T2026: a device or shape id, shapes or all (tools/devices.py)
+    python tools/harness.py perf [RUN] [--device DEVICE]  # GG-T2101: one battle and one camp scroll at a device shape, checked against BIBLE §30; writes docs/perf/records/<date>-<device>.json
     python tools/harness.py safeareas [RUN] [--nocapture] [--device DEVICE] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4 (--device: each device's own shape and safe area); title/camp/merchant/results/battle
     python tools/harness.py refold [RUN] [--device DEVICE]  # GG-T2028: one player at a Fold cover, hub, resize to the Fold main and back; each shape must re-lay out live
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
@@ -913,6 +914,103 @@ def _play_battle(tag, timeout=480):
         if stuck > 12:
             return "stalled", b
     return "timeout", call("state")
+
+
+
+# GG-T2101: BIBLE §30's budget as the perf record checks it (frame times in ms, memory in MB, cold start in s).
+PERF_BUDGET = {"fps": 60, "frame_p95_ms": 1000 / 60, "ui_ms": 8, "texture_mb": 512, "allocated_mb": 1024,
+               "mono_heap_mb": 128, "gc_bytes_per_frame": 1024, "cold_start_s": 5}
+
+
+def _perf_verdict(p):
+    """GG-T2101: {check: (measured, ceiling, ok)} for one perf window against PERF_BUDGET."""
+    b = PERF_BUDGET
+    checks = {
+        "fps_avg": (p["fps_avg"], b["fps"], p["fps_avg"] >= b["fps"] - 1),
+        "frame_p95_ms": (p["frame_ms"]["p95"], round(b["frame_p95_ms"], 2), p["frame_ms"]["p95"] <= b["frame_p95_ms"] + 0.5),
+        "texture_mb": (p["texture_mb"], b["texture_mb"], p["texture_mb"] <= b["texture_mb"]),
+        "allocated_mb": (p["allocated_mb"], b["allocated_mb"], p["allocated_mb"] <= b["allocated_mb"]),
+        "mono_heap_mb": (p["mono_heap_mb"], b["mono_heap_mb"], p["mono_heap_mb"] <= b["mono_heap_mb"]),
+        "gc_bytes_per_frame": (p["gc_alloc_bytes_per_frame"], b["gc_bytes_per_frame"], p["gc_alloc_bytes_per_frame"] <= b["gc_bytes_per_frame"]),
+    }
+    if "ui_ms" in p:
+        checks["ui_ms_p95"] = (p["ui_ms"]["p95"], b["ui_ms"], p["ui_ms"]["p95"] <= b["ui_ms"])
+    return {k: {"measured": m, "budget": c, "ok": ok} for k, (m, c, ok) in checks.items()}
+
+
+def _perf_launch(run, preset, device, want):
+    """Launches the player at the device's shape (scaled to fit this desktop, like tools/scenario.py) straight into a
+    scenario preset and waits until the screen is one of `want`."""
+    import scenario
+    ww, wh = scenario.window_size(device)
+    _, dh, top, bottom = devices.screen(device)
+    launch(run, width=ww, height=wh, extra=("-scenario", preset), fresh=True)
+    call("safearea", top=top, bottom=bottom, ref=dh)
+    frame = devices.frame(device)
+    if frame:
+        call("deviceframe", **frame)
+    deadline = time.time() + 90
+    while time.time() < deadline:
+        st = call("state")
+        if st.get("screen") in want and not st.get("transitioning"):
+            return st
+        time.sleep(0.5)
+    raise RuntimeError(f"scenario {preset} never reached {want} (screen {st.get('screen')})")
+
+
+def perf(run="perf", device=devices.DEFAULT, battle_seconds=40, scroll_seconds=20, out=None):
+    """GG-T2101: one battle (first-boss, autoplay) and one camp scroll (the overworld scenario: there is no map screen
+    yet, so the camp's list stands in for the map) at a device shape, each measured through the automation perf window,
+    checked against PERF_BUDGET and written as one JSON record (docs/perf/records/ by default)."""
+    record = {"ticket": "GG-T2101", "device": device, "device_px": list(devices.screen(device)[:2]),
+              "when": time.strftime("%Y-%m-%dT%H:%M:%S"), "host": "Windows dev player (a desktop proxy, not the phone)",
+              "budget": PERF_BUDGET, "flows": {}}
+
+    _perf_launch(run + "-battle", "first-boss", device, ("battle",))
+    cold = call("perf").get("cold_start_s")
+    time.sleep(2.0)
+    call("perf", reset=1)
+    call("autoplay", on=1)
+    end = time.time() + battle_seconds
+    while time.time() < end and call("state").get("screen") == "battle":
+        time.sleep(1.0)
+    p = call("perf")
+    shot(run + "-battle")
+    record["cold_start_s"] = cold
+    record["flows"]["battle"] = {"preset": "first-boss", "perf": p, "verdict": _perf_verdict(p)}
+    _stop_player()
+
+    st = _perf_launch(run + "-map", "overworld", device, ("hub",))
+    time.sleep(2.0)
+    call("perf", reset=1)
+    cx = 540
+    end = time.time() + scroll_seconds
+    swipes = 0
+    while time.time() < end:
+        a, b = (1700, 900) if swipes % 2 == 0 else (900, 1700)
+        call("drag", path=f"{cx},{a};{cx},{(a + b) // 2};{cx},{b}", step=0.25)
+        swipes += 1
+    p = call("perf")
+    shot(run + "-map")
+    record["flows"]["map"] = {"preset": "overworld", "screen": st.get("screen"), "swipes": swipes, "perf": p,
+                              "verdict": _perf_verdict(p),
+                              "note": "no map screen exists yet; the camp scroll stands in for the map scroll"}
+    _stop_player()
+
+    record["cold_start"] = {"measured": cold, "budget": PERF_BUDGET["cold_start_s"],
+                            "ok": bool(cold) and cold <= PERF_BUDGET["cold_start_s"]}
+    out = out or os.path.join(ROOT, "docs", "perf", "records", f"{time.strftime('%Y-%m-%d')}-{device}.json")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(record, f, indent=2)
+        f.write("\n")
+    for name, flow in record["flows"].items():
+        bad = [k for k, v in flow["verdict"].items() if not v["ok"]]
+        q = flow["perf"]
+        print(f"[perf] {name}: {q['fps_avg']} fps, p95 {q['frame_ms']['p95']} ms, tex {q['texture_mb']} MB, "
+              f"GC {q['gc_alloc_bytes_per_frame']} B/frame" + (f"; over budget: {', '.join(bad)}" if bad else "; within budget"))
+    print(f"[perf] cold start {cold} s; record {out}")
+    return out
 
 
 def _skip_levelups(st):
@@ -4079,6 +4177,10 @@ def _dispatch(cmd):
         sys.exit(0 if firstenchant() else 1)
     elif cmd == "firstskill":
         sys.exit(0 if firstskill() else 1)
+    elif cmd == "perf":
+        raw = sys.argv[sys.argv.index("--device") + 1] if "--device" in sys.argv else devices.DEFAULT
+        names = [a for a in sys.argv[2:] if not a.startswith("--") and a != raw]
+        perf(names[0] if names else "perf", device=devices.device_id(raw))
     elif cmd == "fullloop":
         sys.exit(0 if fullloop(battles=int(sys.argv[2]) if len(sys.argv) > 2 else 4) else 1)
     elif cmd == "clips":
