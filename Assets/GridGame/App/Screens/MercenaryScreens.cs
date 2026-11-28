@@ -55,7 +55,8 @@ namespace GridGame.App
                 Ui.Name(def.Name, top);
                 Ui.RoleBadge(def.Role, top);
                 Ui.Caption(m.Temperament.ToString(), top, "dim");
-                Fold(Ui.Para($"\"{m.Pitch}\"", col, "dim"));
+                var pitch = Ui.Para($"\"{m.Pitch}\"", col, "dim");
+                pitch.style.flexShrink = 0; pitch.style.minWidth = 0; pitch.style.whiteSpace = WhiteSpace.Normal; // the full quote wraps to its height inside the card, never cut off
                 GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", col); // GG-T298
                 int adj = Mercenaries.HaggleAdjust(S, m.Class);
                 if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", col, adj < 0 ? "gold" : "bad");
@@ -84,24 +85,6 @@ namespace GridGame.App
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
             }
-        }
-
-        /// <summary>GG-T1881 (E4): the flavour quote sits on one line ending in an ellipsis; a tap unfolds it to its full
-        /// height, another folds it back.</summary>
-        private void Fold(Label quote)
-        {
-            quote.AddToClassList("fit-off");
-            quote.AddToClassList(TextFit.EllipsisClass);
-            quote.style.minWidth = 0; quote.style.flexShrink = 0;
-            bool open = false;
-            void Apply()
-            {
-                quote.style.whiteSpace = open ? WhiteSpace.Normal : WhiteSpace.NoWrap;
-                quote.style.overflow = open ? Overflow.Visible : Overflow.Hidden;
-                quote.style.textOverflow = open ? TextOverflow.Clip : TextOverflow.Ellipsis;
-            }
-            Apply();
-            quote.RegisterCallback<ClickEvent>(_ => { open = !open; Apply(); App.Audio.Sfx("ui.click"); });
         }
 
         // The merc weighs the offer for a beat before answering (law 5: nothing lands in a single frame).
