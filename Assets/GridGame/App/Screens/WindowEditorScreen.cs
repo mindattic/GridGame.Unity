@@ -66,13 +66,15 @@ namespace GridGame.App
             var foot = Ui.Footer(body, "window-actions-bar");
             foot.name = "window-actions";
             foot.style.justifyContent = Justify.FlexEnd;
-            var save = RowIcon.IconButton("Save", RowKind.Save, Save, "btn--primary", foot); // GG-T751 (§26.7)
-            save.name = "window-save";
+            Ui.Pad(foot, left: Space.S16, right: Space.S16);
+            var del = RowIcon.IconButton("Delete", RowKind.Close, Delete, "btn--danger", foot);
+            del.name = "window-delete";
+            Ui.El("", foot).style.flexGrow = 1;
             var reset = RowIcon.IconButton("Reset", RowKind.NewGamePlus, Reset, null, foot);
             reset.name = "window-reset";
             Ui.SetEnabled(reset, dirty);
-            var del = RowIcon.IconButton("Delete", RowKind.Close, Delete, "btn--danger", foot);
-            del.name = "window-delete";
+            var save = RowIcon.IconButton("Save", RowKind.Save, Save, "btn--primary", foot); // GG-T751 (§26.7)
+            save.name = "window-save";
             Ui.SetEnabled(del, BaseIsCustom);
         }
 
