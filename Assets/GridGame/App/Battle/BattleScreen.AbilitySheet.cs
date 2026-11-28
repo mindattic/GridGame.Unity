@@ -17,7 +17,7 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        private VisualElement abilitiesButton, sheetVeil, sheetGlow;
+        private VisualElement abilitiesButton, sheetVeil, sheetGlow, sheetPreview;
         /// <summary>The sheet's place in the tree: a tab, then folders, then (on the detail page) the move.</summary>
         private readonly List<ActionNode> sheetPath = new List<ActionNode>();
         private int sheetHeroId = -1;
@@ -175,7 +175,7 @@ namespace GridGame.App
         {
             if (sheetVeil == null) return;
             var veil = sheetVeil;
-            sheetVeil = sheetGlow = null;
+            sheetVeil = sheetGlow = sheetPreview = null;
             sheetHeroId = -1;
             highlightedMove = -1;
             var sheet = veil.Q("abilities-sheet");
@@ -197,10 +197,89 @@ namespace GridGame.App
             else CloseAbilities();
         }
 
-        /// <summary>Hook for the board preview while browsing (§9.0, later ticket): a move row was highlighted.</summary>
+        /// <summary>A move row was highlighted: the board preview follows it.</summary>
         private void HighlightMove(Unit hero, int slot)
         {
             highlightedMove = slot;
+            DrawSheetPreview(hero, slot);
+        }
+
+        /// <summary>
+        /// GG-T1919 (§9.0): the live board preview while browsing. Over the dim, on the veil itself so the dim never mutes
+        /// it, the highlighted move outlines what it reaches right now: its valid tiles (gold), the shape of its area at the
+        /// pick that catches the most (filled) and the units it would hit (bold). It breathes, or holds still under Reduce
+        /// Motion.
+        /// </summary>
+        private void DrawSheetPreview(Unit hero, int slot)
+        {
+            sheetPreview?.RemoveFromHierarchy();
+            sheetPreview = null;
+            var veil = sheetVeil;
+            var a = veil == null || hero == null || slot < 0 ? null : BattleEngine.SlotAbility(State, hero, slot);
+            if (a == null) return;
+            var layer = sheetPreview = Ui.El("fill", veil);
+            layer.name = "abilities-preview";
+            layer.pickingMode = PickingMode.Ignore;
+            var sheet = veil.Q("abilities-sheet");
+            if (sheet != null) layer.PlaceBehind(sheet);
+
+            bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
+            var col = harmful ? Palette.Bad : Palette.Good;
+            var valid = BattleEngine.ValidTargets(State, hero.Id, slot);
+            var targets = new List<Unit>();
+            List<Coord> area = null;
+            if (a.Mode == TargetMode.Auto)
+            {
+                var anchor = TargetResolver.AutoAnchor(hero);
+                targets = TargetResolver.Collect(State, a, hero, anchor);
+                if (a.Shape != TargetShape.Self && a.Shape != TargetShape.AllEnemies && a.Shape != TargetShape.AllAllies)
+                    area = TargetResolver.Tiles(anchor, a.Shape, a.Radius, hero.Pos);
+            }
+            else if (valid.Count > 0)
+            {
+                var best = valid[0];
+                int most = -1;
+                foreach (var c in valid)
+                {
+                    int n = TargetResolver.Collect(State, a, hero, c).Count;
+                    if (n > most) { most = n; best = c; }
+                }
+                if (a.Mode == TargetMode.PickActor)
+                {
+                    foreach (var c in valid)
+                    {
+                        var u = State.UnitAt(c);
+                        if (u != null && !targets.Contains(u)) targets.Add(u);
+                    }
+                }
+                else targets = TargetResolver.Collect(State, a, hero, best);
+                if (!a.IsTeleport && a.Shape != TargetShape.SingleActor && a.Shape != TargetShape.SingleTile)
+                    area = TargetResolver.Tiles(best, a.Shape, a.Radius, hero.Pos);
+            }
+
+            foreach (var c in valid) PreviewTile(layer, c, Palette.Gold, 0.12f, Space.S2);
+            if (area != null) foreach (var c in area) PreviewTile(layer, c, col, 0.3f, Space.S2);
+            foreach (var u in targets)
+                foreach (var c in u.Tiles()) PreviewTile(layer, c, col, 0f, Space.S4);
+            if (valid.Count == 0 && targets.Count == 0 && area == null) PreviewTile(layer, hero.Pos, Palette.Gold, 0f, Space.S4);
+
+            if (ReduceMotion) return;
+            layer.schedule.Execute(() => layer.style.opacity = 0.7f + 0.3f * Mathf.Sin(Time.unscaledTime * 4f)).Every(33);
+        }
+
+        /// <summary>One board tile of the preview in overlay space: an outline of <paramref name="edge"/> px over a fill of
+        /// <paramref name="fill"/> alpha.</summary>
+        private void PreviewTile(VisualElement layer, Coord c, Color col, float fill, float edge)
+        {
+            var r = App.Overlay.WorldToLocal(board.Root.LocalToWorld(new Rect(BoardView.PosOf(c), new Vector2(BoardView.Tile, BoardView.Tile))));
+            var t = Ui.El(null, layer);
+            t.pickingMode = PickingMode.Ignore;
+            t.style.position = Position.Absolute;
+            t.style.left = r.x; t.style.top = r.y;
+            t.style.width = r.width; t.style.height = r.height;
+            t.style.backgroundColor = col.WithA(fill);
+            t.style.borderTopWidth = t.style.borderBottomWidth = t.style.borderLeftWidth = t.style.borderRightWidth = edge;
+            t.style.borderTopColor = t.style.borderBottomColor = t.style.borderLeftColor = t.style.borderRightColor = col;
         }
 
         private void RenderSheet()
@@ -223,6 +302,7 @@ namespace GridGame.App
             if (fresh.Count == 0) fresh.Add(tree[0]);
             sheetPath.Clear();
             sheetPath.AddRange(fresh);
+            DrawSheetPreview(hero, highlightedMove);
 
             float scroll = sheet.Q<ScrollView>("abilities-list")?.scrollOffset.y ?? 0f;
             sheet.Clear();
