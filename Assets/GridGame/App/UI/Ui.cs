@@ -244,7 +244,7 @@ namespace GridGame.App
             if (talk != null) bar.Add(talk);
             if (DiamondExchange.Have(s) > 0 || showZeroShards)
             {
-                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
+                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar, tex: Art.UiIcon("cur-shards"));
                 shards.name = "header-shards";
                 shards.tooltip = ShardText.Store;
                 if (onShards == null) shards.pickingMode = PickingMode.Ignore;
@@ -253,7 +253,7 @@ namespace GridGame.App
             if (SummonTickets.Have(s) > 0 || showZeroTickets)
             {
                 int t = SummonTickets.Have(s);
-                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
+                var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar, tex: Art.UiIcon("cur-summon-tickets"));
                 tickets.name = "header-tickets";
                 tickets.pickingMode = PickingMode.Ignore;
                 chips.Add((tickets, tickets.Q<Label>(), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}", Count(t), $"{Count(t)} Ticket{(t == 1 ? "" : "s")}"));
@@ -261,6 +261,11 @@ namespace GridGame.App
             var more = RowIcon.IconButton($"+{chips.Count}", RowKind.Menu, null, "btn--small", bar);
             more.name = "header-more";
             more.style.display = DisplayStyle.None;
+            foreach (var c in chips) { var ci = c.chip.Q(className: RowIcon.Class); ci.style.width = ci.style.height = Size.IconInline; }
+            var goldIcon = RowIcon.SetIcon("cur-gold", "header-gold-icon");
+            goldIcon.name = "header-gold-icon";
+            goldIcon.style.width = goldIcon.style.height = Size.IconInline;
+            bar.Add(goldIcon);
             Text(Gold(s.Gold), "header-gold shadow", bar).name = "header-gold";
 
             int mode = 0;
@@ -315,7 +320,7 @@ namespace GridGame.App
                 t.name = "nav-" + tab.Id;
                 t.EnableInClassList("kit-navtab--active", tab.Id == lit);
                 t.EnableInClassList("kit-navtab--locked", !tab.Open);
-                var icon = t.KindIcon(NavKind(tab.Id));
+                var icon = t.KindIcon(NavKind(tab.Id), Art.UiIcon("nav-" + tab.Id));
                 if (!tab.Open) RowIcon.Badge(icon, RowKind.Locked);
                 Marquee(Text(tab.Label, "kit-navtab-label", t));
                 if (!string.IsNullOrEmpty(tab.Badge)) Text(tab.Badge, "kit-navtab-badge", t).name = "nav-badge";

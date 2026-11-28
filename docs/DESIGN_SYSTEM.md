@@ -66,7 +66,7 @@ Palette additions for code: `Palette.Black`, `Palette.Gray` (the fallback when a
 
 - **Space** (`Space`, `--space-*`): 4, 8, 12, 16, 24, 32, 48, 64, 96. 12 exists only as half of the 24-px gap between targets. `--space-16-framed` (13) is a selected card's padding: 16 less its 3-px frame, so selecting it does not move its content.
 - **Kit** (`Kit`): page gutter 24 (`Fit.Edge`), gap 16, window padding 16 / 24, row 132, header 150, nav 132, indent 8 (touch) or 72 (PC), card portrait 120, detail pane at most 45 % of the column.
-- **Size** (`Size`): target 132, row icon 64, icon M 56, icon S 40, chip 50, thumb 120, avatar 96, party slot 180, medallion 140, slot 196, cell 170, card 300, portrait 360 × 400, art 420 × 620. Lines: underline 2, hairline 3, track 6, bar 8, gauge 14, HP bar 18.
+- **Size** (`Size`): target 132, icon roles per [ICONS.md](ICONS.md) (inline `IconInline` 32, button `IconButton` 48, row `Icon` 64, nav `IconNav` 72; USS `--size-icon-inline`, `--size-icon-button`, `--size-icon`, `--size-icon-nav`), icon M 56, icon S 40, chip 50, thumb 120, avatar 96, party slot 180, medallion 140, slot 196, cell 170, card 300, portrait 360 × 400, art 420 × 620. Lines: underline 2, hairline 3, track 6, bar 8, gauge 14, HP bar 18.
 
 ### 2.4 Radii
 
@@ -127,7 +127,7 @@ Every tappable goes through `Ui.Pressable`, which sinks it and plays the `ui.pre
 | Section | `Ui.Section` | `.kit-section` | n/a | heavy gold, flush left |
 | Card | `Ui.Card(parent, classId, name, out col)` | `.card`, `.card-tap`, `.tap--selected` | when its tap runs an action (`Ui.Tappable(…, confirmTap: true)`) | thumbnail 120 (R9), heavy name, its buttons under its text (`Ui.Actions`) |
 | Button | `Ui.Button(text, onClick, classes, parent, confirmTap)` | `.btn`, `--primary`, `--danger`, `--small`, `--icon`, `--disabled` | **yes** for an action with no confirm of its own (every `RowKind.Confirm` icon button). **No** for a button that opens its own Confirm, a dialog's answer, the battle commit button, navigation and steppers | the primary holds the mana fill; danger is wine red; one primary per screen (POL-C7) |
-| Icon button | `RowIcon.IconButton(kind, …)` | `.btn--icon` | Confirm kind: yes | 132 square; icon per [ICONS.md](ICONS.md) |
+| Icon button | `RowIcon.IconButton(kind, …, tex)` | `.btn--icon` | Confirm kind: yes | 132 square; a 48 icon (`Size.IconButton`): the kind's set icon (`RowIcon.IconId`, `Art.UiIcon`) unless `tex` names another, per [ICONS.md](ICONS.md) |
 | Tabs | `Ui.Tabs(names, active, onPick, parent, locked)` | `.tab`, `.tab--active` | no | the window below sits flush; the active tab has a 4-px mana top |
 | Stepper | `Ui.Stepper(parent, value, onMinus, onPlus, …)` | `.btn--small` | no | minus, value, plus; each button a full target |
 | Field | `Ui.Field(label, value, parent)` | `.kit-field` | n/a | read-only: dim label, body value |

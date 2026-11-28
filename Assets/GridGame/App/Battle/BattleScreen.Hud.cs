@@ -582,8 +582,13 @@ namespace GridGame.App
                 idle.style.whiteSpace = WhiteSpace.Normal;
                 idle.style.marginBottom = Space.S8;
             }
+            // GG-T2111: a commandable hero's skills come right under the instruction, so a short panel (9:20, 3:4) shows the
+            // instruction and the first skill and scrolls to the hero's card, instead of clipping the skills below it.
+            bool skillsFirst = u.IsHero && u.IsCommandable;
+            if (skillsFirst) SkillReadout(u);
             var row = Ui.El("row", panel);
             row.style.alignItems = Align.FlexStart;
+            if (skillsFirst) row.style.marginTop = Space.S8;
             Ui.Thumb(u.Def.Id, row, Size.Thumb).style.marginRight = Space.S16;
             var col = Ui.El("col grow", row);
             col.style.flexShrink = 1;
@@ -644,7 +649,6 @@ namespace GridGame.App
                     b.Def.Name, $"{Ui.BuffEffect(b.Def)} ({b.Remaining} {(b.Def.Unit == GridGame.Core.Content.DurationUnit.Turns ? "turns" : "s")} left)");
                 AttachStatusInspect(pip, b.Def, b.Remaining);
             }
-            if (u.IsHero && u.IsCommandable) SkillReadout(u);
         }
 
         private static string SideName(Coord f) => f.Y > 0 ? "front (facing down)" : f.Y < 0 ? "front (facing up)" : f.X > 0 ? "front (facing right)" : "front (facing left)";
