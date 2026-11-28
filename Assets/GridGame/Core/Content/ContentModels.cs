@@ -985,8 +985,6 @@ namespace GridGame.Core.Content
         public bool OutOfBattleOnly;
         public string BonusVsTag;
         public float BonusMultiplier = 1f;
-        /// <summary>Extra ManaBank slots while equipped (bible §3.1.4 knob), summed over the party, max +4.</summary>
-        public int BankCapacityBonus;
         /// <summary>Relic passive: this hero's pincer strikes deal +X (fraction).</summary>
         public float PincerDamageBonus;
         /// <summary>Gear passive (GG-T297): Evasion points while equipped, 0..20; lost when the piece breaks.</summary>

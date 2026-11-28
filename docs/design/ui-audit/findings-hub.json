@@ -1,0 +1,334 @@
+{
+ "ticket": "GG-T1839",
+ "parent": "GG-T1834",
+ "device": "iphone17pro",
+ "capture": "f17cf7da",
+ "checklist": "docs/research/MobileGameAccessibility.md",
+ "scope": [
+  "title",
+  "splash",
+  "profiles",
+  "newprofile",
+  "createprofile",
+  "newgame",
+  "load",
+  "hub",
+  "camp",
+  "overworld",
+  "stages",
+  "settings",
+  "credits",
+  "about",
+  "bestiary",
+  "bounties",
+  "quests",
+  "crucible",
+  "windows"
+ ],
+ "screens": {
+  "title": {
+   "status": "not-reviewed",
+   "reason": "capture is solid black (GG-T1856); facts.json 'Load' 2.29:1 is sampled on #000000 and needs a recapture"
+  },
+  "splash": {
+   "status": "not-reviewed",
+   "reason": "caught mid-fade (copyright 1.11:1, logo dim); POL-C9 band is expected on a splash"
+  },
+  "profiles": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1851"
+   ]
+  },
+  "newprofile": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1852"
+   ],
+   "notes": "POL-C9 empty band accepted: the soft keyboard covers the lower half"
+  },
+  "createprofile": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1852"
+   ],
+   "notes": "POL-C9 empty band accepted: the soft keyboard covers the lower half"
+  },
+  "newgame": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1853"
+   ]
+  },
+  "load": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1853"
+   ],
+   "notes": "empty-slot rows are 3.7-3.8:1, which passes X5 for disabled rows"
+  },
+  "hub": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1845",
+    "GG-T1846",
+    "GG-T1847",
+    "GG-T1848"
+   ],
+   "notes": "hero thumbnails are small portraits (owner ask met); 6 tiles (E3 ok); Crucible locked row 3.71:1 passes X5"
+  },
+  "camp": {
+   "status": "wrong-screen",
+   "reason": "scenario landed on 'battle' (GG-T1843)"
+  },
+  "overworld": {
+   "status": "wrong-screen",
+   "reason": "scenario landed on 'hub' (GG-T1843); the PNG is a second hub capture"
+  },
+  "stages": {
+   "status": "reviewed",
+   "findings": [
+    "GG-T1849",
+    "GG-T1850"
+   ],
+   "notes": "locked row 3.84:1 passes X5"
+  },
+  "settings": {
+   "status": "not-reviewed",
+   "reason": "capture is solid black (GG-T1856); header labels from facts.json are covered by GG-T1849"
+  },
+  "credits": {
+   "status": "reviewed",
+   "findings": [],
+   "notes": "passes: 11.6:1, readable line length, Back top-left"
+  },
+  "about": {
+   "status": "missing",
+   "reason": "no capture in f17cf7da"
+  },
+  "bestiary": {
+   "status": "not-reviewed",
+   "reason": "capture is solid black (GG-T1856)"
+  },
+  "bounties": {
+   "status": "partial",
+   "findings": [
+    "GG-T1854"
+   ],
+   "reason": "capture is solid black (GG-T1856); finding from the UI tree only"
+  },
+  "quests": {
+   "status": "missing",
+   "reason": "no capture in f17cf7da"
+  },
+  "crucible": {
+   "status": "not-reviewed",
+   "reason": "capture is solid black (GG-T1856); 'Enter the Crucible' 1.03:1 is sampled on #000000"
+  },
+  "windows": {
+   "status": "partial",
+   "findings": [
+    "GG-T1855"
+   ],
+   "reason": "capture is solid black (GG-T1856); finding from the UI tree only"
+  }
+ },
+ "falsePositives": [
+  {
+   "rule": "POL-C3 / T2",
+   "screens": [
+    "stages",
+    "settings",
+    "bestiary",
+    "bounties",
+    "crucible",
+    "windows"
+   ],
+   "note": "bottom nav tabs report 0 px gaps, but T2 passes when hit boxes don't overlap; the nav is a segmented bar, so no ticket"
+  }
+ ],
+ "findings": [
+  {
+   "id": "hub-corners",
+   "ticket": "GG-T1845",
+   "screens": [
+    "hub"
+   ],
+   "rule": "L2",
+   "summary": "hub: no hamburger top-left and no gold top-right; gold only appears as '5,000 G gold' inside the Continue card (checklist L2)",
+   "detail": "The Hub has no header at all: the top-left and top-right corners are empty backdrop. The owner's standing ask is a persistent hamburger top-left and gold top-right on every screen (battle already has them). Gold is buried mid-card in '5,000 G gold · 0:00:40 · Cleared 11/40', which also says the unit twice ('G gold'). Fix: give the Hub the same corner pair as battle (hamburger top-left opening Settings / Save & Quit, gold top-right) and drop the gold from the Continue card's stat line.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/hub.png"
+   ]
+  },
+  {
+   "id": "hub-overflow",
+   "ticket": "GG-T1846",
+   "screens": [
+    "hub"
+   ],
+   "rule": "L10",
+   "summary": "hub: page overflows the stage and scrolls; the Settings / Save & Quit row is cut off at the fold so both show as bare unlabeled icons, and Save & Quit sits in the bottom thumb sweep (checklist L10)",
+   "detail": "facts.json puts the 'Settings' and 'Save & Quit' labels at y 2418-2511 and the Osk quote at y 2554-2824 on a 2550-high stage, so the Hub needs a scroll and the last tile row is clipped: only the gear and power glyphs show, with no words (G6). Save & Quit is a session-ending action in the bottom band the thumb sweeps through (L2: nothing destructive there). Fix: fit the Hub to one stage at 100% text (move Settings and Save & Quit into the top-left hamburger per the owner's corner rule, or shrink the cards) so no scroll is needed and nothing is clipped.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/hub.png"
+   ]
+  },
+  {
+   "id": "hub-tile-icons",
+   "ticket": "GG-T1847",
+   "screens": [
+    "hub"
+   ],
+   "rule": "G6",
+   "summary": "hub: tile kind icons repeat: Summon Circle and Craft share the house glyph, Heroes and Merchant share the person glyph (checklist G6)",
+   "detail": "G6 wants every tappable row to lead with a kind icon that tells it apart. Four of the six Hub tiles reuse two glyphs, so the icon carries no information. Fix: give each tile its own glyph (summon circle, anvil/hammer for Craft, coin/bag for Merchant).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/hub.png"
+   ]
+  },
+  {
+   "id": "hub-subcaption-contrast",
+   "ticket": "GG-T1848",
+   "screens": [
+    "hub"
+   ],
+   "rule": "X4",
+   "summary": "hub: the 'New ability ready' caption under Heroes is 4.21:1 (#8490c3 on #2b3137), below 4.5:1 (checklist X4)",
+   "detail": "Measured by the uiaudit capture (facts.json hub.text). The caption is informative (it is the Learn nudge), so it needs body contrast. Fix: lighten the tile caption colour on the Manapunk theme (and check the other themes).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/hub.png"
+   ]
+  },
+  {
+   "id": "subpage-corners",
+   "ticket": "GG-T1849",
+   "screens": [
+    "stages",
+    "settings",
+    "windows",
+    "bounties",
+    "crucible",
+    "bestiary"
+   ],
+   "rule": "L2",
+   "summary": "stages and every sub-page: header puts 'Tickets' at top-right and gold mid-header next to a '0' diamond button; gold is not in the top-right corner (checklist L2)",
+   "detail": "The sub-page header reads Back · title · '5,000 G' · [diamond 0] · '0 Tickets' (stages.png; the same four labels are in facts.json for settings, windows, bounties, crucible and bestiary). The owner's rule is gold top-right on every screen, and the hamburger top-left; today Back holds top-left and a zero Tickets count holds top-right. Fix: gold at the right edge, hide zero-value currencies (or move them into the Shop), and decide with the owner whether the hamburger sits top-left beside Back on sub-pages.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/stages.png",
+    "docs/design/ui-audit/captures/iphone17pro/settings.png",
+    "docs/design/ui-audit/captures/iphone17pro/windows.png",
+    "docs/design/ui-audit/captures/iphone17pro/bounties.png",
+    "docs/design/ui-audit/captures/iphone17pro/crucible.png",
+    "docs/design/ui-audit/captures/iphone17pro/bestiary.png"
+   ]
+  },
+  {
+   "id": "stages-ellipsis",
+   "ticket": "GG-T1850",
+   "screens": [
+    "stages"
+   ],
+   "rule": "owner: no '...'",
+   "summary": "stages: locked row reads '28 more stages ahead…' with a literal ellipsis (checklist X9 / owner: no '...')",
+   "detail": "The owner's standing rule is no truncated names and no '...'. This is a written ellipsis, not a truncation, but it reads as one. Fix: '28 more stages to unlock' (or name the next region and how to open it).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/stages.png"
+   ]
+  },
+  {
+   "id": "profiles-actions",
+   "ticket": "GG-T1851",
+   "screens": [
+    "profiles"
+   ],
+   "rule": "L7",
+   "summary": "profiles: Rename / Delete float mid-panel detached from the profile row, Delete sits beside Rename with no separation, and '+ New profile' shows a plus twice (checklist L7)",
+   "detail": "The single profile row is centred at ~43% height, Rename and Delete float ~200 px below it with nothing tying them to the selected row, and the panel has large empty bands above and below. Delete is destructive and sits flush against Rename. '+ New profile' has both a sparkle icon and a typed '+'. Fix: per L7, rows at the top, the row's own actions beside or under it, Delete separated (or behind a confirm in the row's menu), New profile as the footer button bottom-right, and drop the typed '+'.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/profiles.png"
+   ]
+  },
+  {
+   "id": "frontdoor-disabled-contrast",
+   "ticket": "GG-T1852",
+   "screens": [
+    "newprofile",
+    "createprofile"
+   ],
+   "rule": "X5",
+   "summary": "newprofile / createprofile: the disabled Create and Next labels are 1.44:1 (#2a3047 on #3e4867), below the 3:1 disabled floor (checklist X5)",
+   "detail": "Measured by the uiaudit capture (facts.json newprofile/createprofile). Both screens open with an empty name so the commit button is disabled, and its label is nearly invisible. X5 asks for at least 3:1 on locked or inactive labels. Fix: raise the disabled button label colour in the menu kit so every theme keeps 3:1.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/newprofile.png",
+    "docs/design/ui-audit/captures/iphone17pro/createprofile.png"
+   ]
+  },
+  {
+   "id": "frontdoor-thumb",
+   "ticket": "GG-T1853",
+   "screens": [
+    "newgame",
+    "load"
+   ],
+   "rule": "L10",
+   "summary": "newgame / load: the three slot rows sit in the top 20% of the screen with a 1462-1617 px empty band below, out of thumb reach (checklist L10)",
+   "detail": "POL-C9 flags both screens (empty band 1462 px on newgame, 1617 px on load, over 15% of 2550). The slot rows are the only thing to tap and they sit at y ~270-510 of 1312 window px, the hardest reach on a phone held one-handed (owner: thumb reach). The text-entry screens (newprofile, createprofile) are exempt because the keyboard covers the bottom half. Fix: anchor the slot list to the lower half (or make each slot a full-width card that fills the panel).",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/newgame.png",
+    "docs/design/ui-audit/captures/iphone17pro/load.png"
+   ]
+  },
+  {
+   "id": "bounties-skull-size",
+   "ticket": "GG-T1854",
+   "screens": [
+    "bounties"
+   ],
+   "rule": "X1",
+   "summary": "bounties: the '☠' wanted glyph renders at 28 px, under the 30 px caption floor (checklist X1)",
+   "detail": "From the UI tree in facts.json (POL-A2 fails 3x on bounties). The screenshot itself came out black (see the capture ticket), so this is from layout data. Fix: draw the glyph at body size or replace it with an icon sprite.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/bounties.png"
+   ]
+  },
+  {
+   "id": "windows-footer-align",
+   "ticket": "GG-T1855",
+   "screens": [
+    "windows"
+   ],
+   "rule": "L7",
+   "summary": "windows: Save / Reset / Delete footer row is off-centre (left inset 194 px vs right 12 px) and puts Delete in the bottom-right commit spot (checklist L7)",
+   "detail": "From the UI tree in facts.json (POL-C8 'ragged edges: left 194 vs right 12'); the screenshot came out black, so re-check after the recapture. L7 reserves bottom-right for the commit button, but here it is Delete. Fix: Save bottom-right, Delete separated to the left (or behind a confirm), and even insets.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/windows.png"
+   ]
+  },
+  {
+   "id": "capture-black",
+   "ticket": "GG-T1856",
+   "screens": [
+    "title",
+    "settings",
+    "bestiary",
+    "bounties",
+    "crucible",
+    "windows",
+    "splash"
+   ],
+   "rule": "§3 capture",
+   "summary": "uiaudit: title, settings, bestiary, bounties, crucible and windows iphone17pro captures are solid black and splash is mid-fade, so their contrast samples read bg #000000 (checklist §3 capture)",
+   "detail": "f17cf7da captured these PNGs as a black frame with only the 'Development Build' watermark, though facts.json has their full UI tree. Every contrast sample on them uses bg #000000, so the X4 numbers (e.g. 'Enter the Crucible' 1.03:1, windows 'Confirm' 1.08:1) are not real. Splash was caught mid-fade (copyright 1.11:1). Likely the shot fires during the screen transition fade; tools/uiaudit.py --settle is 1.5 s. Fix: wait for the fade to finish (or until the frame is not uniform) before capturing, then recapture these screens so the GG-T1839 review can be finished for them.",
+   "screenshots": [
+    "docs/design/ui-audit/captures/iphone17pro/title.png",
+    "docs/design/ui-audit/captures/iphone17pro/settings.png",
+    "docs/design/ui-audit/captures/iphone17pro/bestiary.png",
+    "docs/design/ui-audit/captures/iphone17pro/bounties.png",
+    "docs/design/ui-audit/captures/iphone17pro/crucible.png",
+    "docs/design/ui-audit/captures/iphone17pro/windows.png",
+    "docs/design/ui-audit/captures/iphone17pro/splash.png"
+   ]
+  }
+ ]
+}

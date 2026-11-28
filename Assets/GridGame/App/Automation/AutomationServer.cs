@@ -650,7 +650,7 @@ namespace GridGame.App.Automation
                     return new { ok = true, current = app.Profile.Name, profiles = app.Profile.List(), root = app.Profile.Store.Root };
                 }
                 case "givemana":
-                    if (app.Router.Current is BattleScreen gm) { gm.DevGiveMana(int.TryParse(q["n"], out var gn) ? gn : 6, int.TryParse(q["charge"], out var gc) ? gc : -1); var gs = gm.State; return new { ok = true, meters = gs.Units.Where(u => u.IsHero).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => gs.ManaFull(u, i) > 0).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, points = gs.ManaIn(u.Id, i), full = gs.ManaFull(u, i) })).ToList() }; }
+                    if (app.Router.Current is BattleScreen gm) { gm.DevGiveMana(int.TryParse(q["n"], out var gn) ? gn : 6); var gs = gm.State; return new { ok = true, meters = gs.Units.Where(u => u.IsHero).SelectMany(u => Enumerable.Range(0, u.Bar.Count).Where(i => gs.ManaFull(u, i) > 0).Select(i => new { hero = u.Id, slot = i, ability = u.Bar[i].AbilityId, points = gs.ManaIn(u.Id, i), full = gs.ManaFull(u, i) })).ToList() }; }
                     return new { error = "not in battle" };
                 case "suggest":
                 {

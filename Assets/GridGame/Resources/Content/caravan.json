@@ -3,24 +3,24 @@
     "Id": "mana_casks",
     "Name": "Mana Casks",
     "Icon": "mat_essence_spark",
-    "Description": "Every battle starts with extra mana orbs.",
+    "Description": "Every battle starts with every spell's mana bar partly filled.",
     "Crew": "Brannoc",
     "CrewRole": "cask-keeper",
     "Levels": [
       {
         "Cost": 400,
         "Value": 1,
-        "Text": "+1 orb each battle"
+        "Text": "+100 mana to every spell each battle"
       },
       {
         "Cost": 900,
         "Value": 2,
-        "Text": "+2 orbs each battle"
+        "Text": "+200 mana to every spell each battle"
       },
       {
         "Cost": 1800,
         "Value": 3,
-        "Text": "+3 orbs each battle"
+        "Text": "+300 mana to every spell each battle"
       }
     ]
   },

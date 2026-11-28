@@ -79,7 +79,7 @@ namespace GridGame.Core.Rules
             foreach (var kv in b.Resistances) parts.Add(FormattableString.Invariant($"{kv.Key} ×{kv.Value:0.##}"));
             if (b.PincerDamageBonus > 0) parts.Add($"Pincer +{Math.Round(b.PincerDamageBonus * 100)}%");
             if (b.RegenPerTurn > 0) parts.Add($"Regen {b.RegenPerTurn}/turn");
-            if (b.BattleStartManaOrbs > 0) parts.Add($"+{b.BattleStartManaOrbs} orbs at battle start");
+            if (b.BattleStartManaOrbs > 0) parts.Add($"+{b.BattleStartManaOrbs * 100} mana to every spell at battle start");
             if (b.StartsProtected) parts.Add("Starts battles Protected");
             return string.Join(", ", parts);
         }

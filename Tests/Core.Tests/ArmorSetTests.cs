@@ -147,7 +147,7 @@ namespace GridGame.Tests
         {
             var b = new SetBonusDef { Pieces = 5, Stats = new Stats { Strength = 3 }, Resistances = { [DamageType.Fire] = 0.6f }, PincerDamageBonus = 0.1f, RegenPerTurn = 2, BattleStartManaOrbs = 1, StartsProtected = true };
             var text = ArmorSets.Describe(b);
-            foreach (var part in new[] { "STR +3", "Fire ×0.6", "Pincer +10%", "Regen 2/turn", "+1 orbs at battle start", "Starts battles Protected" })
+            foreach (var part in new[] { "STR +3", "Fire ×0.6", "Pincer +10%", "Regen 2/turn", "+100 mana to every spell at battle start", "Starts battles Protected" })
                 Assert.That(text, Does.Contain(part));
         }
 

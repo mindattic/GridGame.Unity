@@ -1610,7 +1610,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 2,
     "RegenPerTurn": 2
   },
   {
@@ -9980,8 +9979,7 @@
     "Resistances": {},
     "SoldByVendor": true,
     "ShopTier": 2,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_plus1",
@@ -10010,8 +10008,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_plus2",
@@ -10040,8 +10037,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_plus3",
@@ -10071,7 +10067,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 1,
     "PassiveName": "Glare",
     "PassiveDescription": "[Pincer] strikes have a 15% chance to [Blind] the target.",
     "PincerApplyBuff": "blinded",
@@ -10104,8 +10099,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_ench_frost",
@@ -10134,8 +10128,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_ench_spark",
@@ -10164,8 +10157,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_ench_shadow",
@@ -10194,8 +10186,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_ench_poison",
@@ -10224,8 +10215,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_tallow_ench_holy",
@@ -10254,8 +10244,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_knuckles_copper",
@@ -13331,8 +13320,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_plus1",
@@ -13361,8 +13349,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_plus2",
@@ -13391,8 +13378,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_plus3",
@@ -13422,7 +13408,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 1,
     "PassiveName": "Overclock",
     "PassiveDescription": "[Pincer] strikes have a 20% chance to [Slow] the target.",
     "PincerApplyBuff": "slowed",
@@ -13455,8 +13440,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_ench_frost",
@@ -13485,8 +13469,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_ench_spark",
@@ -13515,8 +13498,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_ench_shadow",
@@ -13545,8 +13527,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_ench_poison",
@@ -13575,8 +13556,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_hammer_tinker_ench_holy",
@@ -13605,8 +13585,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_lantern_mistveil",
@@ -27870,8 +27849,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_plus1",
@@ -27900,8 +27878,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_plus2",
@@ -27930,8 +27907,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_plus3",
@@ -27961,7 +27937,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 1,
     "PassiveName": "Short Circuit",
     "PassiveDescription": "[Pincer] strikes have a 15% chance to [Silence] the target.",
     "PincerApplyBuff": "silenced",
@@ -27994,8 +27969,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_ench_frost",
@@ -28024,8 +27998,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_ench_spark",
@@ -28054,8 +28027,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_ench_shadow",
@@ -28084,8 +28056,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_ench_poison",
@@ -28114,8 +28085,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_cog_ench_holy",
@@ -28144,8 +28114,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_wand_feather",
@@ -29092,8 +29061,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_plus1",
@@ -29122,8 +29090,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_plus2",
@@ -29152,8 +29119,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_plus3",
@@ -29183,7 +29149,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 1,
     "PassiveName": "Feedback Loop",
     "PassiveDescription": "[Pincer] strikes have a 15% chance to [Silence] the target.",
     "PincerApplyBuff": "silenced",
@@ -29216,8 +29181,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_ench_frost",
@@ -29246,8 +29210,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_ench_spark",
@@ -29276,8 +29239,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_ench_shadow",
@@ -29306,8 +29268,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_ench_poison",
@@ -29336,8 +29297,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_circuit_ench_holy",
@@ -29366,8 +29326,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_scepter_naga",
@@ -31884,8 +31843,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_plus1",
@@ -31914,8 +31872,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_plus2",
@@ -31944,8 +31901,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_plus3",
@@ -31975,7 +31931,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 1,
     "PassiveName": "Mind Spike",
     "PassiveDescription": "[Pincer] strikes have a 20% chance to [Silence] the target.",
     "PincerApplyBuff": "silenced",
@@ -32008,8 +31963,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_ench_frost",
@@ -32038,8 +31992,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_ench_spark",
@@ -32068,8 +32021,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_ench_shadow",
@@ -32098,8 +32050,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_ench_poison",
@@ -32128,8 +32079,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_orb_neural_ench_holy",
@@ -32158,8 +32108,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_totem_phantom",
@@ -32832,8 +32781,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_plus1",
@@ -32862,8 +32810,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_plus2",
@@ -32892,8 +32839,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_plus3",
@@ -32923,7 +32869,6 @@
     "Resistances": {},
     "SoldByVendor": false,
     "Icon": null,
-    "BankCapacityBonus": 1,
     "PassiveName": "Constellation",
     "PassiveDescription": "[Pincer] strikes have a 25% chance to [Silence] the target.",
     "PincerApplyBuff": "silenced",
@@ -32956,8 +32901,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_ench_frost",
@@ -32986,8 +32930,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_ench_spark",
@@ -33016,8 +32959,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_ench_shadow",
@@ -33046,8 +32988,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_ench_poison",
@@ -33076,8 +33017,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_tome_starlit_ench_holy",
@@ -33106,8 +33046,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_scepter_abyssal",
@@ -37060,8 +36999,7 @@
       "Dark": 0.7
     },
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_ring_iron",
@@ -37565,8 +37503,7 @@
       "Arcane": 0.7
     },
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_ring_titan",
@@ -38047,8 +37984,7 @@
       "Dark": 0.6
     },
     "SoldByVendor": false,
-    "Icon": null,
-    "BankCapacityBonus": 1
+    "Icon": null
   },
   {
     "Id": "eq_earring_dragon",

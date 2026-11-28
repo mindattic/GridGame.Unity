@@ -127,7 +127,6 @@ namespace GridGame.Tests
         {
             var (s, _) = Battle(Db(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 3, 7), ("mage", 1, 7));
             WolfIn(s, 30);
-            s.ManaCharge = 0;
             Step(s, Hero(s, "knight"), 1f); // 10 of 30 ticks spent: 2 s left
             Assert.That(BattleEngine.GuardCharge(s), Is.EqualTo(BattleEngine.GuardChargeFor(2f)));
             int expected = BattleEngine.DampedCharge(s, BattleEngine.GuardChargeFor(2f));

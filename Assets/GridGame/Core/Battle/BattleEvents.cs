@@ -302,23 +302,16 @@ namespace GridGame.Core.Battle
     public sealed class OrbMintedEvent : BattleEvent
     {
         public int SourceUnitId; public bool Landed; public string Reason;
-        /// <summary>The bank slot this orb landed in (0-based), captured at mint time so several orbs minted in one
-        /// action fan into consecutive slots instead of all flying to the final count (GG-T112). -1 when it overflowed.</summary>
-        public int Slot = -1;
-        public override string ToString() => $"Orb from {SourceUnitId} {(Landed ? $"landed in slot {Slot}" : "overflow")} ({Reason})";
+        public override string ToString() => $"Orb from {SourceUnitId} {(Landed ? $"landed" : "overflow")} ({Reason})";
     }
 
     public sealed class OrbsSpentEvent : BattleEvent
     {
         public int Count;
-        /// <summary>The bank count right after this spend, captured at spend time (GG-T130) so playback redraws
-        /// to this value instead of the command's end-of-action bank count, which may already include orbs this
-        /// same action mints later (their fly-in would otherwise land on a bank that already looks full).</summary>
-        public int CountAfter;
         /// <summary>GG-T332: a foe's siphon drained these orbs (the party didn't spend them).</summary>
         public bool Drained;
         public int DrainedById = -1;
-        public override string ToString() => $"Orbs{(Drained ? "Drained" : "Spent")} {Count} -> {CountAfter}";
+        public override string ToString() => $"Orbs{(Drained ? "Drained" : "Spent")} {Count}";
     }
 
     public sealed class TimelineAdvancedEvent : BattleEvent
@@ -707,11 +700,11 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Reinforcements wave {Wave + 1} [{string.Join(",", Spawned)}]";
     }
 
-    /// <summary>Mana charge gained (§3.1.9). <see cref="Total"/> is the meter afterwards; whole orbs it made follow as OrbMinted.</summary>
+    /// <summary>Mana charge gained (§3.1.9).</summary>
     public sealed class ManaChargedEvent : BattleEvent
     {
-        public int SourceId; public int Amount; public int Total; public string Reason; public int Participants; public int Chain;
-        public override string ToString() => $"ManaCharged +{Amount} ({Reason}) -> {Total}";
+        public int SourceId; public int Amount; public string Reason; public int Participants; public int Chain;
+        public override string ToString() => $"ManaCharged +{Amount} ({Reason})";
     }
 
     /// <summary>One spell meter's change in a <see cref="ManaGainedEvent"/> (§3.1.0).</summary>

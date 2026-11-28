@@ -30,7 +30,7 @@ namespace GridGame.Core.Battle
             var before = SnapshotPositions();
             int trapsBefore = S.Traps.Count, pickupsBefore = S.Pickups.Count;
             int hpBefore = hero.Hp;
-            int tilesBefore = S.Region.Tiles.Count, chargeBefore = S.ManaCharge, bankBefore = S.Bank.Count; // GG-T1249
+            int tilesBefore = S.Region.Tiles.Count; // GG-T1249
             int eventsBefore = ev.Count;
             // GG-T188 (§2.0): a hold that ran the whole turn window was a forced drop — the turn ends either way.
             bool timeUp = BattleEngine.IsTimeUp(S, m.HeldSeconds);
@@ -40,7 +40,7 @@ namespace GridGame.Core.Battle
             WalkPath(hero, m.Path, taken);
             bool nothingHappened = taken.Count == 0
                 || (hero.Alive && hero.Hp == hpBefore && S.Traps.Count == trapsBefore && S.Pickups.Count == pickupsBefore && SamePositions(before)
-                    && S.Region.Tiles.Count == tilesBefore && S.ManaCharge == chargeBefore && S.Bank.Count == bankBefore
+                    && S.Region.Tiles.Count == tilesBefore
                     && !HadEffectEvent(eventsBefore) && !WouldFormPincer(hero));
             if (nothingHappened && timeUp) return true; // dropped where it stood: no move, but the turn is spent
             if (nothingHappened)
