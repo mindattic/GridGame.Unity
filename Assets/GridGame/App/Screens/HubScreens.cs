@@ -316,8 +316,13 @@ namespace GridGame.App
             }
             foreach (var slot in Equipment.JewelrySlots)
                 G(ItemUi.SlotName(slot), h.Jewelry.TryGetValue(slot, out var jid) ? jid : null);
-            Ui.Section("Lore", sheet);
-            GlossaryText.Create(def.Lore ?? def.Description ?? "", "kit-text dim", sheet);
+            // GG-T1826: a unit's description and lore live here and in the Bestiary, not in battle.
+            if (!string.IsNullOrEmpty(def.Description) || !string.IsNullOrEmpty(def.Lore))
+            {
+                Ui.Section("Lore", sheet);
+                if (!string.IsNullOrEmpty(def.Description)) GlossaryText.Create(def.Description, "kit-text", sheet).name = "status-description";
+                if (!string.IsNullOrEmpty(def.Lore) && def.Lore != def.Description) GlossaryText.Create(def.Lore, "kit-text dim", sheet).name = "status-lore";
+            }
 
             // GG-T182: armor set progress — every set this hero wears a piece of, with each bonus tier lit once reached.
             var setsBlock = Ui.El("col", sheet);
@@ -2301,6 +2306,7 @@ namespace GridGame.App
             Ui.Caption($"Defeated {e.Defeated}", top, "gold");
             if (!string.IsNullOrEmpty(d.Description)) GlossaryText.Create(d.Description, "kit-text", w);
             if (!string.IsNullOrEmpty(d.Lore) && d.Lore != d.Description) GlossaryText.Create(d.Lore, "kit-text dim", w);
+            Fact(w, "beast-known", "Known", Known(tier));
             if (d.Heavy) GlossaryText.Create(InspectCard.HeavyLine, "kit-text gold", w).name = "beast-heavy"; // GG-T892: its keyword and counters, once seen
             if (d.DropTable != null && C.DropTables.TryGetValue(d.DropTable, out var drops) && drops.Entries.Count > 0)
             {
@@ -2342,6 +2348,11 @@ namespace GridGame.App
             var hint = BestiaryKnowledge.Hint(e);
             if (hint != null) Ui.Para(hint, w, "dim").name = "beast-hint";
         }
+
+        /// <summary>How much of it the Bestiary knows, by the highest tier reached.</summary>
+        private static string Known(int tier) =>
+            tier >= BestiaryKnowledge.Abilities ? "Everything" : tier >= BestiaryKnowledge.Elements ? "Its weaknesses"
+            : tier >= BestiaryKnowledge.Stats ? "Its HP and stats" : tier >= BestiaryKnowledge.Speed ? "Its speed" : "Its name and story";
 
         /// <summary>One knowledge row: its label, then the value, or "???" while <paramref name="value"/> is still locked (null).</summary>
         private static void Fact(VisualElement w, string name, string label, string value)
