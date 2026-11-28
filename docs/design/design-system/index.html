@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@700;800&family=Cinzel:wght@700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Design System</h1>
+    <p class="sub">How every GridGame screen looks and behaves (GG-T2044): the owner's nine rules, the Manapunk tokens from <code>Tokens.cs</code> and <code>Theme.uss</code>, every kit component with its default, pressed, selected-pressed and disabled states, sheets and modals, and the layout grid and thumb zone for each device shape in <code>tools/devices.json</code>. Mocks are drawn at one third scale, so 132 design px is 44 CSS px. The written spec is <a id="l-spec">DESIGN_SYSTEM.md</a>.</p>
+    <div class="links" id="links"></div>
+  </header>
+
+  <nav class="toc">
+    <a href="#rules">Rules</a><a href="#colour">Colour</a><a href="#type">Type</a><a href="#space">Space</a><a href="#radii">Radii and elevation</a><a href="#motion">Motion</a><a href="#components">Components</a><a href="#overlays">Sheets and modals</a><a href="#layout">Layout and thumb zone</a><a href="#dos">Do and do not</a>
+  </nav>
+
+  <section id="rules">
+    <h2>The owner's rules</h2>
+    <div class="grid" id="rule-grid"></div>
+  </section>
+
+  <section id="colour">
+    <h2>Colour roles (Manapunk)</h2>
+    <div class="card"><div class="swatches" id="roles"></div></div>
+    <h3>Every USS colour token</h3>
+    <div class="card"><div class="swatches" id="uss"></div></div>
+  </section>
+
+  <section id="type">
+    <h2>Type</h2>
+    <div class="grid">
+      <div class="specimen">
+        <div class="heavy">Heavy · titles, names, buttons</div>
+        <div>Body · every sentence and row label at TypeScale.Base</div>
+        <div class="dim">Dim · meta and captions, same size</div>
+        <div class="gold">1,250 G · gold is currency</div>
+        <div class="disp">Display · Cinzel, wordmark only</div>
+        <div class="floor dim">30 px: the floor. Nothing smaller.</div>
+      </div>
+      <div class="card">
+        <p style="margin-top:0">One size, <code>TypeScale.Base</code>: <code>GuiType</code> picks the design size that draws 14 dp on this screen, clamped to 40 to 56, times Text size (100 / 115 / 130 %). Emphasis is weight and colour, never size. Shrink-to-fit stops at <code>TypeFloor.ShrinkFloor</code>: 30 px, or more on small or low-dpi screens (12 screen px / 9 dp). Wrapped lines stop at 720 px (<code>--measure-text</code>).</p>
+        <p class="m" style="margin-bottom:0">Fonts: M PLUS Rounded 1c Bold (Body), its ExtraBold (Heavy), Cinzel (Display). Three roles at most per screen; no faux bold.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="space">
+    <h2>Space and size</h2>
+    <div class="grid">
+      <div class="card"><h3>Space (<code>Space</code>, <code>--space-*</code>)</h3><div class="bars" id="space-bars"></div></div>
+      <div class="card"><h3>Size (<code>Size</code>)</h3><div class="scroll"><table id="size-table"></table></div></div>
+    </div>
+  </section>
+
+  <section id="radii">
+    <h2>Radii and elevation</h2>
+    <div class="grid">
+      <div class="card"><h3>Radii (Manapunk)</h3><div class="radii" id="radii-list"></div><p class="m" style="margin-bottom:0">Literals in Theme.uss today; GG-T2047 makes them tokens.</p></div>
+      <div class="card span"><h3>Elevation: layer order plus edge light</h3><div class="elev" id="elev"></div></div>
+    </div>
+  </section>
+
+  <section id="motion">
+    <h2>Motion</h2>
+    <div class="card">
+      <div class="motion" id="motion-rows"></div>
+      <p class="m">Tap the track to play. Easings shown with the standard duration. Press feel: sink 0.06 s, release 0.14 s with overshoot. Screen change: 0.2 s fade through black. Reduce Motion drops shakes, wobble, flicker and marquee scroll.</p>
+    </div>
+  </section>
+
+  <section id="components">
+    <h2>Components and states</h2>
+    <p class="sub">Press and hold a mock to see its pressed state. The confirm demo below runs select-then-confirm as the game does on touch.</p>
+    <div class="grid wide" id="comp-grid"></div>
+    <div class="split">
+      <div class="card comp">
+        <h3>Try it: select, then confirm</h3>
+        <div class="demo mp" id="confirm-demo"></div>
+        <div class="meta" id="confirm-log">Nothing is selected on touch. Tap a row.</div>
+      </div>
+      <div class="card"><h3>The rest of the kit</h3><div class="scroll"><table id="kit-table"></table></div></div>
+    </div>
+  </section>
+
+  <section id="overlays">
+    <h2>Sheets and modals</h2>
+    <div class="card scroll"><table id="ov-table"></table></div>
+    <p class="m">All sit on <code>GameApp.I.Overlay</code> over a 0.72 veil kept topmost; Back closes the top one. A sheet rises in 0.25 s (Out) and drops in 0.15 s; a dialog fades and scales from 96 % in 0.15 s (Back).</p>
+  </section>
+
+  <section id="layout">
+    <h2>Layout grid and thumb zone</h2>
+    <p class="sub">One content column, 24-px gutters, a 4-column grid inside. Primary actions in the bottom 45 % of the safe stage (POL-C4). Pick a shape to draw it; "132 px is" converts the touch target into that phone's own pt or dp.</p>
+    <div class="devwrap">
+      <div class="card"><svg id="phone" viewBox="0 0 300 700" role="img" aria-label="Stage diagram"></svg></div>
+      <div class="card scroll"><table class="devtable" id="dev-table"></table><p class="m" id="dev-note"></p></div>
+    </div>
+  </section>
+
+  <section id="dos">
+    <h2>Do and do not</h2>
+    <div class="dos" id="dos-list"></div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
