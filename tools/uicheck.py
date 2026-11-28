@@ -176,8 +176,9 @@ def main():
             h.call("back"); time.sleep(0.6)
         cards = [h.call("element", name=n) for n in h.call("names", prefix="camp-hero-")]
         win = h.call("element", name="camp-party")
-        check("camp party is a 2-column grid with room for six", len(cards) >= 3 and all(c["w"] < win["w"] * 0.55 for c in cards)
-              and win["h"] < 700, f"{len(cards)} cards, window {win}")
+        # GG-T1962: the party is one row of thumbnails (UX review §2.2), short enough to leave the thumb zone to the NEXT card.
+        check("camp party is a single row of thumbnails", len(cards) >= 3 and len({round(c["y"]) for c in cards}) == 1
+              and win["h"] < 400, f"{len(cards)} cards, window {win}")
 
         # Overwrite confirm on an occupied slot
         h.call("clicktext", text="Save & Quit"); until(lambda: has_text("Start Campaign"))

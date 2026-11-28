@@ -2650,7 +2650,7 @@ def storyarc(run="storyarc", capture=True):
         call("clicktext", text="Skip")
     ok["prologue_then_camp"] = _wait_screen("hub", 8)
     time.sleep(0.8); shot("03-camp")
-    ok["camp_rested_meter"] = bool(call("names", prefix="camp-rested"))
+    ok["camp_fight_button"] = bool(call("names", prefix="camp-continue"))  # GG-T1962: Rested shows on the hub only while it gates
     call("devrested", limit=1, points=5)
     call("devwanderer")
     call("clicktext", text="Adventure"); time.sleep(0.8)
