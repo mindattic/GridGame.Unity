@@ -159,7 +159,7 @@ namespace GridGame.App
             timelineIcons.pickingMode = PickingMode.Ignore;
             timelineIcons.style.position = Position.Absolute;
             timelineIcons.style.left = timelineIcons.style.top = timelineIcons.style.right = timelineIcons.style.bottom = Space.S0;
-            timelineIcons.schedule.Execute(CycleCastRings).Every(1200);
+            timelineIcons.schedule.Execute(CycleBeat).Every(1200);
             timelineIcons.schedule.Execute(PulseTimeline).Every(33);
 
             BuildSlot(frame);
@@ -509,7 +509,7 @@ namespace GridGame.App
             MarkNextAttacker(at);
             LayoutIcons(at);
             SyncTimelineStatus();
-            SyncCastRings(at);
+            SyncCastGhosts(at);
             timelineSeeded = true;
         }
 

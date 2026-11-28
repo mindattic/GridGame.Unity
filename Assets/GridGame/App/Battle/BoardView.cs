@@ -20,11 +20,6 @@ namespace GridGame.App
         public readonly VisualElement HpFill;
         public readonly VisualElement Buffs;
         public readonly VisualElement Glow;
-        public readonly CastRing Cast;
-        public readonly VisualElement CastChip;
-        /// <summary>The charging bar (owner direction 2026-10-11): fills left to right as a cast rides the timeline.</summary>
-        public readonly VisualElement CastBar;
-        private readonly VisualElement castBarFill;
         /// <summary>The armor plate (§13.5): a riveted steel bar on the edge the unit faces.</summary>
         public readonly VisualElement Plate;
         /// <summary>Hero gear durability telegraph (GG-T39): thin weapon/armor wear bars, and the
@@ -108,26 +103,6 @@ namespace GridGame.App
             Buffs.style.right = Space.S8; Buffs.style.top = Space.S8;
             Root.Add(Buffs);
 
-
-            // Casting: countdown traced around the caster's frame. Targeted: the incoming spell's chip in the corner.
-            Cast = new CastRing { name = "castring-" + u.Id, pickingMode = PickingMode.Ignore };
-            Cast.style.display = DisplayStyle.None;
-            Root.Add(Cast);
-            CastChip = new VisualElement { name = "castchip-" + u.Id, pickingMode = PickingMode.Ignore };
-            CastChip.style.position = Position.Absolute;
-            CastChip.style.left = Space.S4; CastChip.style.top = Space.S4;
-            CastChip.style.width = CastChip.style.height = Size.Chip;
-            CastChip.style.borderTopLeftRadius = CastChip.style.borderTopRightRadius = CastChip.style.borderBottomLeftRadius = CastChip.style.borderBottomRightRadius = 12;
-            CastChip.style.borderTopWidth = CastChip.style.borderBottomWidth = CastChip.style.borderLeftWidth = CastChip.style.borderRightWidth = 3;
-            CastChip.style.backgroundColor = Palette.Ink;
-            CastChip.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
-            CastChip.style.display = DisplayStyle.None;
-            CastChip.Add(new Label { name = "castchip-letter", pickingMode = PickingMode.Ignore });
-            CastChip[0].AddToClassList("shadow");
-            CastChip[0].style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(CastChip[0]);
-            CastChip[0].style.unityTextAlign = TextAnchor.MiddleCenter; CastChip[0].style.flexGrow = 1;
-            Root.Add(CastChip);
-
             tileSize = tile;
             Plate = new VisualElement { name = "plate-" + u.Id, pickingMode = PickingMode.Ignore };
             Plate.style.position = Position.Absolute;
@@ -148,22 +123,7 @@ namespace GridGame.App
             Plate.style.justifyContent = Justify.SpaceAround; Plate.style.alignItems = Align.Center;
             Root.Add(Plate);
 
-            CastBar = new VisualElement { name = "castbar-" + u.Id, pickingMode = PickingMode.Ignore };
-            CastBar.style.position = Position.Absolute;
-            CastBar.style.left = Space.S16; CastBar.style.right = Space.S16; CastBar.style.bottom = Space.S32; CastBar.style.height = Size.Gauge;
-            CastBar.style.backgroundColor = Palette.Ink.WithA(0.9f);
-            CastBar.style.borderTopLeftRadius = CastBar.style.borderTopRightRadius = CastBar.style.borderBottomLeftRadius = CastBar.style.borderBottomRightRadius = 7;
-            CastBar.style.borderTopWidth = CastBar.style.borderBottomWidth = CastBar.style.borderLeftWidth = CastBar.style.borderRightWidth = 2;
-            CastBar.style.borderTopColor = CastBar.style.borderBottomColor = CastBar.style.borderLeftColor = CastBar.style.borderRightColor = Palette.White.WithA(0.7f);
-            CastBar.style.overflow = Overflow.Hidden;
-            CastBar.style.display = DisplayStyle.None;
-            castBarFill = new VisualElement { pickingMode = PickingMode.Ignore };
-            castBarFill.style.position = Position.Absolute;
-            castBarFill.style.left = castBarFill.style.top = castBarFill.style.bottom = Space.S0;
-            CastBar.Add(castBarFill);
-            Root.Add(CastBar);
-
-            // Hero gear durability (GG-T39, §24.5): a thin weapon/armor wear strip above the cast bar,
+            // Hero gear durability (GG-T39, §24.5): a thin weapon/armor wear strip near the tile's foot,
             // plus a badge that only shows once the weapon is on its last point.
             Gear = new VisualElement { name = "gear-" + u.Id, pickingMode = PickingMode.Ignore };
             Gear.style.position = Position.Absolute;
@@ -482,26 +442,10 @@ namespace GridGame.App
         {
             Buffs.Clear();
             if (statuses.Count == 0) return;
-            var (icon, letter, color, frac) = statuses[statusBeat % statuses.Count];
+            var (icon, letter, color, _) = statuses[statusBeat % statuses.Count];
             var pip = Ui.StatusPip(icon, letter, color, 50);
             pip.name = "statuspip-" + Id;
-            pip.Add(new RingTimer(frac) { pickingMode = PickingMode.Ignore });
             Buffs.Add(pip);
-            if (statuses.Count > 1)
-            {
-                var more = new Label((statuses.Count).ToString()) { pickingMode = PickingMode.Ignore };
-                more.AddToClassList("shadow");
-                more.style.position = Position.Absolute; more.style.right = -Space.S8; more.style.bottom = -Space.S8;
-                more.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(more);
-                pip.Add(more);
-            }
-        }
-
-        /// <summary>Caster side: show (or hide, with null) the countdown ring; <paramref name="left"/> = fraction of cast time remaining.</summary>
-        public void SetCastRing(Color? color, float left)
-        {
-            Cast.style.display = color.HasValue ? DisplayStyle.Flex : DisplayStyle.None;
-            if (color.HasValue) Cast.Set(color.Value, left);
         }
 
         /// <summary>Draw the plate on the facing edge; it fades as it dents and vanishes when broken.</summary>
@@ -552,28 +496,6 @@ namespace GridGame.App
             }
             armorPulseAmber = animate && hasArmor && armorFrac <= 0.10f;
             if (!armorPulseAmber) armorBarEl.style.opacity = 1f;
-        }
-
-        /// <summary>Caster side: the charging bar, <paramref name="filled"/> = fraction of the cast already charged (null hides it).</summary>
-        public void SetCastBar(Color? color, float filled)
-        {
-            CastBar.style.display = color.HasValue ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!color.HasValue) return;
-            castBarFill.style.width = Length.Percent(Mathf.Clamp01(filled) * 100f);
-            castBarFill.style.backgroundColor = Color.Lerp(color.Value, Palette.White, 0.15f + 0.25f * Mathf.Clamp01(filled));
-        }
-
-        /// <summary>Target side: the incoming spell's icon (or initial) in its colour, top-left of the tile.</summary>
-        public void SetCastChip(Color? color, Texture2D icon, string name)
-        {
-            CastChip.style.display = color.HasValue ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!color.HasValue) return;
-            var c = color.Value;
-            CastChip.style.borderTopColor = CastChip.style.borderBottomColor = CastChip.style.borderLeftColor = CastChip.style.borderRightColor = c;
-            CastChip.style.backgroundImage = icon != null ? new StyleBackground(icon) : new StyleBackground((Texture2D)null);
-            var letter = (Label)CastChip[0];
-            letter.text = icon == null && !string.IsNullOrEmpty(name) ? name.Substring(0, 1) : "";
-            letter.style.color = c;
         }
 
         public void SetGlow(Color c, float alpha)
@@ -1036,7 +958,7 @@ namespace GridGame.App
                 var fill = def != null && def.Pit ? new Color(0.03f, 0.02f, 0.02f, 0.92f) : col.WithA(kv.Value.Blocks ? 0.55f : 0.3f);
                 var e = RegionCell(kv.Key, fill, edge, def?.Glyph, kv.Value.Blocks ? 6f : 3f, !faint && !regionSeen.Contains(key));
                 regionCellAt[kv.Key] = e;
-                // GG-T846: life ring, hidden outline, hatch pulse and the last-3-seconds countdown.
+                // GG-T846: hidden outline and hatch pulse (no life ring or countdown on the tile, GG-T1817).
                 float life = def != null && def.LifeSeconds > 0f && kv.Value.LifeTicks > 0
                     ? Mathf.Clamp01(kv.Value.LifeTicks / (def.LifeSeconds * BattleConfig.TicksPerSecond)) : -1f;
                 var fx = new TileMarkFx(edge, col, faint);
@@ -1082,10 +1004,6 @@ namespace GridGame.App
                             .Every(16).Until(() => Tween.Clock - t0 >= 0.3f);
                     }
                     fx.Life = calm ? life : from;
-                    int secs = Mathf.CeilToInt(kv.Value.LifeTicks / (float)BattleConfig.TicksPerSecond);
-                    if (secs <= 3 && !faint && (!regionLifeSecs.TryGetValue(key, out var shown) || shown != secs))
-                        TileCountdown?.Invoke(CenterOf(kv.Key), secs, col);
-                    regionLifeSecs[key] = secs;
                     // A mark that hatches when its life runs out (a slime glob's OnExpire SpawnUnit) swells in a pulse that
                     // grows stronger and quicker as it nears the end. Reduce Motion: no pulse, the ring still drains.
                     if (!calm && Hatches(def))
@@ -1128,19 +1046,14 @@ namespace GridGame.App
             regionSeen.Clear();
             regionSeen.UnionWith(seen);
             regionFaint.IntersectWith(seen);
-            Prune(regionLife, seen); Prune(regionLifeSecs, seen); Prune(regionHidAt, seen);
+            Prune(regionLife, seen); Prune(regionHidAt, seen);
         }
 
         // GG-T846: per-mark view memory across syncs (marks are rebuilt each sync).
         private readonly HashSet<string> regionFaint = new HashSet<string>();
         private readonly Dictionary<string, float> regionLife = new Dictionary<string, float>();
-        private readonly Dictionary<string, int> regionLifeSecs = new Dictionary<string, int>();
         private readonly Dictionary<string, float> regionHidAt = new Dictionary<string, float>();
         private readonly Dictionary<Coord, VisualElement> regionCellAt = new Dictionary<Coord, VisualElement>();
-
-        /// <summary>GG-T846: a painted mark's life is in its last seconds: (tile centre, whole seconds left, state colour).
-        /// The battle screen floats it as a CombatText Timer.</summary>
-        public System.Action<Vector2, int, Color> TileCountdown;
 
         private static Color TeamHero => Palette.Colorblind ? Palette.CbHero : Palette.Hero;
 
@@ -1288,53 +1201,6 @@ namespace GridGame.App
                 Shapes.Dot(p, body, br, small.Tint(Iron));
                 Shapes.Dot(p, body + new Vector2(-br * 0.35f, -br * 0.35f), br * 0.28f, small.Tint(Sheen).Outlined(Sheen, 0f));
             };
-        }
-    }
-
-    /// <summary>
-    /// Radial countdown traced around a unit's rounded frame, clockwise from top-centre: the lit part is the cast
-    /// time still to run, so the line shrinks toward the moment the spell lands (bible §2.6, owner request).
-    /// </summary>
-    public sealed class CastRing : VisualElement
-    {
-        private Color color = Palette.White;
-        private float left = 1f;
-        public float Left => left;
-        public Color Color => color;
-
-        public CastRing()
-        {
-            style.position = Position.Absolute;
-            style.left = style.top = Space.S4; style.right = style.bottom = Space.S4;
-            generateVisualContent += Draw;
-        }
-
-        public void Set(Color c, float remaining)
-        {
-            color = c; left = Mathf.Clamp01(remaining);
-            MarkDirtyRepaint();
-        }
-
-        /// <summary>The lit trace: a <see cref="Shapes"/> partial rounded-rect stroke (tinted body, ink outline, GG-T737),
-        /// from the frame's top-centre clockwise over the fraction still to run.</summary>
-        private void Draw(MeshGenerationContext ctx)
-        {
-            var r = contentRect;
-            if (r.width <= 0 || left <= 0f) return;
-            const float inset = 5f;
-            var frame = new Rect(r.xMin + inset, r.yMin + inset, r.width - inset * 2f, r.height - inset * 2f);
-            float rad = Mathf.Min(22f, frame.width / 2f, frame.height / 2f);
-            Shapes.RoundedRect(ctx.painter2D, frame, rad, ShapeStyle.Indicator.Tint(color).Thick(8f), start: TopCentre(frame, rad), portion: left);
-        }
-
-        /// <summary>Where the top edge's centre sits along <see cref="Shapes.RoundedRect"/>'s perimeter (which starts at the
-        /// top edge's left end), as a fraction of the whole: its corners are six-segment polygons, measured as drawn.</summary>
-        private static float TopCentre(Rect r, float rad)
-        {
-            float corner = 12f * rad * Mathf.Sin(7.5f * Mathf.Deg2Rad);
-            float w = Mathf.Max(0f, r.width - rad * 2f), h = Mathf.Max(0f, r.height - rad * 2f);
-            float total = 2f * (w + h) + 4f * corner;
-            return total <= 0f ? 0f : w * 0.5f / total;
         }
     }
 

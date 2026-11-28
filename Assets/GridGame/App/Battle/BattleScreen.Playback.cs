@@ -1982,7 +1982,7 @@ namespace GridGame.App
             foreach (var t in ar.Tiles) board.Mark(t, c, 0.22f);
             var targets = ar.Targets.Select(State.UnitById).Where(u => u != null).ToList();
             EndGhost(ar.CasterId, ar.AbilityId);
-            SyncCastRings(lastAt);
+            SyncCastGhosts(lastAt);
             bool itemUse = pendingItemUser >= 0 && pendingItemUser == ar.CasterId;
             string itemId = pendingItemId;
             pendingItemUser = -1; pendingItemId = null;

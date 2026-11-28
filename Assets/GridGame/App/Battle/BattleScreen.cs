@@ -278,7 +278,6 @@ namespace GridGame.App
             boardHost.style.position = Position.Absolute;
             boardHost.style.top = BoardTop;
             board = new BoardView(boardHost, State.Stage.Theme);
-            board.TileCountdown = (at, secs, col) => Text?.Countdown(at, secs, Color.Lerp(col, Palette.White, 0.2f)); // GG-T846
             board.SetScrim(App.Content.Sky?.RegionFor(State.Stage.Theme)?.BoardScrim ?? 0f); // GG-T665
             CreatePrefabFx();
             board.Root.pickingMode = PickingMode.Position;
@@ -613,66 +612,37 @@ namespace GridGame.App
             return null;
         }
 
-        // ── Cast countdowns on the target's frame ──────────────────────────────
+        // ── Pending casts ──────────────────────────────────────────────────────
 
         private Dictionary<int, float> lastAt;
         private int castCycle;
 
         /// <summary>
-        /// Cast time shows on the caster (owner direction 2026-10-10): every pending cast traces a radial countdown
-        /// around its caster's frame in the spell's colour; its target carries the spell chip, so "who casts what on
-        /// whom" reads on the board. A unit with several pending casts (or targeted by several) cycles every 1.2 s.
+        /// A cast time shows only on the caster's timeline entry (BIBLE §9.0, GG-T1817, owner 2026-11-27): nothing is drawn on
+        /// board tiles for a pending cast. This keeps each queued hero cast's ghost at its place on the bar.
         /// </summary>
-        private void SyncCastRings(Dictionary<int, float> at)
+        private void SyncCastGhosts(Dictionary<int, float> at)
         {
-            var casting = new Dictionary<int, List<(Color color, float left)>>();
-            var targeted = new Dictionary<int, List<(Color color, AbilityDef a)>>();
-            var rides = State.Timeline.Where(e => e.Kind == TimelineKind.Cast)
-                .Select(e => (e.Id, e.OwnerId, e.AbilityId, e.TargetUnitId, e.TargetTile, U: BattleEngine.BarU(State, e), Span: CastSpanU(e.TotalCastTicks + e.AccumulatedDelayTicks))).ToList();
             foreach (var g in castGhosts.Values)
-                if (rides.All(r => r.Id != g.EntryId)) rides.Add((g.EntryId, g.CasterId, g.AbilityId, g.TargetUnitId, g.TargetTile, g.U, g.Span));
-            foreach (var e in rides)
             {
-                // GG-T525: under Colorblind palette a cast ring says whose spell it is (blue hero / orange foe) instead of
-                // its element's hue, which several deficiencies can't tell apart.
-                var color = Colorblind && State.UnitById(e.OwnerId) is Unit caster ? Palette.TeamCast(caster.Team == Team.Hero) : Art.SpellColor(e.AbilityId);
-                var a = App.Content.TryAbility(e.AbilityId);
-                float u = at != null && at.TryGetValue(e.Id, out var x) ? x : e.U;
-                if (castGhosts.TryGetValue(e.Id, out var ghost)) ghost.U = u;
-                if (!casting.TryGetValue(e.OwnerId, out var cl)) casting[e.OwnerId] = cl = new List<(Color, float)>();
-                cl.Add((color, Mathf.Clamp01(u / Mathf.Max(0.0001f, e.Span)))); // the share of the cast still to run
-                int target = e.TargetUnitId;
-                if (State.UnitById(target) is not Unit tu || !tu.Alive) target = State.UnitAt(e.TargetTile)?.Id ?? -1;
-                if (target < 0) continue;
-                if (!targeted.TryGetValue(target, out var tl)) targeted[target] = tl = new List<(Color, AbilityDef)>();
-                tl.Add((color, a));
-            }
-            foreach (var kv in board.Units)
-            {
-                if (casting.TryGetValue(kv.Key, out var cl)) { var (c, left) = cl[castCycle % cl.Count]; kv.Value.SetCastRing(c, left); kv.Value.SetCastBar(c, 1f - left); }
-                else { kv.Value.SetCastRing(null, 0f); kv.Value.SetCastBar(null, 0f); }
-                if (targeted.TryGetValue(kv.Key, out var tl))
-                {
-                    var (c, a) = tl[castCycle % tl.Count];
-                    kv.Value.SetCastChip(c, Art.AbilityIcon(a), a?.Name);
-                }
-                else kv.Value.SetCastChip(null, null, null);
+                if (at != null && at.TryGetValue(g.EntryId, out var u)) g.U = u;
+                else if (State.Timeline.FirstOrDefault(x => x.Id == g.EntryId) is TimelineEntry e) g.U = BattleEngine.BarU(State, e);
             }
         }
 
-        /// <summary>The shared 1.2 s beat: cast rings, overlapping timeline circles and status slots each show their next item.</summary>
-        private void CycleCastRings()
+        /// <summary>The shared 1.2 s beat: overlapping timeline circles and status slots each show their next item.</summary>
+        private void CycleBeat()
         {
             if (Paused) return; // the 1.2 s beat is game time too (GG-T126)
             castCycle++;
             if (State == null || board == null || lastAt == null) return;
-            SyncCastRings(lastAt);
+            SyncCastGhosts(lastAt);
             LayoutIcons(lastAt);
             SyncTimelineStatus();
             foreach (var v in board.Units.Values) v.NextStatus();
         }
 
-        /// <summary>Dev hook (automation): queue a pending enemy cast on a unit so the countdown ring can be checked.</summary>
+        /// <summary>Dev hook (automation): queue a pending enemy cast on a unit so its timeline entry can be checked.</summary>
         public int DevQueueCast(int targetId, string abilityId, int ticks)
         {
             var target = State.UnitById(targetId);

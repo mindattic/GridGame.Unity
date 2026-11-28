@@ -352,7 +352,7 @@ def main():
         capt = h.call("style", name="orbs-cap").get("text")
         check("mana pool shows the bank count large and the cap beneath", count == str(have) and capt == f"/{cap}", f"{bank} vs {count} {capt}")
 
-    with section('Buff pips with timer ring (US-155/156)'):
+    with section('Buff pips (US-155/156)'):
         b = battle_state()
         target = next(u for u in b["units"] if u["team"] == "Enemy")
         h.call("buff", unit=target["Id"], id="burning")
@@ -386,23 +386,16 @@ def main():
         probs = [p for p in h.call("layout").get("problems", []) if "Power Amplifier" in p]
         check("the amplifier's feed line fits the combat feed", not probs, " | ".join(probs))
 
-    with section('Pending spell: countdown ring on the caster, spell chip on the target, cycling when several'):
+    with section('Pending spell: on the timeline only, nothing on board tiles (GG-T1817)'):
         hero = next(u for u in battle_state()["units"] if u["team"] == "Hero")
         icons_before = set(entry_icons(h.call("names", prefix="tl-")))
         r = h.call("devcast", target=hero["Id"], ability="charge_ice", ticks=40); time.sleep(0.4)
-        caster = r.get("caster", -1)
-        ring = h.call("element", name=f"castring-{caster}")
-        chip = h.call("element", name=f"castchip-{hero['Id']}")
-        check("a pending spell rings its caster and marks its target", ring.get("w", 0) > 0 and chip.get("w", 0) > 0, f"{r} {ring} {chip}")
+        on_tiles = h.call("names", prefix="castring-") + h.call("names", prefix="castchip-") + h.call("names", prefix="castbar-")
+        check("a pending spell draws no ring, chip or bar on board tiles", not on_tiles, f"{r} {on_tiles}")
         # GG-T287: casts ride the bar as their own diamonds (the old rule "casts are not drawn on the timeline" is gone).
         new_icons = set(entry_icons(h.call("names", prefix="tl-"))) - icons_before
         check("a pending spell rides the timeline as a cast diamond", len(new_icons) >= 1, f"{sorted(icons_before)} -> new {sorted(new_icons)}")
-        h.call("devcast", target=hero["Id"], ability="charge_fireball", ticks=60); time.sleep(0.2)
-        seen = set()
-        for _ in range(5):
-            seen.add(h.call("style", name=f"castchip-{hero['Id']}")["border"]); time.sleep(0.5)
-        check("two pending spells on one unit cycle their colours", len(seen) >= 2, str(seen))
-        h.shot("castring")
+        h.shot("pendingcast")
 
     with section('Long-press tooltip'):
         wait_idle(200)

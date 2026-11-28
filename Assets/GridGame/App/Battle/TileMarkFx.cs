@@ -4,13 +4,13 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>
-    /// GG-T846 (BIBLE §14.23, Shapes §11.6): the vector dressing on a painted region tile. A timed mark shows a life ring
-    /// in its state's colour, its lit arc draining clockwise from 12 o'clock as its LifeSeconds run out (over a dark ink
-    /// track); the party's own hidden mark keeps a dotted frame in its owner's colour (dashed = there, but only to you).
+    /// GG-T846 (BIBLE §14.23, Shapes §11.6): the vector dressing on a painted region tile. The party's own hidden mark
+    /// keeps a dotted frame in its owner's colour (dashed = there, but only to you). No life ring: a board tile carries
+    /// no countdown (BIBLE §9.0, GG-T1817).
     /// </summary>
     public sealed class TileMarkFx : VisualElement
     {
-        /// <summary>Share of the mark's life left (0..1); below 0 = no ring (the mark lasts until cleared).</summary>
+        /// <summary>Share of the mark's life left (0..1); below 0 = the mark lasts until cleared. Only a hatching glob draws it.</summary>
         public float Life = -1f;
         /// <summary>GG-T895: the mark hatches when its life runs out (a slime glob): it is drawn as a wobbling blob of its
         /// state's colour that swells, and wobbles harder and quicker, as <see cref="Life"/> drains. <see cref="Calm"/>
@@ -56,13 +56,6 @@ namespace GridGame.App
                 Shapes.Dot(p, shine, radius * 0.18f, ShapeStyle.Small.Tint(Color.white.WithA(0.7f)).Outlined(Color.clear, 0f));
             }
             if (Crate && !hidden) DrawCrate(p, r, Wear);
-            if (Life >= 0f)
-            {
-                var st = ShapeStyle.Small.Thick(6f);
-                float radius = Mathf.Min(r.width, r.height) * 0.38f;
-                Shapes.Ring(p, r.center, radius, st.Tint(ShapeStyle.Ink.WithA(0.35f)));
-                if (Life > 0f) Shapes.Ring(p, r.center, radius, st.Tint(Color.Lerp(state, Color.white, 0.25f).WithA(hidden ? 0.5f : 0.95f)), -90f, 360f * Life);
-            }
         }
 
         /// <summary>The crate wood (GG-T935).</summary>
