@@ -48,10 +48,10 @@ namespace GridGame.App
             var start = board.StartOf(h.ClassId);
 
             var head = Ui.Panel(body, null, false, "hex-head");
-            Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", head, h.SkillPoints > 0 ? "gold" : "dim").name = "hex-points";
+            Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", RowIcon.Line("cur-skill-points", head), h.SkillPoints > 0 ? "gold" : "dim").name = "hex-points";
             var have = StatLine(board.StatTotals(owned));
             int bought = SkillHexProgress.Refundable(C, h).Count;
-            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(have.Length > 0 ? " · " + have : "")} · earn 1 a level", head, "dim");
+            Ui.Caption($"Owns {owned.Count} node{(owned.Count == 1 ? "" : "s")} ({bought} bought){(string.IsNullOrEmpty(have) ? "" : " · " + have)} · earn 1 a level", head, "dim");
 
             var frame = Ui.Panel(body, null, true, "hex-board");
             var host = SkillHexView.Host(board, zoom, out var view);
@@ -154,7 +154,8 @@ namespace GridGame.App
             {
                 var term = C.TryTerm(kv.Key);
                 string val = $"{(kv.Value >= 0 ? "+" : "")}{kv.Value}";
-                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", w);
+                var id = HeroIcons.Stat(kv.Key);
+                var t = GlossaryText.Create(term != null ? $"[{kv.Key}] {val} — {term.Text}" : $"{kv.Key} {val}", "kit-text", id != null ? RowIcon.Line(id, w) : w);
                 t.name = "hex-stat-line";
             }
         }
