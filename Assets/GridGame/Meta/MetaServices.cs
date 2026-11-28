@@ -373,6 +373,9 @@ namespace GridGame.Meta
         /// <summary>The hero class with the most combo points earned as a supporter this battle (null when none), and its points.</summary>
         public string TopSupporter;
         public int TopSupporterPoints;
+        /// <summary>GG-T1828: each hero class's combo points this battle, earned attacking and supporting.</summary>
+        public Dictionary<string, int> ComboAttackerPoints = new Dictionary<string, int>();
+        public Dictionary<string, int> ComboSupporterPoints = new Dictionary<string, int>();
         /// <summary>GG-T944 (§2.13.1): the party turns the battle took (<see cref="BattleResults.PartyTurns"/>) and the
         /// commands it took (<see cref="BattleResults.ActionsTaken"/>, Guards included).</summary>
         public int PartyTurns;
@@ -675,6 +678,8 @@ namespace GridGame.Meta
                 OrbsLeft = battle.ReadySpellCount,
                 BestComboRank = r.BestComboRank,
                 BestComboScore = r.BestComboScore,
+                ComboAttackerPoints = new Dictionary<string, int>(r.ComboAttackerPoints),
+                ComboSupporterPoints = new Dictionary<string, int>(r.ComboSupporterPoints),
                 PartyTurns = r.PartyTurns,
                 Actions = r.ActionsTaken,
                 Rounds = r.Rounds,
